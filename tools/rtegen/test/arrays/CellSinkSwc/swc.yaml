@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: Apache-2.0
+# RTE-25 test component: reads an array port (dimension as a number) in another task than its writer and writes
+# the maximum, its index and an echo of the array it read.
+version: 1
+name: CellSinkSwc
+description: Cell voltage monitor (reads and writes array ports)
+implementation: c
+runnables:
+  - name: Run20ms
+    period_ms: 20
+ports:
+  - { name: CellVoltages, direction: in, type: uint16, runnables: [Run20ms], dimension: 6 }
+  - { name: MaxCell_mV, direction: out, type: uint16, runnables: [Run20ms] }
+  - { name: MaxCellIndex, direction: out, type: uint8, runnables: [Run20ms] }
+  - { name: CellEcho, direction: out, type: uint16, runnables: [Run20ms], dimension: 6 }

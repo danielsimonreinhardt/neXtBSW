@@ -1,0 +1,59 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Your Name <you@example.com>
+Date: Thu, 17 Sep 2026 12:00:00 +0200
+Subject: [PATCH] Fix empty flash configuration field of the s32k148evb image
+
+The linker script reserves FlashConfigField at 0x400 and keeps an input
+section .FlashConfig for it, but no source file ever placed anything in
+that section, so .FlashConfigField is zero bytes long and the image
+leaves 0x400 to 0x40F untouched.
+
+The flash controller reads that field out of reset. In erased flash it
+reads 0xFF in every byte, so FSEC = 0xFF, which is SEC = 11 = secure:
+the device comes up with the debug port locked and only a mass erase
+brings it back. It works on a board that still carries an unsecured
+field from an earlier flash run, which is why an incremental download
+over an existing image does not show it, but a device programmed from
+this image alone after a mass erase comes up secured.
+
+startUp.S now fills the section with the NXP default values: backdoor
+comparison key and FPROT erased, FSEC = 0xFE (unsecure, mass erase
+enabled, backdoor key disabled), FOPT = 0x7F, FEPROT and FDPROT erased.
+Reference: S32K1xx Series Reference Manual, Rev. 13, chapter 36.4.1
+"Flash configuration field description" for the layout and 36.4.4.1.4
+(FSEC) for SEC = 11 being secure.
+
+Signed-off-by: Your Name <you@example.com>
+---
+ .../platforms/s32k148evb/main/src/bsp/startUp.S   | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
+
+diff --git a/executables/referenceApp/platforms/s32k148evb/main/src/bsp/startUp.S b/executables/referenceApp/platforms/s32k148evb/main/src/bsp/startUp.S
+index cbd41e71..c1073869 100644
+--- a/executables/referenceApp/platforms/s32k148evb/main/src/bsp/startUp.S
++++ b/executables/referenceApp/platforms/s32k148evb/main/src/bsp/startUp.S
+@@ -280,6 +280,21 @@ __isr_vector:
+ 
+     .size    __isr_vector, . - __isr_vector
+ 
++/*
++ * Flash Configuration Field (FCF), read by the flash controller out of reset from 0x400.
++ * The linker script reserves the region, but nothing filled it, so the field stayed erased
++ * (0xFF...FF). FSEC = 0xFF means SEC = 11, that is "secure": the device comes up with the debug
++ * port locked and only a mass erase gets it back.
++ * Values below are the NXP defaults: backdoor key and FPROT erased, FSEC = 0xFE (unsecure, mass
++ * erase enabled, backdoor key disabled), FOPT = 0x7F, FEPROT = FDPROT = 0xFF.
++ */
++    .section .FlashConfig, "a"
++    .align 2
++    .long   0xFFFFFFFF      /* 0x400: backdoor comparison key, bytes 0-3 */
++    .long   0xFFFFFFFF      /* 0x404: backdoor comparison key, bytes 4-7 */
++    .long   0xFFFFFFFF      /* 0x408: FPROT3, FPROT2, FPROT1, FPROT0 */
++    .long   0xFFFF7FFE      /* 0x40C: FSEC, FOPT, FEPROT, FDPROT */
++
+     .section .text // , "a" // has no effect for gcc compiler
+     .equ _NVIC_ICER,  0xE000E180
+     .equ _NVIC_ICPR,  0xE000E280
+-- 
+2.30.1.windows.1
+

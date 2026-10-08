@@ -1,0 +1,20 @@
+# Module manifest (doc/architecture/README.md, section 5). Checked by tools/nxconfig (checks.py).
+#
+# kind: service, not device_driver: bspPinEvent serves no board part. It is the family neutral consumer end of
+# the pin interrupt contract (doc/architecture/pin-interrupts.md, variant A): the dispatcher of a family
+# (platforms/<family>/bsp, IO-52) calls PinEvents::onEdge(), the family implements IPinEventHardware (level,
+# edge detector). It lives in libs/bsp next to the other family neutral parts that sit directly on an L1 contract
+# (bspAdcAccess) - the dispatcher links it, no L2 driver does.
+#
+# No parameters here: the values are per input and stand in the project (pin_events.<input>: edge, debounce_us,
+# max_events, window_ms, rearm_ms; checked by tools/nxconfig/pinevent.py). tools/bswgen generates the
+# PinEventConfig table from them (bsp/pinEvent/pinEventConfiguration.h, IO-54).
+module: bspPinEvent
+kind: service
+description: >-
+  Events on digital inputs: counter, time stamp and qualifier per input, software debounce with level
+  confirmation, rate limit with automatic re-arm (driver robustness, QM)
+verification: mock
+verification_note: Host tests with simulated time and mutants, s32k1xx adapter host test through the real dispatcher, target build of a project with pin_events (IO-54); no board test (IO-56).
+console: pinevent
+cmake_target: bspPinEvent

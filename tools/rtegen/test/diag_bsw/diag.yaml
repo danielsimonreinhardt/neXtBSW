@@ -1,0 +1,119 @@
+# Diagnostic description of the COM-32 RTE tests: identifiers whose values come from the basic software
+# (`source: {bsw: ...}`, the notation of the rte.yaml connections), read by the rte::diag functions. Served with the
+# ECU description test/diag/rte.yaml (synthetic components of test/multitask) and the project
+# buildtest_s32k148_min (S32K148 without SBC: ADC channel POTI with a sensor plan, internal input BANDGAP, CAN
+# buses CAN0/CAN1) - not the eval board. The first identifiers and the routine are those of test/diag/diag.yaml,
+# because that ECU description connects them.
+schema_version: 1
+
+data_identifiers:
+  - identifier: 0x0300
+    name: MotorSpeed
+    data:
+      - name: speed
+        type: uint16
+        source: {port: MotorSwc.Speed.Speed}
+  - identifier: 0x0301
+    name: MotorSetpoint
+    write: true
+    data:
+      - name: setpoint
+        type: uint16
+        source: {port: AppSwc.Setpoint.Setpoint}
+
+  # COM-32: ECU state and start reasons (libs/bsw/ecuState)
+  - identifier: 0x0310
+    name: EcuStatus
+    data:
+      - name: state
+        type: uint8
+        source: {bsw: ecu.state}
+      - name: wakeup
+        type: uint32
+        source: {bsw: ecu.wakeup}
+      - name: canWake          # one start reason: CAN1, the second bus of the project
+        type: uint8
+        source: {bsw: ecu.wakeup.CAN1}
+
+  # an ADC channel with a sensor plan: mV (clamped to uint16), converter value, physical value and quality, one
+  # conversion for value and quality
+  - identifier: 0x0311
+    name: Poti
+    data:
+      - name: voltage
+        type: uint16
+        source: {bsw: adc.mv.POTI}
+      - name: raw
+        type: uint16
+        source: {bsw: adc.raw.POTI}
+      - name: value
+        type: int16            # sint32 -> int16: clamped at both ends
+        source: {bsw: adc.phys.POTI}
+      - name: quality
+        type: uint8
+        source: {bsw: adc.qlf.POTI}
+
+  # an internal converter input as float32, and only the quality of a sensor (no NRC when the conversion fails)
+  - identifier: 0x0312
+    name: Converter
+    data:
+      - name: bandgap
+        type: float32
+        source: {bsw: adc.mv.BANDGAP}
+      - name: potiQuality
+        type: uint8
+        source: {bsw: adc.qlf.POTI}
+
+  # BSW services (RTE-05): one reading per service
+  - identifier: 0x0313
+    name: Supply
+    data:
+      - name: state
+        type: uint8
+        source: {bsw: bsw.power.state}
+      - name: ok
+        type: uint8
+        source: {bsw: bsw.power.ok}
+      - name: voltage
+        type: uint16
+        source: {bsw: bsw.power.supply_mv}
+      - name: quality
+        type: uint8
+        source: {bsw: bsw.power.qlf}
+      - name: reason
+        type: uint8
+        source: {bsw: bsw.reset.reason}
+      - name: watchdog
+        type: uint8
+        source: {bsw: bsw.reset.watchdog}
+      - name: uptime
+        type: uint32
+        source: {bsw: bsw.time.ms}
+
+  # a port and a BSW value in one identifier: the BSW value outside the lock, the port under it
+  - identifier: 0x0314
+    name: MotorStatus
+    data:
+      - name: speed
+        type: uint16
+        source: {port: MotorSwc.Speed.Speed}
+      - name: state
+        type: uint8
+        source: {bsw: ecu.state}
+
+routines:
+  - identifier: 0x0500
+    name: SpinUp
+    start:
+      call: {runnable: MotorSwc.Run1ms}
+      request:
+        - name: enable
+          type: uint8
+          values:
+            - {value: 0, text: disabled}
+            - {value: 1, text: enabled}
+    results:
+      call: {runnable: AppSwc.Run10ms}
+      response:
+        - name: speed
+          type: int32

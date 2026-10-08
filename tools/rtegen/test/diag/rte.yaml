@@ -1,0 +1,46 @@
+# ECU description of the COM-28 tests: the diagnostic jobs reach component values through the RTE (did.* and
+# routine.* targets, diag.yaml of this folder). Reuses the synthetic components of test/multitask (two tasks),
+# used with the build-test project buildtest_s32k148_min and the BSW task profile test/multitask/tasks.yaml, not
+# with the eval board. Only the connections matter here, not what the components compute.
+#
+#   MotorSwc.Setpoint (uint16, required, read in two tasks)  <- did.MotorSetpoint: what the tester writes (2E)
+#   MotorSwc.Enable (boolean, required)                      <- routine.SpinUp.start.enable (request parameter)
+#   AppSwc.Speed (uint32, required)                          <- routine.SpinUp.start: counts the start requests
+#   MotorSwc.Speed (uint32, provided)                        -> diag.yaml source of MotorSpeed (uint16, clamped)
+#                                                               and routine.SpinUp.results.speed (int32, clamped)
+#   AppSwc.Setpoint (uint16, provided)                       -> diag.yaml source of MotorSetpoint, and the same
+#                                                               link written as did.MotorSetpoint
+
+schema_version: 2
+
+tasks:
+  - name: motor
+    period_ms: 1
+    priority: 35
+    stack_bytes: 1024
+    runnables: [MotorSwc.Run1ms]
+  - name: app
+    period_ms: 10
+    priority: 25
+    stack_bytes: 2048
+    runnables:
+      - MotorSwc.RunDiag10ms
+      - AppSwc.Run10ms
+      - { runnable: AppSwc.Run50ms, offset_ms: 20 }
+
+components:
+  - name: MotorSwc
+    path: ../multitask/MotorSwc
+  - name: AppSwc
+    path: ../multitask/AppSwc
+
+connections:
+  MotorSwc.Setpoint.Setpoint: did.MotorSetpoint
+  MotorSwc.Enable.Enable: routine.SpinUp.start.enable
+  MotorSwc.Speed.Speed: [rte, routine.SpinUp.results.speed]
+  MotorSwc.Wide.Wide: rte
+  AppSwc.Speed.Speed: routine.SpinUp.start
+  AppSwc.Wide.Wide: MotorSwc.Wide.Wide
+  AppSwc.Setpoint.Setpoint: [rte, did.MotorSetpoint]
+  AppSwc.Led.Led: dio.out.LED1
+  AppSwc.SlowCount.SlowCount: rte

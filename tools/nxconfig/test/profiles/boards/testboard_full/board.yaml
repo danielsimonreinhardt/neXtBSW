@@ -1,0 +1,227 @@
+# Synthetic full-featured s32k1xx board (PLAT-62): the generator and tool tests need one rich board - SBC with CAN,
+# a second passive CAN, gate driver on SPI, high-side switch, hall inputs, complementary PWM with power stage facts,
+# sensor channels of every kind, input capture, FlexIO-I2C, UART - and the private eval board must not be that board
+# (it stays private, PLAT-46 F10, so a test against it is red in the exported open tree).
+#
+# Every value here is invented test data: the signal *names* follow the demo component (swc/DemoSwc) and its demo
+# CAN matrix, so the same ECU description connects; pins, channels, crystal, resistors and sense ratios are chosen
+# freely from the derivative database ([MUX] mcudb/s32k1xx/S32K144_LQFP100.pinmux.yaml, every pin function below is
+# listed there) and differ from any real board. No pads: they would only repeat a package drawing. No hardware.
+schema_version: 1
+
+board:
+  name: testboard_full
+  mcu: S32K144
+  package: LQFP100
+  supply_v: 5.0
+  clock:
+    sosc_hz: 16000000                     # other crystal than the eval board (40 MHz) and the EVBs (8 MHz)
+  debug:
+    interface: SWD
+    probe: J-Link
+  adc_reference_mv: 5000
+
+devices:
+  # SBC: role power_supply and CAN0 transceiver; three of four HVIO are local wake-up inputs (LOCAL1..LOCAL3)
+  - name: SBC
+    part: UJA1131HW/FD/5V/4Y
+    pins:
+      HVIO1: { use: none }
+      HVIO2: { use: wake_input, note: "synthetic wake key" }
+      HVIO3: { use: wake_input, note: "synthetic wake connector" }
+      HVIO4: { use: wake_input, note: "synthetic wake line" }
+      EN:    { use: none }
+  - name: MOT1_GD
+    part: TMC6200-TA
+    module: gdTmc6200
+    connect: { drv_en: MOT1_GD_DRV_EN, fault: MOT1_GD_FAULT }
+  - name: DIAG_PHY
+    part: SN65HVD1050D
+    note: "passive transceiver of the second bus"
+  - name: KL30B_SW
+    part: BTS5030-1EJA
+    module: highSideSwitch
+    connect: { in: EN_SW_KL30B, den: DIAG_EN_SW_KL30B, is: CURRENTSENSE_KL30B }
+  - name: HALL1
+    part: hall3_open_collector
+    module: hall
+    connect: { u: HALL_UX, v: HALL_V, w: HALL_WY }
+
+spi:
+  - name: SBC_SPI
+    instance: LPSPI1                      # [MUX] LPSPI1 SCK PTB14, SIN PTB15, SOUT PTB16, PCS3 PTB17 (MUX 3)
+    sck:  { pin: PTB14 }
+    sin:  { pin: PTB15 }
+    sout: { pin: PTB16 }
+    pcs:  { pin: PTB17, index: 3 }
+    device: SBC
+  - name: MOT1_GD_SPI
+    instance: LPSPI0                      # [MUX] LPSPI0 SCK PTE0, SIN PTE1, SOUT PTE2 (MUX 2), PCS2 PTE6 (MUX 2)
+    sck:  { pin: PTE0 }
+    sin:  { pin: PTE1 }
+    sout: { pin: PTE2 }
+    pcs:  { pin: PTE6, index: 2 }
+    device: MOT1_GD
+
+can:
+  - name: CAN0
+    instance: FlexCAN0                    # [MUX] FlexCAN0 RX PTE4, TX PTE5 (MUX 5)
+    rx: { pin: PTE4 }
+    tx: { pin: PTE5 }
+    phy: SBC
+  - name: CAN1
+    instance: FlexCAN2                    # [MUX] FlexCAN2 RX PTB12, TX PTB13 (MUX 4); 16 message buffers
+    rx: { pin: PTB12 }
+    tx: { pin: PTB13 }
+    phy: DIAG_PHY
+
+uart:
+  - name: UART
+    instance: LPUART1                     # [MUX] LPUART1 RX PTC8, TX PTC9 (MUX 2)
+    rx: { pin: PTC8 }
+    tx: { pin: PTC9 }
+
+rails:
+  - { name: SUPPLY_5V, mv: 5000, source: "synthetic rail" }
+  - { name: VREF_2, mv: 2500, source: "synthetic rail" }
+
+# One channel per sensor kind of the model (IO-18); resistor and amplifier values are invented
+adc:
+  - { name: MOTOR_NTC, instance: ADC0, channel: SE4, pin: PTB0, scale: { factor: 1, offset_mv: 0, verify: true }, fitted: false, note: "pull-up not fitted (synthetic)" }
+  - { name: SENSE_12VGATE, instance: ADC0, channel: SE5, pin: PTB1, scale: { divider: { r_top: 10000, r_bottom: 3300 }, offset_mv: 0 } }
+  - name: 12VBAT_CURRENT
+    instance: ADC0
+    channel: SE6
+    pin: PTB2
+    scale: { factor: 1, offset_mv: 0, verify: true }
+    sensor:
+      kind: shunt_amplifier
+      shunt_uohm: 10000
+      gain: 50
+      reference: { rail: VREF_2 }
+      output_min_mv: 5
+      source: "synthetic amplifier"
+  - { name: SENSE_TSVOLTAGE, instance: ADC0, channel: SE7, pin: PTB3, scale: { divider: { r_top: 22000, r_bottom: 2000 }, offset_mv: 0 } }
+  - name: SENSE_TSCURRENT
+    instance: ADC0
+    channel: SE12
+    pin: PTC14
+    scale: { factor: 1, offset_mv: 0, verify: true }
+    sensor:
+      kind: shunt_amplifier
+      shunt_uohm: 1000
+      gain: 50
+      reference: { rail: SUPPLY_5V, ratio_permille: 500 }
+      output_min_mv: 10
+      source: "synthetic amplifier"
+  - name: ADC_CURRENT_U
+    instance: ADC1
+    channel: SE4
+    pin: PTC6
+    scale: { factor: 1, offset_mv: 0, verify: true }
+    sensor: { kind: shunt_amplifier, shunt_uohm: 5000, gain: 20, reference: { rail: SUPPLY_5V, ratio_permille: 500 }, output_min_mv: 10, source: "synthetic amplifier" }
+  - name: ADC_CURRENT_V
+    instance: ADC1
+    channel: SE5
+    pin: PTC7
+    scale: { factor: 1, offset_mv: 0, verify: true }
+    sensor: { kind: shunt_amplifier, shunt_uohm: 5000, gain: 20, reference: { rail: SUPPLY_5V, ratio_permille: 500 }, output_min_mv: 10, source: "synthetic amplifier" }
+  - name: ADC_CURRENT_W
+    instance: ADC1
+    channel: SE6
+    pin: PTD4
+    scale: { factor: 1, offset_mv: 0, verify: true }
+    sensor: { kind: shunt_amplifier, shunt_uohm: 5000, gain: 20, reference: { rail: SUPPLY_5V, ratio_permille: 500 }, output_min_mv: 10, source: "synthetic amplifier" }
+  - { name: BEMF_U, instance: ADC1, channel: SE0, pin: PTA2, scale: { divider: { r_top: 22000, r_bottom: 2000 }, offset_mv: 0 } }
+  - { name: BEMF_V, instance: ADC1, channel: SE1, pin: PTA3, scale: { divider: { r_top: 22000, r_bottom: 2000 }, offset_mv: 0 } }
+  - { name: BEMF_W, instance: ADC1, channel: SE3, pin: PTD3, scale: { divider: { r_top: 22000, r_bottom: 2000 }, offset_mv: 0 } }
+  - name: CURRENTSENSE_KL30B
+    instance: ADC1
+    channel: SE12
+    pin: PTA15
+    scale: { factor: 1, offset_mv: 0 }
+    sensor: { kind: highside_is, device: KL30B_SW, k_ilis: 2000, r_is_ohm: 1000, source: "synthetic sense ratio" }
+  - { name: PILOT_ANALOG, instance: ADC1, channel: SE13, pin: PTA16, scale: { divider: { r_top: 56000, r_bottom: 22000 }, offset_mv: 0 } }
+  - name: PROXY_ANALOG
+    instance: ADC1
+    channel: SE2
+    pin: PTD2
+    scale: { factor: 1, offset_mv: 0, verify: true }
+    sensor:
+      kind: pullup
+      pullup_ohm: 470
+      supply: { rail: SUPPLY_5V }
+      diode_mv: 300
+      source: "synthetic pull-up"
+
+pwm:
+  - name: MOT1
+    instance: FTM0                        # [MUX] FTM0 CH0 PTC0, CH1 PTC1, CH2 PTD0, CH3 PTD1 (MUX 2), CH4 PTB4, CH5 PTB5
+    mode: complementary
+    active: { high_side: high, low_side: high }
+    gate_driver: MOT1_GD
+    pairs:
+      - { name: MOT1_U, high_side: MOT1_U_PWM_HS, low_side: MOT1_U_PWM_LS }
+      - { name: MOT1_V, high_side: MOT1_V_PWM_HS, low_side: MOT1_V_PWM_LS }
+      - { name: MOT1_W, high_side: MOT1_W_PWM_HS, low_side: MOT1_W_PWM_LS }
+    channels:
+      - { name: MOT1_U_PWM_HS, channel: 0, pin: PTC0 }
+      - { name: MOT1_U_PWM_LS, channel: 1, pin: PTC1 }
+      - { name: MOT1_V_PWM_HS, channel: 2, pin: PTD0 }
+      - { name: MOT1_V_PWM_LS, channel: 3, pin: PTD1 }
+      - { name: MOT1_W_PWM_HS, channel: 4, pin: PTB4 }
+      - { name: MOT1_W_PWM_LS, channel: 5, pin: PTB5 }
+    # invented switch, driver and gate values (schema IO-24), minimum dead time 150 + 20 ns
+    power_stage:
+      switch:
+        part: SYNTHETIC-NMOS
+        turn_on_delay_ns: 0
+        rise_time_ns: 50
+        turn_off_delay_ns: 100
+        fall_time_ns: 50
+        test_gate_resistance_mohm: 4700
+        internal_gate_resistance_mohm: 2000
+        gate_charge_nc: 40
+        r_ds_on_uohm: 4000
+        source: "synthetic switch"
+      driver:
+        part: TMC6200-TA
+        turn_on_delay_ns: 90
+        turn_off_delay_ns: 110
+        source: "synthetic driver timing"
+      gate:
+        turn_on_resistance_mohm: 2000
+        turn_off_resistance_mohm: 2000
+        source: "synthetic gate resistors"
+
+# PILOT_DUTY shares FTM0 with MOT1 (a project uses one of them), PWM_IN is on FTM2
+input_capture:
+  - { name: PILOT_DUTY, instance: FTM0, channel: 6, pin: PTA17 }   # [MUX] FTM0_CH6 PTA17 (MUX 2)
+  - { name: PWM_IN, instance: FTM2, channel: 4, pin: PTD13 }       # [MUX] FTM2_CH4 PTD13 (MUX 2)
+
+dio:
+  inputs:
+    - { name: BUTTON1, pin: PTD5, active: low, pull: up }
+    - { name: BUTTON2, pin: PTD6, active: low, pull: up }
+    - { name: HALL_UX, pin: PTD10 }
+    - { name: HALL_V, pin: PTD11 }
+    - { name: HALL_WY, pin: PTE11 }
+    - { name: MOT1_GD_FAULT, pin: PTE13, active: high }
+    - { name: SBC_INTERRUPT1, pin: PTE14, active: low, pull: up }
+    - { name: SBC_INTERRUPT2, pin: PTE3, active: low, pull: up }
+  outputs:
+    - { name: LED1, pin: PTD15, active: high }
+    - { name: LED2, pin: PTD16, active: high }
+    - { name: MOT1_GD_DRV_EN, pin: PTE7, active: high }
+    - { name: EN_VOLTAGEFILTER, pin: PTE15, active: high }
+    - { name: EN_CURRENTFILTER, pin: PTE16, active: high }
+    - { name: PILOT_STATE_C, pin: PTC12, active: high }
+    - { name: EN_SW_KL30B, pin: PTE8, active: high }
+    - { name: DIAG_EN_SW_KL30B, pin: PTE9, active: high }
+    - { name: WAKE_PULSE, pin: PTD7 }
+
+i2c:
+  - name: I2C
+    instance: FlexIO                      # [MUX] FlexIO_D6 PTA8, FlexIO_D7 PTA9 (MUX 4)
+    sda: { pin: PTA8, flexio_pin: 6 }
+    scl: { pin: PTA9, flexio_pin: 7 }

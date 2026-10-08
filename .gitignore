@@ -1,0 +1,56 @@
+# Build-Ausgaben (S32 Design Studio / Eclipse / makefiles)
+Debug/
+Release/
+Debug_RAM/
+Release_RAM/
+build/
+.nextbsw-backup/
+# TOOL-88: Kladde des atomaren Speicherns (project.yaml.part usw.). Bleibt nach einem Absturz liegen und darf
+# nie versehentlich committet werden - sie kann die halb geschriebene Fassung sein.
+*.part
+*.o
+*.d
+!doc/changelog.d/
+*.elf
+*.bin
+*.hex
+*.map
+*.su
+
+# S32DS / Eclipse Projekt-Metadaten (lokal, nicht teilen)
+.metadata/
+.settings/
+.launch
+*.launch
+
+# MATLAB / Simulink (Codegenerierung läuft nach build/swc)
+slprj/
+*.slxc
+*.autosave
+*.asv
+*.r20*
+
+# Python
+.venv/
+__pycache__/
+
+# Claude Code (Agenten-Worktrees, lokale Einstellungen)
+.claude/
+
+# IDE
+.vscode/
+*.user
+
+# OS
+Thumbs.db
+.DS_Store
+CMakeUserPresets.json
+
+# Documents under NDA / restricted distribution - local only, never push
+doc/confidential/
+
+# NVM-14: Schluesseldateien gehoeren in den Schluesselspeicher des Arbeitsplatzes (%LOCALAPPDATA%/neXtBSW/keys,
+# tools/nxconfig/keystore.py), nie ins Repository. Ausnahme: der absichtlich unsichere Testschluessel (BL-03).
+# Pruefung: python tools/nxconfig csec-key scan
+*.key
+!tools/canflash/keys/nextbsw-insecure-test.key

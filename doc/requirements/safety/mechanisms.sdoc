@@ -1,0 +1,1046 @@
+[DOCUMENT]
+TITLE: Safety mechanisms (SM)
+OPTIONS:
+  VIEW_STYLE: Table
+
+[GRAMMAR]
+IMPORT_FROM_FILE: @nextbsw
+
+[TEXT]
+STATEMENT: >>>
+Working state: dev at aaa22c86 (after v0.2.0)
+
+The catalogue of safety mechanisms, moved from doc/safety/concept.md sections 6.1 to 6.7 (stage 1, and the
+device-dependent rows as stage 2) and the item tables of sections 13.3 to 13.6 (device drivers, stage 2) by DOC-21
+step 3 (content unchanged). How to read the fields - fault model, detection, reaction (safe states S1, S2, S3, SD of
+concept section 3), worst case to reaction - and the notes about several mechanisms stay in concept.md section 6;
+the failure analysis per mechanism is doc/safety/fmea.md section 3. STAGE 2 = device-dependent, never credited by a
+stage-1 requirement; CREDITED no = a stage-1 mechanism that is described but claims nothing. Field texts are
+Markdown as in doc/safety.
+
+Issue 3 (DOC-51, 2026-10-04), together with concept.md issue 3: the state after the corrections of the confirmation
+review CM-07 (record doc/safety/reviews/records/CR-07-1.md, the user under deviation D-01, verdict accepted with
+conditions), released with the re-check in that record on 2026-10-04 (verdict accepted, CM-07 closed;
+DOC-57). Changed: **SM-26 and SM-27 are CREDITED no for release R1**
+(decision ZD; the safety manual already read them so), so the requirements SSR-089 ... SSR-092 no longer specify them;
+their notes are brought to the state of the tree (accepted by `nxconfig` since SYS-139/SYS-140, start test called
+from `RteSystem::init()` since SYS-141/SYS-143, power-on only). The credit of every stage-1 mechanism is explicit:
+CREDITED no for SM-26, SM-27, SM-58, SM-59 and SM-60, credited for every other stage-1 node. Before issue 3 this
+document had no number.
+<<<
+
+[[SECTION]]
+TITLE: 6.1 Program flow and time
+
+[SM]
+UID: SM-01
+TITLE: MCU watchdog
+STAGE: 1
+STATUS: implemented
+LOCATION: `ecu/safety/safeWatchdog`, `bsp::Watchdog`
+FAULT_MODEL: >>>
+the safety task stops running — endless loop, deadlock, starvation, lost interrupt
+<<<
+DETECTION: >>>
+hardware counter, time-out 250 ms; serviced from the safety task every 7 cycles = 70 ms (since SYS-53, derived at
+the fastest LPO)
+<<<
+REACTION: >>>
+reset by hardware (S2)
+<<<
+WORST_CASE: >>>
+250 ms from the last service
+<<<
+
+[SM]
+UID: SM-02
+TITLE: Watchdog configuration check
+STAGE: 1
+STATUS: implemented
+FAULT_MODEL: >>>
+the watchdog is reconfigured or switched off behind the supervision's back
+<<<
+DETECTION: >>>
+`Watchdog::checkWatchdogConfiguration(250 ms)` each service, i.e. every 70 ms
+<<<
+REACTION: >>>
+S1 + S2
+<<<
+WORST_CASE: >>>
+70 ms + reaction
+<<<
+
+[SM]
+UID: SM-03
+TITLE: Watchdog over-service check
+STAGE: 1
+STATUS: implemented
+FAULT_MODEL: >>>
+the watchdog is serviced by something other than the intended path (a runaway loop that happens to hit the service)
+<<<
+DETECTION: >>>
+the service counter must not advance by more than one between two services (70 ms)
+<<<
+REACTION: >>>
+S1 + S2
+<<<
+WORST_CASE: >>>
+70 ms + reaction
+<<<
+
+[SM]
+UID: SM-04
+TITLE: Safety manager sequence monitor
+STAGE: 1
+STATUS: implemented
+FAULT_MODEL: >>>
+the safety cycle is entered without being left, or left without being entered — control flow through the safety code
+is not the intended one; *since SYS-40:* the safety task runs too slowly or too fast while it still runs (wrong
+period, interrupt load, a fault of the OS tick or of the clock plan), or the time base of the check stopped or was
+reconfigured
+<<<
+DETECTION: >>>
+`safetyManagerSequenceMonitor.hit(ENTER/LEAVE)` around each safety cycle (10 ms); the same pattern around the
+watchdog service; *since SYS-40:* first step of every cycle, the distance to the previous cycle start on the LPTMR
+(16-bit, LPO1K clock, stops while the core is halted) against 14 ticks, the sum of 7 intervals against 59 ticks
+(since SYS-53), the timer's configuration re-checked in every cycle (`CyclePeriodCheck`, `LptmrCycleTimer`)
+<<<
+REACTION: >>>
+S1 + S2 (`SAFETY_CYCLE_PERIOD_VIOLATION` for the period part, before the late cycle's checks)
+<<<
+WORST_CASE: >>>
+10 ms + reaction; period part: an interval of 17 ms or more at the start of the late cycle, a window at its end
+<<<
+NOTE: >>>
+, since SYS-40 with **period check**
+<<<
+
+[SM]
+UID: SM-05
+TITLE: RTE run-time supervision
+STAGE: 1
+STATUS: implemented
+FAULT_MODEL: >>>
+a task cycle takes longer than the task period, or a runnable takes longer than its own period
+<<<
+DETECTION: >>>
+measured in the generated RTE per cycle; deadline **is** the configured period from `rte.yaml`, no extra
+configuration value; one event per source per measurement window (latch); the RTE task posts the event into a
+mailbox in general RAM (checked by an inverted copy, overflow and corruption reported as own contexts) and the
+safety task delivers it to the supervisor — no write from the RTE task into the protected RAM (SYS-37)
+<<<
+REACTION: >>>
+**S3 — log only**, by decision: one missed deadline must not restart the ECU
+<<<
+WORST_CASE: >>>
+detection within one task cycle; no de-energising reaction
+<<<
+NOTE: >>>
+(SYS-05)
+<<<
+
+[SM]
+UID: SM-06
+TITLE: Debug-halt / stall deadman
+STAGE: 1
+STATUS: implemented
+FAULT_MODEL: >>>
+the core does not execute software for longer than 10 ms — debugger halt, interrupt lock, starved task, later a
+flash erase
+<<<
+DETECTION: >>>
+LPIT channel 1 as a 32-bit period counter with `MCR[DBG_EN] = 1` (the LPIT keeps counting while the core is halted),
+time-out 10 ms, re-triggered through `CLRTEN`/`SETTEN` at every 1 ms poll; second source: `DFSR`
+<<<
+REACTION: >>>
+interrupt walks the safe outputs table; afterwards the guard inhibits the PWM and takes DRV_EN away **until the next
+explicit enable** (IO-32)
+<<<
+WORST_CASE: >>>
+10 ms until the timer expires, then exception entry + table walk on the first instruction after the halt
+<<<
+
+[SM]
+UID: SM-07
+TITLE: Startup watchdog self-test
+STAGE: 1
+STATUS: implemented
+FAULT_MODEL: >>>
+the watchdog hardware itself does not reset the MCU
+<<<
+DETECTION: >>>
+two deliberate watchdog resets at every start (test low / test high) before the application runs, from `main()`
+(`platforms/s32k1xx/port/main/src/main.cpp`)
+<<<
+REACTION: >>>
+on failure: `WATCHDOG_STARTUP_CHECK_FAILURE` → **S1 held** (SYS-23; issue 1: no reaction, finding F1)
+<<<
+WORST_CASE: >>>
+at start-up, before the BSP is initialised: table walk, then the hold
+<<<
+NOTE: >>>
+(OpenBSW `executeFastTest`)
+<<<
+
+[[/SECTION]]
+
+[[SECTION]]
+TITLE: 6.2 Memory
+
+[SM]
+UID: SM-10
+TITLE: MPU: protected RAM (fusa gate)
+STAGE: 1
+STATUS: implemented
+FAULT_MODEL: >>>
+non-safety code writes the safety data
+<<<
+DETECTION: >>>
+the safety RAM region is read-only except inside the safety shell; the shell opens it with all interrupts suspended
+and closes it on scope exit; nested ISRs are counted (`SafePreIsrHook`/`SafePostIsrHook`); since SYS-37 code outside
+the safety context reports events only through a mailbox, checked by a static rule (`safety-context`: monitor
+triggers, limp home and writing safety-system calls only from listed safety-context files), an ELF check (supervisor
+inside, mailboxes outside the protected region; only safety-context functions call `handle()`) and a host test that
+write-protects the supervisor page like the fusa gate
+<<<
+REACTION: >>>
+access violation is a fault exception → fault handler (safe outputs, dump, reset)
+<<<
+WORST_CASE: >>>
+immediate (exception)
+<<<
+
+[SM]
+UID: SM-11
+TITLE: MPU state check on entry and exit
+STAGE: 1
+STATUS: implemented
+FAULT_MODEL: >>>
+the gate was left open by a previous cycle, or is still closed when it should be open
+<<<
+DETECTION: >>>
+`mpuStatusCheckOnEnterMonitor` / `mpuStatusCheckOnLeaveMonitor` each safety cycle (10 ms)
+<<<
+REACTION: >>>
+S1 + S2
+<<<
+WORST_CASE: >>>
+10 ms + reaction
+<<<
+
+[SM]
+UID: SM-12
+TITLE: MPU enabled and complete
+STAGE: 1
+STATUS: implemented
+FAULT_MODEL: >>>
+the MPU is switched off or has fewer regions than the derivative promises
+<<<
+DETECTION: >>>
+`mpu::isGlobalEnabled()` and `hasRegionsOfDerivative()` against `NX_MPU_REGIONS` from `mcudb`, every 10 ms; context
+= the whole `CESR`
+<<<
+REACTION: >>>
+S1 + S2
+<<<
+WORST_CASE: >>>
+10 ms + reaction
+<<<
+
+[SM]
+UID: SM-13
+TITLE: MPU region descriptors unchanged
+STAGE: 1
+STATUS: implemented
+FAULT_MODEL: >>>
+a region descriptor was overwritten (start, end, access rights, validity)
+<<<
+DETECTION: >>>
+`areRegionsConfiguredCorrectly()` compares each descriptor every 10 ms; context = failing region
+<<<
+REACTION: >>>
+S1 + S2
+<<<
+WORST_CASE: >>>
+10 ms + reaction
+<<<
+
+[SM]
+UID: SM-14
+TITLE: ROM check (CRC-32 over the flash areas)
+STAGE: 1
+STATUS: implemented
+FAULT_MODEL: >>>
+the program image in flash is not the one that was linked — bit flips, partial erase, wrong image
+<<<
+DETECTION: >>>
+**active since SYS-38, repeated since SYS-44.** The linker script (`port/main/linkerscript/application.dld.in`)
+lists five areas — vector table, flash configuration field, startup section, code and read-only data, initialized
+data in flash (hot data, RAM functions, general data) — directly behind the image; the post-link step
+`safeMemory/tools/romCheckImage.py` (`cmake/NxRomCheck.cmake`) writes the reference CRC into the ELF and produces
+the hex, and stops the build if the list is missing or implausible or any flash byte lies outside the areas. The
+component `romcheck` of the board port (level 2, idle context) calls `RomCheck::idle()` once after
+`SafetyManager::init()` requested it, and since SYS-44 the idle handler of the application calls it in every round;
+a pass runs when the period `modules.safeMemory.rom_check_period_ms` has elapsed (start to start; 0 = once per
+start). A pass is a known-answer test of the CRC unit (SYS-44), then the list (1…16 areas, list length, word
+alignment, areas inside [application flash start, list)), and only then the CRC unit over the areas compared with
+`__checksum_result`. No pass starts while a flash write is open (`safety::FlashWriteScope`, every NvM write) or a
+flash command runs (`FTFC FSTAT[CCIF]`); a pass during which one began is discarded and repeated. **SYS-91:** a
+calibration segment (`memory.calibration`) is not in the list — its dataset may be flashed without a build, and the
+build reference would hold the ECU before the calibration start-up check applies `on_invalid`. The template marks
+its region as the area with its own reference (the build accepts content outside the list only there), and every
+pass then runs the owner's check against the CRCs of the CALV header (`RomCheck::setOwnAreaCheck`,
+`calibration::recheckSegment`), armed only for a segment the start-up check accepted and uses
+<<<
+REACTION: >>>
+mismatch, **implausible list**, failed known-answer test, a due pass kept off by flash writes for more than one
+period, or the calibration segment off its own reference during operation → `ROM_CHECK_FAILURE` → **S1 held**
+(SYS-23); at start-up a damaged segment gets `on_invalid` instead (refuse: functions stopped, UDS reachable)
+<<<
+WORST_CASE: >>>
+start-up + one CRC run over the image in the idle context (not sliced, runs at idle priority without a lock: F3
+decided); then once per period
+<<<
+
+[SM]
+UID: SM-15
+TITLE: ECC double-bit error, RAM
+STAGE: 1
+STATUS: implemented
+FAULT_MODEL: >>>
+an uncorrectable RAM error
+<<<
+DETECTION: >>>
+`ERM->SR0` non-correctable bits (NCE0, and NCE1 where the derivative has it) every 10 ms; address from `ERM->EARn`
+<<<
+REACTION: >>>
+S1 + S2
+<<<
+WORST_CASE: >>>
+10 ms + reaction
+<<<
+
+[SM]
+UID: SM-16
+TITLE: ECC double-bit error, flash
+STAGE: 1
+STATUS: implemented
+FAULT_MODEL: >>>
+an uncorrectable flash read error
+<<<
+DETECTION: >>>
+`FTFC->FERSTAT` `DFDIF` every 10 ms
+<<<
+REACTION: >>>
+S1 + S2
+<<<
+WORST_CASE: >>>
+10 ms + reaction
+<<<
+
+[SM]
+UID: SM-55
+TITLE: Latent-fault test of the RAM ECC
+STAGE: 1
+STATUS: implemented
+FAULT_MODEL: >>>
+the ECC decoder of an SRAM array or the error record (ERM) no longer works, so SM-15 would miss the error it exists
+for
+<<<
+DETECTION: >>>
+once per start in `main()`, before the BSP: the error injection module (EIM) inverts one, then two data bits on a
+read of a reserved word per ECC array (S32K14x: SRAM_L and SRAM_U; S32K11x: SRAM_U, single bit only); corrected
+value, ERM record and address are checked, the EIM is switched off and the record cleared
+(`safe_memory::eccLatentTestAtStart()`). Flash ECC: not covered, no injection module (fmea.md SM-55)
+<<<
+REACTION: >>>
+`INTEGRITY_EVENT_DMA_ECC_ERROR`, context bit 3 → S1 + S2; after the configured number of such resets S1 held (SM-50,
+reset-loop limit)
+<<<
+WORST_CASE: >>>
+at start
+<<<
+NOTE: >>>
+(SYS-73)
+<<<
+
+[SM]
+UID: SM-17
+TITLE: Fault handlers with dump
+STAGE: 1
+STATUS: implemented
+FAULT_MODEL: >>>
+a fault exception of any origin (bus fault, usage fault, hard fault, watchdog warning)
+<<<
+DETECTION: >>>
+the architecture's fault exceptions
+<<<
+REACTION: >>>
+**first** the safe outputs walk, from assembler, using only R0–R3, no stack and no RAM; then the dump; then the
+reset
+<<<
+WORST_CASE: >>>
+exception entry + table walk
+<<<
+
+[SM]
+UID: SM-60
+TITLE: Lock of the FlexNVM block
+STAGE: 1
+CREDITED: no
+STATUS: implemented
+LOCATION: `platforms/s32k1xx/bsp/bspFlexNvm` (`flexnvm/FlexNvmBlockLock.h`), `IDataFlash::holdForDirectRead()`
+FAULT_MODEL: >>>
+a data-flash read overlaps an erase, a program, an EEPROM store of the NvM or a CSEc command started by another task
+and returns undefined data that the reader takes as valid
+<<<
+DETECTION: >>>
+not a detector, an exclusion: `read()` copies in sections of 32 bytes, each with interrupts locked and the block
+checked idle in the same section; a read in place takes a hold, granted only on an idle block; while a hold exists no
+EEPROM store and no data-flash command starts
+<<<
+REACTION: >>>
+`read()` returns `BUSY` instead of undefined data; a store under a hold waits at most 260 ms, then the write fails and
+the NvM reports it (never a collision)
+<<<
+WORST_CASE: >>>
+interrupt lock of a few µs per section (not measured on a board); a store delayed by a hold up to 260 ms (AoU-40)
+<<<
+NOTE: >>>
+(NVM-25; proposed, *not credited*; readers by pointer outside the family port and CSEc commands do not take the hold
+yet; board proof open)
+<<<
+
+[[/SECTION]]
+
+[[SECTION]]
+TITLE: 6.4 MCU periphery, supply and registers
+
+[SM]
+UID: SM-18
+TITLE: ADC reference supervision
+STAGE: 1
+STATUS: implemented
+LOCATION: `safeSystem`
+FAULT_MODEL: >>>
+the ADC reference has drifted, so every analogue measurement of the ECU is wrong
+<<<
+DETECTION: >>>
+bandgap channel read every 10 ms with interrupts suspended and the fusa gate closed; VREFH computed from it;
+compared with `board.adc_reference_mv` ± `modules.safeSystem.adc_reference_tolerance_mv` (default 200 mV)
+<<<
+REACTION: >>>
+S1 + S2, context 1
+<<<
+WORST_CASE: >>>
+10 ms + reaction
+<<<
+
+[SM]
+UID: SM-19
+TITLE: ADC read failure limit
+STAGE: 1
+STATUS: implemented
+FAULT_MODEL: >>>
+the reference can no longer be monitored at all (the conversion path is broken)
+<<<
+DETECTION: >>>
+failed readings counted; the monitor fires once after `modules.safeSystem.adc_read_error_limit` consecutive failures
+(default 10 cycles)
+<<<
+REACTION: >>>
+S1 + S2, context 2
+<<<
+WORST_CASE: >>>
+10 × 10 ms = 100 ms + reaction
+<<<
+
+[SM]
+UID: SM-20
+TITLE: Internal supply supervision
+STAGE: 1
+STATUS: implemented
+FAULT_MODEL: >>>
+the MCU's own 3.3 V flash, 3.3 V oscillator or 1.2 V core supply is out of range
+<<<
+DETECTION: >>>
+SIM supply monitor multiplexed over a 6-step cycle, one supply measured every 2 safety cycles, ± 200 mV against the
+nominal value, using the last valid reference
+<<<
+REACTION: >>>
+S1 + S2
+<<<
+WORST_CASE: >>>
+60 ms (full multiplexer round) + reaction
+<<<
+
+[SM]
+UID: SM-21
+TITLE: Safety register lock
+STAGE: 1
+STATUS: implemented
+LOCATION: `safeIo::init`
+FAULT_MODEL: >>>
+a pin configuration that must not change is changed
+<<<
+DETECTION: >>>
+the pin configuration register of the locked pin is locked at start-up and read back once (function and, since
+SYS-42, the lock bit). *State after SYS-24 (2026-09-22, added by DOC-48):* every pin of the lock list generated
+from the configuration (class `PIN_FUNCTION`: the pins of the used PWM groups, every `safe_off` output and the role
+pin `safety.locked_pin`) is locked and read back the same way; the event context names class and index of the
+entry. Scope judgement: finding F4, fmea.md SM-21
+<<<
+REACTION: >>>
+`LOCK_REGISTER_ERROR` → S1 + S2
+<<<
+WORST_CASE: >>>
+start-up only
+<<<
+
+[SM]
+UID: SM-22
+TITLE: Safety register check
+STAGE: 1
+STATUS: implemented
+LOCATION: `safeIo::cyclic`
+FAULT_MODEL: >>>
+a safety-relevant register drifted during operation
+<<<
+DETECTION: >>>
+the direction of the checked pin is read every 10 ms; a change of state raises the event with the new state as
+context. *State after SYS-24 and SYS-153 (added by DOC-48):* in addition every entry of the check list generated
+from the configuration (classes `PIN_FUNCTION`, `GPIO_DIRECTION`, `CLOCK_GATE`, `PWM_TIMER`, and `SUPERVISION` with
+`PMC_LVDSC1` since SYS-153) is read and compared in every safety cycle; a deviation raises the event with class and
+index as context (S1 without reset) and is latched until the next initialisation. Scope judgement: finding F4,
+fmea.md SM-22
+<<<
+REACTION: >>>
+context `false` → **S1 without reset**; context `true` → release the indicator
+<<<
+WORST_CASE: >>>
+10 ms
+<<<
+
+[SM]
+UID: SM-59
+TITLE: Low-voltage detect reset
+STAGE: 1
+CREDITED: no
+STATUS: implemented
+FAULT_MODEL: >>>
+VDD falls below the specified range while the MCU keeps executing, with degraded ADC, pins and communication, down
+to the low-voltage reset
+<<<
+DETECTION: >>>
+the PMC compares VDD with VLVD (2.80 … 3.00 V falling, 50 mV hysteresis), continuously, no instruction involved;
+`PMC_LVDSC1[LVDRE] = 1` written in every start (0 after power-on); since SYS-153 re-checked every safety cycle by
+SM-22 (SafeIo list, class SUPERVISION, mask `0x30`, expected `0x10`, 8-bit read): `LVDRE` cleared or `LVDIE` set is
+`CHECK_REGISTER_ERROR`, S1 without reset
+<<<
+REACTION: >>>
+hardware reset (`RCM_SRS[LVD]`), the MCU held in reset until VDD is above VLVD plus hysteresis; the pins go to their
+reset state (AoU-07); the start counts as power-on (reset-loop record cleared)
+<<<
+WORST_CASE: >>>
+the comparator's response, not software; off in VLPR/VLPS (only the LVR there)
+<<<
+NOTE: >>>
+(SYS-125; hardware of the MCU, switched on by the family port s32k1xx in `boardInit()`, *not credited*; cyclic
+re-check SYS-153, board proof open)
+<<<
+
+[[/SECTION]]
+
+[[SECTION]]
+TITLE: 6.5 Outputs and the safe state
+
+[SM]
+UID: SM-23
+TITLE: Safe outputs table, one list for three paths
+STAGE: 1
+STATUS: implemented
+FAULT_MODEL: >>>
+an output stays energised while the software that should command it is no longer trustworthy
+<<<
+DETECTION: >>>
+not a detector — the reaction of SM-06, SM-17, SM-22 and (since the SYS-06 merge) of every resetting event of the
+supervisor
+<<<
+REACTION: >>>
+PWM groups to their inactive level via `SWOCTRL`, every `safe_off` output driven inactive, clock-gated peripherals
+skipped, `dsb` at the end
+<<<
+WORST_CASE: >>>
+the walk itself: on the demo image `enterSafeState()` is 68 bytes with the walk inlined; roughly 30 executed
+instructions for two entries, well under 1 µs at 80 MHz — **computed**. On the board (2026-09-22, oscilloscope on
+the gate-driver enable and a phase, fmea.md 8.1 B3, anomaly AN-008) the walk from the timer to the enable is
+bounded at **≤ 21 µs**; the computed value is not resolved by that measurement (added by DOC-48)
+<<<
+
+[SM]
+UID: SM-24
+TITLE: One adapter per `safe_off` output, enforced at build time
+STAGE: 1
+STATUS: implemented
+FAULT_MODEL: >>>
+a new power output is added to a project and the driver that owns it is left believing it is still on
+<<<
+DETECTION: >>>
+`tools/bswgen` counts the `safe_off` outputs as `NX_SAFE_OFF_OUTPUT_COUNT`; `Integration.cpp` compares that with the
+number of `IPowerStageOutput` adapters in a `static_assert`
+<<<
+REACTION: >>>
+the build fails
+<<<
+WORST_CASE: >>>
+build time
+<<<
+
+[SM]
+UID: SM-25
+TITLE: De-energise before the reset
+STAGE: 1
+STATUS: implemented
+FAULT_MODEL: >>>
+the window between an event and the reset (log output, pending interrupts) in which a bridge keeps switching
+<<<
+DETECTION: >>>
+not a detector — the supervisor calls `enterSafeState()` before `softwareSystemReset()` for every resetting event
+<<<
+REACTION: >>>
+S1 then S2
+<<<
+WORST_CASE: >>>
+as SM-23, then the reset
+<<<
+
+[SM]
+UID: SM-26
+TITLE: Selectable safe state of a PWM group with fallback to freewheel
+STAGE: 1
+CREDITED: no
+STATUS: implemented
+FAULT_MODEL: >>>
+a machine without a mechanical brake is braked uncontrolled by freewheel above a speed and charges the DC link; a
+wrong or corrupted selection builds a short onto a broken switch or leaves the bridge in a half state
+<<<
+DETECTION: >>>
+not a detector — the reaction of SM-23 extended: every walk reads the group's encoded selection word (exactly one
+pattern per allowed short, anything else freewheel) and the clock gate of its timer; the selection service accepts
+only allowed, not withdrawn states
+<<<
+REACTION: >>>
+the group's timer forced to the selected short pattern, its bound gate-driver enable left as it is; freewheel on any
+doubt; a bridge fault or a failed start test withdraws the short for the power cycle
+<<<
+WORST_CASE: >>>
+as SM-23 plus one RAM read and two compares per entry — **computed, not measured**; the short itself only while no
+reset follows
+<<<
+NOTE: >>>
+(SYS-116; optional per project; *not credited* for release R1 - CM-07 decision ZD, issue 3). *Corrected in issue 3
+(CR-07-1, as CR-10-1 F-01 for the safety manual):* `nxconfig` accepts an active short since both follow-ups are in
+the tree - the safe supervisor withdraws the short of a group on a bridge fault of a bound device
+(`NX_SAFE_BRIDGE_FAULT_CLASSES`, SYS-140, SSR-091) and the family port keeps the short in S1, in a degraded group and
+after a debug halt (`NX_SAFE_STATE_SHORT_HOLD`, SYS-139, SSR-092); host verified, board proof open (fmea.md SM-26,
+B12 ... B14); the integrator's side is AoU-33
+<<<
+
+[SM]
+UID: SM-27
+TITLE: Start-up test of the active short
+STAGE: 1
+CREDITED: no
+STATUS: implemented
+FAULT_MODEL: >>>
+a short that is never built is a latent fault: the forcing register, the pattern, the gate driver and the low-side
+switches are exercised only when needed
+<<<
+DETECTION: >>>
+once per **power-on** (since SYS-143; after any other reset the outcome of the power-on test is taken from a record
+in no-init RAM, and without an intact record the group has freewheel only until the next power-on), at standstill,
+before the application enables the group: the short pattern forced and read back from the timer, then the value
+found before restored and read back; the gate-driver enable bound to the group must read off before and after
+(SYS-143, read through the driver); the phase voltages (IO-64) are not measured
+<<<
+REACTION: >>>
+a failure withdraws the short for the power cycle and forces freewheel; the caller raises the event (proposed,
+degradable). *State issue 3 (SYS-143):* the caller logs the failure (SAFETY component) and sets the qualifier
+`safety.qlf.safe_state.<GROUP>` to ERROR; no event of the safe supervisor is raised
+<<<
+WORST_CASE: >>>
+at start, `pwm.<group>.safe_state_test_us` plus a few register accesses
+<<<
+NOTE: >>>
+(SYS-116; *not credited* for release R1 - CM-07 decision ZD, issue 3). *Corrected in issue 3 (CR-07-1, as CR-10-1
+F-01 for the safety manual):* called from `RteSystem::init()` before the init runnables since SYS-141; since SYS-143
+power-on only, bounded by a budget derived by `tools/rtegen` (a third of the MCU watchdog time-out) and with the
+enable read back; host verified, board proof open (fmea.md SM-27); the integrator's side is AoU-38
+<<<
+
+[SM]
+UID: SM-58
+TITLE: Hardware threshold without the core
+STAGE: 1
+CREDITED: no
+STATUS: implemented
+FAULT_MODEL: >>>
+an over-current or over-voltage while the software that should see it does not run or does not react (stalled core,
+frozen duties, a stopped trigger chain)
+<<<
+DETECTION: >>>
+the MCU's comparator against its DAC level, derived from a project threshold in the unit of the signal
+(`hw_thresholds`), rounded to the safe side; continuous, analogue, no instruction involved. Latent faults of the
+path behind the comparator: since SYS-129 a start test once per start in `ComplementaryPwm::init()`, after the timer
+runs and before the route is locked and any pin is muxed (every channel masked by `OUTMASK`): route selected without
+`LK`, comparator forced through the DAC "not above", "above" and "not above" again; `FAULTF`, `FAULTFn` and `FAULTIN`
+must stay clear, then be set, then be clear again after clearing only `FAULTFn` of the configured input; findings
+`PATH_FAULT_UNFORCED`, `PATH_NO_TRIP`, `PATH_NO_CLEAR` (skipped after a failed start test of SYS-128)
+<<<
+REACTION: >>>
+the FTM forces every channel of the PWM group to its inactive level (`POL`, freewheel, also over `SWOCTRL`), latched
+until reset; the path's registers are checked by SM-22. A finding of the SYS-129 start test forces the group
+inactive through the software output control before any pin is muxed and is reported by the safety cycle as
+`HW_SHUTOFF` with findings: S1 held, never SD
+<<<
+WORST_CASE: >>>
+comparator ≤ 500 ns plus 3 (4 + filter) timer clocks — **computed, not measured**; board proof open
+(`hardware-mechanisms.md` 2.4, 5)
+<<<
+NOTE: >>>
+(SYS-86; optional per project, *not credited* — SYS-20). SYS-129 (safety review SYS-86 H6): the path from the
+comparator output to `FMS[FAULTF]` is exercised once per start (seven waits of 30 µs, about 0.21 ms; latent-fault
+interval = drive cycle). Remaining: the forcing of the channels by the fault control (`FAULTEN` → `POL`) is not
+observed (outputs masked during the test), board proof open (`hardware-mechanisms.md` 2.7, `fmea.md` SM-58)
+<<<
+
+[[/SECTION]]
+
+[[SECTION]]
+TITLE: 6.6 Data, communication and the analogue path
+
+[SM]
+UID: SM-30
+TITLE: Signal qualifier of the RTE
+STAGE: 1
+STATUS: implemented
+FAULT_MODEL: >>>
+a value is used although the measurement behind it is not valid — raw value at the converter limits, amplifier
+outside its output range, open pull-up, value outside the load's breakpoints, failed conversion
+<<<
+DETECTION: >>>
+computed per channel and per task from the generated conversion; `QLF_ERROR_RANGE` (32) or `QLF_ERROR`, otherwise
+`QLF_OK`; on a failed conversion the value is held
+<<<
+REACTION: >>>
+the **application** decides (AoU-12); the BSW does not switch anything off
+<<<
+WORST_CASE: >>>
+one task period of the reading task
+<<<
+
+[SM]
+UID: SM-31
+TITLE: E2E protection P01 / P02 / P11
+STAGE: 1
+STATUS: implemented
+FAULT_MODEL: >>>
+a CAN message is corrupted, repeated, lost, out of sequence, or comes from the wrong sender
+<<<
+DETECTION: >>>
+CRC, data ID and counter per message; check status mapped to the qualifier; configured per signal by `rtegen` from
+the project
+<<<
+REACTION: >>>
+the application decides; a failing check marks the signal
+<<<
+WORST_CASE: >>>
+one reception period
+<<<
+
+[SM]
+UID: SM-32
+TITLE: CAN bus state and transmit gate
+STAGE: 1
+STATUS: implemented
+FAULT_MODEL: >>>
+the ECU keeps sending into a bus that is not healthy, or keeps using data from one
+<<<
+DETECTION: >>>
+`CanBusMonitor` with bus-off counters; `CanPhyGate` follows the readiness reports of the phy providers
+(`CanPhyReadiness`) and blocks transmission while no provider is ready
+<<<
+REACTION: >>>
+transmission blocked; state readable
+<<<
+WORST_CASE: >>>
+one supervision cycle
+<<<
+
+[SM]
+UID: SM-33
+TITLE: CAN transceiver readiness through the SBC
+STAGE: 2
+STATUS: implemented
+FAULT_MODEL: >>>
+the transceiver is in a state in which sending is pointless or harmful (bus dominant, thermal, under-voltage)
+<<<
+DETECTION: >>>
+`getPhyErrorStatus` of `sbc::Uja113xCanPhy`, from the SBC's transceiver status register
+<<<
+REACTION: >>>
+feeds SM-32
+<<<
+WORST_CASE: >>>
+one SBC supervision cycle
+<<<
+NOTE: >>>
+*(device-dependent: described, not credited in stage 1, section 1.4)*
+<<<
+
+[SM]
+UID: SM-34
+TITLE: Device reports to the safe supervisor
+STAGE: 1
+STATUS: implemented
+FAULT_MODEL: >>>
+a fault that a device package or a base-software service over device values (G2–G4) found is not attributed, reaches
+no reaction, or is reacted to by the driver itself; a common cause on a device bus (F5) looks like several unrelated
+device faults; a switching-off reaction is triggered by a message that a task without safety context posted
+<<<
+DETECTION: >>>
+context word `safeSupervisor/DeviceReport.h` (bus id = kind + position among the used buses of that kind, device
+instance, fault class, detail; malformed words refused by the box and handled fail-safe); `DEVICE_REPORT` from a
+per-package `DeviceReportBox` in ordinary RAM, delivered by the safety task (`deliverDeviceReports`), or from a
+check in the safety task; `DEVICE_FAULT` only from the safety context (static rule `safety-context`); communication
+faults of two different devices on one bus within 20 safety cycles are one "bus lost" event
+<<<
+REACTION: >>>
+`DEVICE_REPORT`: S3 for every word (log, bus correlation, `QLF_ERROR` on the qualifier of the device values on a
+lost bus, `gd.<device>.qlf` today); `DEVICE_FAULT`: S1 held for `IDENTITY` (a reset cannot remove a wrong part), S1
++ S2 for every other class and for a malformed word
+<<<
+WORST_CASE: >>>
+report: one safety cycle after posting (box) plus the RTE task period for the qualifier; fault: within the safety
+cycle that detects it
+<<<
+NOTE: >>>
+(SYS-29, gap G5; the base-software half of section 13.1 — it detects nothing itself)
+<<<
+
+[[/SECTION]]
+
+[[SECTION]]
+TITLE: 6.7 Start-up, reset and ECU state
+
+[SM]
+UID: SM-50
+TITLE: Start reason from two independent sources
+STAGE: 1
+STATUS: implemented
+FAULT_MODEL: >>>
+the ECU does not know why it restarted, so a configured reaction to a watchdog reset never happens
+<<<
+DETECTION: >>>
+the supply role (`power_supply`, e.g. the SBC's reset source register) **and** the MCU's own reset status
+(`RCM_SRS`, captured in a static constructor before `main()`), unified with a documented rank rule
+<<<
+REACTION: >>>
+`after_watchdog_reset: sleep` becomes effective also for a reset only the MCU saw
+<<<
+NOTE: >>>
+(SYS-18)
+<<<
+
+[SM]
+UID: SM-51
+TITLE: Image check by the bootloader
+STAGE: 1
+STATUS: implemented
+FAULT_MODEL: >>>
+the application image is incomplete, from another project, or was interrupted mid-flash
+<<<
+DETECTION: >>>
+validity record and identifier with a version field; the memory layout comes from one generated source shared by the
+bootloader linker, the application linker, the updater and `canflash`
+<<<
+REACTION: >>>
+the bootloader does not start an invalid image
+<<<
+
+[SM]
+UID: SM-52
+TITLE: Reset counter of the SBC
+STAGE: 2
+STATUS: implemented
+FAULT_MODEL: >>>
+the ECU restarts in a loop
+<<<
+DETECTION: >>>
+the SBC counts every reset (RCC); on overflow it asserts LIMP and, if the MTPNV allows it, goes to sleep — the MCU
+loses its supply until a wake-up. The application resets RCC as its last step before normal mode; the bootloader
+deliberately does **not**, so a permanently crashing application is still recognised
+<<<
+REACTION: >>>
+forced sleep (board-level, outside the software)
+<<<
+NOTE: >>>
+*(device-dependent: described, not credited in stage 1, section 1.4)*
+<<<
+
+[SM]
+UID: SM-53
+TITLE: Defined run-down
+STAGE: 1
+STATUS: implemented
+LOCATION: `ecuState`
+FAULT_MODEL: >>>
+the run-down before the power down does not finish (a run-down step, the lifecycle shutdown or the power down hangs
+or fails); power outputs are left at their last value
+<<<
+DETECTION: >>>
+state machine Startup / Run / Standby / Rundown / Shutdown / Sleep with per-step time-outs (`shutdown_timeout_ms`,
+`sleep_timeout_ms`, `nvm_timeout_ms`, `can_stop_timeout_ms`) and supervision of the requested restart (SYS-173)
+<<<
+REACTION: >>>
+a timed-out step is aborted and the ECU restarts (never continued past the NvM step); an overdue restart is ended
+by a direct reset; the last run-down step walks the safe outputs table (SYS-174). The consistency of the
+non-volatile data belongs to the NvM mechanism, not to SM-53
+<<<
+
+[[/SECTION]]
+
+[[SECTION]]
+TITLE: 13 Device drivers - stage 2 (concept section 13)
+
+[SM]
+UID: SM-40
+TITLE: TMC6200 gate driver
+STAGE: 2
+STATUS: partial
+LOCATION: `libs/bsw/gdTmc6200`
+STATEMENT: >>>
+.. list-table::
+   :header-rows: 1
+
+   * - Item
+     - Content
+   * - Supervision cycle
+     - `modules.<device>.cycle_ms`, default 10 ms: `GSTAT` and `IOIN` read, FAULT pin sampled; `GCONF`/`SHORT_CONF`/`DRV_CONF` read back every 100 ms
+   * - Detected by the part, read by us
+     - charge-pump under-voltage, over-temperature warning and over-temperature shutdown, short to ground and short to supply per phase, short detection, FAULT output
+   * - Detected by the driver
+     - SPI failure and wrong device version (`COMMUNICATION`), an all-zero `IOIN` answer - no supply or SDO held low (`NO_SUPPLY`, 0x8000, IO-67), loss of the register configuration or `GSTAT.reset` while enabled (`DEVICE_RESET`), DRV_EN read back through `IOIN` not matching the commanded level (`ENABLE_MISMATCH`), `test_mode` set (`TEST_MODE`)
+   * - Reaction
+     - a shutdown fault drives DRV_EN low, latches, and `enable()` is refused until the application calls `clearFaults()` (only allowed with DRV_EN off). A communication failure retries once per second and **never** switches on. **IO-67 (2026-10-01):** an all-zero `IOIN` answer (`NO_SUPPLY`) is latched only when the device goes missing out of DISABLED/ENABLED (it belongs to the shutdown set there); before the device was brought up it is a current fault, and the first successful startup needs no acknowledgement - DRV_EN still only by `enable()`. DRV_EN is never switched on by the driver itself — not in `init()`, not in `cyclic()`, not after a successful retry. **Corrected by IO-44 (2026-09-23):** a reported short (`GSTAT shortdet_u/v/w` on its own) was *not* in the shutdown set, so the part reported it and the bridge kept running. It is a shutdown fault since IO-44. Two further answers of the same task: `enable()` is refused while the phases would run into a fault, and `clearFaults()` answers `NOT_CLEARED` while the condition is still present instead of reporting success. **Form of the enable rule changed by IO-45 (board 2026-09-24, B-IO44-3):** not "every phase switches" but **one common state of the three phases** - all off, all switching or all full; every mixture (measured: 50/50/0, 0/0/50, 50/50/100, 8 of 8 with a shutdown fault) is refused with `PHASES_MIXED`. The rule is checked at the enable only; a later duty change into a mixture is answered by the part's short detection and the shutdown above. This is a rule of the stage-2 driver against device faults, not a stage-1 mechanism
+   * - Times
+     - the part itself switches the bridge off in **< 2.2 µs** on a short (data sheet p. 38); our polling adds up to one cycle (10 ms default) before the *software* knows
+   * - Never written
+     - OTP_PROG (irreversible), FACTORY_CONF (clock trim), GCONF `test_mode`, the `SHORT_CONF` bits that would disable the protection
+   * - Evidence today
+     - `tools/test -k tmc6200` (every fault code measured on the board with its `GSTAT`) and `tmc6200-io44-mutations` (16 built-in faults, all detected) since IO-44; board: SPI access, the one rewrite after a device reset, enable/disable over DRV_EN and the start-up failure without VS confirmed on the eval board. **The short was measured on the board 2026-09-23** (24 V/1 A) — that is what found the gap above: 15 occurrences of `fault 0x0800` with DRV_EN high, escalation to a shutdown fault in only 5 of them (11 ms to 1551 ms later), the other 10 ran on until the operator intervened. **The corrected reaction itself is a host test only** — the board proof needs the user at the 24 V power stage (checklist B-IO44-1 … B-IO44-6 in IO-44); over-temperature reactions remain host tests only
+   * - **Open (needs manufacturer safety documentation)**
+     - which of the above the manufacturer regards as safety diagnostics; whether the 10 ms polling interval is acceptable or an interrupt on FAULT is required (today there is none); the coverage of the short detection against a shoot-through; whether `short_retries` and `short_all_bridges_off` have required values for safety use; whether the current-sense amplifier path needs its own diagnostic; **whether a reported short (the retry case) is one the manufacturer expects to be answered by switching off** — IO-44 decided it that way from the data sheet (the counter has triggered at least once, i.e. the part has already switched off once and taken it back), but that is our reading, not the manufacturer's statement
+   * - **Integration (IO-45, was open)**
+     - the enable rule takes effect on the target: the family port attaches the phase duty source to every instance bound to the PWM group of the project (board `pwm[].gate_driver`, IO-25 - the same binding that sets `interfaceMode`) with one pair per phase (`module.yaml phases: 3`, `nxconfig` warns otherwise). The source reads the timer (on time of each high side, output mask and software output control included) and converts once into the driver's per mille - no value in the 0.01 % of the console or the RTE reaches the driver. Host tests `gate-driver-duty-source`, `ftm-pwm-group`, `tmc6200` with mutants; **board proof open** (B-IO44-5, restated: all off accepted, a mixture refused without a DRV_EN pulse)
+<<<
+NOTE: >>>
+Stage 2 (concept section 13): the driver's diagnostics exist; the encapsulated safety package (SYS-28) and the
+manufacturer's safety documentation are open (concept section 13.2). Was concept.md section 13.3.
+<<<
+
+[SM]
+UID: SM-41
+TITLE: MC33771C cell controller
+STAGE: 2
+STATUS: partial
+LOCATION: `libs/bsw/bccMc33771`
+STATEMENT: >>>
+.. list-table::
+   :header-rows: 1
+
+   * - Item
+     - Content
+   * - Supervision cycle
+     - `cycle_ms`, default 20 ms (fault registers 1–3, FAULT pin); configuration re-read every 1 s; measurement every `measurement_period_ms`, default 100 ms
+   * - Detected by the part, read by us
+     - cell over- and under-voltage, analogue input over-/under-temperature and open input, supply faults (VPWR, VCOM, VANA), measurement-chain faults (ADC1-A/B, GND loss, oscillator, DED/fuse), IC over-temperature, balancing open and balancing short, current input open, the part's own communication error counters, diagnostic time-out
+   * - Detected by the driver
+     - CRC of every response, master/slave bit, reserved bits, cluster ID, address, command and the **message counter** (two identical counters in a row is a fault); every configuration write verified through the part's auto-read; configuration drift (`CONFIGURATION_LOST`); loss of the cluster ID during operation (`DEVICE_RESET`); measurement time-out
+   * - Reaction
+     - balancing is never switched on by the driver; it is refused while a blocking fault is latched and switched off on CB short, IC over-temperature, measurement-chain fault, under-voltage of a balanced cell or communication loss. Three consecutive communication failures → `FAILED`, immediate restart attempt
+   * - Part-side backstop
+     - the part resets itself after `tCOM_LOSS` = 1024 ms without valid communication; the supervision period is required to stay far below that
+   * - Evidence today
+     - `tools/test -k mc33771c` (host, register model). **No board run at all**
+   * - **Open (needs manufacturer safety documentation)**
+     - the diagnostic mode of the part (`SYS_DIAG`, `GO2DIAG`) is **not implemented** — the OV/UV function check, the CT open-load check, the leakage check and the ADC function check all live there, and those are exactly the self-tests a battery-management safety concept usually relies on. Which of them are required, at which interval, and what the part's safety documentation says about the measurement chain, is unknown. Also open: plausibility of the stack voltage against the sum of the cells (no threshold is backed), and temperature in °C (today ppm of VCOM, needs the characteristic from IO-18)
+<<<
+NOTE: >>>
+Stage 2 (concept section 13): the driver's diagnostics exist; the encapsulated safety package (SYS-28) and the
+manufacturer's safety documentation are open (concept section 13.2). Was concept.md section 13.4.
+<<<
+
+[SM]
+UID: SM-42
+TITLE: UJA113x system basis chip
+STAGE: 2
+STATUS: partial
+LOCATION: `libs/bsw/sbcUja113x`
+STATEMENT: >>>
+.. list-table::
+   :header-rows: 1
+
+   * - Item
+     - Content
+   * - Watchdog
+     - timeout or window mode; configuration changes only in standby (a change in normal mode resets the system); window trigger once, timeout trigger twice; the driver aims at 70 % of the window. **On the eval board the watchdog is off** (development mode SDMC = 1, `autonomous`)
+   * - Supply supervision
+     - battery voltage at BAT or BATSENSE against an under- and an over-voltage threshold with hysteresis, reported as interrupts BMUI/BMOI; optional automatic shutdown of the transceiver and of V2/VEXT on those events
+   * - Transceiver diagnostics
+     - CAN failure, bus dominant, local wake, partial-networking frame detection — feeding SM-33
+   * - Reset counter and limp home
+     - see SM-52
+   * - Driver rules
+     - MTPNV is never written; no writes with a wrong device ID or a missing address echo; registers 0x00 (watchdog) and 0x01 (mode) are blocked for generic writes; sleep only without pending interrupts and with a wake-up source; selective wake only with a confirmed configuration
+   * - Evidence today
+     - `tools/test -k uja113x`, `-k ecustate`, `-k sbc-console`; board: start-up, register configuration, the CAN transceiver, battery under-voltage monitoring and sleep with CAN wake-up confirmed on the eval board
+   * - **Open (needs manufacturer safety documentation)**
+     - the SBC is the one part in the design that could provide a **time base independent of the MCU**, and today it is switched off on our board. What the manufacturer's safety documentation requires for that role (window mode vs. timeout, the trigger source, what must be done with LIMP, what the fail-safe outputs guarantee) is unknown. Also open and already recorded in the driver documentation: three hypotheses read from the data sheet that need a board measurement (the direction of the under-voltage hysteresis, the polarity of the `IOnOLIE` enable bits, the sign convention of the HVIO current thresholds), and the fact that the driver's current thresholds are the **typical** values — min/max deviate by up to 20 %, which is not good enough for a guaranteed switch-off limit
+<<<
+NOTE: >>>
+Stage 2 (concept section 13): the driver's diagnostics exist; the encapsulated safety package (SYS-28) and the
+manufacturer's safety documentation are open (concept section 13.2). Was concept.md section 13.5.
+<<<
+
+[SM]
+UID: SM-43
+TITLE: BTS5030 smart high-side switch
+STAGE: 2
+STATUS: partial
+LOCATION: `libs/bsw/highSideSwitch`
+STATEMENT: >>>
+.. list-table::
+   :header-rows: 1
+
+   * - Item
+     - Content
+   * - Supervision cycle
+     - `cycle_ms`, default 10 ms: IS sampled, one state step, IN and DEN rewritten every cycle (so another writer is overridden within one cycle)
+   * - Detected
+     - over-current (load current ≥ `overcurrent_ma` for `overcurrent_debounce_ms`), fault current with the sense output saturated (≥ `fault_ma` for `fault_debounce_ms`), ADC read error while on or off, current above `off_max_ma` while off, open load below `open_load_ma` (warning only)
+   * - Reaction
+     - over-current and fault states are **latched**; they are left only by an explicit `reset`, and switching on again needs a separate command. No automatic retry, on purpose: the switch limits the current and restarts thermally by itself. A failed output write while on switches the channel off
+   * - Accuracy limit, stated in the driver documentation
+     - the sense ratio of the BTS5030-1EJA is specified for 0.5 … 7 A (± 20 % at 0.5 A, ± 5.5 % at 7 A); below 0.5 A it is coarse (± 50 % at 50 mA). Open-load and off levels in that range are rough limits, not measurements
+   * - Evidence today
+     - `tools/test -k high-side-switch`, `-k bswgen`; board: current sense, over-current switch-off with latch, open load and the off check confirmed with an electronic load; the fault-current threshold needs a real device fault and is host tests only
+   * - **Open (needs manufacturer safety documentation)**
+     - whether the current-sense path may be used as a safety diagnostic at all given that accuracy, what the part's own protection guarantees (thermal shutdown, current limit) and how it is meant to be supervised, and — a neXtBSW point rather than a part point — `EN_SW_KL30B` was missing from the safe outputs table in issue 1; since **IO-37** the manifest declares `connect.in` as `safe_off: true` and the adapter exists (host-verified, board proof outstanding; finding F7)
+<<<
+NOTE: >>>
+Stage 2 (concept section 13): the driver's diagnostics exist; the encapsulated safety package (SYS-28) and the
+manufacturer's safety documentation are open (concept section 13.2). Was concept.md section 13.6.
+<<<
+
+[[/SECTION]]

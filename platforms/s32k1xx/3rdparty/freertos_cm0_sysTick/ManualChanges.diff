@@ -1,0 +1,20 @@
+--- a/portable/GCC/ARM_CM0/port.c
++++ b/src/port.c
+@@ -387,6 +387,8 @@
+ }
+ /*-----------------------------------------------------------*/
+ 
++void setupApplicationsIsr();
++
+ /*
+  * Setup the systick timer to generate the tick interrupts at the required
+  * frequency.
+@@ -409,6 +411,8 @@
+     /* Configure SysTick to interrupt at the requested rate. */
+     portNVIC_SYSTICK_LOAD_REG = ( configSYSTICK_CLOCK_HZ / configTICK_RATE_HZ ) - 1UL;
+     portNVIC_SYSTICK_CTRL_REG = ( portNVIC_SYSTICK_CLK_BIT_CONFIG | portNVIC_SYSTICK_INT_BIT | portNVIC_SYSTICK_ENABLE_BIT );
++
++    setupApplicationsIsr();
+ }
+ /*-----------------------------------------------------------*/
+ 

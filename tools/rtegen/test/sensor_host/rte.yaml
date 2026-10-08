@@ -1,0 +1,25 @@
+# SPDX-License-Identifier: Apache-2.0
+# ECU description of the IO-18 host test: the synthetic SensorSwc reads signed physical ADC values and qualifiers of
+# the test profile testproject_full (PLAT-62; current amplifier, proximity pull-up with diode, quality of the
+# high-side IS channel).
+# Component paths are relative to this file (RTE-22).
+
+schema_version: 2
+
+tasks:
+  - name: app10
+    period_ms: 10
+    priority: 25
+    stack_bytes: 1024
+    runnables: [SensorSwc.Run10ms]
+
+components:
+  - name: SensorSwc
+    path: SensorSwc
+
+connections:
+  SensorSwc.TsCurrent.TsCurrent: adc.phys.SENSE_TSCURRENT
+  SensorSwc.TsCurrentQlf.TsCurrentQlf: adc.qlf.SENSE_TSCURRENT
+  SensorSwc.Proxy.Proxy: adc.phys.PROXY_ANALOG
+  SensorSwc.ProxyQlf.ProxyQlf: adc.qlf.PROXY_ANALOG
+  SensorSwc.SwitchQlf.SwitchQlf: adc.qlf.CURRENTSENSE_KL30B

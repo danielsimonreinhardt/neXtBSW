@@ -1,0 +1,60 @@
+# CI of a neXtBSW workspace on GitHub Actions (template of tools/ci, TOOL-67).
+#
+#   python -m tools.ci template github --out <workspace>     writes this file to .github/workflows/ci.yml
+#
+# The provider only checks out, provides Python and calls two commands - all the logic lives in the pinned
+# neXtBSW tree (tools/ci/README.md). Adjust: NEXTBSW_DIR if the submodule is not at ./nextbsw.
+name: ci
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+
+env:
+  NEXTBSW_DIR: nextbsw          # the pinned tree, as nextbsw.path of nextbsw.yaml names it
+  PYTHONUTF8: "1"
+  NX_CI_CACHE: ${{ github.workspace }}/../nx-ci-cache
+
+jobs:
+  nextbsw:
+    runs-on: windows-latest     # the tools are pinned for windows and linux (tools/ci/versions.toml)
+    steps:
+      - name: Checkout with the neXtBSW submodule
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0        # the release tag of the tree has to come along (ARCH-55: VERSION == tag)
+          # A private neXtBSW repository needs a credential of its own: put a personal access token or a deploy
+          # key with read access to it into the secret NEXTBSW_TOKEN. For a public tree, delete the next line.
+          token: ${{ secrets.NEXTBSW_TOKEN || github.token }}
+
+      - name: Python of the pinned tree
+        uses: actions/setup-python@v5
+        with:
+          python-version-file: ${{ env.NEXTBSW_DIR }}/tools/ci/.python-version
+
+      - name: Environment of the workspace
+        run: python ${{ env.NEXTBSW_DIR }}/tools/setup venv .
+
+      - name: Pinned tools into the cache
+        run: .venv/Scripts/python -m tools.ci setup
+        working-directory: ${{ env.NEXTBSW_DIR }}
+
+      # Pin, configuration, generated code, target builds of the workspace's presets and its own tests.
+      - name: Pipeline of the workspace
+        run: .venv/Scripts/python -m tools.ci run --strict --workspace ${{ github.workspace }} --out ${{ github.workspace }}/ci-out
+        working-directory: ${{ env.NEXTBSW_DIR }}
+
+      - name: Job summary
+        if: always()
+        run: .venv/Scripts/python -m tools.ci summary ${{ github.workspace }}/ci-out >> $env:GITHUB_STEP_SUMMARY
+        working-directory: ${{ env.NEXTBSW_DIR }}
+
+      - name: Report and artefacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-out
+          path: ci-out

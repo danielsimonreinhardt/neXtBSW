@@ -1,0 +1,136 @@
+# Board-Profil: Bau-Test-Board S32K148 (LQFP176) - nur Hardware: was bestueckt und wie es verdrahtet ist.
+# Zweck (ARCH-09, Nutzerentscheidung 2026-09-15): zweites Board-Profil als Dauertest der Board-Neutralitaet.
+# Es gibt diese Platine nicht als Eigenentwicklung; das Profil beschreibt das oeffentliche NXP-Evaluierungsboard
+# S32K148EVB-Q176 so weit, wie der OpenBSW-Port es belegt, und dient nur dem Konfigurieren, Pruefen und Bauen.
+# Kein Hardware-Zugriff, keine Flash- oder Debug-Freigabe (siehe README.md).
+#
+# Unterschiede zum Eval Board S32K144, die hier absichtlich geprueft werden (Prueffragen Abschnitt 11):
+#   anderes Derivat und Gehaeuse (S32K148 LQFP176, 1,5 MB PFLASH, 252 KB RAM, Pins nur im LQFP176 wie PTE21..PTE25),
+#   anderer Quarz (8 MHz statt 40 MHz) bei gleichem Systemtakt 80 MHz, kein SBC (passive CAN-Transceiver,
+#   MCU-eigener Watchdog), zwei CAN-Busse an zwei verschiedenen FlexCAN-Instanzen.
+#
+# Schema: tools/nxconfig/model.py (Board), Zustaendigkeiten: doc/architecture/README.md Abschnitt 4.
+# Quellen:
+#   [OB]  external/openbsw/executables/referenceApp/platforms/s32k148evb (Referenz-Port des S32K148-EVB):
+#         bspConfiguration/include/bsp/clock/boardClock.h (CRYSTAL_SPEED 8000000U),
+#         bspConfiguration/include/bsp/io/io/ioConfiguration.h (Pin-Reihenfolge PORTA0..PORTE27: canRx/canTx = PTE4/PTE5,
+#         UART1_RX/UART1_TX = PTC6/PTC7, EVAL_SW3 = PTC12, EVAL_LED_RED/GREEN/BLUE = PTE21/PTE22/PTE23,
+#         SAFETY_TEST = PTD31), bspConfiguration/include/bsp/adc/analogInputConfiguration.h (EVAL_POTI_ADC = ADC0 SE28),
+#         bspConfiguration/include/bsp/adc/analogInputScaleConfiguration.h (Skalierung des Poti),
+#         bspConfiguration/include/bsp/io/input/inputConfiguration.h, .../io/output/outputConfiguration.h (Pegel)
+#   [MUX] mcudb/s32k1xx/S32K148_LQFP176.pinmux.yaml (jede Pin-Funktion unten ist dort belegt)
+# [SYN] synthetisches Testprofil, keine Hardware (TOOL-243, F8): Werte, die weder [OB] noch [MUX] belegen, sind fuer den
+#       Bau-Test gewaehlt. Das Profil wird nur konfiguriert, generiert und gelinkt - nie geflasht (README.md); es gibt
+#       keine Hardware, an der sie falsch sein koennten, und kein Projekt darf sie als Fakten eines echten Boards
+#       uebernehmen. Bis TOOL-243 standen sie als verify: true. Pad-Nummern fehlen ganz (keine Quelle).
+schema_version: 1
+
+board:
+  name: buildtest_s32k148
+  mcu: S32K148
+  package: LQFP176
+  description: Bau-Test-Profil S32K148 (LQFP176), kein SBC, zwei CAN-Busse, 8-MHz-Quarz
+  supply_v: 5.0
+  clock:
+    sosc_hz: 8000000                      # [OB] boardClock.h CRYSTAL_SPEED 8000000U (S32K148-EVB)
+  debug:
+    interface: JTAG                       # nur fuer die J-Link-Ziele von CMake; nicht freigegeben (README.md)
+    probe: J-Link
+  adc_reference_mv: 5000                  # VREFH = 5 V (kein eigener Referenzbaustein wie am Eval Board)
+
+# Bestueckte Bausteine: kein SBC. Beide CAN-Anschluesse haben einen Transceiver ohne Software-Steuerung
+# (Modus-Pins von der Platine gesetzt) -> Modul canPhyPassive, Rolle can_phy, immer bereit.
+# Die Rolle power_supply erfuellt damit niemand; der Watchdog ist der MCU-eigene (safeWatchdog).
+devices:
+  - { name: CAN0_PHY, part: TJA1051T/3, module: canPhyPassive, note: "Transceiver von CAN0, Modus fest Normal" }
+  - { name: CAN1_PHY, part: TJA1051T/3, module: canPhyPassive, note: "Transceiver von CAN1 (zweiter Bus)" }
+
+# Zwei CAN-Busse an zwei FlexCAN-Instanzen (Prueffrage 4). CAN1 liegt auf PTE24/PTE25, die es nur im LQFP176 gibt.
+can:
+  - name: CAN0
+    instance: FlexCAN0
+    rx: { pin: PTE4 }                     # [OB] canRx, [MUX] FlexCAN0_RX PTE4 (MUX 5)
+    tx: { pin: PTE5 }                     # [OB] canTx, [MUX] FlexCAN0_TX PTE5 (MUX 5)
+    phy: CAN0_PHY
+  - name: CAN1
+    instance: FlexCAN2                    # zweite genutzte Instanz; FlexCAN1 liegt auf den Konsolen-Pins PTC6/PTC7
+    rx: { pin: PTE25 }                    # [MUX] FlexCAN2_RX PTE25 (MUX 3), nur LQFP176
+    tx: { pin: PTE24 }                    # [MUX] FlexCAN2_TX PTE24 (MUX 3), nur LQFP176
+    phy: CAN1_PHY
+
+# Konsole. Am S32K148-EVB liegt sie laut [OB] an LPUART1 (PTC6/PTC7, OpenSDA-VCOM) - und seit ARCH-15 kommen
+# Instanz, Empfangsinterrupt und Interrupt-Ebene der Konsole aus dieser Konfiguration, nicht mehr fest aus dem
+# Board-Port. Damit steht hier wieder die echte EVB-Konsole; das Bau-Profil pruefte davor LPUART2 auf PTD6/PTD7,
+# weil der Port fest IP_LPUART2/LPUART2_RxTx_IRQn beschrieb (stiller Fehler, Befund ARCH-09-B2).
+uart:
+  - name: UART
+    instance: LPUART1
+    rx: { pin: PTC6 }                     # [MUX] LPUART1_RX PTC6 (MUX 2); [OB] UART1_RX des s32k148evb-Ports
+    tx: { pin: PTC7 }                     # [MUX] LPUART1_TX PTC7 (MUX 2); [OB] UART1_TX des s32k148evb-Ports
+    note: EVB-Konsole ueber OpenSDA-VCOM (LPUART1), Pegel und Bestueckung nur aus dem Handbuch zu bestaetigen
+
+# Ein Analogeingang, damit DemoSwc seinen mV-Eingang bekommt und die ADC-Skalierung geprueft wird.
+adc:
+  # [OB] analogInputConfiguration.h: EVAL_POTI_ADC an ADC0 _ADCCHANNEL28; [MUX] ADC0_SE28 nur auf PTC28.
+  # Skalierung: [OB] analogInputScaleConfiguration.h skaliert AiEVAL_POTI_ADC mit
+  # scaleFunction<uint32_t, _5_0Volt12BitResolution, precisionFactor, 0> - 5 V Vollausschlag am Pin, Offset 0, kein
+  # Teiler -> Faktor 1, Offset 0 mV (TOOL-243).
+  - { name: POTI, instance: ADC0, channel: SE28, pin: PTC28, scale: { factor: 1, offset_mv: 0 } }
+
+# Eine komplementaere PWM-Gruppe, obwohl das S32K148-EVB keine Endstufe hat. Urspruenglich noetig, weil ein
+# Board ohne Motorbruecke nicht linken konnte (Befund ARCH-09-B4); seit ARCH-17 sind PWM-Gruppen optional.
+# Die Gruppe bleibt trotzdem, damit dieser Bau-Test den Pfad der komplementaeren PWM auf einem zweiten Derivat
+# mitprueft. Sie beschreibt ein Paar auf FTM0 an Pins des Arduino-Headers - Hardware dazu gibt es nicht.
+pwm:
+  - name: MOT1
+    instance: FTM0
+    mode: complementary
+    active: { high_side: high, low_side: high }   # [SYN] frei gewaehlt fuer den Bau-Test, keine Endstufe am Board
+    pairs:
+      - { name: MOT1_U, high_side: MOT1_U_PWM_HS, low_side: MOT1_U_PWM_LS }
+    channels:
+      - { name: MOT1_U_PWM_HS, channel: 0, pin: PTB12 }   # [MUX] FTM0_CH0 PTB12 (MUX 2)
+      - { name: MOT1_U_PWM_LS, channel: 1, pin: PTB13 }   # [MUX] FTM0_CH1 PTB13 (MUX 2)
+    # SYNTHETISCHES BEISPIEL (IO-24), kein Bauteil und keine Messung: zeigt das Format der Endstufen-Fakten
+    # (tools/nxconfig/model.py PowerStage, Ableitung tools/nxconfig/powerstage.py). Beleg ist [SYN]: die Zahlen
+    # definieren dieses Bau-Profil, sie beschreiben kein Bauteil (bis TOOL-243 verify: true). Seitdem gelten sie fuer
+    # nxconfig als belegt: eine Totzeit unter der abgeleiteten Mindesttotzeit ist fuer ein Projekt, das MOT1 nutzt,
+    # ein Fehler statt einer Warnung - strenger, nicht laxer.
+    # Mindesttotzeit daraus: Ausschaltpfad (60 + 30) ns * (2000 + 22000) / (2000 + 10000) = 180 ns,
+    # Einschaltpfad 15 ns -> Schalter 165 ns, Treiber 90 - 50 = 40 ns -> 205 ns plus Zuschlag des Projekts.
+    power_stage:
+      switch:
+        turn_on_delay_ns: 15
+        rise_time_ns: 35
+        turn_off_delay_ns: 60
+        fall_time_ns: 30
+        test_gate_resistance_mohm: 10000
+        internal_gate_resistance_mohm: 2000
+        gate_charge_nc: 60
+        r_ds_on_mohm: 8
+        r_ds_on_hot_mohm: 14
+        source: "[SYN] synthetisches Testprofil, keine Hardware (IO-24-Formatbeispiel, kein Bauteil, keine Messung)"
+      driver: { turn_on_delay_ns: 50, turn_off_delay_ns: 90,
+                source: "[SYN] synthetisches Testprofil, keine Hardware (kein Gate-Treiber am Board)" }
+      gate: { turn_on_resistance_mohm: 10000, turn_off_resistance_mohm: 22000,
+              source: "[SYN] synthetisches Testprofil, keine Hardware (keine Gate-Widerstaende am Board)" }
+      short_circuit: { vds_threshold_mv: 800, blanking_ns: 1000,
+                       source: "[SYN] synthetisches Testprofil, keine Hardware (keine Kurzschlusserkennung am Board)" }
+      note: synthetisches Beispiel, keine Hardware
+
+dio:
+  inputs:
+    # [OB] EVAL_SW3 = PTC12 (Taster): inputConfiguration.h {Io::EVAL_SW3, Io::HIGH_ACTIVE, 1}, ioConfiguration.h
+    # Zeile 76 {_PORTC_, PC12, _IN, FILTER_ACTIVE | FILTER_TICK1, GPIO} ohne PULLUP -> high-aktiv, kein interner
+    # Pull. Bis TOOL-243 stand hier geraten low-aktiv mit Pull-up (verify: true); jetzt wie [OB].
+    - { name: BUTTON1, pin: PTC12, active: high }
+  outputs:
+    # [OB] EVAL_LED_RED/GREEN/BLUE = PTE21/PTE22/PTE23 (RGB-LED).
+    # Diese Pins gibt es nur im LQFP176 (im LQFP100 fehlen sie) - genau darum stehen sie hier.
+    # LED1: [OB] outputConfiguration.h {Io::EVAL_LED_RED, Io::HIGH, Io::HIGH_ACTIVE} -> high-aktiv.
+    # LED2/LED3: [OB] treibt PTE22/PTE23 nicht als Digitalausgang, sondern als FTM-PWM (ioConfiguration.h ALT2,
+    # PwmSupportConfiguration.hpp EVAL_LED_GREEN_PWM/EVAL_LED_BLUE_PWM) und nennt keinen Pegel -> [SYN]: Pegel wie LED1
+    # gewaehlt (dieselbe RGB-LED), fuer den Bau-Test, keine Aussage ueber die Hardware.
+    - { name: LED1, pin: PTE21, active: high }
+    - { name: LED2, pin: PTE22, active: high }
+    - { name: LED3, pin: PTE23, active: high }

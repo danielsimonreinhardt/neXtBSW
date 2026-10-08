@@ -1,0 +1,13 @@
+# Module manifest (doc/architecture/README.md, section 5), minimal (DOC-14): a library is a catalogue entry only -
+# tools/nxconfig and tools/bswgen assign no board device, take no project values and generate nothing for it. The
+# E2E configuration of a signal stands in the ECU description (projects/<project>/rte.yaml, e2e), read by tools/rtegen.
+module: e2e
+kind: library
+description: AUTOSAR E2E library with the profiles P01, P02 and P11 (C99, no OpenBSW dependency, no dynamic memory)
+# Evidence (CHANGELOG.md): "Board-Test COM-12 und COM-03 (2026-09-16)" (qualifier with injected E2E errors),
+# COM-13 (2026-09-16), "Board-Nachweis COM-14 (2026-09-16)"; all with P01 frames 0x210 from the PC.
+verification: hardware
+verification_note: >-
+  The P01 check of received frames is confirmed on the eval board through the signal qualifier (wrong CRC, stuck
+  counter, healing); the board evidence names P01 only, P02 and P11 are covered by host tests.
+cmake_target: e2e

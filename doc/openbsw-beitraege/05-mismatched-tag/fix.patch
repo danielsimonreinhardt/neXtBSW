@@ -1,0 +1,33 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Your Name <you@example.com>
+Date: Thu, 17 Sep 2026 12:00:00 +0200
+Subject: [PATCH] Fix mismatched tag in forward declaration of DiagnosisConfiguration
+
+`DiagnosisConfiguration` is defined as a struct in
+`uds/DiagnosisConfiguration.h`, but `OutgoingDiagConnectionManager.h`
+forward declared it as a class. Clang reports that as
+`-Wmismatched-tags` and MSVC as C4099, and the declaration suggests a
+class with private data although the type is a plain aggregate.
+
+The forward declaration now uses `struct`.
+
+Signed-off-by: Your Name <you@example.com>
+---
+ libs/bsw/uds/include/uds/connection/OutgoingDiagConnectionManager.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/libs/bsw/uds/include/uds/connection/OutgoingDiagConnectionManager.h b/libs/bsw/uds/include/uds/connection/OutgoingDiagConnectionManager.h
+index f9ed3d36..be93cfdb 100644
+--- a/libs/bsw/uds/include/uds/connection/OutgoingDiagConnectionManager.h
++++ b/libs/bsw/uds/include/uds/connection/OutgoingDiagConnectionManager.h
+@@ -30,7 +30,7 @@ class ITransportMessageProvider;
+ 
+ namespace uds
+ {
+-class DiagnosisConfiguration;
++struct DiagnosisConfiguration;
+ class OutgoingDiagConnection;
+ class DiagDispatcher;
+ struct TransportJob;
+-- 
+2.51.0

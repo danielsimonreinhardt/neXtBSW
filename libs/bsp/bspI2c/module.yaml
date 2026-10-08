@@ -1,0 +1,16 @@
+# Module manifest (doc/architecture/README.md, section 5), minimal like bspSpi (DOC-14): a contract is a catalogue
+# entry only - tools/nxconfig and tools/bswgen assign no board device and take no project values for it. The bus
+# settings are project values of the board I2C bus (project.yaml i2c.<bus>), not of this contract. The
+# implementation is the family I2C driver (platforms/<family>/bsp/bspFlexioI2c for S32K1xx, adapted in the family
+# port until it implements the contract itself).
+module: bspI2c
+kind: contract
+description: I2C master contract II2cMaster - one bus, 7-bit addresses, write/read with or without STOP, plus probe, register read and address scan helpers
+# Evidence: host tests only (libs/bsp/bspI2c/test/host, IO-28); the S32K1xx FlexIO implementation is host tested
+# against a register model (IO-09). Board test pending: `i2c scan` on the eval board (IO-28, user decision
+# 2026-09-28).
+verification: mock
+verification_note: >-
+  Contract helpers (probe, register read, scan, result names) against a fake bus in host tests; the S32K1xx FlexIO
+  master behind it against a FlexIO register model. Not yet exercised on a board.
+cmake_target: bspI2c

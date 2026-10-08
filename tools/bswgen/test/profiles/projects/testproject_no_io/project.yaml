@@ -1,0 +1,25 @@
+# Synthetic project without any I/O channel (PLAT-94) on testboard_no_io: the board offers a digital input and
+# output, an ADC channel, a PWM pair and an input capture channel, the project uses only the console. bswgen must
+# generate every channel table empty and still correct: no digital input, no digital output, no ADC channel (neither
+# a board nor an internal one), no PWM group, no capture channel, no safety section. Checked by
+# tools/bswgen/test_bswgen.py (BswGenNoIoTest: the drivers compiled with the target compiler and the warning flags of
+# the target build) and against tools/bswgen/test/reference/testproject_no_io. Test data only, no hardware.
+schema_version: 1
+
+project:
+  name: testproject_no_io
+  board: ../../boards/testboard_no_io
+
+clock:
+  system_hz: 64000000
+
+use:
+  uart: all
+
+uart:
+  CONSOLE: { baudrate: 115200 }
+
+interrupts:
+  max_syscall_level: 5
+  ranks:
+    - { source: uart, name: CONSOLE, rank: 4, note: "console receive interrupt, the only interrupt source" }

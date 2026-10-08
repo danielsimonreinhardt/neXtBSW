@@ -1,0 +1,44 @@
+# ECU description of the RTE-08 host test: mode ports on the ECU mode manager ecu.mode and mode switch runnables in
+# two application tasks. BSW task profile: tools/rtegen/test/multitask/tasks.yaml. Component paths are relative to this file (RTE-22).
+#
+#   fast (1 ms, key 35):  ModeSwc.Run1ms, ModeSwc.OnStandbyToRun (transition STANDBY -> RUN)
+#   slow (10 ms, key 25): ModeSwc.Run10ms, AlphaSwc.Run10ms and the mode switch runnables ModeSwc.OnStartupEntry,
+#                         ModeSwc.OnRunExit, AlphaSwc.OnStandbyExit, ModeSwc.OnRunEntry (call order in a switch:
+#                         every exit, then every transition, then every entry; inside a group this list's order)
+#
+# A mode switch runnable is listed in tasks[].runnables like a periodic one; the event that starts it (entry, exit
+# or transition of a mode) is part of the component (SWC-MODE-SWITCH-EVENT in its ARXML), as in AUTOSAR.
+
+schema_version: 2
+
+tasks:
+  - name: fast
+    period_ms: 1
+    priority: 35
+    stack_bytes: 1024
+    runnables: [ModeSwc.Run1ms, ModeSwc.OnStandbyToRun]
+  - name: slow
+    period_ms: 10
+    priority: 25
+    stack_bytes: 2048
+    runnables:
+      - ModeSwc.Run10ms
+      - AlphaSwc.Run10ms
+      - ModeSwc.OnStartupEntry
+      - ModeSwc.OnRunEntry
+      - ModeSwc.OnRunExit
+      - AlphaSwc.OnStandbyExit
+
+components:
+  - name: ModeSwc
+    path: ModeSwc
+  - name: AlphaSwc
+    path: AlphaSwc
+
+connections:
+  ModeSwc.EcuMode.EcuMode: ecu.mode
+  ModeSwc.SlowMode.EcuMode: ecu.mode
+  ModeSwc.AnyMode.EcuMode: ecu.mode
+  AlphaSwc.Mode.Mode: ecu.mode
+  ModeSwc.EntryCount.EntryCount: rte
+  ModeSwc.EntryCountIn.EntryCountIn: ModeSwc.EntryCount.EntryCount

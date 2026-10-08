@@ -1,0 +1,740 @@
+# Klassifizierung jeder Datei des Repositoriums fuer den Export (PLAT-50).
+# Konzept: doc/architecture/lizenz-und-release.md Abschnitt 5.2/5.3. Entscheidungen des Nutzers vom 2026-09-17
+# (Entscheidungsboard, PLAT-46): Apache-2.0 ueberall, DCO fuer Beitraege, erste Veroeffentlichung als frischer
+# Export ohne Historie (F5), Eval-Board- und Schaltplanmaterial sowie Hersteller-PDFs bleiben privat (F6/F10),
+# mcudb-Werte nur mit oeffentlichem Beleg (F8), CHANGELOG/todo/CLAUDE.md bereinigt veroeffentlichen (F11),
+# das Desktop-Studio wird nicht an Dritte ausgeliefert (F12).
+#
+# Klassen: open < licensed < nda < private < workstation. Eine Datei darf in ein Profil, wenn ihre Klasse nicht
+# hoeher ist als das Profil. Wer nichts trifft, ist "nicht klassifiziert" und damit im Export verboten.
+# Der spezifischste Glob gewinnt (Zahl der /-Ebenen, dann Laenge des festen Anfangs, dann spaetere Zeile);
+# ein Modul-Manifest mit `distribution:` schlaegt diese Tabelle.
+#
+# Felder je Eintrag: glob, class, license (SPDX fuer Dateien ohne eigenen Kopf), reason, verify (Klasse noch
+# nicht belegt -> Warnung), binary_ok (Binaer-/Dokumentdatei ist gewollt), cleaned (wird nur bereinigt
+# veroeffentlicht, siehe export.clean), allow (Muster-IDs, die hier geduldet sind, mit Begruendung im reason).
+#
+# Diese Tabelle gehoert laut Konzept spaeter in die Repo-Wurzel (distribution.yaml). Sie liegt hier, weil PLAT-50
+# nur unterhalb von tools/distcheck schreiben darf; --rules zeigt auf einen beliebigen Pfad.
+
+version: 1
+
+pattern_file: doc/confidential/distcheck-patterns.yaml   # private Musterliste (NDA-Texte), .gitignore-Ordner
+
+profiles:
+  open:
+    licenses: [Apache-2.0, MIT, BSD-2-Clause, BSD-3-Clause, CC-BY-4.0, CC0-1.0, OFL-1.1,
+               AdditionRef-neXtBSW-Generator-Output-Exception]
+  licensed:
+    licenses: [Apache-2.0, MIT, BSD-2-Clause, BSD-3-Clause, CC-BY-4.0, CC0-1.0, OFL-1.1,
+               LicenseRef-neXtBSW-Commercial, AdditionRef-neXtBSW-Generator-Output-Exception]
+  nda:
+    licenses: [Apache-2.0, MIT, BSD-2-Clause, BSD-3-Clause, CC-BY-4.0, CC0-1.0, OFL-1.1,
+               LicenseRef-neXtBSW-Commercial, LicenseRef-neXtBSW-NDA,
+               AdditionRef-neXtBSW-Generator-Output-Exception]
+
+suffixes:
+  # Dateien, die einen SPDX-Kopf tragen sollen (R2)
+  source: [.c, .cpp, .cc, .h, .hpp, .inc, .py, .cmake, .m, .s, .j2, .ld, .dld, .in]
+  # Binaer- und Dokumentdateien, die im Profil einen ausdruecklichen Eintrag brauchen (R4)
+  binary: [.pdf, .svd, .pack, .lib, .a, .zip, .slx, .ttf, .asc, .hex, .bin, .elf, .png, .jpg, .exe, .dll]
+  # nicht zeilenweise durchsuchbar
+  no_text_scan: [.pdf, .slx, .ttf, .zip, .lib, .a, .bin, .hex, .elf, .png, .jpg, .exe, .dll, .svd, .pack]
+
+# ------------------------------------------------------------------ R3: oeffentliche Grundliste der Textmuster
+# Die Liste, die NDA-Dokumente beim Namen nennt, liegt NICHT hier, sondern unter pattern_file.
+content_patterns:
+  # der Ordnername doc/confidential (lokal, .gitignore) ist kein Aufdruck
+  - { id: confidential, regex: "(?<!doc/)\\bconfidential\\b(?!/)", text: "Vertraulichkeitsaufdruck" }
+  - { id: nda, regex: "\\b(under (an )?NDA|non-disclosure agreement|NDA-Unterlage|Geheimhaltungs)", text: "NDA-Bezug" }
+  - { id: la_opt_nxp, regex: "LA_OPT_NXP", text: "NXP-Zusatzlizenz (Weitergabe nur mit Zusatzvereinbarung)" }
+  - { id: proprietary, regex: "proprietary (and|information)", text: "Proprietaeraufdruck" }
+  - { id: do_not_distribute, regex: "(do not distribute|internal use only|nicht zur Weitergabe)", text: "Weitergabeverbot" }
+  # PLAT-119 (F9 A): Kopfzeilen, die Simulink Coder/Embedded Coder in C-Code und ARXML schreibt - erzeugt unter einer
+  # MATLAB-Studentenlizenz, darf nicht in einen Export (auch nicht als Kopie in einem Testprofil)
+  # TOOL-240: AH1506/AH1507 sind nicht oeffentlich; der Name allein ist erlaubt, Inhalte daraus (Tabelle, Kapitel,
+  # Abbildung, Abschnitt) nicht - Wortlaut in tools/distcheck/patterns.example.yaml (app_hint_content)
+  - id: app_hint_content
+    regex: '\bAH15(?:06|07)\b[\s,:;(]*(?:Rev\.?\s*\d+(?:\.\d+)*[\s,:;(]*)?(?:(?:tabelle|table|tab\.|kapitel|chapter|section|abschnitt|abbildung|abb\.|figure|fig\.|§)|\d+\.\d)|\b(?:tabelle|table|tab\.|kapitel|chapter|section|abschnitt|abbildung|abb\.|figure|fig\.|§)\s*[A-Za-z0-9.-]{1,10}\s+(?:of|in|from|aus|von|in der|in dem)\s+AH15(?:06|07)\b'
+    text: "Inhalt aus AH1506/AH1507 (nicht oeffentlich, nur der Name ist erlaubt)"
+  - { id: simulink_generated,
+      regex: "(Code generated for Simulink model|Simulink Coder version\\s*:|Embedded Coder version\\s*:|Auto generated XML Component Description for model)",
+      text: "mit MATLAB/Simulink (Studentenlizenz) erzeugter Code oder ARXML (F9 A, PLAT-119)" }
+
+# ------------------------------------------------------------------ R7: Geheimnisse und Arbeitsplatzspuren
+secrets:
+  - { id: bl_security_constant, regex: "BL_SECURITY_CONSTANT\\s*[=(:]?\\s*0x[0-9A-Fa-f]{4,}",
+      text: "Schluessel des Bootloader-Security-Access" }
+  - { id: private_key, regex: "-----BEGIN [A-Z ]*PRIVATE KEY-----", text: "privates Schluesselmaterial" }
+  - { id: token, regex: "(gh[pousr]_[A-Za-z0-9]{16,}|AKIA[0-9A-Z]{16}|xox[baprs]-[A-Za-z0-9-]{10,})",
+      text: "Zugangstoken" }
+  # PLAT-114: seit 2026-10-02 ist neXtBSW_development das private Entwicklungs-Repo und neXtBSW-Studio das des
+  # Studios; das offene Repo neXtBSW und der oeffentliche OpenBSW-Fork des Kontos duerfen genannt werden
+  - { id: private_repo, regex: "github\\.com/danielsimonreinhardt/(neXtBSW_development|neXtBSW-Studio)\\b",
+      text: "Adresse eines privaten Repositoriums (Entwicklung, Studio)" }
+  - { id: decision_board, regex: "claude\\.ai/artifact/", text: "internes Entscheidungsboard" }
+  - { id: workstation_path, regex: "[A-Za-z]:[\\\\/](WORK|DATA|TOOLS|NXP|Users)[\\\\/]",
+      text: "Pfad des Arbeitsplatzes", severity: warning }
+
+# ------------------------------------------------------------------ R11: Belege der Derivatdatenbank
+evidence:
+  # TOOL-241 (F8): auch die freigegebenen Boards (boards/*/board.yaml, nur im Profil, soweit nicht private)
+  files: ["mcudb/**/*.yaml", "boards/**/board.yaml"]
+  # Werte mit `verify: true` haben keinen oeffentlichen Beleg: Befund (Fehler) -> der Export bricht ab und nennt die
+  # Liste. Kein Platzhalter, weil der Baum baubar bleiben muss (Generatoren brauchen die Werte). Freigabe je Datei
+  # per Entscheidung des Nutzers: accepted: [{ glob: "mcudb/stm32/STM32G474RE.yaml", reason: "..." }]
+  unverified:
+    severity: error
+    accepted: []
+  forbidden_sources:
+    - { id: s32ds, regex: "\\[S32DS\\]", text: "Wert aus S32DS-Geraetedateien (NXP Confidential) statt aus RM/Datenblatt" }
+    - { id: confidential_source, regex: "confidential", text: "Beleg nennt eine vertrauliche Quelle" }
+    - { id: nda_source, regex: '\bNDA\b|AH15(06|07)', text: "Beleg nennt eine NDA-Unterlage (NDA, AH1506/AH1507)" }
+
+# ------------------------------------------------------------------ R6: Fremdquellen
+integrity:
+  - { dir: platforms/common/3rdparty/cmsis, requires: [README.md] }
+  - { dir: platforms/s32k1xx/3rdparty/freertos_cm0_sysTick, requires: [README.md] }
+  - { dir: mcudb/s32k1xx/sources/hal_nxp, requires: [README.md] }
+  - { dir: mcudb/stm32/sources/stm32_open_pin_data, requires: [README.md] }
+
+# ------------------------------------------------------------------ R5: Ziele aus Eclipse OpenBSW
+# TOOL-244: Ziele, die im echten Bau aus external/openbsw (oder der Familienplattform dort) kommen. Die Bautests der
+# privaten Familien (platforms/stm32/test/buildtest) definieren sie nur als Platzhalter; der Referenzcheck darf sie
+# deshalb nicht als "in einer nicht exportierten Datei definiert" melden.
+# Dazu die Ziele des privaten FreeRTOS-Ports von rm4x: freertosPort waehlt ihn nur fuer armv7r und bricht mit Meldung
+# ab, wenn der Ordner fehlt (EXISTS-Pruefung); der Test des Kerns liest INTERFACE_LINK_LIBRARIES, daher kein
+# $<TARGET_NAME_IF_EXISTS:...> dort.
+external_targets: [etl, util, bsp, common, cpp2can, socBsp, freeRtosCrxPort, freeRtosCrx]
+
+# ------------------------------------------------------------------ Klassifizierung
+paths:
+
+  # --- Grundregel: alles, was nicht ausdruecklich geoeffnet ist, bleibt privat -----------------------------
+  - glob: "**"
+    class: private
+    reason: "Voreinstellung: nicht ausdruecklich klassifiziert = nicht veroeffentlichen"
+
+  # --- Firmware, Bibliotheken, Plattformen ---------------------------------------------------------------
+  - { glob: "libs/**", class: open, license: Apache-2.0, reason: "Eigenentwicklung und OpenBSW-Ableitungen" }
+  - { glob: "platforms/**", class: open, license: Apache-2.0, reason: "Plattformcode je Familie" }
+  # TOOL-244 (Nutzer 2026-10-07): der oeffentliche Stand umfasst vorerst nur S32K1; STM32 und RM4x samt Fremdquellen
+  # (ST cmsis_device_f4, FreeRTOS ARM_CRx) und Tests bleiben privat. Die Host-Tests, die sie lesen, nimmt
+  # export.clean (tests_yaml) aus dem Export.
+  - { glob: "platforms/stm32/**", class: private, reason: "Familie noch nicht unterstuetzt, Chipdaten nicht oeffentlich belegt (F8, TOOL-243/244)" }
+  - { glob: "platforms/rm4x/**", class: private, reason: "Familie noch nicht unterstuetzt, Chipdaten nicht oeffentlich belegt (F8, TOOL-243/244)" }
+  - { glob: "bootloader/platforms/stm32/**", class: private, reason: "Familie noch nicht unterstuetzt, Chipdaten nicht oeffentlich belegt (F8, TOOL-243/244)" }
+  - { glob: "ecu/platforms/stm32/**", class: private, reason: "Familie noch nicht unterstuetzt, Chipdaten nicht oeffentlich belegt (F8, TOOL-243/244)" }
+  - { glob: "ecu/platforms/nucleo_f446re/**", class: private, reason: "Familie noch nicht unterstuetzt, Chipdaten nicht oeffentlich belegt (F8, TOOL-243/244)" }
+  - { glob: "platforms/common/test/cortexr4f/**", class: private, reason: "Familie noch nicht unterstuetzt, Chipdaten nicht oeffentlich belegt (F8, TOOL-243/244)" }
+  - { glob: "platforms/common/test/test_cortex_r4f.py", class: private, reason: "Familie noch nicht unterstuetzt, Chipdaten nicht oeffentlich belegt (F8, TOOL-243/244)" }
+  - { glob: "bootloader/test/board/stm32f446/**", class: private, reason: "Familie noch nicht unterstuetzt, Chipdaten nicht oeffentlich belegt (F8, TOOL-243/244)" }
+  - { glob: "bootloader/test/test_bl_stm32_build.py", class: private, reason: "Familie noch nicht unterstuetzt, Chipdaten nicht oeffentlich belegt (F8, TOOL-243/244)" }
+  - { glob: "tools/bswgen/test_blgen_stm32.py", class: private, reason: "Familie noch nicht unterstuetzt, Chipdaten nicht oeffentlich belegt (F8, TOOL-243/244)" }
+  - { glob: "mcudb/tools/pinmux_stm32_open_pin_data.py", class: private, reason: "Familie noch nicht unterstuetzt, Chipdaten nicht oeffentlich belegt (F8, TOOL-243/244)" }
+  - { glob: "mcudb/tools/pinout_stm32_open_pin_data.py", class: private, reason: "Familie noch nicht unterstuetzt, Chipdaten nicht oeffentlich belegt (F8, TOOL-243/244)" }
+  - { glob: "mcudb/tools/test_pinmux_stm32_open_pin_data.py", class: private, reason: "Familie noch nicht unterstuetzt, Chipdaten nicht oeffentlich belegt (F8, TOOL-243/244)" }
+  - { glob: "ecu/**", class: open, license: Apache-2.0, reason: "aus der OpenBSW-Referenz-App abgeleitet" }
+  - { glob: "ecu/platforms/evalboard_s32k144/**", class: private,
+      reason: "Board-Port des eigenen Eval Boards (F10; Safety-Review 2026-10-02 F2 a, PLAT-62)" }
+  - { glob: "ecu/platforms/s32k116evb/**", class: private,
+      reason: "Board-Port des privaten Boards s32k116evb (Pegel nicht oeffentlich belegt) - privat bis PLAT-13 (TOOL-243c)" }
+  - { glob: "bootloader/**", class: open, license: Apache-2.0, reason: "eigener UDS-Bootloader" }
+  - { glob: "cmake/**", class: open, license: Apache-2.0 }
+  - { glob: "CMakeLists.txt", class: open, license: Apache-2.0 }
+  - { glob: "VERSION", class: open, license: Apache-2.0,
+      reason: "Version der neXtBSW (ARCH-55), einzige Quelle fuer CMake, Werkzeuge und den Pin eines Kunden-Repos" }
+  - { glob: "CMakePresets.json", class: open, license: Apache-2.0, cleaned: true,
+      reason: "Profile der privaten Projekte werden beim Export entfernt (export.clean)" }
+  - { glob: ".gitattributes", class: open, license: Apache-2.0 }
+  - { glob: "**/.gitattributes", class: open, license: Apache-2.0 }
+  - { glob: ".gitignore", class: open, license: Apache-2.0, allow: [nda],
+      reason: "haelt den lokalen NDA-Ordner aus jedem Checkout heraus - gerade im offenen Baum noetig" }
+  - { glob: ".gitmodules", class: open, license: Apache-2.0, reason: "Verweis auf Eclipse OpenBSW (oeffentlich)" }
+  - { glob: "README.md", class: open, license: Apache-2.0 }
+  - { glob: ".github/**", class: open, license: Apache-2.0, reason: "CI-Beschreibung" }
+  - { glob: ".github/workflows/docs.yml", class: open, license: Apache-2.0,
+      reason: "Veroeffentlichung der Doku-Website mit mike nach gh-pages (DOC-87); laeuft im Release-Repository" }
+  - { glob: "SECURITY.md", class: open, license: Apache-2.0,
+      reason: "Meldeweg fuer Schwachstellen (GitHub Private Vulnerability Reporting), unterstuetzte Versionen (DOC-67)" }
+  - { glob: "CONTRIBUTING.md", class: open, license: Apache-2.0, allow: [nda],
+      reason: "Beitragsregeln mit DCO (DOC-01); nennt NDA-Material nur als Ausschlussregel" }
+  - { glob: "external/openbsw", class: open, license: Apache-2.0,
+      reason: "Submodul-Verweis (Gitlink); der Inhalt kommt von Eclipse OpenBSW und wird nicht mitexportiert" }
+
+  # --- aus NDA-Unterlagen abgeleitet (IO-06, Datenblatt nur unter NDA erhalten) ------------------------
+  # Seit dem Merge von IO-06 liegt der Treiber in dev. Er darf nicht in den offenen Zweig (CLAUDE.md, F3 offen).
+  - { glob: "libs/bsw/bccMc33771/**", class: nda, license: LicenseRef-neXtBSW-NDA,
+      reason: "Registerdaten aus NDA-Unterlagen (IO-06)" }
+  - { glob: "platforms/s32k1xx/port/bspConfiguration/include/bsp/bcc/**", class: nda,
+      license: LicenseRef-neXtBSW-NDA, reason: "Konfiguration des NDA-Treibers (IO-06)" }
+  - { glob: "platforms/s32k1xx/port/main/include/systems/CellMonitorSystem.h", class: nda,
+      license: LicenseRef-neXtBSW-NDA, reason: "System des NDA-Treibers (IO-06)" }
+  - { glob: "platforms/s32k1xx/port/main/src/systems/CellMonitorSystem.cpp", class: nda,
+      license: LicenseRef-neXtBSW-NDA, reason: "System des NDA-Treibers (IO-06)" }
+
+  # --- Fremdquellen im Baum ------------------------------------------------------------------------------
+  - { glob: "platforms/common/3rdparty/cmsis/**", class: open, license: Apache-2.0, reason: "ARM CMSIS_6" }
+  - { glob: "platforms/s32k1xx/3rdparty/freertos_cm0_sysTick/**", class: open, license: MIT,
+      reason: "FreeRTOS-Kernel V10.6.2 (Amazon)" }
+  - { glob: "platforms/s32k1xx/bsp/bspMcu/include/3rdparty/nxp/**", class: open, license: BSD-3-Clause,
+      reason: "NXP-Derivat-Header (Zephyr hal_nxp, RTD)" }
+
+  # --- Derivatdatenbank ----------------------------------------------------------------------------------
+  - { glob: "mcudb/**", class: open, license: Apache-2.0, reason: "eigene Datensammlung, Belege je Wert (R11)" }
+  - { glob: "mcudb/s32k1xx/sources/hal_nxp/**", class: open, license: Apache-2.0, reason: "Zephyr hal_nxp (NXP)" }
+  # TOOL-243 (F8 b, Nutzer 2026-10-07): noch nicht unterstuetzte Ziele bleiben vorerst privat - ihre Werte sind nicht
+  # oeffentlich belegt (R11), bis zur Unterstuetzung privat. Die Fremdquellen darunter gehen mit (der spezifischere
+  # Glob gewinnt, ein offener Unterordner bliebe sonst ohne seine Derivatdatei im Export).
+  - { glob: "mcudb/stm32/**", class: private,
+      reason: "noch nicht unterstuetzt, Werte nicht oeffentlich belegt (F8), bis zur Unterstuetzung privat (TOOL-243)" }
+  - { glob: "mcudb/s32k3xx/**", class: private,
+      reason: "noch nicht unterstuetzt, Werte nicht oeffentlich belegt (F8), bis zur Unterstuetzung privat (TOOL-243)" }
+  - { glob: "mcudb/rm4x/**", class: private,
+      reason: "noch nicht unterstuetzt, Werte nicht oeffentlich belegt (F8), bis zur Unterstuetzung privat (TOOL-243)" }
+  - { glob: "mcudb/s32k3xx/sources/hal_nxp/**", class: private,
+      reason: "Zephyr hal_nxp (NXP, Apache-2.0) - mit mcudb/s32k3xx privat: noch nicht unterstuetzt (F8, TOOL-243)" }
+  # Testdaten und Tests, die die privaten Derivate beim Namen laden (R5-Fehler, TOOL-243): gehen mit ihnen. Die
+  # Host-Tests, die sie implizit lesen (stm32-/rm4x-Klassen in tools/canflash, tools/nxconfig, tools/elfcheck,
+  # platforms/stm32/test), laufen im Export nicht - Folgeaufgabe, siehe Changelog-Fragment TOOL-243
+  - { glob: "bootloader/test/layouts/stm32f446_unequal.yaml", class: private,
+      reason: "synthetisches Bootloader-Layout fuer STM32F446RE/nucleo_f446re, liest die uid aus mcudb/stm32 (F8, TOOL-243)" }
+  - { glob: "tools/nxconfig/test/profiles/boards/testboard_rm46/**", class: private,
+      reason: "Test-Board mit mcu: RM46L852 (mcudb/rm4x privat, F8, TOOL-243)" }
+  - { glob: "tools/nxconfig/test/profiles/projects/testproject_rm46/**", class: private,
+      reason: "Test-Projekt auf testboard_rm46 (mcudb/rm4x privat, F8, TOOL-243)" }
+  - { glob: "mcudb/tools/test_pinout.py", class: private,
+      reason: "familienuebergreifender Pinout-Test, importiert mcudb/rm4x/tools und prueft stm32-/rm4x-/s32k3-Tabellen (F8, TOOL-243)" }
+  - { glob: "mcudb/tools/test_rtd_adapter.py", class: open, license: Apache-2.0, allow: [confidential],
+      reason: "Test prueft, dass die uebernommenen BSD-3-Herstellerdateien KEINEN Vertraulichkeitsaufdruck tragen; PLAT-114" }
+  - { glob: "mcudb/stm32/sources/stm32_open_pin_data/**", class: private,
+      reason: "ST STM32_open_pin_data (BSD-3-Clause; F7 noch offen) - mit mcudb/stm32 privat: noch nicht unterstuetzt (F8, TOOL-243)" }
+  - { glob: "mcudb/s32k1xx/sources/keil_s32k116_dfp/**", class: open, license: Apache-2.0, allow: [la_opt_nxp],
+      reason: "nur Anleitung; der Text zitiert LA_OPT_NXP als Begruendung, warum die SVD NICHT im Repo liegt" }
+
+  # --- Werkzeuge -----------------------------------------------------------------------------------------
+  - { glob: "tools/**", class: open, license: Apache-2.0, reason: "Kernbibliotheken und Generatoren" }
+  - { glob: "tools/studio/**", class: private,
+      reason: "neXtBSW Studio wird nicht an Dritte ausgeliefert (Entscheidung F12 vom 2026-09-17)" }
+  - { glob: "tools/todo/**", class: private, reason: "interne Planung und Agenten-Workflow (F11)" }
+  - { glob: "tools/boardtest/suites/evalboard_s32k144_*.yaml", class: private,
+      reason: "Board-Testplan des eigenen Eval Boards (F10; PLAT-62), gehoert zu den privaten Mitschnitten" }
+  - { glob: "tools/boardtest/captures/**", class: private,
+      reason: "Messmitschnitte des eigenen Boards (Eval-Board-Material bleibt privat)" }
+  - { glob: "tools/stackuse/reports/evalboard_s32k144_*", class: private,
+      reason: "Stack-Bericht des privaten Demo-Projekts (K1, DOC-73); Berichte offener Projekte bleiben offen" }
+  - { glob: "tools/distcheck/**", class: open, license: Apache-2.0,
+      allow: [confidential, nda, la_opt_nxp, proprietary, do_not_distribute, simulink_generated, private_repo,
+              decision_board, workstation_path, bl_security_constant, private_key, token, private_dir_names],
+      reason: "das Pruefwerkzeug selbst enthaelt die Muster, nach denen es sucht" }
+  - { glob: "tools/requirements.txt", class: open, license: Apache-2.0 }
+  - { glob: "tools/docgen/test_mermaid.py", class: open, license: Apache-2.0, allow: [confidential],
+      reason: "Test schliesst den Ordner mit lizenzierten Normen beim Einsammeln der Markdown-Dateien aus (liest ihn nie); DOC-63" }
+  - { glob: "tools/rtegen/test/types/**/*.slx", class: open, license: Apache-2.0, binary_ok: true,
+      reason: "eigenes Simulink-Testmodell der Typ-Pruefung von rtegen (TypeSwc), wie swc/**/*.slx (F9 A: Modell bleibt offen); PLAT-114" }
+  # PLAT-119 (Entscheidung F9 A vom 2026-10-06): Code und ARXML, die Simulink Coder/Embedded Coder R2024a unter einer
+  # MATLAB-Studentenlizenz erzeugt hat, gehen nicht in den Export (Apache-2.0 erlaubt kommerzielle Nutzung, die
+  # Studentenlizenz nicht). Modelle, Parameter und Bau-Skripte bleiben offen; R3-Muster simulink_generated haelt
+  # weiteres Generat auf.
+  - { glob: "tools/rtegen/test/types/TypeSwc/generated/**", class: private,
+      reason: "Simulink-Coder-Generat (C und ARXML) des Testmodells TypeSwc, MATLAB-Studentenlizenz (F9 A, PLAT-119)" }
+  - { glob: "tools/rtegen/test/types/TypeSink/generated/arxml/TypeSink_datatype.arxml", class: private,
+      reason: "Kopie des Simulink-Coder-ARXML TypeSwc_datatype.arxml, MATLAB-Studentenlizenz (F9 A, PLAT-119)" }
+  # Host-Tests, die den erzeugten Kopf TypeSwc.h einbinden (R5): ohne das Generat nicht uebersetzbar
+  - { glob: "tools/rtegen/test/types/rte_types_host_test.cpp", class: private,
+      reason: "bindet TypeSwc.h des privaten Simulink-Generats ein (F9 A, PLAT-119)" }
+  - { glob: "tools/rtegen/test/nvm/rte_nvm_host_test.cpp", class: private,
+      reason: "bindet TypeSwc.h des privaten Simulink-Generats ein (F9 A, PLAT-119)" }
+  - { glob: "tools/rtegen/test/nvm/rte_nvm_asil_host_test.cpp", class: private,
+      reason: "bindet TypeSwc.h des privaten Simulink-Generats ein (F9 A, PLAT-119)" }
+  # PLAT-114: der Studio-Ablauf (Import, Ins Modell schreiben, Aus Modell uebernehmen) gehoert zum Studio, das nicht
+  # ausgeliefert wird (F12): studio_flow.py ruft studio.core auf, die MATLAB-Tests, die es aufrufen, gehen mit.
+  # Ihre Eintraege in tools/test/tests.yaml entfernt der Export (export.clean tests_yaml).
+  - { glob: "tools/swc/test/studio_flow.py", class: private,
+      reason: "Python-Haelfte der MATLAB-Tests ueber den Studio-Ablauf, ruft studio.core (F12); PLAT-114" }
+  - { glob: "tools/swc/test/SwcRunnablesTest.m", class: private, reason: "faehrt den Studio-Ablauf (studio_flow.py); PLAT-114" }
+  - { glob: "tools/swc/test/SwcTypesTest.m", class: private, reason: "faehrt den Studio-Ablauf (studio_flow.py); PLAT-114" }
+  - { glob: "tools/swc/test/SwcParamsTest.m", class: private, reason: "faehrt den Studio-Ablauf (studio_flow.py); PLAT-114" }
+  - { glob: "tools/swc/test/SwcMeasurementsTest.m", class: private,
+      reason: "faehrt den Studio-Ablauf (studio_flow.py); PLAT-114" }
+
+  # --- Komponenten (Simulink) ----------------------------------------------------------------------------
+  - { glob: "swc/**", class: open, license: Apache-2.0,
+      reason: "eigene Modelle, Parameter, Bau-Skripte, Tests und die handgeschriebene Ersatz-SWC (F9 A, PLAT-119)" }
+  - { glob: "swc/**/*.slx", class: open, license: Apache-2.0, binary_ok: true,
+      reason: "eigenes Simulink-Modell (F9 A: Modell bleibt offen)" }
+  - { glob: "swc/*/generated/**", class: private,
+      reason: "Simulink-Coder-Generat (C und ARXML, R2024a, MATLAB-Studentenlizenz) - nicht veroeffentlichen (F9 A, PLAT-119); im Export ersetzt die Ersatz-SWC swc/DemoSwcSubstitute den Code (export.overlay)" }
+
+  # --- Boards und Projekte -------------------------------------------------------------------------------
+  - { glob: "boards/**", class: private, reason: "Board-Profile werden einzeln freigegeben" }
+  - { glob: "boards/buildtest_s32k148/**", class: open, license: Apache-2.0,
+      reason: "synthetisches Bau-Profil ohne Hardware (ARCH-09)" }
+  - { glob: "boards/nucleo_f446re/**", class: private,
+      reason: "noch nicht unterstuetzt, Werte nicht oeffentlich belegt (F8), bis zur Unterstuetzung privat (TOOL-243)" }
+  # TOOL-243c (Nutzer 2026-10-07, Entscheidungsboard f8-s32k116evb-pegel-1007, Option c): Pins des S32K116EVB sind aus
+  # dem oeffentlichen Quick Start Guide belegt, die Pegel von Poti, Tastern und RGB-LED nicht (6 Werte verify: true,
+  # R11) - das Board bleibt wie STM32/S32K3/RM46/Nucleo vorerst privat, bis die Pegel am Board gemessen sind (PLAT-13).
+  # Das Derivat S32K116 (mcudb/s32k1xx) bleibt oeffentlich; Projekt, Board-Port und Referenzausgabe gehen mit.
+  - { glob: "boards/s32k116evb/**", class: private,
+      reason: "Pegel von Poti/Tastern/LED nicht oeffentlich belegt (R11, F8), Entscheidung 2026-10-07 Option c: privat bis zur Messung am Board (PLAT-13, TOOL-243c)" }
+  - { glob: "boards/evalboard_s32k144/**", class: private,
+      reason: "eigenes Eval Board, Schaltplanmaterial bleibt privat (Entscheidung vom 2026-09-17, F10)" }
+  - { glob: "projects/**", class: private, reason: "Projekte werden einzeln freigegeben" }
+  - { glob: "projects/README.md", class: open, license: Apache-2.0 }
+  - { glob: "projects/buildtest_s32k148_min/**", class: open, license: Apache-2.0 }
+  - { glob: "projects/nucleo_f446re_demo/**", class: private,
+      reason: "Projekt des privaten Boards nucleo_f446re (board: zeigt dorthin) - mit ihm privat (F8, TOOL-243)" }
+  - { glob: "projects/s32k116evb_minimal/**", class: private,
+      reason: "Projekt des privaten Boards s32k116evb (board: zeigt dorthin) - mit ihm privat bis PLAT-13 (TOOL-243c)" }
+  - { glob: "projects/evalboard_s32k144_demo/**", class: private, reason: "Projekt des eigenen Boards (F10)" }
+  - { glob: "projects/evalboard_s32k144_charge/**", class: private, reason: "Projekt des eigenen Boards (F10)" }
+  - { glob: "tools/*/test/reference/evalboard_s32k144_*/**", class: private, reason: "Referenzausgabe des eigenen Boards (PLAT-78)" }
+  - { glob: "tools/*/test/reference/s32k116evb_minimal/**", class: private,
+      reason: "Referenzausgabe des privaten Projekts s32k116evb_minimal (PLAT-78) - mit dem Board privat bis PLAT-13 (TOOL-243c)" }
+
+  # --- Dokumentation -------------------------------------------------------------------------------------
+  - { glob: "doc/**", class: private, reason: "Vorgabe fuer doc: erst nach Sichtung oeffnen" }
+  - { glob: "mkdocs.yml", class: open, license: Apache-2.0,
+      reason: "Konfiguration der Doku-Website (DOC-71); die Website wird im exportierten Baum gebaut (tools/docgen/site.py)" }
+  - { glob: "doc/README.md", class: open, license: Apache-2.0, allow: [proprietary],
+      reason: "Wegweiser der Dokumentation (DOC-01); nennt das Studio als proprietaer und ausgenommen" }
+  - { glob: "doc/release-notes/**", class: open, license: Apache-2.0, reason: "Release Notes je Version (DOC-61)" }
+  - { glob: "doc/guide/**", class: open, license: Apache-2.0, reason: "Anwenderdokumentation (DOC-01, DOC-02)" }
+  - { glob: "doc/reference/**", class: open, license: Apache-2.0,
+      reason: "aus tools/nxconfig/model.py erzeugte Referenz (DOC-03, tools/docgen)" }
+  - { glob: "doc/architecture/**", class: open, license: Apache-2.0, reason: "Zielbild und Entwurfsentscheidungen" }
+  - { glob: "doc/figures/**", class: open, license: Apache-2.0,
+      reason: "Bildseiten zu Architektur, Start, Flash, Zustaenden, Safety-Kette und Modulen (DOC-63)" }
+  - { glob: "doc/architecture/lizenz-und-release.md", class: private,
+      reason: "nennt NDA-Unterlagen, interne Bewertung und offene Rechtsfragen" }
+  - { glob: "doc/architecture/fast-control-loop.md", class: private,
+      reason: "K1/K2: Konzept nach R1, im Entwicklungs-Repo, von Safety-Dokumenten zitiert; DOC-75" }
+  - { glob: "doc/architecture/multi-mcu-flash.md", class: private,
+      reason: "K1/K2: Konzept nach R1, im Entwicklungs-Repo, von Safety-Dokumenten zitiert; DOC-75" }
+  - { glob: "doc/safety/**", class: open, license: Apache-2.0,
+      reason: "Sicherheitskonzept und Nachweise als SEooC - Veroeffentlichungsziel, damit ein Integrator die Annahmen kennt (SYS-19)" }
+  # DOC-73: Nutzerentscheidung K1 'doc-kurz-archiv = privat' (2026-10-04) - Arbeits- und Pruefaufzeichnungen bleiben im
+  # Entwicklungs-Repo. Verweise aus veroeffentlichten Dokumenten darauf ersetzt der Export durch "not published,
+  # available on request" (Linktext bleibt, Quelltext unveraendert; Liste neben dem Export: <out>.replacements.md)
+  # DOC-74 (K1): partner-and-degraded.md bleibt offen (Teil A); Teil B/C sind im Quelltext als private Abschnitte
+  # markiert (<!-- export:private-begin/-end -->), der Export schneidet sie und ersetzt Links auf ihre Anker (README)
+  - { glob: "doc/safety/reviews/**", class: private,
+      reason: "Review-Protokolle der Bestaetigungsmassnahmen und Code-Inspektionen samt Werkzeug (K1, DOC-73)" }
+  - { glob: "doc/safety/iso26262-gap.md", class: private,
+      reason: "klauselweise Lueckenanalyse gegen die Norm, Momentaufnahme 2026-09-21 (K1, DOC-73)" }
+  - { glob: "doc/safety/rtos-comparison.md", class: private,
+      reason: "Entscheidungsvorlage FreeRTOS/SAFERTOS mit Bewertung eines Fremdprodukts (K1, DOC-73)" }
+  - { glob: "doc/safety/traceability.md", class: private,
+      reason: "aus dem Anforderungsmodell erzeugte Matrix (tools/trace), K1, DOC-73" }
+  # DOC-80: Nutzerentscheidung CR05-SDOC 'publish' (Re-Check CR-05-1, 2026-10-04) - die Sicherheitsanforderungen
+  # (ssr.sdoc, EW-15 des Safety Case) und die Kataloge goals/assumptions/mechanisms.sdoc gehen mit R1 in den offenen
+  # Baum, Konzept, Handbuch und FMEA verweisen auf ihre IDs; der Rest von doc/requirements (poc,
+  # Migrationsplan) bleibt privat ueber die Grundregel doc/**; Grammatik und StrictDoc-Konfiguration seit DOC-85 offen
+  - { glob: "doc/requirements/safety/**", class: open, license: Apache-2.0,
+      reason: "Sicherheitsanforderungen und Kataloge des SEooC (SSR, ASG, AoU, SM) - eigene Texte, Normstellen nur mit Teil und Klausel (CR05-SDOC, DOC-80)" }
+  # DOC-85: ohne Grammatik und Konfiguration scheitert StrictDoc im Export an den offenen .sdoc ('@nextbsw' [schema]);
+  # beide sind eigene Texte (Elementtypen und Felder, keine Normstellen), poc/ und der Migrationsplan bleiben privat
+  - { glob: "doc/requirements/nextbsw.sgra", class: open, license: Apache-2.0,
+      reason: "StrictDoc-Grammatik der Anforderungen (Elementtypen SSR, ASG, AoU, SM, CLAUSE ...), eigene Definition; DOC-85" }
+  - { glob: "doc/requirements/strictdoc_config.py", class: open, license: Apache-2.0,
+      reason: "StrictDoc-Projektkonfiguration (Grammatik @nextbsw, Ausschluss poc/), von tools/trace gelesen; DOC-85" }
+  - { glob: "doc/requirements/migration-plan.md", class: private,
+      reason: "Projektplan der StrictDoc-Migration (DOC-21); doc/requirements ausser safety/ ist ohnehin privat, hier ausdruecklich (K1, DOC-73)" }
+  - { glob: "doc/openbsw-beitraege/**", class: open, license: Apache-2.0,
+      reason: "Beitraege an Eclipse OpenBSW (Patches gegen ein Apache-2.0-Projekt)" }
+  - { glob: "doc/hardware/**", class: workstation,
+      reason: "Hersteller-PDFs ohne Weitergaberecht: Arbeitsplatzebene, im Export nur Link und SHA-256 (F6)" }
+  - { glob: "doc/hardware/evalboard.pdf", class: private,
+      reason: "Schaltplan des eigenen Boards (F10: bleibt privat)" }
+  - { glob: "doc/changelog.d/**", class: private, reason: "Changelog-Fragmente der laufenden Arbeit" }
+  - { glob: "doc/koordinator-stand.md", class: private, reason: "interner Sitzungsstand" }
+  - { glob: "doc/TODO.md", class: private, reason: "aus doc/todo.yaml erzeugt; der Export erzeugt eine eigene Fassung" }
+  - { glob: "doc/todo.yaml", class: private, cleaned: true,
+      reason: "interne Planung; wird bereinigt veroeffentlicht (Entscheidung F11)" }
+  - { glob: "CHANGELOG.md", class: private, cleaned: true,
+      reason: "12 900 Zeilen mit NDA-Bezug, Messprotokollen und interner Planung; der oeffentliche Changelog beginnt neu (F11)" }
+  - { glob: "CLAUDE.md", class: private, cleaned: true,
+      reason: "Agenten-Workflow und Hardware-Sicherheitsregeln des eigenen Boards; bereinigt veroeffentlicht (F11)" }
+
+  # --- erzeugte Dateien des Exports ----------------------------------------------------------------------
+  - { glob: "LICENSE", class: open, license: Apache-2.0 }
+  - { glob: "doc/unpublished.yaml", class: open, license: Apache-2.0,
+      reason: "vom Export geschriebene Liste des absichtlich nicht Veroeffentlichten (export.unpublished, DOC-85)" }
+  - { glob: "NOTICE", class: open, license: Apache-2.0,
+      reason: "Third-Party-Hinweise von Hand gepflegt (DOC-67); R10 prueft, dass jede verwendete Lizenz darin steht" }
+
+  # --- Lizenzkennzeichnung nach REUSE (PLAT-49) ----------------------------------------------------------
+  - { glob: "REUSE.toml", class: open, license: Apache-2.0,
+      reason: "Lizenz und Copyright je Datei (REUSE 3.3); Lizenz ist nicht Verteilungsklasse" }
+  - { glob: "LICENSES/**", class: open, license: Apache-2.0,
+      reason: "Lizenztexte der im Baum verwendeten SPDX-Kennungen" }
+  - { glob: "LICENSES/LicenseRef-neXtBSW-NDA.txt", class: nda, allow: [nda],
+      reason: "Lizenztext der NDA-Ableitungen, gehoert nur zu Staenden mit diesen Dateien" }
+  - { glob: "LICENSES/LicenseRef-neXtBSW-Proprietary.txt", class: private,
+      reason: "Lizenztext des Studios und des eigenen Board-Materials" }
+  - { glob: "LICENSES/LicenseRef-Vendor-Document.txt", class: private,
+      reason: "Kennzeichnung der Hersteller-PDFs (Arbeitsplatzebene)" }
+
+# ------------------------------------------------------------------ Export
+export:
+  project: neXtBSW
+  copyright: "2026 Daniel Simon Reinhardt-Probul"     # Entscheidung F13 vom 2026-09-17 (PLAT-49)
+  license: Apache-2.0
+  upstream: "https://github.com/eclipse-openbsw/openbsw"
+  first_commit: "neXtBSW: erste Veroeffentlichung (frischer Export ohne Historie)"
+  required_files: [LICENSE, NOTICE, SECURITY.md, CONTRIBUTING.md]   # NOTICE, SECURITY.md, CONTRIBUTING.md kommen aus dem Repo (DOC-01, DOC-67)
+  verify_preset: buildtest-s32k148-min       # synthetisches Bau-Profil ohne eigenes Board (R9)
+  generate:
+    LICENSE: { template: templates/LICENSE.Apache-2.0.txt }
+  # PLAT-114: Ersetzungen in sonst unveraenderten Dateien (glob, regex, with). Der Check des Quellbaums prueft R3/R7
+  # auf dem ersetzten Text, meldet also nur, was im Export stehen bliebe.
+  substitute:
+    - glob: "doc/**/*.md"
+      regex: "https?://claude\\.ai/artifact/[A-Za-z0-9_-]+"
+      with: "(internal review page, not published)"
+      reason: >-
+        Pruefaufzeichnungen (doc/safety/reviews/records) nennen die Seite, auf der der Nutzer geurteilt hat; der Link
+        bleibt im Entwicklungs-Repo als Nachweis, der offene Baum bekommt einen neutralen Text
+    - glob: "tools/ci/pipeline.toml"
+      regex: '\[presets\.not_built\.nucleo-f446re-demo\]\r?\nreason = "[^\r\n]*"\r?\n\r?\n'
+      with: ""
+      reason: >-
+        TOOL-244: das Preset nucleo-f446re-demo (privates Board, F8) fehlt im Export (export.clean CMakePresets.json);
+        seine Ausnahme "nicht gebaut" faellt mit weg, sonst meldet der CI-Check eine Ausnahme fuer ein unbekanntes Preset
+    - glob: "tools/ci/pipeline.toml"
+      regex: '\[presets\.not_built\.s32k116evb-minimal\]\r?\nreason = "[^\r\n]*"\r?\n\r?\n'
+      with: ""
+      reason: >-
+        TOOL-243c: das Preset s32k116evb-minimal (privates Board s32k116evb, Pegel unbelegt bis PLAT-13) fehlt im Export
+        (export.clean CMakePresets.json); seine Ausnahme "nicht gebaut" faellt wie bei nucleo-f446re-demo mit weg
+    - glob: "tools/rtegen/test/reference/**/RteConfig.cpp"
+      regex: "(\"DemoSwc\\.Run(?:10|100)ms\", &)(Run(?:10|100)ms,)"
+      with: "\\1DemoSwc_\\2"
+      reason: >-
+        PLAT-119 (F9 A): im Export ist DemoSwc der C-Ersatz (export.overlay), seine Runnables heissen
+        DemoSwc_Run10ms/DemoSwc_Run100ms (RTE-20) statt der Embedded-Coder-Namen - die Referenzausgaben von rtegen
+        (rtegen-reference) folgen dem, sonst bliebe die Referenz im Export rot fuer einen Pfad, der im Profil fehlt. Ist keine Datei unter `replaces` im Profil,
+  # schreibt der Export jede Quelle (rechts) an ihr Ziel (links); Quelle muss im Profil liegen, das Ziel darf keine
+  # Datei des Profils sein (R13). Die Tests der Ersatz-SWC bauen den Ordner genauso (swc/DemoSwcSubstitute/test).
+  overlay:
+    - replaces: swc/DemoSwc/generated
+      files:
+        swc/DemoSwc/swc.yaml: swc/DemoSwcSubstitute/swc.yaml
+        swc/DemoSwc/src/DemoSwc.c: swc/DemoSwcSubstitute/src/DemoSwc.c
+      reason: >-
+        Ohne das Simulink-Generat wird DemoSwc im Export eine handgeschriebene C-Komponente (swc.yaml implementation: c)
+        mit derselben RTE-Schnittstelle; Modell, DemoSwc_data.m und Bau-Skripte bleiben daneben. Wer eine eigene
+        MATLAB-Lizenz hat, erzeugt das Original mit swc_build und entfernt swc.yaml und src/ (swc/DemoSwcSubstitute/README.md)
+  # DOC-85: Liste dessen, was der Export absichtlich weglaesst (tools/distcheck/unpublished.py). Die Konsistenztests
+  # (doc/safety/test) nehmen eine fehlende Quelle - Datei, Testeintrag, Aufgabe - im Export nur hin, wenn sie dort
+  # steht; eine fehlende oeffentliche Datei bleibt ein Fehler. Dateien nur aus dem Rahmen `files` und nur Klasse
+  # private (NDA- und Arbeitsplatzmaterial wird nicht einmal beim Namen genannt); `folders` werden als Ganzes genannt
+  # (Board-Mitschnitte, Studio, interne Planung - vom Safety Case zitiert; jede Datei darin muss privat sein);
+  # `cleaned`: die bereinigt geschriebenen Dateien (Textstellen des Originals fehlen dort absichtlich); Tests und
+  # Aufgaben: was die Bereinigung von tests.yaml und todo.yaml entfernt (die Testnamen stehen dort ohnehin als Kommentar)
+  unpublished:
+    file: doc/unpublished.yaml
+    files: ["doc/safety/**", "doc/requirements/**"]
+    folders: [tools/boardtest/captures, tools/studio, tools/todo]
+    tests: tools/test/tests.yaml
+    tasks: doc/todo.yaml
+  clean:
+    - file: CHANGELOG.md
+      mode: replace
+      template: templates/CHANGELOG.public.md
+    - file: CLAUDE.md
+      mode: sections
+      note: |
+        <!-- Bereinigte Fassung: die Abschnitte zur internen Arbeitsweise (Agenten, Koordinator, eigenes Board,
+             Hardware-Freigaben) sind entfernt. -->
+      drop_bullets:                            # ganzer Aufzaehlungspunkt, wenn eine seiner Zeilen passt
+        - "ai/artifact"
+        - "Entscheidungsboard"
+        - "neXtBSW Studio"
+        - "Nur committen"
+        - "evalboard_s32k144|Eval Board S32K144"
+        - "Lizenz und Veröffentlichung"
+      drop_headings:
+        - "Sicherheitsregeln Hardware"
+        - "Parallele Arbeit mit Agenten"
+        - "Ablauf fuer den Koordinator"
+        - "Ablauf für den Koordinator"
+        - "Regeln fuer Agenten"
+        - "Regeln für Agenten"
+      drop_lines:
+        - "claude\\.ai/artifact"
+        - "github\\.com/danielsimonreinhardt"
+        - "[A-Za-z]:[\\\\/](WORK|DATA|TOOLS|NXP|Users)[\\\\/]"
+        - "COM9|CANcaseXL|J-Link|JP1|MTPNV"
+        - "Entscheidungsboard"
+        - "evalboard_s32k144|evalboard-s32k144"
+        - "auf diesem PC"
+    - file: doc/todo.yaml
+      mode: todo
+      profile: open
+      keep_fields: [id, area, prio, status, title, depends]   # done_when enthaelt interne Notizen
+      drop_status: [done]
+      drop_tasks_matching:
+        - "NDA"
+        - "vertraulich|confidential"
+        - "evalboard_s32k144"
+        - "doc/confidential"
+        - "tools/studio"
+        - "claude\\.ai/artifact"
+      note: |
+        # Oeffentliche Fassung der Aufgabenliste (erzeugt von tools/distcheck).
+        # Interne Felder (owner, touches, shared, needs, verify, done_when) und Aufgaben, die private Pfade
+        # beruehren oder nicht weitergebbare Unterlagen nennen, sind entfernt.
+    - file: tools/test/tests.yaml
+      mode: tests_yaml
+      drop_matching:                           # Target-Eintraege mit Presets privater Projekte
+        - "evalboard-s32k144"
+      # DOC-73 (K1): Eintraege, die nicht exportierte Dateien lesen, ohne sie in args/covers zu nennen
+      reads:
+        safety-plan: [doc/safety/iso26262-gap.md, doc/safety/reviews/records]   # Lueckenzeilen 2.1-2.4, Urteile CM-nn
+        safety-dfa: [doc/requirements/safety/mechanisms.sdoc]   # liest den Katalog ohne requires-Probe (PLAT-62)
+        # PLAT-119: erwartet im ELF die Embedded-Coder-Runnables der DemoSwc und ihre -Werror-Ausnahme
+        target-c-swc: [swc/DemoSwc/generated/src/DemoSwc.c]
+        # TOOL-244: laedt Bootloader und Derivat der privaten Familie stm32 (Klasse Stm32ImagesTest)
+        elfcheck-stm32: [mcudb/stm32/STM32F446RE.yaml]
+        # TOOL-243c: bauen das Projekt des privaten Boards s32k116evb (Preset s32k116evb-minimal, bis PLAT-13);
+        # s32k116-images nennt das Projekt in args und geht von selbst
+        target-buildtest-s32k116: [projects/s32k116evb_minimal/project.yaml]
+        elfcheck-s32k116: [projects/s32k116evb_minimal/project.yaml]
+      narrow:
+        # TaskFloorTest.test_demo_profile_and_report liest den Stack-Bericht des privaten Demo-Projekts; die uebrigen
+        # acht Faelle der Klasse laufen weiter (unittest -k mit fnmatch-Muster)
+        - test: stackuse
+          reads: tools/stackuse/reports/evalboard_s32k144_demo.md
+          replace: "-k, TaskFloorTest]"
+          with: "-k, \"*TaskFloorTest.test_[!d]*\"]"
+        # PLAT-119 (F9 A): ohne das Simulink-Generat (DemoSwc als C-Ersatz, TypeSwc fehlt) laufen die Faelle nicht, die
+        # den erzeugten Code uebersetzen oder das ARXML/die Embedded-Coder-Namen erwarten; der Rest der Eintraege bleibt.
+        # pytest statt unittest, weil nur pytest -k Faelle abwaehlen kann (gefunden im Probe-Export 2026-10-06)
+        - test: rtegen
+          reads: swc/DemoSwc/generated/src/DemoSwc.c
+          replace: "kind: unittest"
+          with: "kind: pytest"
+        - test: rtegen
+          reads: swc/DemoSwc/generated/src/DemoSwc.c
+          replace: "args: [tools/rtegen/test_rtegen.py]"
+          with: 'args: [tools/rtegen/test_rtegen.py, -q, -k, "not (RteTypes or RteCaptureHostTest or RtePwmHostTest or RteCanHostTest or RteCommControlHostTest or RteQualifierHostTest or RteEventHostTest or RteEcuStateHostTest or test_demo_component_is_parsed or test_demo_project_keeps_ecu_description_and_dbc or test_generation_output or test_pair_driven_by_two_ports or test_access_points_are_parsed or test_sizes_of_the_copies or test_demo_component_reads_its_data_file or test_qualifier_ports or test_validate_matches_generate)"]'
+        - test: rtegen
+          reads: tools/rtegen/test/types/rte_types_host_test.cpp
+          replace: "- tools/rtegen/test/types/rte_types_host_test.cpp"
+          with: "# (privat, PLAT-119)"
+        - test: rtegen-c-swc
+          reads: swc/DemoSwc/generated/src/DemoSwc.c
+          replace: "kind: unittest"
+          with: "kind: pytest"
+        - test: rtegen-c-swc
+          reads: swc/DemoSwc/generated/src/DemoSwc.c
+          replace: "args: [tools/rtegen/test_rtegen_c_swc.py]"
+          with: 'args: [tools/rtegen/test_rtegen_c_swc.py, -q, -k, "not (DescriptionFindingsTest or CSwcHostTest or test_rte_components_cmake or test_simulink_component_with_swc_yaml_stays_on_the_arxml or test_simulink_component_dimensions_against_the_arxml)"]'
+        - test: rtegen-device-values
+          reads: swc/DemoSwc/generated/src/DemoSwc.c
+          replace: "kind: unittest"
+          with: "kind: pytest"
+        - test: rtegen-device-values
+          reads: swc/DemoSwc/generated/src/DemoSwc.c
+          replace: "args: [tools/rtegen/test_rtegen_device_values.py]"
+          with: 'args: [tools/rtegen/test_rtegen_device_values.py, -q, -k, "not DeviceValueHostTest"]'
+        - test: rtegen-disabled
+          reads: swc/DemoSwc/generated/src/DemoSwc.c
+          replace: "kind: unittest"
+          with: "kind: pytest"
+        - test: rtegen-disabled
+          reads: swc/DemoSwc/generated/src/DemoSwc.c
+          replace: "args: [tools/rtegen/test_rtegen_disabled.py]"
+          with: 'args: [tools/rtegen/test_rtegen_disabled.py, -q, -k, "not (test_bsw_targets_of_the_demo or test_simulink_init_values or test_nvm_writer_cannot_be_disabled)"]'
+        - test: swc-yaml
+          reads: swc/DemoSwc/generated/src/DemoSwc.c
+          replace: "kind: unittest"
+          with: "kind: pytest"
+        - test: swc-yaml
+          reads: swc/DemoSwc/generated/src/DemoSwc.c
+          replace: "args: [tools/swc/test_swc_yaml.py]"
+          with: 'args: [tools/swc/test_swc_yaml.py, -q, -k, "not (test_demoswc_fixture_matches_the_checked_in_arxml or test_fixture_describes_the_rte04_model)"]'
+        - test: elfcheck-timing
+          reads: swc/DemoSwc/generated/src/DemoSwc.c
+          replace: "kind: unittest"
+          with: "kind: pytest"
+        - test: elfcheck-timing
+          reads: swc/DemoSwc/generated/src/DemoSwc.c
+          replace: "args: [tools/elfcheck/test/test_timing.py, -k, TimingUnitTest]"
+          with: 'args: [tools/elfcheck/test/test_timing.py, -q, -k, "TimingUnitTest and not test_c_swc_profile"]'
+        - test: a2lgen
+          reads: tools/rtegen/test/types/TypeSwc/generated/src/TypeSwc.c
+          replace: "kind: unittest"
+          with: "kind: pytest"
+        - test: a2lgen
+          reads: tools/rtegen/test/types/TypeSwc/generated/src/TypeSwc.c
+          replace: "args: [tools/a2lgen/test_a2lgen.py, tools/a2lgen/test_map_index_mode.py, tools/a2lgen/test_xcp_master.py]"
+          with: 'args: [tools/a2lgen/test_a2lgen.py, tools/a2lgen/test_map_index_mode.py, tools/a2lgen/test_xcp_master.py, -q, -k, "not SignalScalingA2lTest"]'
+        # TOOL-244 (Nutzer 2026-10-07): der oeffentliche Stand umfasst vorerst nur S32K1. Gemischte Testdateien laufen im
+        # Export ohne die Faelle der privaten Familien stm32/rm4x/s32k3xx (pytest -k "not ...", die Dateien bleiben
+        # offen); Faelle, die nur eine Schleife ueber die Familien sind, pruefen im Export nur die vorhandenen.
+        - test: nxconfig
+          reads: mcudb/rm4x/RM46L852.yaml
+          replace: "kind: unittest"
+          with: "kind: pytest"
+        - test: nxconfig
+          reads: mcudb/rm4x/RM46L852.yaml
+          replace: "args: [tools/nxconfig/test_nxconfig.py]"
+          with: 'args: [tools/nxconfig/test_nxconfig.py, -q, -k, "not Rm4xClockTest"]'
+        - test: nxconfig-pinevent
+          reads: mcudb/rm4x/RM46L852.yaml
+          replace: "kind: unittest"
+          with: "kind: pytest"
+        - test: nxconfig-pinevent
+          reads: mcudb/rm4x/RM46L852.yaml
+          replace: "args: [tools/nxconfig/test_pinevent.py]"
+          with: 'args: [tools/nxconfig/test_pinevent.py, -q, -k, "not (test_stm32_line_per_pin_number or test_s32k3_eirq_only_at_the_pins_of_the_table or test_rm46_gio_pins_on_either_request or Rm46)"]'
+        - test: nxconfig-newboard-special
+          reads: mcudb/stm32/STM32F446RE.yaml
+          replace: "kind: unittest"
+          with: "kind: pytest"
+        - test: nxconfig-newboard-special
+          reads: mcudb/stm32/STM32F446RE.yaml
+          replace: "args: [tools/nxconfig/test_newboard_special.py]"
+          with: 'args: [tools/nxconfig/test_newboard_special.py, -q, -k, "not test_stm32_crystal_pins_are_special"]'
+        - test: bswgen-interrupts
+          reads: mcudb/stm32/STM32F446RE.yaml
+          replace: "kind: unittest"
+          with: "kind: pytest"
+        - test: bswgen-interrupts
+          reads: mcudb/stm32/STM32F446RE.yaml
+          replace: "args: [tools/bswgen/test_bswgen_interrupts.py]"
+          with: 'args: [tools/bswgen/test_bswgen_interrupts.py, -q, -k, "not test_stm32_generator_writes_the_same_macros"]'
+        - test: blgen
+          reads: mcudb/stm32/STM32F446RE.yaml
+          replace: "kind: unittest"
+          with: "kind: pytest"
+        - test: blgen
+          reads: mcudb/stm32/STM32F446RE.yaml
+          replace: "args: [tools/bswgen/test_blgen.py]"
+          with: 'args: [tools/bswgen/test_blgen.py, -q, -k, "not test_other_family_and_derivative_take_their_own_uid"]'
+        - test: bswgen
+          reads: mcudb/rm4x/RM46L852.yaml
+          replace: "kind: unittest"
+          with: "kind: pytest"
+        - test: bswgen
+          reads: mcudb/rm4x/RM46L852.yaml
+          replace: "args: [tools/bswgen/test_bswgen.py]"
+          with: 'args: [tools/bswgen/test_bswgen.py, -q, -k, "not (test_header_from_a_register_description or test_svd_generation_is_not_part_of_the_build)"]'
+        - test: platform-selection
+          reads: platforms/rm4x/3rdparty/freertos_crx/CMakeLists.txt
+          replace: "kind: unittest"
+          with: "kind: pytest"
+        - test: platform-selection
+          reads: platforms/rm4x/3rdparty/freertos_crx/CMakeLists.txt
+          replace: "args: [platforms/common/test/test_platform_selection.py]"
+          with: 'args: [platforms/common/test/test_platform_selection.py, -q, -k, "not (test_armv7r_uses_the_crx_port or test_armv7r_without_double_precision_fpu_stops)"]'
+        - test: bl-startup-window-host
+          reads: bootloader/platforms/stm32/hal_stm32.c
+          replace: "kind: unittest"
+          with: "kind: pytest"
+        - test: bl-startup-window-host
+          reads: bootloader/platforms/stm32/hal_stm32.c
+          replace: "args: [bootloader/test/host/test_bl_startup_window_host.py]"
+          with: 'args: [bootloader/test/host/test_bl_startup_window_host.py, -q, -k, "not test_other_families_say_no"]'
+        - test: bl-security-host
+          reads: bootloader/platforms/stm32/hal_stm32.c
+          replace: "kind: unittest"
+          with: "kind: pytest"
+        - test: bl-security-host
+          reads: bootloader/platforms/stm32/hal_stm32.c
+          replace: "args: [tools/canflash/test_bl_security_host.py]"
+          with: 'args: [tools/canflash/test_bl_security_host.py, -q, -k, "not Stm32F446"]'
+        - test: bootloader-host
+          reads: bootloader/platforms/stm32/hal_stm32.c
+          replace: "kind: unittest"
+          with: "kind: pytest"
+        - test: bootloader-host
+          reads: bootloader/platforms/stm32/hal_stm32.c
+          replace: "args: [tools/canflash/test_bootloader_host.py]"
+          with: 'args: [tools/canflash/test_bootloader_host.py, -q, -k, "not Stm32F446"]'
+        # TOOL-245 (Export-Pruefstand, slow): die Sektor-Tabellen-Mutanten (PLAT-16) wirken nur auf einem Flash mit
+        # ungleich grossen Sektoren und werden mit BootloaderStm32F446Test (privates Layout stm32f446_unequal, Familie
+        # stm32) erkannt - im offenen Stand gibt es kein solches Layout; die uebrigen Mutationsfaelle laufen weiter
+        - test: bl-update-mutations
+          reads: bootloader/test/layouts/stm32f446_unequal.yaml
+          replace: "kind: unittest"
+          with: "kind: pytest"
+        - test: bl-update-mutations
+          reads: bootloader/test/layouts/stm32f446_unequal.yaml
+          replace: "args: [tools/canflash/test_bl_update_mutations.py]"
+          with: 'args: [tools/canflash/test_bl_update_mutations.py, -q, -k, "not test_sector_table_mutations_are_detected"]'
+        # TOOL-243c (Nutzer 2026-10-07, Option c): Board s32k116evb samt Projekt s32k116evb_minimal privat bis PLAT-13
+        # (Pegel unbelegt). Faelle, die genau dieses Projekt laden, laufen im Export nicht; der Rest der Eintraege
+        # bleibt, im Entwicklungs-Repo unveraendert alle Faelle. Das offene ARMv6-M-Profil ohne Bootloader
+        # (testproject_safe_outputs_k116) traegt die S32K116-Faelle, die keinen Bootloader brauchen.
+        - test: bl-flash-reserve
+          reads: projects/s32k116evb_minimal/project.yaml
+          replace: "kind: unittest"
+          with: "kind: pytest"
+        - test: bl-flash-reserve
+          reads: projects/s32k116evb_minimal/project.yaml
+          replace: "args: [bootloader/test/test_bl_flash_reserve.py]"
+          with: 'args: [bootloader/test/test_bl_flash_reserve.py, -q, -k, "not test_armv6m_fills_the_gap"]'
+        # Ab hier mit --deselect statt -k: pytest nimmt nur das letzte -k, und mehrere Eintraege haben schon eine
+        # narrow-Regel von TOOL-244/PLAT-119 (die steht davor und wird zuerst angewandt; der Anfang der args bleibt
+        # gleich, darum passt diese Regel vor und nach ihr)
+        - test: application-linker
+          reads: projects/s32k116evb_minimal/project.yaml
+          replace: "kind: unittest"
+          with: "kind: pytest"
+        - test: application-linker
+          reads: projects/s32k116evb_minimal/project.yaml
+          replace: "args: [platforms/s32k1xx/port/main/linkerscript/test/test_application_linker.py"
+          with: 'args: [platforms/s32k1xx/port/main/linkerscript/test/test_application_linker.py, -q, --deselect, "platforms/s32k1xx/port/main/linkerscript/test/test_application_linker.py::LinkerTemplateTest::test_s32k116_layout_generated_from_the_project"'
+        - test: bswgen-interrupts
+          reads: projects/s32k116evb_minimal/project.yaml
+          replace: "kind: unittest"
+          with: "kind: pytest"
+        - test: bswgen-interrupts
+          reads: projects/s32k116evb_minimal/project.yaml
+          replace: "args: [tools/bswgen/test_bswgen_interrupts.py"
+          with: 'args: [tools/bswgen/test_bswgen_interrupts.py, --deselect, "tools/bswgen/test_bswgen_interrupts.py::CoreMacroTest::test_cortex_m0plus_project"'
+        - test: bswgen
+          reads: projects/s32k116evb_minimal/project.yaml
+          replace: "kind: unittest"
+          with: "kind: pytest"
+        - test: bswgen
+          reads: projects/s32k116evb_minimal/project.yaml
+          replace: "args: [tools/bswgen/test_bswgen.py"
+          with: 'args: [tools/bswgen/test_bswgen.py, --deselect, "tools/bswgen/test_bswgen.py::DerivativeInterruptsTest::test_s32k116_profile", --deselect, "tools/bswgen/test_bswgen.py::DerivativeInterruptsTest::test_s32k116_profile_needs_no_workstation_file", --deselect, "tools/bswgen/test_bswgen.py::BswGenSafeOutputsHostTest::test_empty_table_without_power_outputs"'
+        - test: nxconfig
+          reads: projects/s32k116evb_minimal/project.yaml
+          replace: "kind: unittest"
+          with: "kind: pytest"
+        - test: nxconfig
+          reads: projects/s32k116evb_minimal/project.yaml
+          replace: "args: [tools/nxconfig/test_nxconfig.py"
+          with: 'args: [tools/nxconfig/test_nxconfig.py, --deselect, "tools/nxconfig/test_nxconfig.py::MemoryTest::test_build_settings_features_and_pll", --deselect, "tools/nxconfig/test_nxconfig.py::MemoryTest::test_s32k116evb_profile_checks", --deselect, "tools/nxconfig/test_nxconfig.py::RteRequiredTest::test_a_built_project_without_rte_is_refused_with_file_and_path", --deselect, "tools/nxconfig/test_nxconfig.py::RteRequiredTest::test_the_hint_of_the_message_is_enough", --deselect, "tools/nxconfig/test_nxconfig.py::RteRequiredTest::test_a_configuration_only_profile_is_not_refused_by_nxconfig_but_by_rtegen"'
+        - test: elfcheck-timing
+          reads: projects/s32k116evb_minimal/project.yaml
+          replace: "kind: unittest"
+          with: "kind: pytest"
+        - test: elfcheck-timing
+          reads: projects/s32k116evb_minimal/project.yaml
+          replace: "args: [tools/elfcheck/test/test_timing.py"
+          with: 'args: [tools/elfcheck/test/test_timing.py, --deselect, "tools/elfcheck/test/test_timing.py::TimingUnitTest::test_interrupt_rank_beyond_the_levels_is_refused"'
+    # PLAT-114: Annotationen ohne exportierte Datei (NDA-Modul, Studio, Hersteller-PDFs) fallen weg, damit der offene
+    # Baum nur Lizenzen nennt, deren Text er unter LICENSES/ mitbringt
+    - file: REUSE.toml
+      mode: reuse_toml
+      profile: open
+    - file: CMakePresets.json
+      mode: json_drop
+      arrays: [configurePresets, buildPresets, testPresets]
+      drop_matching:
+        - "projects/evalboard_s32k144"
+        - "\"name\": \"evalboard-s32k144"
+        # TOOL-243: Projekt des privaten Boards nucleo_f446re (F8)
+        - "projects/nucleo_f446re_demo"
+        - "\"nucleo-f446re-demo\""
+        # TOOL-243c: Projekt des privaten Boards s32k116evb (Pegel unbelegt, bis PLAT-13); dazu das Worktree-Preset
+        - "projects/s32k116evb_minimal"
+        - "\"s32k116evb-minimal"

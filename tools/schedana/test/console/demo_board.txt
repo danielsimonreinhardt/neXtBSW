@@ -1,0 +1,31 @@
+rte runnables
+task swc (context 3): every 10 ms, cycles 1256, overruns 0, max 80 us
+  DemoSwc.Run10ms: every 10 ms, offset 0 ms, calls 1256, last 3 us, max 7 us
+  DemoSwc.Run100ms: every 100 ms, offset 0 ms, calls 126, last 4 us, max 9 us
+init DemoSwc.DemoSwc_Init: calls 1, last 12 us
+stats cpu
+task                    %        total   runs      avg      min      max
+------------------------------------------------------------------------
+idle            97.32 %       973 ms     84    11583 us     12 us  15012 us
+background       0.05 %         0 ms     10       50 us     44 us     61 us
+bsp              1.07 %        10 ms    125      101 us     42 us    134 us
+swc              0.33 %         3 ms    100       33 us     28 us     80 us
+can              0.40 %         4 ms    109       36 us     11 us     92 us
+sysadmin         0.02 %         0 ms      2       10 us      8 us     12 us
+safety           0.36 %         3 ms    100       36 us     30 us     48 us
+
+isr group               %        total   runs      avg      min      max
+------------------------------------------------------------------------
+test             0.00 %         0 ms      0        0 us      0 us      0 us
+can              0.45 %         4 ms    213       21 us      9 us     34 us
+
+measurement time:  1000123 us
+stats stack
+stack:task=idle,size=2048,used=992
+stack:task=background,size=1024,used=420
+stack:task=bsp,size=2048,used=588
+stack:task=swc,size=2048,used=676
+stack:task=can,size=2048,used=712
+stack:task=sysadmin,size=1024,used=380
+stack:task=safety,size=1024,used=344
+stack:task=timer,size=1024,used=256

@@ -1,0 +1,31 @@
+# SPDX-License-Identifier: Apache-2.0
+# ECU description of the RTE-11 test: board targets written as the board profile spells them (leading digit, lower
+# case) and an internal converter input. Component paths are relative to this file (RTE-22).
+
+schema_version: 2
+
+tasks:
+  - name: app10
+    period_ms: 10
+    priority: 25
+    stack_bytes: 1024
+    runnables: [DemoSwc.Run10ms, DemoSwc.Run100ms, SensorSwc.Run10ms]
+
+components:
+  - name: DemoSwc
+    path: ../../../../swc/DemoSwc
+  - name: SensorSwc
+    path: ../sensor_host/SensorSwc
+
+connections:
+  DemoSwc.Button1.Button1: dio.in.button_a
+  DemoSwc.MotorNtc_mV.MotorNtc_mV: adc.mv.1V_BANDGAP
+  DemoSwc.Led1.Led1: dio.out.3V3_EN
+  DemoSwc.Led2.Led2: dio.out.led_status
+  DemoSwc.MotorNtcFiltered_mV.MotorNtcFiltered_mV: rte
+  DemoSwc.PcCommandQlf.PcCommandQlf: rte.init
+  SensorSwc.TsCurrent.TsCurrent: adc.phys.12VBAT_CURRENT
+  SensorSwc.TsCurrentQlf.TsCurrentQlf: adc.qlf.12VBAT_CURRENT
+  SensorSwc.Proxy.Proxy: adc.phys.vbat_sense
+  SensorSwc.ProxyQlf.ProxyQlf: adc.qlf.vbat_sense
+  SensorSwc.SwitchQlf.SwitchQlf: rte.init

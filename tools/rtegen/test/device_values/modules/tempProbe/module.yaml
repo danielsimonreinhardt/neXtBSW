@@ -1,0 +1,30 @@
+# Synthetic module manifest of the RTE-18 test profile (tools/rtegen/test_rtegen_device_values.py): a temperature
+# probe that exists only here - no part, no driver code, no board. It proves that a new driver becomes a connection
+# target of the RTE (and of the Studio's connection editor) through its manifest alone, without a change of
+# tools/rtegen: the section rte names its values and the generic reader contract (access reading).
+module: tempProbe
+kind: device_driver
+description: Synthetic temperature probe of the RTE-18 test profile (no hardware, no driver code)
+verification: mock
+verification_note: Test profile only; the reader is a stub of the host test.
+parts:
+  - TPROBE-*
+parameters:
+  cycle_ms: { type: int, min: 1, max: 1000, default: 10, unit: ms, description: "measurement period" }
+rte:
+  prefix: tprobe
+  include: tempProbe/TempProbeRte.h
+  reading: ::tempprobe::Reading
+  read: readTempProbe
+  instance: Probe
+  noun: temperature probe
+  values:
+    temp_c10:       { types: [sint16, sint32], field: temperature, unit: 0.1 degC }
+    resistance_ohm: { types: [uint32], field: resistance, unit: ohm, description: "sensor resistance" }
+    alarm:          { types: [boolean], unit: 1 = above the alarm threshold }
+    qlf:
+      types: [uint8, uint16, uint32]
+      field: quality
+      unit: QLF_* of Rte_Qlf.h
+      qualifier: true
+      without: a measured temperature from a held one (probe not answering)

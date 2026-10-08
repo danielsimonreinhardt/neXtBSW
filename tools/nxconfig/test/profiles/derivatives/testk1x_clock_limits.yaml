@@ -1,0 +1,22 @@
+# ARCH-22: clock limits laid over the test derivative TESTK1X (tools/nxconfig/test/mcudb/s32k1xx/TESTK1X.yaml) for
+# the profile testboard_s32k1_gates/testproject_s32k1_gates (8 MHz crystal, SPLL 128 MHz, 64 MHz core from the SPLL).
+# Synthetic values, deliberately different from the S32K14x ones, so that every divider differs from 1 and from the
+# eval board (SPLLDIV1 / 2, SPLLDIV2 / 4, BUS_CLK / 2 there). Test data only, no real chip.
+#
+#   output          source   limit     smallest divider   result
+#   SPLLDIV1        128 MHz  50 MHz    4 (2 gives 64)      32 MHz  (FTM1 default SPLL)
+#   SPLLDIV2        128 MHz  20 MHz    8 (4 gives 32)      16 MHz
+#   FIRCDIV1        48 MHz   48 MHz    1                   48 MHz
+#   FIRCDIV2        48 MHz   12 MHz    4 (limit exactly)   12 MHz  (ADC0, LPSPI0, LPUART1 console)
+#   SIRCDIV1        8 MHz    8 MHz     1                   8 MHz
+#   SIRCDIV2        8 MHz    3 MHz     4 (2 gives 4)       2 MHz   (LPIT)
+#   SOSCDIV1        8 MHz    5 MHz     2                   4 MHz   (FTM0 default SOSC)
+#   SOSCDIV2        8 MHz    8 MHz     1                   8 MHz   (FlexCAN0 bit timing unchanged)
+#   BUS_CLK (SPLL)  64 MHz   20 MHz    4 (DIVBUS)          16 MHz  (LPI2C1 on the bus clock), without SPLL 48 MHz
+clock:
+  system_source_max_hz:
+    SPLL: { max_hz: { bus: 20000000 }, source: synthetic }
+  output_max_hz:
+    max_hz: { SPLLDIV1: 50000000, SPLLDIV2: 20000000, FIRCDIV1: 48000000, FIRCDIV2: 12000000,
+              SIRCDIV1: 8000000, SIRCDIV2: 3000000, SOSCDIV1: 5000000, SOSCDIV2: 8000000 }
+    source: synthetic

@@ -1,0 +1,33 @@
+# ECU-Beschreibung fuer die RTE (tools/rtegen) des Projekts buildtest_s32k148_min (ARCH-09).
+# Format und Verbindungsziele: doc/reference/rte.md und swc/README.md.
+#
+# Bewusst ohne CAN-Abschnitt: dieses Bau-Profil hat keine DBC. Damit wird zugleich geprueft, dass rtegen und die
+# Anwendung ohne CAN-Signale bauen, obwohl der Bus fuer Konsole, UDS und Bootloader genutzt wird.
+# Zwei Anwendungs-Tasks mit frei gewaehlten Prioritaetsschluesseln (Prueffrage 5): DemoSwc laeuft in app10, ein
+# zweiter Task app100 ohne Runnables wuerde rtegen ablehnen, daher verteilt app10/app100 die beiden Runnables.
+
+schema_version: 2
+
+tasks:
+  - name: app10
+    period_ms: 10
+    priority: 25            # zwischen bsp (20) und can (40)
+    stack_bytes: 2048
+    runnables: [DemoSwc.Run10ms]
+  - name: app100
+    period_ms: 100
+    priority: 35            # zweiter Anwendungs-Task, anderer Schluessel
+    stack_bytes: 1024
+    runnables: [DemoSwc.Run100ms]
+
+components:
+  - name: DemoSwc
+    path: ../../swc/DemoSwc
+
+connections:
+  DemoSwc.Button1.Button1: dio.in.BUTTON1
+  DemoSwc.MotorNtc_mV.MotorNtc_mV: adc.mv.POTI
+  DemoSwc.Led1.Led1: dio.out.LED1
+  DemoSwc.Led2.Led2: dio.out.LED2
+  DemoSwc.MotorNtcFiltered_mV.MotorNtcFiltered_mV: rte
+  DemoSwc.PcCommandQlf.PcCommandQlf: rte.init   # ohne CAN keine Quelle: Initwert 0 (QLF_DEBOUNCE), Led2 bleibt aus

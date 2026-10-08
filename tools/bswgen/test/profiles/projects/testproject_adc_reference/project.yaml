@@ -1,0 +1,21 @@
+# Synthetic project for the reference check of safeSystem (ARCH-32) on testboard_adc_sampling: that board has
+# VREFH = 5000 mV (board.adc_reference_mv), not the 4096 mV of the eval board, and the project chooses a tolerance of
+# 350 mV and an error limit of 6 instead of the defaults (200 mV, 10). tools/bswgen/test_bswgen.py
+# (BswGenAdcReferenceTest) checks the generated headers and compiles the SafeSystem host test against them.
+# Test data only, no hardware.
+schema_version: 1
+
+project:
+  name: testproject_adc_reference
+  board: ../../boards/testboard_adc_sampling
+
+clock:
+  system_hz: 64000000
+
+adc_internal:
+  - { name: BANDGAP, instance: ADC0, channel: BANDGAP }
+
+modules:
+  safeSystem:
+    adc_read_error_limit: 6
+    adc_reference_tolerance_mv: 350

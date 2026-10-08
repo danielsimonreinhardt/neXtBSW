@@ -1,0 +1,56 @@
+# Ablauf der CI dieses Workspace (Vorlage aus tools/ci, TOOL-67).
+#
+#   python -m tools.ci template pipeline --out <workspace>     schreibt diese Datei nach ci/pipeline.toml
+#
+# Format wie <baum>/tools/ci/pipeline.toml. Welche Tests und Target-Builds es gibt, steht allein in
+# ci/tests.yaml; diese Datei legt nur fest, was die CI darueber hinaus entscheidet. Jede Ausnahme nennt ihren
+# Grund - er erscheint im Bericht.
+
+schema = 1
+
+[run]
+groups = ["all"]
+# Target-Builds von Null: nur so sagt "warnungsfrei" etwas ueber den ganzen Workspace
+clean = true
+
+# Tests, die uebersprungen werden duerfen. Jeder andere uebersprungene Test ist mit --strict rot: sonst koennte
+# ein fehlendes Werkzeug (ziglang, cmake, ARM-GCC) die CI unbemerkt aushoehlen.
+[allowed_skips]
+
+# Sichtbare CMake-Presets dieses Workspace, die kein target-Eintrag in ci/tests.yaml baut. Jedes andere sichtbare
+# Profil ohne Eintrag macht den Lauf rot ("Profil ohne CI-Entscheidung").
+[presets]
+worktree_bases = []
+
+# [presets.not_built.mein-versuchspreset]
+# reason = "Versuchsstand, baut absichtlich nicht in der CI"
+
+# Schritte ausserhalb der CI - werden in jedem Bericht als "uebersprungen" genannt, nie still weggelassen.
+[[outside]]
+name = "Hardware"
+reason = "kein Flashen, kein J-Link, kein CAN-Adapter; Board-Tests laufen nur am Arbeitsplatz"
+
+# Testabdeckung des eigenen Codes (TOOL-217, Luecke N19): die zig-Eintraege von ci/tests.yaml, gemessen mit
+# <baum>/tools/test/coverage.py --workspace; Schwellen je Modul in ci/coverage.yaml
+# (python -m tools.ci template coverage --out .). Gezaehlt werden nur Dateien dieses Workspace, nie der Baum.
+# `enforce = false`: ein Modul unter seiner Schwelle ist eine Warnung; `strict`: ein fehlgeschlagener Messlauf ist rot.
+# Eingeschaltet ohne ci/coverage.yaml ist der Lauf rot; `enabled = false` nennt die Stufe als nicht gelaufen.
+[coverage]
+enabled = true
+enforce = false
+strict = false
+
+# Statische Analyse des eigenen Codes (TOOL-217, Luecke N19): cppcheck mit MISRA-Addon und clang-tidy ueber die
+# Compile-Datenbank des eigenen Target-Builds (relativ zur Bau-Wurzel; der Name ist der binary_dir des Eintrags
+# target-main in ci/tests.yaml). Abweichungen in ci/misra/deviations.yaml (python -m tools.ci template
+# misra-deviations --out .), Baseline in ci/misra/baseline.yaml (python -m tools.misra baseline --workspace .),
+# Regelwerk des Baums oder ci/misra/rules.yaml. `enforce = true`: jeder neue Befund ist rot.
+[static_analysis]
+enabled = true
+enforce = true
+strict_tools = true
+compile_db = "main/compile_commands.json"
+
+[artifacts]
+# Aus den Bau-Verzeichnissen der cmake_preset-Eintraege gesammelt (relativ zum binary_dir)
+patterns = ["**/RelWithDebInfo/**/*.elf", "**/RelWithDebInfo/**/*.hex", "**/RelWithDebInfo/**/*.map"]

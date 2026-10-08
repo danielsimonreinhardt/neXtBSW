@@ -1,0 +1,52 @@
+VERSION "rtegen event send test (COM-38)"
+
+
+NS_ :
+	CM_
+	BA_DEF_
+	BA_
+	BA_DEF_DEF_
+
+BS_:
+
+BU_: EVB PC
+
+
+BO_ 768 TxEvtP01: 8 EVB
+ SG_ Value : 0|8@1+ (1,0) [0|255] "" PC
+ SG_ Crc : 8|8@1+ (1,0) [0|255] "" PC
+ SG_ Counter : 16|4@1+ (1,0) [0|15] "" PC
+
+BO_ 769 TxMixP02: 8 EVB
+ SG_ Crc : 0|8@1+ (1,0) [0|255] "" PC
+ SG_ Counter : 8|4@1+ (1,0) [0|15] "" PC
+ SG_ Flag : 16|1@1+ (1,0) [0|1] "" PC
+
+BO_ 770 TxEvtPlain: 2 EVB
+ SG_ Flag : 0|1@1+ (1,0) [0|1] "" PC
+
+BO_ 771 TxCyc: 2 EVB
+ SG_ Flag : 0|1@1+ (1,0) [0|1] "" PC
+ SG_ Level : 8|8@1+ (1,0) [0|255] "" PC
+
+
+CM_ "Test matrix for event triggered sending of tools/rtegen (COM-38): an event message with E2E profile 1 and a
+minimum gap, a mixed message (cyclic and on change) with E2E profile 2, an event message without E2E and without a
+gap, and a cyclic message without GenMsgSendType value. Not a board matrix, only used by the host test.";
+BA_DEF_ BO_  "GenMsgCycleTime" INT 0 65535;
+BA_DEF_ BO_  "GenMsgSendType" ENUM  "Cyclic","Spontaneous","CyclicAndSpontaneous","IfActive";
+BA_DEF_ BO_  "GenMsgDelayTime" INT 0 65535;
+BA_DEF_ SG_  "GenSigStartValue" FLOAT -2147483648 4294967295;
+BA_DEF_DEF_  "GenMsgCycleTime" 0;
+BA_DEF_DEF_  "GenMsgSendType" "Cyclic";
+BA_DEF_DEF_  "GenMsgDelayTime" 0;
+BA_DEF_DEF_  "GenSigStartValue" 0;
+BA_ "GenMsgSendType" BO_ 768 1;
+BA_ "GenMsgDelayTime" BO_ 768 30;
+BA_ "GenMsgSendType" BO_ 769 2;
+BA_ "GenMsgCycleTime" BO_ 769 50;
+BA_ "GenMsgDelayTime" BO_ 769 20;
+BA_ "GenMsgSendType" BO_ 770 1;
+BA_ "GenMsgCycleTime" BO_ 771 20;
+BA_ "GenSigStartValue" SG_ 768 Value 5;
+BA_ "GenSigStartValue" SG_ 771 Level 7;

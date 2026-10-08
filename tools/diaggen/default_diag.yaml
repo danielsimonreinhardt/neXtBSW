@@ -1,0 +1,60 @@
+# Default diagnostic description of tools/diaggen (COM-28): what the application answers when a project names
+# no diag.yaml (project.diag). These are the identifiers the application answered by hand before COM-28
+# (ecu/uds AppDataIdentifiers), with the same bytes: a project without its own description behaves as before -
+# except that since COM-33 the version texts of F180/F181 fill their 32 bytes (NUL behind the text), so that a
+# tester can split a response with several identifiers by this description.
+#
+# Protocol values only, nothing of a board or a derivative. Schema: tools/nxconfig/model.py (DiagDescription).
+schema_version: 1
+
+sessions:
+  - name: Default
+    id: 0x01
+    p2_ms: 50
+    p2_star_ms: 5000
+  - name: Extended
+    id: 0x03
+    p2_ms: 50
+    p2_star_ms: 5000
+
+data_identifiers:
+  # ISO 14229-1 Annex C.1: numberOfModules (one module per identifier), then the identification text
+  - identifier: 0xF180
+    name: BootSoftwareIdentification
+    label: Boot software identification
+    data:
+      - name: numberOfModules
+        type: uint8
+        source: {constant: 1}
+      - name: bootSoftwareIdentification
+        type: ascii
+        length_bytes: 32
+        source: {bsw: bootloader.version}
+  - identifier: 0xF181
+    name: ApplicationSoftwareIdentification
+    label: Application software identification
+    data:
+      - name: numberOfModules
+        type: uint8
+        source: {constant: 1}
+      - name: applicationSoftwareIdentification
+        type: ascii
+        length_bytes: 32
+        source: {bsw: application.version}
+  - identifier: 0xF186
+    name: ActiveDiagnosticSession
+    label: Active diagnostic session
+    data:
+      - name: activeSession
+        type: uint8
+        source: {bsw: uds.session}
+  # harmless RAM value for write tests; writable in the extended session, no security level (as before COM-28)
+  - identifier: 0xFD00
+    name: RamTestValue
+    label: RAM test value
+    write: true
+    write_sessions: [Extended]
+    data:
+      - name: ramTestValue
+        type: uint32
+        source: {bsw: uds.ram_test}

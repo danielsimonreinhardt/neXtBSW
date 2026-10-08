@@ -1,0 +1,46 @@
+# Stacks of the task objects of ecu/application/src/app/app.cpp (PLAT-26): the BSW tasks of
+# ecu/asyncCoreConfiguration/tasks.yaml plus the OpenBSW idle and timer task. The application tasks take their stack
+# from the ECU description (rte.yaml tasks[].stack_bytes) and are not listed here.
+#
+# A project changes a value in project.yaml bsw_tasks.<task> (stack_bytes, run_in); without an entry the values of
+# this file apply, so a project that decides nothing builds the same image as before PLAT-26. tools/nxconfig
+# (bswtasks.py) checks the project values against this file with file, line and YAML path; tools/rtegen generates
+# tasks/BswTasks.h from both (NX_BSW_TASK_STACK_<TASK>, NX_BSW_TASK_OWN_<TASK>).
+#
+# stack_bytes:     default of the task; the value the image had before PLAT-26
+# min_stack_bytes: smallest value a project may set. A plausibility floor, no proof: a project that goes below
+#                  stack_bytes has to confirm the value (high-water mark of the console command "stats" at the
+#                  board, or tools/stackuse for the image) and note it in bsw_tasks.<task>.evidence - without that
+#                  note an error in an ASIL project, a warning in a QM project (PLAT-107, PLAT-26/S3). A task that
+#                  a tools/stackuse profile analyses (context with `bsw_task`) must have its worst case below the
+#                  floor, or the stackuse run fails (PLAT-107, PLAT-26/S1).
+# multiple_of:     granularity of the value (default 8: AAPCS stack alignment)
+# run_in:          other tasks this task may be merged into (project.yaml bsw_tasks.<task>.run_in): the task then
+#                  has no FreeRTOS task and no stack of its own, its context number is that of the target task.
+#                  Only tasks listed here can be merged; a task with above_application (safety) never can, and none
+#                  can be merged into it.
+# run_in_power_stage: the merges of run_in still allowed in a project with a power stage or gate driver (a used PWM
+#                  group, or a used device with the role gate_driver); left out: all of run_in (PLAT-107,
+#                  PLAT-26/S2)
+# note:            consequence of a merge, repeated in the warning of tools/nxconfig
+schema_version: 1
+
+# every BSW task of the manifest without an entry below (e.g. the tasks of a test profile)
+default: { stack_bytes: 2048, min_stack_bytes: 512 }
+
+tasks:
+  idle: { stack_bytes: 2048, min_stack_bytes: 512 }        # idle hook: console output, ROM check (SYS-44)
+  timer: { stack_bytes: 1024, min_stack_bytes: 512 }       # FreeRTOS timer service task
+  # PLAT-26/S2 (safety review 2026-10-01): with a power stage not into bsp (deadman, output monitoring) until a
+  # board measurement shows the delay of an NvM write there is harmless
+  background: { stack_bytes: 2048, min_stack_bytes: 512, run_in: [can, bsp], run_in_power_stage: [can],
+                note: "runtime statistics and the NvM of the RTE (writes, NVM-02) then run at the priority of that task; a write that waits for the memory delays that task and every module in it (deadlines of the modules of that task, e.g. UDS P2 in can or a deadman in bsp)" }
+  bsp: { stack_bytes: 2048, min_stack_bytes: 512 }
+  can: { stack_bytes: 2048, min_stack_bytes: 512 }
+  sysadmin: { stack_bytes: 2048, min_stack_bytes: 512, run_in: [can, bsp],
+              note: "the lifecycle manager (start-up and shutdown sequence) and its console output then run at the priority of that task; the output of a lifecycle console command no longer runs above task can" }
+  # SYS-65/SYS-97: the stack of the safety task is an MPU region of its own (MemoryProtection::init, SYSMPU
+  # granularity 32 bytes). Floor: worst case 1576 B of the static analysis (doc/safety/unit-design.md, issue 1 of
+  # SYS-65), rounded up; coupled to tools/stackuse (PLAT-107): the demo profile links its safety contexts to this
+  # task, and a worst case above the floor fails the run (report: 1208 B with the console command "safety").
+  safety: { stack_bytes: 2048, min_stack_bytes: 1600, multiple_of: 32 }

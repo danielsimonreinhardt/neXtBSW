@@ -1,0 +1,133 @@
+# Schwellen der Testabdeckung je Modul (TOOL-40, Stufe 2 der funktionalen Sicherheit, SYS-19).
+#
+# Gemessen wird mit tools/test/coverage.py: Anweisungen (`lines`) und Zweige (`branches`) in Prozent, gezaehlt
+# wie gcov sie zaehlt ("Taken at least once" fuer Zweige). Die Werte sind ein **Vorschlag** und werden noch
+# nicht erzwungen (tools/ci/pipeline.toml, [coverage] enforce = false); erst nach Abnahme durch den Nutzer wird
+# daraus ein Tor. Jede Schwelle nennt ihren Grund - eine Schwelle ohne `reason` ist ein Fehler dieser Liste.
+#
+# Grundlage sind die Messwerte vom 2026-09-21 (41 von 42 zig-Eintraegen, 165 s, gesamt 92,4 % Anweisungen /
+# 56,5 % Zweige). Fuer nicht genannte Module gilt `defaults`.
+#
+# Einteilung:
+#   sicherheitsrelevant (SYS-19)  Anweisungen 95, Zweige 70 - E2E-Schutz, CAN-Zustand, ECU-Zustandsautomat,
+#                                 Sicherheitsueberwachung. Ziel ist der Nachweis nach ISO 26262-6 Tabelle 9
+#                                 (Anweisungs- und Zweigabdeckung auf Unit-Ebene); MC/DC kaeme erst bei
+#                                 hoeherem ASIL dazu (Weg in doc/changelog.d/TOOL-40.md).
+#   Vorgabe                       Anweisungen 80, Zweige 50 - heute von den meisten Modulen erreicht.
+#   Uebergang                     unter der Vorgabe, mit Grund und Absicht, sie anzuheben.
+#
+# Geaenderte OpenBSW-Kopien (SYS-62, doc/safety/component-qualification.md Abschnitt 3): eine Kopie mit status
+# modified in tools/openbswsync/copies.yaml liegt im eigenen Baum (ecu/, platforms/) und wird hier wie eigener Code
+# gezaehlt - `exclude` nimmt nur das Submodul aus, nie eine Kopie. Die ASIL-B-Module, die solche Kopien enthalten,
+# stehen unten mit der Schwelle "sicherheitsrelevant"; Messwerte vom 2026-09-28 (Linux-Container, 72 von 78 zig-
+# Eintraegen gemessen, die sechs fehlenden betreffen keines dieser Module). Unveraenderte OpenBSW-Teile (safeMonitor,
+# FreeRTOS, ETL) liegen im Submodul und sind nicht mitgezaehlt; ihre Nachweise stehen im Qualifizierungsbericht
+# (Weg 8-12).
+
+version: 1
+
+defaults:
+  lines: 80
+  branches: 50
+
+# Noch berichten, nicht erzwingen; das schaltet tools/ci/pipeline.toml um.
+enforce: false
+
+# Nicht mitgezaehlt: das Submodul, der Testcode selbst (er ist per Definition zu 100 % ausgefuehrt) und
+# erzeugter Code (er gehoert dem Generator, seine Tests stehen bei den Generatoren).
+exclude:
+  - "external/**"
+  - "**/test/**"
+  - "**/generated/**"
+
+modules:
+  libs/bsw/e2e:
+    lines: 95
+    branches: 70
+    reason: >
+      Sicherheitsrelevant (SYS-19): E2E-Schutz der Signale, Profile P01/P02/P11. Gemessen 2026-09-21:
+      98,5 % Anweisungen, 58,3 % Zweige - die Anweisungen reichen, die Zweige fehlen noch (Fehlerbilder
+      der Zaehler- und CRC-Pfade).
+  libs/bsw/canSystem:
+    lines: 95
+    branches: 70
+    reason: >
+      Sicherheitsrelevant (SYS-19): Buszustand, Signal-Qualifier und Transceiver-Gate entscheiden, ob ein
+      Signal gueltig ist. Gemessen 2026-09-21: 100 % Anweisungen, 60,0 % Zweige.
+  libs/bsw/ecuState:
+    lines: 95
+    branches: 70
+    reason: >
+      Sicherheitsrelevant (SYS-19): Zustandsautomat der ECU (Nachlauf, Abschalten). Gemessen 2026-09-21 nur
+      70,8 % / 50,0 %, weil davon allein EcuStateRte.cpp aus den bsw-providers-Eintraegen gemessen wird - die
+      eigentlichen Host-Tests des Moduls baut ein Python-Skript (Eintrag `ecustate`, kind script) und liegen
+      damit ausserhalb dieser Messung. Erst wenn die mitgemessen werden, ist der Wert aussagekraeftig.
+  platforms/s32k1xx/port/safety/safeSystem:
+    lines: 95
+    branches: 70
+    reason: >
+      Sicherheitsrelevant (SYS-19): Sicherheitspfad der Plattform (safeSupervisor-Anbindung, Reaktionen).
+      Gemessen 2026-09-21: 100 % Anweisungen, 62,5 % Zweige.
+  ecu/application:
+    lines: 70
+    branches: 40
+    reason: >
+      Uebergang: von der Anwendung messen die zig-Eintraege nur RteSystem (SYS-05) und den Logger (SYS-12),
+      der Rest der Anwendung hat keine Host-Tests. Gemessen 2026-09-21: 73,6 % / 44,4 %. Anheben, sobald die
+      Anwendung eigene Host-Tests bekommt.
+  platforms/s32k1xx/port/bspConfiguration/bspFlexCan:
+    lines: 75
+    branches: 45
+    reason: >
+      Uebergang: der FlexCAN-Treiber wird gegen ein Registermodell geprueft, die Interrupt- und Fehlerpfade
+      der Hardware bleiben offen. Gemessen 2026-09-21: 79,7 % / 46,6 %.
+  libs/bsw/canPhyPassive:
+    lines: 80
+    branches: 40
+    reason: >
+      Uebergang: winziges Modul (5 Anweisungen, 10 Zweige), das nur als Nebenwirkung der canSystem-Tests
+      gemessen wird; bei so kleinen Zahlen ist jeder Prozentwert grob. Gemessen 2026-09-21: 80,0 % / 40,0 %.
+  ecu/safety/safeSupervisor:
+    lines: 95
+    branches: 70
+    reason: >
+      Sicherheitsrelevant (M-SUP, B-SM): SafeSupervisor.cpp/.h sind geaenderte OpenBSW-Kopien und zaehlen als
+      Eigenentwicklung (SYS-62). Gemessen 2026-09-28: 99,6 % Anweisungen, 61,7 % Zweige (SafeSupervisor.cpp
+      344/346, 371/614) - die Zweige fehlen.
+  ecu/safety/safeWatchdog:
+    lines: 95
+    branches: 70
+    reason: >
+      Sicherheitsrelevant (M-WDG, B-SM): SafeWatchdog.cpp/.h geaenderte Kopien (SYS-62). Gemessen 2026-09-28:
+      100 % Anweisungen, 61,5 % Zweige.
+  platforms/s32k1xx/port/safety/safeLifecycle:
+    lines: 95
+    branches: 70
+    reason: >
+      Sicherheitsrelevant (M-LCY, B-SM): SafetyManager.cpp und IsrWrapper.cpp geaenderte Kopien (SYS-62).
+      Gemessen 2026-09-28: 95,7 % / 53,3 % - IsrWrapper.cpp hat keinen Host-Test und fehlt in der Messung.
+  platforms/s32k1xx/port/safety/safeMemory:
+    lines: 95
+    branches: 70
+    reason: >
+      Sicherheitsrelevant (M-MEM, B-SM): MPU, ROM-Pruefung, ECC; sechs geaenderte Kopien (SYS-62). Gemessen
+      2026-09-28: 91,2 % / 56,0 % - SafeMemory.cpp 16/29 und MemoryProtection.cpp 92/111 Anweisungen.
+  platforms/s32k1xx/port/safety/safeIo:
+    lines: 95
+    branches: 70
+    reason: >
+      Sicherheitsrelevant (M-SIO, B-SM): SafeIo.cpp, SafeState.cpp geaenderte Kopien (SYS-62). Gemessen
+      2026-09-28: 100 % / 61,4 %.
+  platforms/s32k1xx/port/safety/safeSupervisionCheck:
+    lines: 95
+    branches: 70
+    reason: >
+      Sicherheitsrelevant (M-SPC, B-SM), eigener Code ohne Kopie; gleiche Schwelle wie die Nachbarmodule, damit
+      das Sicherheitsteil einheitlich bewertet wird. Gemessen 2026-09-28: 100 % / 69,8 %.
+  platforms/s32k1xx/bsp/bspClock:
+    lines: 95
+    branches: 70
+    reason: >
+      Abhaengigkeit des ASIL-B-Pfads (D-CLK, B-DEP): clockConfig.cpp ist eine geaenderte Kopie (SYS-62), der
+      Takt traegt Watchdog, Totmann und Periodenpruefung. Gemessen 2026-09-28: 91,8 % / 52,2 % (clockConfig.cpp
+      291/319, 414/810).

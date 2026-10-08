@@ -1,0 +1,50 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Your Name <you@example.com>
+Date: Thu, 17 Sep 2026 12:00:00 +0200
+Subject: [PATCH] Fix loss of DWT cycles in the s32k148evb system timer
+
+updateTicks() converted the elapsed DWT cycles into ticks and then set
+lastDwt to the current DWT value. The cycles that did not add up to a
+whole tick were dropped, so every call lost up to dwtTicksRatio - 1
+cycles (4 of 5 at 80 MHz, 2 of 3 at 48 MHz).
+
+The loss is not a fixed offset: it grows with the number of calls.
+updateTicks() runs on every getSystemTicks/getSystemTimeUs/... call, so
+the system time runs slow at a rate that depends on how often the
+application reads it, and a caller polling faster than one tick can
+even see the time stand still.
+
+lastDwt now advances only by the cycles that became whole ticks, so the
+remainder is counted by the next call. This is what the stm32 platform
+already does in platforms/stm32/bsp/bspTimer/src/bsp/SystemTimer/
+SystemTimer.cpp.
+
+Signed-off-by: Your Name <you@example.com>
+---
+ .../src/bsp/SystemTimer/SystemTimer.cpp                | 10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
+
+diff --git a/executables/referenceApp/platforms/s32k148evb/bspConfiguration/src/bsp/SystemTimer/SystemTimer.cpp b/executables/referenceApp/platforms/s32k148evb/bspConfiguration/src/bsp/SystemTimer/SystemTimer.cpp
+index 4eba0fec..c7a60b5e 100644
+--- a/executables/referenceApp/platforms/s32k148evb/bspConfiguration/src/bsp/SystemTimer/SystemTimer.cpp
++++ b/executables/referenceApp/platforms/s32k148evb/bspConfiguration/src/bsp/SystemTimer/SystemTimer.cpp
+@@ -44,9 +44,13 @@ uint32_t volatile& DEMCR      = *reinterpret_cast<uint32_t volatile*>(0xE000EDFC
+ uint64_t updateTicks()
+ {
+     ETL_MAYBE_UNUSED const interrupts::SuspendResumeAllInterruptsScopedLock lock;
+-    uint32_t const curDwt = DWT_CYCCNT;
+-    state.ticks += static_cast<uint32_t>((curDwt - state.lastDwt) / state.dwtTicksRatio);
+-    state.lastDwt = curDwt;
++    uint32_t const curDwt   = DWT_CYCCNT;
++    uint32_t const newTicks = (curDwt - state.lastDwt) / state.dwtTicksRatio;
++    state.ticks += newTicks;
++    // Consume only the cycles that became whole ticks so the remainder carries over to the next
++    // call. Setting lastDwt to curDwt would discard up to dwtTicksRatio - 1 cycles per call, which
++    // makes the clock run slow at a rate that depends on how often it is read.
++    state.lastDwt += newTicks * state.dwtTicksRatio;
+     return state.ticks;
+ }
+ 
+-- 
+2.30.1.windows.1
+

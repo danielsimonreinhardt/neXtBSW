@@ -1,0 +1,24 @@
+# Module manifest (doc/architecture/README.md, section 5). Checked by tools/nxconfig (checks.py).
+#
+# kind: service, not device_driver - reason (doc/architecture/treiber-granularitaet.md, section 1 and 2):
+# hallDecoder serves no board part and has no connection of its own. It is the hardware independent behaviour
+# behind the device driver `hall` (sector table, direction from the transition, debouncing with confirmation,
+# period from six stamps, standstill, quality, statistics). The board device, its wiring and its project
+# parameters belong to the device driver of the family (platforms/<family>/port/.../hall/module.yaml, access
+# platforms/<family>/bsp/bspHall), which hands the decoder a HallDecoderConfig derived by tools/bswgen. A second
+# access (a timer capture where one timer reaches all three pins, another family) links the same decoder
+# instead of copying it.
+#
+# No project_parameters: the values are per motor, so they stand per instance under modules.<device> of the
+# `hall` device driver - described once, not twice.
+module: hallDecoder
+kind: service
+description: >-
+  Hardware independent evaluation of three Hall signals: sector, direction, period, speed, standstill and
+  quality from sampled states and microsecond time stamps
+# Evidence (CHANGELOG.md): IO-07 is built without known Hall hardware (user decision), host tests only.
+verification: mock
+verification_note: Host tests only; no Hall sensor has been connected to a board yet.
+provides:
+  - hall_decoder
+cmake_target: hallDecoder

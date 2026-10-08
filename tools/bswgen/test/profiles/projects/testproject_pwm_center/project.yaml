@@ -1,0 +1,16 @@
+# Synthetic project for the center aligned PWM group with trigger output (IO-61) on testboard_pwm_center: up-down
+# counting at 20 kHz from a 64 MHz clock (turning point 1600, period 3200 ticks), dead time 750 ns (48 clock ticks,
+# DTPS /1), trigger in the middle of the zero vector with all low sides on (turning point, match of the free
+# channel 0). Checked by platforms/s32k1xx/bsp/bspFtmPwmGroup/test/test_ftm_pwm_group.py (register model) and against
+# tools/bswgen/test/reference/testproject_pwm_center. Test data only, no hardware.
+schema_version: 1
+
+project:
+  name: testproject_pwm_center
+  board: ../../boards/testboard_pwm_center
+
+clock:
+  system_hz: 64000000
+
+pwm:
+  INVERTER: { frequency_hz: 20000, deadtime_ns: 750, alignment: center, trigger: { point: zero_low } }

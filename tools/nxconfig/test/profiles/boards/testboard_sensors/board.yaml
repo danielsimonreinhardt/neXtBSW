@@ -1,0 +1,82 @@
+# SPDX-License-Identifier: Apache-2.0
+# Synthetic s32k1xx board for the sensor characteristics (IO-18): S32K116 (Cortex-M0+, no FPU) with VREFH 3300 mV and
+# one channel per sensor kind, other rails, resistors and gains than the eval board. Test data only - no values of
+# real components, every source says so.
+schema_version: 1
+
+board:
+  name: testboard_sensors
+  mcu: S32K116
+  package: LQFP48
+  clock: { sosc_hz: 8000000 }
+  adc_reference_mv: 3300
+
+devices:
+  - name: PUMP_SW
+    part: BTS5030-1EJA
+    module: highSideSwitch
+    connect: { in: PUMP_IN, den: PUMP_DEN, is: PUMP_IS }
+
+rails:
+  - { name: SUPPLY_5V, mv: 5000, source: "synthetic test rail IO-18" }
+  - { name: REF_1V65, mv: 1650, source: "synthetic test rail IO-18" }
+
+adc:
+  # divider as sensor: 47k / 10k -> 18.81 V full scale
+  - name: BAT_V
+    instance: ADC0
+    channel: SE0
+    pin: PTA0
+    sensor: { kind: divider, r_top_ohm: 47000, r_bottom_ohm: 10000, source: "synthetic test divider IO-18" }
+  # bidirectional current: 2 mOhm, 50 V/V, zero at 1650 mV, linear output 20 ... 3200 mV
+  - name: MOTOR_I
+    instance: ADC0
+    channel: SE1
+    pin: PTA1
+    sensor:
+      kind: shunt_amplifier
+      shunt_uohm: 2000
+      gain: 50
+      reference: { rail: REF_1V65 }
+      output_min_mv: 20
+      output_max_mv: 3200
+      source: "synthetic test amplifier IO-18"
+  # NTC input: 10k pull-up from a fixed 3300 mV (the load is in the project)
+  - name: TEMP_NTC
+    instance: ADC0
+    channel: SE3
+    pin: PTA7
+    sensor: { kind: pullup, pullup_ohm: 10000, supply: { mv: 3300 }, source: "synthetic test pull-up IO-18" }
+  # level sensor: 1k pull-up from half of the 5 V rail over a 300 mV diode (table load in the project)
+  - name: LEVEL
+    instance: ADC0
+    channel: SE4
+    pin: PTB0
+    sensor:
+      kind: pullup
+      pullup_ohm: 1000
+      supply: { rail: SUPPLY_5V, ratio_permille: 800 }
+      diode_mv: 300
+      source: "synthetic test pull-up IO-18"
+      verify: true
+  # falling characteristic: value = 5000 mV - U * 3 / 2
+  - name: PRESSURE
+    instance: ADC0
+    channel: SE5
+    pin: PTB1
+    sensor: { kind: linear, unit: mV, gain_num: -3, gain_den: 2, offset: 5000, source: "synthetic test sensor IO-18" }
+  # smart high-side switch: k_ILIS 5000, R_IS 2.2k
+  - name: PUMP_IS
+    instance: ADC0
+    channel: SE6
+    pin: PTB2
+    sensor: { kind: highside_is, device: PUMP_SW, k_ilis: 5000, r_is_ohm: 2200, source: "synthetic test switch IO-18" }
+  # no sensor: board scale with a negative offset -> adc.phys may be negative, adc.mv stays limited at 0
+  - { name: OFFSET_V, instance: ADC0, channel: SE7, pin: PTB3, scale: { factor: 2, offset_mv: -100 } }
+  # circuit not fitted: pin only
+  - { name: SPARE, instance: ADC0, channel: SE9, pin: PTC1, fitted: false, note: "not fitted" }
+
+dio:
+  outputs:
+    - { name: PUMP_IN, pin: PTD16 }
+    - { name: PUMP_DEN, pin: PTD15 }

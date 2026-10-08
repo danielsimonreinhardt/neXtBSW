@@ -1,0 +1,73 @@
+# Test profile 4 of tools/schedana: every data flow mistake the analysis must find.
+# Expected findings:
+#   reader_before_writer          Fast.First reads shared_ab before Fast.Second writes it in the same cycle
+#   rate_transition_not_harmonic  3 ms task <-> 7 ms task (to_slow, from_slow)
+#   cross_task_age                to_slow 10 ms, from_slow 10 ms
+#   atomic_hand_over              atomic_sig is used by runnables of both tasks (Slow writes, Fast reads)
+#   signal_without_writer         no_writer
+#   signal_without_reader         no_reader
+#   dataflow_cycle                First -> Slow -> Second -> First with a delay of 23 ms
+schema_version: 1
+name: dataflow_errors
+tick_us: 1000
+
+tasks:
+  - name: base
+    kind: bsw
+    priority: 20
+    period_ms: 10
+    wcet_us: 100
+    roles: [io]
+
+  - name: fast
+    kind: application
+    priority: 30
+    period_ms: 3
+    stack_bytes: 1024
+    overhead_us: 10
+    runnables:
+      - name: Fast.First
+        period_ms: 3
+        wcet_us: 50
+        mean_us: 40
+        min_us: 35
+        reads: [shared_ab, no_writer, atomic_sig]
+        writes: [to_slow]
+      - name: Fast.Second
+        period_ms: 3
+        wcet_us: 60
+        mean_us: 50
+        min_us: 45
+        reads: [from_slow]
+        writes: [shared_ab, no_reader]
+
+  - name: slow
+    kind: application
+    priority: 35
+    period_ms: 7            # not harmonic with the 3 ms of task fast
+    stack_bytes: 1024
+    overhead_us: 10
+    runnables:
+      - name: Slow.Run7ms
+        period_ms: 7
+        wcet_us: 120
+        mean_us: 100
+        min_us: 90
+        reads: [to_slow]
+        writes: [from_slow, atomic_sig]
+
+  - name: guard
+    kind: bsw
+    priority: 60
+    period_ms: 20
+    wcet_us: 100
+    above_application: true
+    roles: [safety]
+
+signals:
+  - { name: shared_ab }
+  - { name: to_slow }
+  - { name: from_slow }
+  - { name: no_writer }
+  - { name: no_reader }
+  - { name: atomic_sig, consistency: atomic }

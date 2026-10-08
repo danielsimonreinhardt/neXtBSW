@@ -1,0 +1,123 @@
+# Test profile of the ODX/PDX export (TOOL-43), not the eval board: what the export has to carry over besides the
+# demo project - a linear conversion with a fractional factor and an offset, signed, little endian and float
+# values, a text table, one-sided limits, a unit the export knows and one it does not know, texts and raw bytes,
+# two security levels (one without sessions: every session but the default one), a routine with all three steps
+# and one with only a start, DTCs with an explicit number and display code, a number derived from the neXtBSW range
+# (TOOL-178), two snapshot records of one DTC, extended data with a counter, the signed fault detection counter and
+# an identifier, a manufacturer group and the group of the neXtBSW range.
+#
+# Used by tools/diaggen/test_odxexport.py. The ports are never resolved (the description is read on its own).
+schema_version: 1
+
+sessions:
+  - {name: Base, id: 0x01, label: Base session, p2_ms: 25, p2_star_ms: 2500}
+  - {name: Workshop, id: 0x03, description: Everything a workshop tester may do., p2_ms: 25, p2_star_ms: 2500}
+
+security:
+  - {name: Service, level: 0x05, seed_bytes: 8, key_bytes: 16, attempts: 5, delay_ms: 3000, sessions: [Workshop]}
+  - {name: Plant, level: 0x41, label: Plant unlock, seed_bytes: 2, key_bytes: 2, attempts: 1, delay_ms: 60000}
+
+operation_cycles:
+  - {name: Ignition, kind: ignition}
+
+data_identifiers:
+  - identifier: 0x0300
+    name: BatteryState
+    label: Battery state
+    description: Several codings in one record.
+    group: measurement
+    read_sessions: [Base, Workshop]
+    data:
+      - {name: voltage, label: Battery voltage, type: uint16, unit: V, factor: 0.001, offset: 0.0, min: 0, max: 65.535,
+         source: {port: TestSwc.Battery.Voltage}}
+      - {name: current, type: int16, byte_order: little, unit: A, factor: 0.01, offset: -2.5, min: -300,
+         source: {port: TestSwc.Battery.Current}}
+      - {name: temperature, type: float32, unit: degC, max: 125.5, source: {port: TestSwc.Battery.Temperature}}
+      - {name: health, type: uint8, unit: SoH-points, source: {port: TestSwc.Battery.Health}}
+      - {name: contactor, type: uint8, source: {port: TestSwc.Battery.Contactor},
+         values: [{value: 0, text: open}, {value: 1, text: precharge}, {value: 2, text: closed}]}
+      - {name: counter, type: uint32, byte_order: little, source: {port: TestSwc.Battery.Counter}}
+
+  - identifier: 0x0301
+    name: Limits
+    write: true
+    write_sessions: [Workshop]
+    write_security: Service
+    read_security: Plant
+    data:
+      - {name: maxCurrent, type: int32, unit: mA, min: -100000, max: 100000, source: {port: TestSwc.Limits.Max}}
+
+  - identifier: 0xF190
+    name: Vin
+    group: identification
+    data:
+      - {name: vin, type: ascii, length_bytes: 17, source: {constant: WNXBSW00000000001}}
+
+  - identifier: 0xF18C
+    name: EcuSerialNumber
+    group: identification
+    data:
+      - {name: uid, type: bytes, length_bytes: 16, source: {bsw: chip.uid}}
+
+routines:
+  - identifier: 0x0500
+    name: Balance
+    label: Cell balancing
+    group: actuator_test
+    sessions: [Workshop]
+    security: Service
+    start:
+      call: {runnable: TestSwc.Run10ms}
+      request:
+        - {name: targetVoltage, type: uint16, unit: mV, min: 2500, max: 4200}
+        - {name: mode, type: uint8, values: [{value: 1, text: passive}, {value: 2, text: active}]}
+      response:
+        - {name: accepted, type: uint8}
+    stop:
+      call: {runnable: TestSwc.Run10ms}
+    results:
+      call: {runnable: TestSwc.Run10ms}
+      response:
+        - {name: remaining, type: uint16, byte_order: little, unit: s, factor: 0.5}
+        - {name: deviation, type: int8, unit: mV}
+
+  - identifier: 0x0501
+    name: Ping
+    start:
+      call: {runnable: TestSwc.Run10ms}
+
+fault_memory:
+  max_entries: 4
+  snapshot_records_max: 2
+  extended_records_max: 1
+
+dtcs:
+  - number: 0x912345
+    name: CellOvervoltage
+    label: Cell overvoltage
+    display_code: B112345
+    severity: check_immediately
+    priority: 1
+    group: measurement
+    operation_cycle: Ignition
+    event: {port: TestSwc.Battery.Overvoltage}
+    debounce: {counter: {failed_threshold: 5, passed_threshold: -5}}
+    snapshots:
+      - {record_number: 0x01, dids: [BatteryState, Vin]}
+      - {record_number: 0x10, label: Latest, dids: [Limits]}
+    extended_data:
+      - record_number: 0x02
+        data:
+          - {name: occurrences, counter: occurrence_counter}
+          - {name: fdc, counter: fault_detection_counter}
+          - {name: limits, did: Limits}
+
+  - name: RteDeadline
+    description: Derived number of the neXtBSW range, no label (the text is the name).
+    operation_cycle: Ignition
+    event: {bsw: rte.deadline}
+    debounce: {time: {failed_ms: 100, passed_ms: 100}}
+
+dtc_groups:
+  - {name: Chassis, label: Chassis group, group: 0x900000, first: 0x900000, last: 0x9FFFFF}
+  - {name: NeXtBsw, bsw: true}

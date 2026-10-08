@@ -1,0 +1,75 @@
+# Diagnostic description of the NVM-03 RTE tests (test/dem/rte.yaml): a fault memory whose events come from ports of
+# the synthetic components of test/multitask and from the BSW. Not the eval board.
+schema_version: 1
+
+operation_cycles:
+  - name: Power
+    kind: power
+  - name: Drive
+    kind: operation
+    autostart: false            # driven by AppSwc.Led through dem.cycle.Drive
+
+enable_conditions:
+  - name: MotorEnabled
+    port: MotorSwc.Enable.Enable
+  - name: Running
+    bsw: ecu.state              # RUN of the ECU state machine
+    initial: true
+
+data_identifiers:
+  - identifier: 0x0300
+    name: MotorSpeed
+    read: true
+    data:
+      - {name: speed, type: uint16, source: {port: MotorSwc.Speed.Speed}}
+  - identifier: 0xFD10
+    name: Marker
+    read: true
+    data:
+      - {name: marker, type: uint32, source: {constant: 0x12345678}}
+
+fault_memory:
+  max_entries: 2
+  overflow: replace_oldest
+  cycle_ms: 10
+  write_interval_ms: 500
+
+dtcs:
+  - number: 0x100001
+    name: SpeedTooHigh
+    severity: check_immediately
+    operation_cycle: Power
+    enable_conditions: [MotorEnabled, Running]
+    priority: 2
+    event: {port: MotorSwc.Speed.Speed, failed_above: 3000}
+    debounce: {counter: {failed_threshold: 4, passed_threshold: -4}}
+    aging: {threshold_cycles: 2}
+    snapshots:
+      - record_number: 0x01
+        dids: [MotorSpeed, Marker]
+    extended_data:
+      - record_number: 0x01
+        data:
+          - {name: occurrence, counter: occurrence_counter}
+          - {name: marker, did: Marker}
+          - {name: fdc, counter: fault_detection_counter}
+
+  - number: 0x100002
+    name: CountStatus
+    operation_cycle: Drive
+    priority: 3
+    event: {port: AppSwc.SlowCount.SlowCount, result: status}
+    debounce: {time: {failed_ms: 25, passed_ms: 20}}
+
+  - number: 0x100003
+    name: BusOff
+    operation_cycle: Power
+    priority: 1
+    event: {bsw: can.busoff.CAN1}
+    debounce: {counter: {failed_threshold: 1, passed_threshold: -1}}
+
+  - number: 0x100004
+    name: Deadline
+    operation_cycle: Power
+    event: {bsw: rte.deadline}
+    debounce: {counter: {failed_threshold: 1, passed_threshold: -1}}

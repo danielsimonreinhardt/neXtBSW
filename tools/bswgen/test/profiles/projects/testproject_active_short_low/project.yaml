@@ -1,0 +1,25 @@
+# SYS-116: synthetic project on testboard_safe_outputs (no high_side_hold, no bridge_reset_state) - the group BRIDGE
+# allows freewheel and the low-side short only, without the start test (warnings). The short-high slots of the table
+# must hold the freewheel values. Test data only, no hardware.
+schema_version: 1
+
+project:
+  name: testproject_active_short_low
+  board: ../../boards/testboard_safe_outputs
+
+clock:
+  system_hz: 64000000
+
+use:
+  spi: all
+  dio: all
+
+pwm:
+  BRIDGE:
+    frequency_hz: 16000
+    deadtime_ns: 500
+    safe_states: [freewheel, active_short_low]
+
+modules:
+  GD_A: { console: gda }
+  GD_B: { console: gdb }

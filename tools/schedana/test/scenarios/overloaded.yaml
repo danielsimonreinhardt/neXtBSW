@@ -1,0 +1,63 @@
+# Test profile 2 of tools/schedana: overloaded system.
+# Expected: system_overloaded (3 + 59 + 20 + 1 + 20 = 103 %), deadline_missed for ctrl (response time 1910 us at
+# a period of 1000 us) and response_diverges for the lowest priority task.
+schema_version: 1
+name: overloaded
+tick_us: 500
+max_lock_us: 2
+
+tasks:
+  - name: base
+    kind: bsw
+    priority: 20
+    period_ms: 10
+    wcet_us: 300
+    mean_us: 200
+    roles: [io]
+
+  - name: ctrl
+    kind: application
+    priority: 30
+    period_ms: 1
+    stack_bytes: 1024
+    overhead_us: 10
+    runnables:
+      - name: Motor.Run1ms
+        period_ms: 1
+        wcet_us: 500
+        mean_us: 400
+        min_us: 380
+        reads: [current_mv]
+        writes: [duty]
+      - name: Motor.Run5ms
+        period_ms: 5
+        wcet_us: 400
+        mean_us: 350
+        min_us: 300
+        reads: [duty]
+        writes: [status]
+
+  - name: bus
+    kind: bsw
+    priority: 40
+    period_ms: 2
+    wcet_us: 400
+    mean_us: 300
+    roles: [communication]
+
+  - name: guard
+    kind: bsw
+    priority: 60
+    period_ms: 20
+    wcet_us: 200
+    mean_us: 150
+    above_application: true
+    roles: [safety]
+
+isrs:
+  - { name: bus, period_ms: 0.5, wcet_us: 100, mean_us: 60 }
+
+signals:
+  - { name: current_mv, bsw: adc.mv.CURRENT, read_inputs_task: ctrl }
+  - { name: duty, bsw: pwm.MOT1, write_outputs_task: ctrl }
+  - { name: status }

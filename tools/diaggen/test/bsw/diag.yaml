@@ -1,0 +1,86 @@
+# Test profile of COM-32 for tools/diaggen: identifiers whose values come from the basic software through the RTE
+# (`source: {bsw: ...}` in the notation of the rte.yaml connections), mixed with a port, a constant and a value of
+# the diagnostic stack. Not the eval board: the ADC channel POTI and the CAN buses are those of
+# projects/buildtest_s32k148_min (S32K148 without SBC), whose diagnostic addresses the host test uses.
+#
+# Used by tools/diaggen/test_diaggen.py and tools/diaggen/test_diaggen_bsw_host.py (ecu/uds as DLL against
+# udsoncan, the RTE replaced by the value store DiagRteStub.cpp). tools/rtegen/test/diag_bsw checks how the RTE
+# really reads these values.
+schema_version: 1
+
+data_identifiers:
+  - identifier: 0x0400
+    name: EcuStatus
+    data:
+      - name: state
+        type: uint8
+        source: {bsw: ecu.state}
+        values:
+          - {value: 0, text: STARTUP}
+          - {value: 1, text: RUN}
+          - {value: 2, text: STANDBY}
+          - {value: 3, text: SHUTDOWN}
+          - {value: 4, text: SLEEP}
+          - {value: 5, text: RUNDOWN}
+      - name: wakeup
+        type: uint32
+        source: {bsw: ecu.wakeup}
+      - name: canWake
+        type: uint8
+        source: {bsw: ecu.wakeup.CAN1}
+
+  - identifier: 0x0401
+    name: Supply
+    data:
+      - name: voltage
+        type: uint16
+        unit: V
+        factor: 0.001          # the coded value is the mV of the service
+        source: {bsw: bsw.power.supply_mv}
+      - name: quality
+        type: uint8
+        source: {bsw: bsw.power.qlf}
+      - name: uptime
+        type: uint32
+        byte_order: little
+        unit: ms
+        source: {bsw: bsw.time.ms}
+
+  - identifier: 0x0402
+    name: Poti
+    data:
+      - name: revision
+        type: uint8
+        source: {constant: 7}
+      - name: voltage
+        type: uint16
+        unit: mV
+        source: {bsw: adc.mv.POTI}
+      - name: value
+        type: int32
+        source: {bsw: adc.phys.POTI}
+      - name: quality
+        type: uint8
+        source: {bsw: adc.qlf.POTI}
+      - name: speed
+        type: uint16
+        source: {port: TestSwc.Speed.Speed}
+      - name: session
+        type: uint8
+        source: {bsw: uds.session}
+
+  - identifier: 0x0403
+    name: Bandgap
+    data:
+      - name: voltage
+        type: float32
+        unit: mV
+        source: {bsw: adc.mv.BANDGAP}
+
+  - identifier: 0x0404
+    name: Setpoint          # writable port identifier: the BSW values above do not touch the write functions
+    write: true
+    data:
+      - name: setpoint
+        type: uint16
+        source: {port: TestSwc.Setpoint.Setpoint}

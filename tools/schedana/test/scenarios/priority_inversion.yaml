@@ -1,0 +1,51 @@
+# Test profile 3 of tools/schedana: an application task above a communication task ("priority inversion" in the
+# sense of the task: the application decides how long the bus stack has to wait).
+# Expected: application_above_critical_bsw (ctrl above bus, role communication) and deadline_tight for bus
+# (response time 600 us against a deadline of 700 us), no error - the choice stays free.
+schema_version: 1
+name: priority_inversion
+tick_us: 1000
+
+tasks:
+  - name: base
+    kind: bsw
+    priority: 20
+    period_ms: 20
+    wcet_us: 100
+    roles: [io]
+
+  - name: bus
+    kind: bsw
+    priority: 40
+    period_ms: 10
+    deadline_ms: 0.7        # the peer expects an answer inside the CAN cycle
+    wcet_us: 200
+    mean_us: 120
+    roles: [communication]
+
+  - name: ctrl
+    kind: application
+    priority: 45            # above bus: the application preempts the bus stack
+    period_ms: 5
+    stack_bytes: 1024
+    overhead_us: 10
+    runnables:
+      - name: Ctrl.Run5ms
+        period_ms: 5
+        wcet_us: 290
+        mean_us: 250
+        min_us: 240
+        reads: [command]
+        writes: [answer]
+
+  - name: guard
+    kind: bsw
+    priority: 60
+    period_ms: 20
+    wcet_us: 100
+    above_application: true
+    roles: [safety]
+
+signals:
+  - { name: command, bsw: can.rx.PC_Command.Value, read_inputs_task: ctrl }
+  - { name: answer, bsw: can.tx.Status.Answer, write_outputs_task: ctrl }

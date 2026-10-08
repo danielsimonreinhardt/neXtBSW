@@ -1,0 +1,237 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Your Name <you@example.com>
+Date: Thu, 17 Sep 2026 12:00:00 +0200
+Subject: [PATCH] Fix MPU region count and enable check for all S32K1xx derivatives
+
+The system MPU code of the S32K148EVB platform hard-coded properties of
+the S32K148 and mixed the read-only configuration field CESR[NRGD] into
+the enable check:
+
+- `SMPU_ENTRYS` was a fixed 16, although the number of region
+  descriptors belongs to the derivative (S32K142/144/146: 8,
+  S32K148: 16). It now follows `MPU_RGD_COUNT` of the device header,
+  which also declares `IP_MPU->RGD[]`.
+- `isGlobalEnabled()` compared CESR against 0x201, that is VLD = 1 and
+  NRGD = 2. NRGD reports how many region descriptors the silicon
+  implements (Reference Manual Rev. 14, 15.4.2: 0000b = 8, 0001b = 12,
+  0010b = 16) and is read-only, so on a derivative with 8 descriptors
+  the enabled MPU was reported as disabled and the safe supervisor
+  raised MPU_NOT_ENABLED in every cycle. The check now looks at the
+  global enable bit CESR[VLD] only.
+- `areRegionsConfiguredCorrectly()` had its own constant of 16 regions
+  next to `SMPU_ENTRYS`. On a derivative with 8 descriptors the loop
+  read RGD[8].WORD3 (0x4000D48C), which is not implemented and answers
+  with a bus fault. It now uses `mpu::SMPU_ENTRYS`.
+- `setWordInDescriptor()` asserted `slot <= SMPU_ENTRYS`, so
+  `slot == SMPU_ENTRYS` wrote past the last descriptor. The bound is
+  now `slot < SMPU_ENTRYS`, matching the reject condition of
+  `getWordInDescriptor()`.
+
+On the S32K148 nothing changes: MPU_RGD_COUNT is 16 and CESR[VLD] is
+part of the old comparison.
+
+The new host test `safeMemoryMpuTest` redirects IP_MPU to a fake
+register block and checks the enable bit for the reset values of
+MPU_CESR from Table 15-4 as well as the descriptor bounds.
+
+Signed-off-by: Your Name <you@example.com>
+---
+ CMakeLists.txt                                     |   3 +
+ .../safety/safeMemory/include/safeMemory/mpu.h     |  14 +--
+ .../safeMemory/src/safeMemory/MemoryProtection.cpp |   2 +-
+ .../safety/safeMemory/test/CMakeLists.txt          |  10 ++
+ .../safeMemory/test/src/safeMemory/MpuTest.cpp     | 102 +++++++++++++++++++++
+ 5 files changed, 124 insertions(+), 7 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 1dc44b64..5e382e1d 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -220,6 +220,9 @@ if (BUILD_EXECUTABLE STREQUAL "unitTest")
+         add_subdirectory(platforms/s32k1xx/bsp/canflex2Transceiver/test)
+         add_subdirectory(platforms/s32k1xx/bsp/bspUart/test)
+ 
++        add_subdirectory(
++            executables/referenceApp/platforms/s32k148evb/safety/safeMemory/test)
++
+     else ()
+         message(
+             FATAL_ERROR
+diff --git a/executables/referenceApp/platforms/s32k148evb/safety/safeMemory/include/safeMemory/mpu.h b/executables/referenceApp/platforms/s32k148evb/safety/safeMemory/include/safeMemory/mpu.h
+index 6c473005..467cad00 100644
+--- a/executables/referenceApp/platforms/s32k148evb/safety/safeMemory/include/safeMemory/mpu.h
++++ b/executables/referenceApp/platforms/s32k148evb/safety/safeMemory/include/safeMemory/mpu.h
+@@ -19,7 +19,10 @@ namespace safety
+ {
+ namespace mpu
+ {
+-static constexpr uint8_t SMPU_ENTRYS = 16U;
++// Number of region descriptors implemented by the derivative, taken from the device header
++// (S32K148: 16, S32K142/S32K144/S32K146: 8). Accessing a descriptor above this number results in
++// a bus fault.
++static constexpr uint8_t SMPU_ENTRYS = MPU_RGD_COUNT;
+ 
+ enum class ReadAccess : uint8_t
+ {
+@@ -131,10 +134,9 @@ inline void globalDisable() { IP_MPU->CESR = MPU_CESR_VLD(0); }
+ 
+ inline void globalEnable() { IP_MPU->CESR = MPU_CESR_VLD(1); }
+ 
+-inline bool isGlobalEnabled()
+-{
+-    return ((IP_MPU->CESR & (MPU_CESR_NRGD_MASK | MPU_CESR_VLD_MASK)) == 0x201U);
+-}
++// CESR[VLD] is the global enable bit. CESR[NRGD] is a read-only hardware configuration field
++// (number of region descriptors) and does not tell whether the MPU is enabled.
++inline bool isGlobalEnabled() { return ((IP_MPU->CESR & MPU_CESR_VLD_MASK) != 0U); }
+ 
+ inline void setDescriptor(size_t const slot, Descriptor const& d)
+ {
+@@ -147,7 +149,7 @@ inline void setDescriptor(size_t const slot, Descriptor const& d)
+ template<uint8_t slot, uint8_t wordNumber, uint32_t word>
+ void setWordInDescriptor()
+ {
+-    static_assert(slot <= SMPU_ENTRYS, "");
++    static_assert(slot < SMPU_ENTRYS, "");
+     if (wordNumber == 2U)
+     {
+         IP_MPU->RGD[slot].WORD2 = word;
+diff --git a/executables/referenceApp/platforms/s32k148evb/safety/safeMemory/src/safeMemory/MemoryProtection.cpp b/executables/referenceApp/platforms/s32k148evb/safety/safeMemory/src/safeMemory/MemoryProtection.cpp
+index 2a7646df..b2393702 100644
+--- a/executables/referenceApp/platforms/s32k148evb/safety/safeMemory/src/safeMemory/MemoryProtection.cpp
++++ b/executables/referenceApp/platforms/s32k148evb/safety/safeMemory/src/safeMemory/MemoryProtection.cpp
+@@ -233,7 +233,7 @@ bool MemoryProtection::checkValidity(uint8_t const region)
+ 
+ bool MemoryProtection::areRegionsConfiguredCorrectly(uint8_t& failed_region)
+ {
+-    constexpr uint8_t MAX_MPU_REGIONS = 16U;
++    constexpr uint8_t MAX_MPU_REGIONS = mpu::SMPU_ENTRYS;
+ 
+     for (uint8_t i = 0U; i < numOfMemoryProtectionConfigurationRamRegions; ++i)
+     {
+diff --git a/executables/referenceApp/platforms/s32k148evb/safety/safeMemory/test/CMakeLists.txt b/executables/referenceApp/platforms/s32k148evb/safety/safeMemory/test/CMakeLists.txt
+new file mode 100644
+index 00000000..a30fbdcc
+--- /dev/null
++++ b/executables/referenceApp/platforms/s32k148evb/safety/safeMemory/test/CMakeLists.txt
+@@ -0,0 +1,10 @@
++add_executable(safeMemoryMpuTest src/safeMemory/MpuTest.cpp)
++
++target_include_directories(
++    safeMemoryMpuTest
++    PRIVATE ../include
++            ${PROJECT_SOURCE_DIR}/platforms/s32k1xx/bsp/bspMcu/include/3rdparty/nxp)
++
++target_link_libraries(safeMemoryMpuTest PRIVATE utbspMcu gtest_main)
++
++gtest_discover_tests(safeMemoryMpuTest PROPERTIES LABELS "safeMemoryMpuTest")
+diff --git a/executables/referenceApp/platforms/s32k148evb/safety/safeMemory/test/src/safeMemory/MpuTest.cpp b/executables/referenceApp/platforms/s32k148evb/safety/safeMemory/test/src/safeMemory/MpuTest.cpp
+new file mode 100644
+index 00000000..7de209c3
+--- /dev/null
++++ b/executables/referenceApp/platforms/s32k148evb/safety/safeMemory/test/src/safeMemory/MpuTest.cpp
+@@ -0,0 +1,102 @@
++/********************************************************************************
++ * Copyright (c) 2026 Your Name
++ *
++ * This program and the accompanying materials are made available under the
++ * terms of the Apache License Version 2.0 which is available at
++ * https://www.apache.org/licenses/LICENSE-2.0
++ *
++ * SPDX-License-Identifier: Apache-2.0
++ ********************************************************************************/
++
++// Test-only hardware fake: the register layout comes from the device header, the peripheral
++// instance is redirected to host memory before mpu.h is included.
++#include "S32K148_MPU.h"
++
++#include <cstring>
++
++namespace
++{
++MPU_Type fakeMpu;
++}
++
++#undef IP_MPU
++#define IP_MPU (&fakeMpu)
++
++#include "safeMemory/mpu.h"
++
++#include <gtest/gtest.h>
++
++namespace
++{
++using namespace ::safety;
++
++class MpuTest : public ::testing::Test
++{
++protected:
++    void SetUp() override { memset(&fakeMpu, 0, sizeof(fakeMpu)); }
++};
++
++// Reset values of MPU_CESR, S32K1xx Series Reference Manual Rev. 14, Table 15-4.
++uint32_t const CESR_RESET_S32K116_118     = 0x00812001U; // 8 region descriptors, NRGD = 0
++uint32_t const CESR_RESET_S32K142_144_146 = 0x00814001U; // 8 region descriptors, NRGD = 0
++uint32_t const CESR_RESET_S32K148         = 0x00815201U; // 16 region descriptors, NRGD = 2
++
++TEST_F(MpuTest, NumberOfRegionDescriptorsFollowsDeviceHeader)
++{
++    EXPECT_EQ(MPU_RGD_COUNT, mpu::SMPU_ENTRYS);
++    EXPECT_EQ(sizeof(fakeMpu.RGD) / sizeof(fakeMpu.RGD[0]), mpu::SMPU_ENTRYS);
++}
++
++TEST_F(MpuTest, IsGlobalEnabledForEveryNumberOfRegionDescriptors)
++{
++    fakeMpu.CESR = CESR_RESET_S32K148;
++    EXPECT_TRUE(mpu::isGlobalEnabled());
++
++    // Derivatives with 8 region descriptors report NRGD = 0 while the MPU is enabled
++    fakeMpu.CESR = CESR_RESET_S32K142_144_146;
++    EXPECT_TRUE(mpu::isGlobalEnabled());
++
++    fakeMpu.CESR = CESR_RESET_S32K116_118;
++    EXPECT_TRUE(mpu::isGlobalEnabled());
++
++    // NRGD = 1 (12 region descriptors) is defined by the reference manual as well
++    fakeMpu.CESR = MPU_CESR_NRGD(1U) | MPU_CESR_VLD(1U);
++    EXPECT_TRUE(mpu::isGlobalEnabled());
++}
++
++TEST_F(MpuTest, IsGlobalEnabledIsFalseWhenValidBitIsCleared)
++{
++    for (uint32_t nrgd = 0U; nrgd <= 2U; ++nrgd)
++    {
++        fakeMpu.CESR = MPU_CESR_NRGD(nrgd);
++        EXPECT_FALSE(mpu::isGlobalEnabled()) << "NRGD " << nrgd;
++    }
++}
++
++// The fake does not model CESR[NRGD] as read-only, so this checks the written bit directly.
++TEST_F(MpuTest, GlobalEnableAndDisableToggleValidBit)
++{
++    mpu::globalEnable();
++    EXPECT_EQ(MPU_CESR_VLD_MASK, fakeMpu.CESR & MPU_CESR_VLD_MASK);
++    mpu::globalDisable();
++    EXPECT_EQ(0U, fakeMpu.CESR & MPU_CESR_VLD_MASK);
++}
++
++TEST_F(MpuTest, SetWordInDescriptorWritesLastImplementedDescriptor)
++{
++    mpu::setWordInDescriptor<mpu::SMPU_ENTRYS - 1U, 2U, 0x12345678U>();
++    mpu::setWordInDescriptor<mpu::SMPU_ENTRYS - 1U, 3U, 0x00000001U>();
++
++    EXPECT_EQ(0x12345678U, fakeMpu.RGD[mpu::SMPU_ENTRYS - 1U].WORD2);
++    EXPECT_EQ(0x00000001U, fakeMpu.RGD[mpu::SMPU_ENTRYS - 1U].WORD3);
++}
++
++TEST_F(MpuTest, GetWordInDescriptorRejectsNotImplementedDescriptor)
++{
++    fakeMpu.RGD[mpu::SMPU_ENTRYS - 1U].WORD3 = 0xCAFEU;
++
++    EXPECT_EQ(0xCAFEU, mpu::getWordInDescriptor<3U>(mpu::SMPU_ENTRYS - 1U));
++    EXPECT_EQ(0U, mpu::getWordInDescriptor<3U>(mpu::SMPU_ENTRYS));
++}
++
++} // anonymous namespace
+-- 
+2.51.0

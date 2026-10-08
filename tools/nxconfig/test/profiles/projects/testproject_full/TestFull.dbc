@@ -1,0 +1,61 @@
+VERSION "neXtBSW test profile testproject_full 1"
+
+
+NS_ :
+	CM_
+	BA_DEF_
+	BA_
+	VAL_
+	BA_DEF_DEF_
+
+BS_:
+
+BU_: EVB PC
+
+
+BO_ 272 EVB_Status: 8 EVB
+ SG_ Led1 : 0|1@1+ (1,0) [0|1] "" PC
+ SG_ Led2 : 1|1@1+ (1,0) [0|1] "" PC
+ SG_ MotorNtcFiltered_mV : 8|16@1+ (1,0) [0|65535] "mV" PC
+ SG_ EvbCrc : 24|8@1+ (1,0) [0|255] "" PC
+ SG_ SwVersion : 32|8@1+ (1,0) [0|255] "" PC
+ SG_ EvbCounter : 40|4@1+ (1,0) [0|15] "" PC
+
+BO_ 273 EVB_Analog: 8 EVB
+ SG_ MotorNtcCoarse_mV : 7|12@0+ (2,0) [0|8190] "mV" PC
+ SG_ MotorNtcFine_mV : 23|16@0- (0.5,-2500) [-2500|10000] "mV" PC
+
+BO_ 528 PC_Command: 8 PC
+ SG_ Setpoint_mV : 7|16@0- (0.5,1000) [-4000|6000] "mV" EVB
+ SG_ Offset_mV : 16|12@1- (1,-100) [-2148|1947] "mV" EVB
+ SG_ Mode : 28|2@1+ (1,0) [0|3] "" EVB
+ SG_ PcCrc : 32|8@1+ (1,0) [0|255] "" EVB
+ SG_ PcCounter : 40|4@1+ (1,0) [0|15] "" EVB
+
+
+CM_ "Demo CAN matrix of the demo component (swc/DemoSwc) for the synthetic test profile testproject_full (PLAT-62). Intel and Motorola signals, signed with offset, E2E profiles 11 (sent) and 1 (received). IDs stay clear of the diagnostic IDs 0x7DF/0x7E0/0x7E8 and the XCP IDs 0x7F0/0x7F1.";
+CM_ BU_ EVB "ECU running the RTE (rte.yaml can.node)";
+CM_ BU_ PC "Tester";
+CM_ BO_ 272 "Status: LED states and filtered NTC voltage (Intel byte order), E2E protected (profile 11)";
+CM_ BO_ 273 "NTC voltage with coarse and signed fine resolution (Motorola byte order)";
+CM_ BO_ 528 "Setpoint from the tester, supervised with GenMsgTimeoutTime and E2E profile 1";
+CM_ SG_ 272 SwVersion "Not connected in the RTE, sent with GenSigStartValue";
+CM_ SG_ 272 EvbCrc "E2E profile 11 checksum, written by the RTE";
+CM_ SG_ 272 EvbCounter "E2E profile 11 counter 0..14, written by the RTE";
+CM_ SG_ 528 PcCrc "E2E profile 1 checksum, checked by the RTE";
+CM_ SG_ 528 PcCounter "E2E profile 1 counter 0..14, checked by the RTE";
+CM_ SG_ 273 MotorNtcFine_mV "raw = (value + 2500 mV) / 0.5 mV, signed";
+CM_ SG_ 528 Setpoint_mV "raw = (value - 1000 mV) / 0.5 mV, signed";
+BA_DEF_ BO_  "GenMsgCycleTime" INT 0 65535;
+BA_DEF_ BO_  "GenMsgTimeoutTime" INT 0 65535;
+BA_DEF_ SG_  "GenSigStartValue" FLOAT -2147483648 4294967295;
+BA_DEF_DEF_  "GenMsgCycleTime" 0;
+BA_DEF_DEF_  "GenMsgTimeoutTime" 0;
+BA_DEF_DEF_  "GenSigStartValue" 0;
+BA_ "GenMsgCycleTime" BO_ 272 100;
+BA_ "GenMsgCycleTime" BO_ 273 100;
+BA_ "GenMsgCycleTime" BO_ 528 100;
+BA_ "GenMsgTimeoutTime" BO_ 528 500;
+BA_ "GenSigStartValue" SG_ 272 SwVersion 1;
+BA_ "GenSigStartValue" SG_ 528 Setpoint_mV 3000;
+VAL_ 528 Mode 0 "Off" 1 "Slow" 2 "Fast" 3 "Test" ;

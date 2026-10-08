@@ -1,0 +1,14 @@
+# Module manifest (doc/architecture/README.md, section 5), minimal (DOC-14): a contract is a catalogue entry only -
+# tools/nxconfig and tools/bswgen assign no board device, take no project values and generate nothing for it. The
+# implementation is the pin-interrupt dispatcher of a family (platforms/s32k1xx/bsp/bspPinIrq); consumers are the
+# Hall access (IO-07) and the pin-event module (IO-53). Concept: doc/architecture/pin-interrupts.md (IO-47).
+module: bspPinEdge
+kind: contract
+description: Pin edge contract - consumer interface onEdge(channel, time) called by the pin-interrupt dispatcher of a family, and arming of the pins of a consumer
+# Evidence (CHANGELOG.md, IO-52): host tests of the s32k1xx dispatcher and of the Hall access through it; no board
+# test of a pin interrupt yet (IO-23).
+verification: mock
+verification_note: >-
+  Host tests only (s32k1xx dispatcher against a PORT register model, Hall access through the dispatcher); no pin
+  interrupt has been exercised on a board yet.
+cmake_target: bspPinEdge

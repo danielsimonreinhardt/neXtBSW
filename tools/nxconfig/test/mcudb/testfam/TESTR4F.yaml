@@ -1,0 +1,43 @@
+# Synthetic derivative for tests (ARCH-23): Cortex-R4F (ARMv7-R, VFPv3-D16) with a vectored interrupt manager (VIM).
+# Every number here is test data, not a fact of a real part: the channel count and the fixed channels of a real
+# rm4x derivative come from its documents (PLAT-44/NEU-10) and are not known in the repository yet.
+schema_version: 1
+
+derivative:
+  name: TESTR4F
+  family: testfam
+  core: cortex-r4f
+  packages: [BGA100]
+  pin_pattern: "G(IOA|IOB)[0-7]"
+  sources: [synthetic]
+
+memory:
+  - { name: FLASH, kind: code_flash, start: 0x00000000, size: 0x00100000, sector_size: 0x20000 }
+  - { name: RAM, kind: ram, start: 0x08000000, size: 0x00010000 }
+
+instances:
+  CAN1: { class: can }
+  CAN2: { class: can }
+  UART1: { class: uart }
+
+vim:
+  channels: 48
+  fixed:
+    - { channel: 0, request: SYNTH_FIQ_A, kind: fiq }
+    - { channel: 1, request: SYNTH_FIQ_B, kind: fiq }
+  source: synthetic
+
+pinmux:
+  BGA100:
+    signals:
+      GPIO: { GIOA0: 0, GIOA1: 0, GIOB0: 0, GIOB1: 0 }
+      CAN1_RX: { GIOA0: 1 }
+      CAN1_TX: { GIOA1: 1 }
+      CAN2_RX: { GIOB0: 1 }
+      CAN2_TX: { GIOB1: 1 }
+
+# BL-03: synthetische Chipkennung (Testdaten, keine Hardware)
+uid:
+  address: 0x1FFF0000
+  size: 12
+  source: "Testdaten"

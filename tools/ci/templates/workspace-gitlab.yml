@@ -1,0 +1,43 @@
+# CI of a neXtBSW workspace on GitLab CI (template of tools/ci, TOOL-67).
+#
+#   python -m tools.ci template gitlab --out <workspace>     writes this file to .gitlab-ci.yml
+#
+# The provider only checks out, provides Python and calls the commands of the pinned tree; all the logic lives in
+# tools/ci of that tree (tools/ci/README.md). Adjust: NEXTBSW_DIR if the submodule is not at ./nextbsw.
+
+variables:
+  NEXTBSW_DIR: nextbsw               # the pinned tree, as nextbsw.path of nextbsw.yaml names it
+  GIT_SUBMODULE_STRATEGY: recursive  # the tree comes with the checkout
+  GIT_SUBMODULE_DEPTH: 0             # the release tag of the tree has to come along (ARCH-55: VERSION == tag)
+  GIT_DEPTH: 0
+  PYTHONUTF8: "1"
+  NX_CI_CACHE: "$CI_PROJECT_DIR/../nx-ci-cache"
+
+# A private neXtBSW repository needs a credential of its own. Put a deploy token or a project access token with
+# read access into the masked CI variable NEXTBSW_TOKEN and let git use it for that host:
+.credentials: &credentials
+  - |
+    if [ -n "$NEXTBSW_TOKEN" ]; then
+      git config --global url."https://gitlab-ci-token:${NEXTBSW_TOKEN}@${CI_SERVER_HOST}/".insteadOf "https://${CI_SERVER_HOST}/"
+    fi
+
+nextbsw:
+  image: python:3.12.10              # the version of <tree>/tools/ci/.python-version
+  cache:
+    key: nx-ci-cache
+    paths: [../nx-ci-cache]
+  before_script:
+    - *credentials
+    - git submodule sync --recursive
+    - git submodule update --init --recursive
+  script:
+    # the environment of the workspace from the requirements of the pinned tree (TOOL-63)
+    - python $NEXTBSW_DIR/tools/setup venv .
+    - (cd $NEXTBSW_DIR && ../.venv/bin/python -m tools.ci setup)
+    # pin, configuration, generated code, target builds of the workspace's presets and its own tests
+    - (cd $NEXTBSW_DIR && ../.venv/bin/python -m tools.ci run --strict --workspace "$CI_PROJECT_DIR" --out "$CI_PROJECT_DIR/ci-out")
+  after_script:
+    - (cd $NEXTBSW_DIR && ../.venv/bin/python -m tools.ci summary "$CI_PROJECT_DIR/ci-out") || true
+  artifacts:
+    when: always
+    paths: [ci-out]

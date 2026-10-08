@@ -1,0 +1,40 @@
+# ECU description of the RTE-27 test profile: required ports without any connection. They do not stop the
+# configuration - each reads a defined init value from a constant buffer of its own, and the generator warns.
+# BSW task profile: tools/rtegen/test/multitask/tasks.yaml. Component paths are relative to this file (RTE-22).
+#
+#   fast (1 ms, key 35):  ConsumerSwc.RunFast1ms (implicit and explicit read of Count)
+#   slow (10 ms, key 25): InitSinkSwc.Run10ms, ConsumerSwc.RunImp10ms, ConsumerSwc.RunExp10ms
+#
+# ConsumerSwc (the synthetic component of test/implicit) has no ProducerSwc here: CountImp, CountExp, Samples and
+# Pair are unconnected, read in two tasks (the lock path of the published value, the implicit copies of RTE-09).
+# The host test gives CountImp/CountExp the ARXML init value 7 (a copy of the component), so it can tell the init
+# value of the port from a zero. InitSinkSwc (C component, swc.yaml has no init values: 0) reads an unconnected
+# value and an unconnected qualifier (QLF_NOT_AVAILABLE, RTE-27/RTE-28).
+# Used by: tools/rtegen/test_rtegen.py (RteUnconnectedPortTest, host test rte_unconnected_host_test.cpp) and
+# tools/schedana/test_schedana.py (the same warning in the schedule analysis).
+
+schema_version: 2
+
+tasks:
+  - name: fast
+    period_ms: 1
+    priority: 35
+    stack_bytes: 1024
+    runnables: [ConsumerSwc.RunFast1ms]
+  - name: slow
+    period_ms: 10
+    priority: 25
+    stack_bytes: 2048
+    runnables: [InitSinkSwc.Run10ms, ConsumerSwc.RunImp10ms, ConsumerSwc.RunExp10ms]
+
+components:
+  - name: ConsumerSwc
+    path: ../implicit/ConsumerSwc
+  - name: InitSinkSwc
+    path: InitSinkSwc
+
+connections:
+  ConsumerSwc.Seen.Seen: rte
+  InitSinkSwc.Echo_mV.Echo_mV: rte
+  InitSinkSwc.EchoQlf.EchoQlf: rte
+  InitSinkSwc.Runs.Runs: rte

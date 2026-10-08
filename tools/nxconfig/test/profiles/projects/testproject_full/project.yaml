@@ -1,0 +1,136 @@
+# Synthetic full-featured project on testboard_full (PLAT-62): the own test profile of the generator and tool tests
+# that used to run against the private eval board project. It uses (almost) everything the board offers - SBC,
+# two CAN buses, gate driver and complementary PWM, high-side switch, sensors, sampling over a PWM period, input
+# capture, UART, FlexIO-I2C, NVM partition and data flash areas, diagnostics and XCP - with the demo component
+# (rte.yaml) and its demo CAN matrix (TestFull.dbc). All values are test data, chosen to differ from any real
+# project where the value is a choice (clock, IDs, thresholds); no hardware.
+schema_version: 1
+
+project:
+  name: testproject_full
+  board: ../../boards/testboard_full
+  rte: rte.yaml
+  diag: diag.yaml
+
+clock:
+  system_hz: 80000000
+
+memory:
+  flash: PFLASH
+  bootloader: { size: 0x8000, ram: SRAM_L, stack_size: 0x1000 }
+  application: { ram: [SRAM_L, SRAM_U], noinit_size: 0x400 }
+
+nvm:
+  partition:
+    eeprom_bytes: 4096
+    data_flash_bytes: 0x8000
+    partition_code: 0xB
+    load_on_reset: true
+    key_slots: 20
+  data_flash:
+    areas:
+      CalMain:   {size: 0x2000, purpose: calibration}
+      CalBackup: {size: 0x2000, purpose: calibration}
+      Test:      {size: 0x1000, purpose: data}
+  blocks:
+    EcuStatistics: {write: change, min_interval_ms: 3600000}
+
+bootloader:
+  can: CAN0
+
+diagnostics:
+  request_id: 0x7E0
+  functional_id: 0x7DF
+  response_id: 0x7E8
+  tester_address: 0xF1
+  ecu_address: 0x2A
+  isotp: { padding: 0xCC, block_size: 0, stmin_ms: 0, n_cr_ms: 1000, n_bs_ms: 1000 }
+  bootloader:
+    version_prefix: nextbsw-bl
+
+xcp:
+  master_id: 0x7F0
+  slave_id: 0x7F1
+
+can:
+  CAN0: { bitrate: 500000, sample_point_percent: 81.25, sjw_tq: 2, prop_seg_tq: 7 }   # explicit; CAN1 derived
+  CAN1: { bitrate: 500000, sample_point_percent: 81.25 }
+
+uart:
+  UART: { baudrate: 115200 }
+
+use:
+  spi: all
+  can: [CAN0, CAN1]
+  uart: all
+  i2c: all
+  adc: all
+  dio: all
+  input_capture: [PWM_IN]
+
+pwm:
+  MOT1: { frequency_hz: 20000, deadtime_ns: 1000, deadtime_margin_ns: 300 }
+
+interrupts:
+  max_syscall_level: 5
+  ranks:
+    - { source: can,  name: CAN0, rank: 3 }
+    - { source: uart, name: UART, rank: 4 }
+    - { source: can,  name: CAN1, rank: 3 }
+
+adc_internal:
+  - { name: BANDGAP,      instance: ADC0, channel: BANDGAP }
+  - { name: ADCINTERNAL0, instance: ADC0, channel: INTERNAL0 }
+
+adc_sampling:
+  SENSE_TSCURRENT: { kind: pwm_period_average, pwm_group: MOT1, samples: 16 }
+  ADC_CURRENT_U:   { kind: pwm_period_average, pwm_group: MOT1, samples: 16 }
+  ADC_CURRENT_V:   { kind: pwm_period_average, pwm_group: MOT1, samples: 16 }
+  ADC_CURRENT_W:   { kind: pwm_period_average, pwm_group: MOT1, samples: 16 }
+
+modules:
+  KL30B_SW:
+    cycle_ms: 10
+    overcurrent_ma: 3000
+    overcurrent_debounce_ms: 30
+    fault_ma: 6000
+    fault_debounce_ms: 20
+    switch_on_blanking_ms: 20
+    open_load_ma: 30
+    off_max_ma: 800
+    off_debounce_ms: 50
+    console: kl30b
+  bspAdcAccess:
+    lock_policy: interrupt_lock
+    lock_timeout_ms: 100
+    poll_safety_factor: 16
+    max_interrupt_suspend_us: 50
+    sample_clocks: 42
+    clock_divider: 1
+    averages: 1
+  capture:
+    min_frequency_hz: 40
+    timeout_ms: 200
+    update_period_ms: 10
+  ecuState:
+    min_run_ms: 5000
+    post_run_ms: 2000
+    shutdown_timeout_ms: 5000
+    sleep_timeout_ms: 2000
+    wakeup_during_shutdown: restart
+    after_watchdog_reset: run
+    nvm_timeout_ms: 1000
+    can_stop_timeout_ms: 500
+    step_error: restart
+    wakeup_can: CAN0                  # CAN1 (passive transceiver) cannot wake
+    wakeup_local: none
+    wakeup_cyclic_ms: 0
+  safeSystem:
+    adc_read_error_limit: 10
+
+safety:
+  safe_state_output: LED1
+  locked_pin: LED2
+  test_pin: PTC13                       # not used on testboard_full
+  safe_state_output_shared_with_application: >-
+    LED1 is a status LED of the synthetic test board, no actuator; the demo component shows its blink level there.

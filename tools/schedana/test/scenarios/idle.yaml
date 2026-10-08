@@ -1,0 +1,62 @@
+# Test profile 1 of tools/schedana: a system with plenty of reserve and a clean data flow.
+# Expected: no error, no warning; total load about 2.4 %.
+# Own names and periods, no eval board (review question 7).
+schema_version: 1
+name: idle
+tick_us: 1000
+
+tasks:
+  - name: base
+    kind: bsw
+    priority: 20
+    period_ms: 10
+    wcet_us: 100
+    mean_us: 60
+    roles: [io]
+
+  - name: ctrl
+    kind: application
+    priority: 30
+    period_ms: 10
+    stack_bytes: 1024
+    overhead_us: 5
+    runnables:
+      - name: Ctrl.Sense10ms
+        period_ms: 10
+        wcet_us: 20
+        mean_us: 15
+        min_us: 12
+        reads: [sensor_mv]
+        writes: [setpoint]
+      - name: Ctrl.Log100ms
+        period_ms: 100
+        wcet_us: 40
+        mean_us: 30
+        min_us: 25
+        reads: [setpoint]
+        writes: [log_out]
+
+  - name: bus
+    kind: bsw
+    priority: 40
+    period_ms: 10
+    wcet_us: 50
+    mean_us: 30
+    roles: [communication]
+
+  - name: guard
+    kind: bsw
+    priority: 60
+    period_ms: 50
+    wcet_us: 30
+    mean_us: 20
+    above_application: true
+    roles: [safety]
+
+isrs:
+  - { name: bus, period_ms: 1, wcet_us: 5, mean_us: 3 }
+
+signals:
+  - { name: sensor_mv, bsw: adc.mv.SENSOR, read_inputs_task: ctrl }
+  - { name: log_out, bsw: dio.out.LOG, write_outputs_task: ctrl }
+  - { name: setpoint }

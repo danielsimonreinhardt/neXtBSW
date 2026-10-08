@@ -1,0 +1,135 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Your Name <you@example.com>
+Date: Thu, 17 Sep 2026 12:00:00 +0200
+Subject: [PATCH 1/2] Fix HardFault_Handler destroying the exception context
+
+`HardFault_Handler()` printed a line before branching to
+`customHardFaultHandler`. Being a normal function, it got a prologue and
+a call, so at the branch LR held the return address of the printf call
+instead of EXC_RETURN and the stack pointer was 8 bytes below the
+exception frame (GCC 11.4, RelWithDebInfo: `push {r3, lr}`, `bl
+debug_printf`, `b.w customHardFaultHandler`).
+
+`customHardFaultHandler` selects MSP or PSP with `tst LR, 4`, stores LR
+in the dump and reads the stacked registers at fixed offsets from that
+stack pointer, so the dumped context was arbitrary. Calling printf from
+the fault path is also a way into a lockup, because it takes locks and
+uses buffers of a system that has just failed.
+
+The handler is now naked and contains nothing but the branch, as the
+module documentation demands and as the STM32 platform does. `naked` is
+required rather than only dropping the printf: at -O0 a non-naked
+function still emits `push {r7}`, which moves the stack pointer.
+
+The message moves to `HardFault_Handler_Final()`, which runs after the
+dump has been written and may print.
+
+Signed-off-by: Your Name <you@example.com>
+---
+ .../platforms/s32k148evb/main/src/os/isr/isr_sys.cpp    | 17 ++++++++---------
+ 1 file changed, 8 insertions(+), 9 deletions(-)
+
+diff --git a/executables/referenceApp/platforms/s32k148evb/main/src/os/isr/isr_sys.cpp b/executables/referenceApp/platforms/s32k148evb/main/src/os/isr/isr_sys.cpp
+index 01b0b4d6..f7d0e729 100644
+--- a/executables/referenceApp/platforms/s32k148evb/main/src/os/isr/isr_sys.cpp
++++ b/executables/referenceApp/platforms/s32k148evb/main/src/os/isr/isr_sys.cpp
+@@ -18,21 +18,20 @@
+ 
+ extern "C"
+ {
+-void HardFault_Handler()
+-{
+-    // WARNING:
+-    // Do NOT modify this function if possible. Use HardFault_Handler_Final instead.
+-    // Refer to hardFaultHandler documentation for details.
+-    printf("HardFault_Handler\r\n");
+ #ifndef UNIT_TEST
+-    asm volatile("b customHardFaultHandler");
++// WARNING:
++// Do NOT modify this function if possible. Use HardFault_Handler_Final instead.
++// Refer to hardFaultHandler documentation for details. The handler must not touch the stack and
++// must keep LR (EXC_RETURN), which customHardFaultHandler evaluates to find the exception frame,
++// so it is naked and contains nothing but the branch.
++__attribute__((naked)) void HardFault_Handler() { asm volatile("b customHardFaultHandler"); }
+ #else
+-    etl::infinite_loop();
++void HardFault_Handler() { etl::infinite_loop(); }
+ #endif
+-}
+ 
+ void HardFault_Handler_Final()
+ {
++    // This is the first output of the fault handling: HardFault_Handler cannot print anything.
+     printf("HardFault_Handler_Final\r\n");
+     ::safety::safe_memory::checkEccErrors();
+     softwareSystemReset();
+-- 
+2.51.0
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Your Name <you@example.com>
+Date: Thu, 17 Sep 2026 12:00:00 +0200
+Subject: [PATCH 2/2] Fix hard fault dump address to follow the no-init section
+
+The dump was written to the fixed address 0x2000EC00, while the no-init
+section of the S32K148EVB linker script starts at 0x2001EC00
+(`SRAM_U_END + 1 - 0x400`, with `SRAM_U_END = 0x2001EFFF`). 0x2000EC00
+is 64 KiB lower and lies in MainRAM, which holds .data, .bss, heap and
+stack. In the current build the dump landed inside the .bss object
+`app::transportSystem`, so the handler corrupted live data, and the
+start-up code clears that range on the next reset - the dump could never
+be read after the reset that `HardFault_Handler_Final()` performs.
+
+The address now comes from the linker symbol `__NOINIT_DATA` of the
+no-init section, so the dump follows the linker script of the board and
+the handler works for every derivative of the family. The offset inside
+the section is kept: the dump occupies the last DUMP_SIZE bytes of the
+0x400 byte section, as before.
+
+Signed-off-by: Your Name <you@example.com>
+---
+ platforms/s32k1xx/hardFaultHandler/src/hardFaultHandler.s | 13 +++++++------
+ 1 file changed, 7 insertions(+), 6 deletions(-)
+
+diff --git a/platforms/s32k1xx/hardFaultHandler/src/hardFaultHandler.s b/platforms/s32k1xx/hardFaultHandler/src/hardFaultHandler.s
+index 6780733e..7e170b07 100644
+--- a/platforms/s32k1xx/hardFaultHandler/src/hardFaultHandler.s
++++ b/platforms/s32k1xx/hardFaultHandler/src/hardFaultHandler.s
+@@ -18,11 +18,12 @@
+ // Unit constants
+ //------------------------------------------------------------------------------
+ 
+-// Dump location
+-.equ NO_INIT_RAM_START, 0x2000EC00
++// Dump location: the no-init RAM section of the linker script, which provides __NOINIT_DATA and
++// reserves NO_INIT_RAM_SIZE bytes there. The dump must not be in a section that the start-up code
++// initializes, otherwise it is gone after the reset that follows the fault.
+ .equ NO_INIT_RAM_SIZE,  0x400
+ .equ DUMP_SIZE,         0x140
+-.equ DUMP_START,        NO_INIT_RAM_START + NO_INIT_RAM_SIZE - DUMP_SIZE
++.equ DUMP_OFFSET,       NO_INIT_RAM_SIZE - DUMP_SIZE
+ 
+ // Dump fields offsets
+ .equ DUMP_HANDLER_PSR,  0x000
+@@ -77,7 +78,7 @@ customHardFaultHandler:
+     mrs     R12, XPSR
+ 
+     // Save PSR and LR
+-    ldr     R2, = DUMP_START
++    ldr     R2, = __NOINIT_DATA + DUMP_OFFSET
+     str     R12, [R2, #DUMP_HANDLER_PSR]
+     str     LR,  [R2, #DUMP_HANDLER_LR]
+ 
+@@ -130,8 +131,8 @@ customHardFaultHandler:
+ 
+     // Calculate and save checksum
+     mov     R1, 0
+-    ldr     R2, = DUMP_START
+-    ldr     R3, = DUMP_START + DUMP_CHECKSUM
++    ldr     R2, = __NOINIT_DATA + DUMP_OFFSET
++    ldr     R3, = __NOINIT_DATA + DUMP_OFFSET + DUMP_CHECKSUM
+     1:
+     ldr     R0, [R2], 4
+     add     R1, R0
+-- 
+2.51.0

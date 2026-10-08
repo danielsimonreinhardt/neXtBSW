@@ -1,0 +1,18 @@
+# SPDX-License-Identifier: Apache-2.0
+# SYS-32 test component: the application side. Reads the cell values of CellPkgSwc in another task together with
+# their age qualifiers (age.qlf.*, one of them on a wider port) and writes what it saw, so the host test can check
+# what a component gets.
+version: 1
+name: CellAppSwc
+description: Consumer of the cell values and their age qualifiers
+implementation: c
+runnables:
+  - name: Run10ms
+    period_ms: 10
+ports:
+  - { name: Cells_mV, direction: in, type: uint16, runnables: [Run10ms], dimension: 4 }
+  - { name: CellsAge, direction: in, type: uint8, runnables: [Run10ms] }
+  - { name: CurrentAge, direction: in, type: uint16, runnables: [Run10ms] }
+  - { name: SeenCell0_mV, direction: out, type: uint16, runnables: [Run10ms] }
+  - { name: SeenCellsAge, direction: out, type: uint8, runnables: [Run10ms] }
+  - { name: SeenCurrentAge, direction: out, type: uint16, runnables: [Run10ms] }

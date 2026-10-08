@@ -1,0 +1,42 @@
+# Synthetic s32k1xx board for the error branches of bsp/sbc/sbcConfiguration.h (ARCH-41): S32K144 LQFP64, 8 MHz
+# crystal, two UJA113x on three SPI buses. Test data only, no hardware. nxconfig refuses both projects on this board
+# (ARCH-44); bswgen generates them only with that rule switched off (BswGenSbcConfigurationProbeTest.unchecked), and
+# the port header then refuses them at compile time:
+#
+# - SBC_A on SBCA_SPI (LPSPI1), SBC_B on SBCB_SPI (LPSPI0, chip select 1) and on SBCB2_SPI (LPSPI2).
+# - testproject_sbc_two uses SBCA_SPI and SBCB_SPI: two SBC, sbcConfiguration.h and SbcSystem support one.
+# - testproject_sbc_two_buses uses SBCB_SPI and SBCB2_SPI: one SBC with two used SPI buses.
+schema_version: 1
+
+board:
+  name: testboard_sbc_errors
+  mcu: S32K144
+  package: LQFP64
+  clock: { sosc_hz: 8000000 }
+
+devices:
+  - { name: SBC_A, part: UJA1131HW/FD/5V/4Y, module: sbcUja113x }
+  - { name: SBC_B, part: UJA1132HW/5V/4Y, module: sbcUja113x }
+
+spi:     # [MUX] S32K144_LQFP64.pinmux.yaml: LPSPI1 PTD0..PTD3 MUX 3, LPSPI0 PTB2..PTB5 MUX 3, LPSPI2 MUX 3
+  - name: SBCA_SPI
+    instance: LPSPI1
+    sck:  { pin: PTD0 }
+    sin:  { pin: PTD1 }
+    sout: { pin: PTD2 }
+    pcs:  { pin: PTD3, index: 0 }
+    device: SBC_A
+  - name: SBCB_SPI
+    instance: LPSPI0
+    sck:  { pin: PTB2 }
+    sin:  { pin: PTB3 }
+    sout: { pin: PTB4 }
+    pcs:  { pin: PTB5, index: 1 }
+    device: SBC_B
+  - name: SBCB2_SPI
+    instance: LPSPI2
+    sck:  { pin: PTC15 }
+    sin:  { pin: PTC0 }
+    sout: { pin: PTC1 }
+    pcs:  { pin: PTC14, index: 0 }
+    device: SBC_B

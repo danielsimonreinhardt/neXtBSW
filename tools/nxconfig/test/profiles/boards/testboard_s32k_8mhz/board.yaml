@@ -1,0 +1,49 @@
+# Synthetic s32k1xx board for the clock model tests (ARCH-06): S32K144 LQFP64 with an 8 MHz crystal, no SBC, two
+# CAN buses with passive transceivers, console on LPUART1, one complementary PWM pair on FTM1. Test data only.
+# DIAG is on FlexCAN1 (16 message buffers on the S32K144): the projects of this board use it for the bootloader
+# and the clock model only, not in use.can (ARCH-42). The derivative stays S32K144 on purpose (Studio tests).
+schema_version: 1
+
+board:
+  name: testboard_s32k_8mhz
+  mcu: S32K144
+  package: LQFP64
+  clock: { sosc_hz: 8000000 }
+  adc_reference_mv: 5000          # other reference than the eval board; the project measures internal channels only
+
+devices:
+  - { name: PHY_A, part: TJA1051 }
+  - { name: PHY_B, part: TJA1051 }
+
+can:
+  - { name: VEH, instance: FlexCAN0, rx: { pin: PTE4 }, tx: { pin: PTE5 }, phy: PHY_A }
+  - { name: DIAG, instance: FlexCAN1, rx: { pin: PTA12 }, tx: { pin: PTA13 }, phy: PHY_B }
+
+uart:
+  - { name: CONSOLE, instance: LPUART1, rx: { pin: PTC8 }, tx: { pin: PTC9 } }
+
+pwm:
+  - name: FAN
+    instance: FTM1
+    mode: complementary
+    active: { high_side: high, low_side: high }
+    pairs:
+      - { name: FAN_A, high_side: FAN_A_HS, low_side: FAN_A_LS }
+    channels:
+      - { name: FAN_A_HS, channel: 0, pin: PTB2 }
+      - { name: FAN_A_LS, channel: 1, pin: PTB3 }
+    # IO-24: synthetic fast power stage, no component. Minimum dead time: switch max(0, (30 + 10) - 8) = 32 ns
+    # (off path not shortened by the smaller turn-off resistor) + driver 55 - 40 = 15 ns + project margin
+    power_stage:
+      switch: { turn_on_delay_ns: 8, rise_time_ns: 12, turn_off_delay_ns: 30, fall_time_ns: 10,
+                test_gate_resistance_mohm: 4700, internal_gate_resistance_mohm: 1000, gate_charge_nc: 30,
+                r_ds_on_mohm: 5, r_ds_on_hot_mohm: 8, source: "synthetic test stage IO-24" }
+      driver: { turn_on_delay_ns: 40, turn_off_delay_ns: 55, source: "synthetic test stage IO-24" }
+      gate: { turn_on_resistance_mohm: 4700, turn_off_resistance_mohm: 2200, source: "synthetic test stage IO-24" }
+      short_circuit: { vds_threshold_mv: 500, blanking_ns: 200, source: "synthetic test stage IO-24" }
+
+dio:
+  inputs:
+    - { name: KEY, pin: PTE8, active: low }       # testproject_s32k_no_inputs does not use it (ARCH-13)
+  outputs:
+    - { name: LED, pin: PTD16 }

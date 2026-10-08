@@ -1,0 +1,38 @@
+# Synthetic bootloader memory layout for host tests (PLAT-16): S32K116, 2-KB sectors.
+# Derivative facts: mcudb/s32k1xx/S32K116.yaml (PFLASH 128 KB at 0, sector_size 0x800, phrase 8 bytes;
+# SRAM_L 1 KB at 0x1FFFFC00 + SRAM_U 14 KB at 0x20000000 = 15 KB contiguous). Partitioning as in the eval board
+# convention: bootloader from the start of the flash, validity record in the last sector, application in between.
+# Not a board profile: the S32K116EVB needs board and project files (PLAT-11/PLAT-13).
+name: s32k116_2k
+source: >
+  mcudb/s32k1xx/S32K116.yaml (derivative facts); bootloader 0x2000 = 4 sectors, application RAM SRAM_L + SRAM_U,
+  no-init 0x400 - the same rules tools/nxconfig/memory.py applies
+family: s32k1xx                   # MCU family: hooks bootloader/platforms/<family> (BL-08)
+target:
+  board: buildtest_s32k116
+  derivative: S32K116
+flash:
+  start: 0x00000000
+  size: 0x00020000
+  sector_size: 0x800
+  program_size: 8
+bootloader_size: 0x2000
+record_address: 0x0001F800        # last sector of PFLASH
+app_start: 0x00002000
+app_end: 0x0001F800               # exclusive: the record sector
+ram:
+  start: 0x1FFFFC00               # SRAM_L
+  end: 0x20003800                 # end of SRAM_U (exclusive)
+boot_request: 0x200037F0          # 0x10 below the RAM end, inside the no-init area
+bootloader_ram:                   # RAM the bootloader and its updater run in (memory.bootloader.ram)
+  start: 0x1FFFFC00
+  size: 0x00001400                # SRAM_L (1 KB) plus the first 4 KB of SRAM_U
+stack_size: 0x00000800
+# Diagnostic addresses (COM-11, project section diagnostics): other ids than the eval board, so that the host
+# tests of this layout show the bootloader answering on the configured addresses.
+diagnostics:
+  request_id: 0x7A0
+  functional_id: 0x7DF
+  response_id: 0x7A8
+  padding: 0x00                   # unpadded-looking filler (0x00 is a legal filler byte too)
+  scan_start: 0x00000410          # family s32k1xx: behind vector table and flash configuration field

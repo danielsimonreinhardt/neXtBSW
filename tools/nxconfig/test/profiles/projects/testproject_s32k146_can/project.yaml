@@ -1,0 +1,30 @@
+# Synthetic project for the message buffer check (ARCH-42) on testboard_s32k146_can: the application uses the two
+# buses on instances with 32 message buffers (FlexCAN0, FlexCAN1); SERVICE on FlexCAN2 (16 buffers) is left out of
+# use.can. The FlexCAN driver of OpenBSW needed 32; since COM-26 the family port's driver splits 16 buffers. The
+# tests add SERVICE and expect no error, and the error at use.can with the requirement of the old driver (32).
+# Test data only.
+schema_version: 1
+
+project:
+  name: testproject_s32k146_can
+  board: ../../boards/testboard_s32k146_can
+
+clock:
+  system_hz: 80000000
+
+use:
+  can: [POWERTRAIN, BODY]
+  uart: all
+
+can:
+  POWERTRAIN: { bitrate: 500000 }
+  BODY: { bitrate: 250000 }
+  SERVICE: { bitrate: 500000 }
+
+interrupts:
+  ranks:
+    - { source: can, name: POWERTRAIN, rank: 3 }
+    - { source: can, name: BODY, rank: 3 }
+
+uart:
+  CONSOLE: { baudrate: 115200 }

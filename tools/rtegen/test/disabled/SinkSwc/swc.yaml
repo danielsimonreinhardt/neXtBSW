@@ -1,0 +1,24 @@
+# SPDX-License-Identifier: Apache-2.0
+# Test component of the RTE-23 profile tools/rtegen/test/disabled: reads values of a disabled component
+# (LevelSrcSwc), of a disabled runnable (AuxSrcSwc.RunAux10ms), of a running one (AuxSrcSwc.RunMain10ms) and the
+# age qualifier of a port whose writer is disabled. It echoes what it read, so the host test sees which values the
+# RTE hands a runnable that stays enabled.
+version: 1
+name: SinkSwc
+description: Reads values of disabled parts and echoes them (RTE-23 test)
+implementation: c
+runnables:
+  - name: Run10ms
+    period_ms: 10
+ports:
+  - { name: Level_mV, direction: in, type: uint32, runnables: [Run10ms] }   # disabled source: disabled_values 1234
+  - { name: LevelQlf, direction: in, type: uint8, runnables: [Run10ms] }    # disabled source: QLF_NOT_AVAILABLE
+  - { name: LevelAge, direction: in, type: uint8, runnables: [Run10ms] }    # age.qlf of a disabled writer: 64
+  - { name: Main, direction: in, type: uint16, runnables: [Run10ms] }       # running source
+  - { name: Aux, direction: in, type: uint16, runnables: [Run10ms] }        # disabled runnable: disabled_values 77
+  - { name: Echo_mV, direction: out, type: uint32, runnables: [Run10ms] }
+  - { name: EchoQlf, direction: out, type: uint8, runnables: [Run10ms] }
+  - { name: EchoAge, direction: out, type: uint8, runnables: [Run10ms] }
+  - { name: EchoMain, direction: out, type: uint16, runnables: [Run10ms] }
+  - { name: EchoAux, direction: out, type: uint16, runnables: [Run10ms] }
+  - { name: Runs, direction: out, type: uint16, runnables: [Run10ms] }

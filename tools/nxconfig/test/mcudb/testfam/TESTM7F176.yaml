@@ -1,0 +1,33 @@
+# Synthetic derivative for tests (PLAT-09): Cortex-M7 with double precision FPU (core with several FPU variants).
+schema_version: 1
+
+derivative:
+  name: TESTM7F176
+  family: testfam
+  core: cortex-m7f
+  fpu: dp
+  packages: [LQFP176]
+  pin_pattern: "P[A-K]([0-9]|1[0-5])"
+  sources: [synthetic]
+
+memory:
+  - { name: FLASH, kind: code_flash, start: 0x08000000, size: 0x00200000, sector_size: 0x20000 }
+  - { name: DTCM, kind: ram, start: 0x20000000, size: 0x00020000 }
+
+instances:
+  FDCAN1: { class: can }
+  FDCAN2: { class: can }
+  USART1: { class: uart }
+
+pinmux:
+  LQFP176:
+    signals:
+      GPIO: { PA0: 0, PB0: 0, PB1: 0, PD0: 0, PD1: 0 }
+      FDCAN1_RX: { PD0: 9 }
+      FDCAN1_TX: { PD1: 9 }
+
+# BL-03: synthetische Chipkennung (Testdaten, keine Hardware)
+uid:
+  address: 0x1FFF0000
+  size: 12
+  source: "Testdaten"

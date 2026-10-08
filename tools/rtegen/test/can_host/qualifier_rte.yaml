@@ -1,0 +1,69 @@
+# ECU-Beschreibung nur für den Host-Test des Signal-Qualifiers (COM-03, tools/rtegen/test_rtegen.py:
+# RteQualifierHostTest). Sie nutzt die eingecheckte DemoSwc-Komponente und die Testmatrix qualifier.dbc:
+# je eine empfangene Botschaft mit E2E-Profil P01, P02 und P11 (Modus NIBBLE), eine ohne E2E, eine
+# gesendete mit P02-Schutz. Beide on_error-Varianten und drei Entprellzeiten kommen vor.
+#
+# Pfade sind wie in einem Projekt relativ zu dieser Datei (RTE-22, schema_version: 2). Diese Datei heisst nicht
+# rte.yaml und wird von keinem Projekt genannt, deshalb findet `nxconfig migrate` sie nicht selbst - sie wurde von
+# Hand auf Format 2 gezogen.
+
+schema_version: 2
+
+tasks:
+  - name: swc
+    period_ms: 10
+    priority: 30
+    stack_bytes: 2048
+    runnables: [DemoSwc.Run10ms, DemoSwc.Run100ms]
+
+components:
+  - name: DemoSwc
+    path: ../../../../swc/DemoSwc
+
+can:
+  dbc: qualifier.dbc
+  node: EVB
+  bus: CAN0
+  task: swc
+  monitor: [RxP01, RxP02, RxP11]
+  qualifiers:
+    RxP01:
+      debounce_ms: 30           # 3 Task-Zyklen
+      on_error: hold
+      e2e: { profile: P01, data_id: 0x0123, data_id_mode: BOTH, crc: Crc, counter: Counter }
+    RxP02:
+      debounce_ms: 0            # ohne Entprellung: Fehler sofort
+      on_error: init            # Signale fallen auf GenSigStartValue
+      e2e:
+        profile: P02
+        data_id_list: [0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08,
+                       0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x10]
+        crc: Crc
+        counter: Counter
+    RxP11:
+      debounce_ms: 20
+      e2e:
+        profile: P11
+        data_id: 0x0A12         # Modus NIBBLE: höchstens 12 Bit, das High-Nibble 0xA geht mit
+        data_id_mode: NIBBLE
+        data_id_nibble: IdNibble
+        crc: Crc
+        counter: Counter
+    RxPlain:
+      timeout_ms: 50            # überschreibt GenMsgTimeoutTime
+      on_error: init
+    TxP02:
+      e2e:
+        profile: P02
+        data_id_list: [0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18,
+                       0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F, 0x20]
+        crc: Crc
+        counter: Counter
+
+connections:
+  DemoSwc.Button1.Button1: can.rx.RxPlain.Flag
+  DemoSwc.MotorNtc_mV.MotorNtc_mV: can.qlf.RxP01     # Qualifier an einem Required Port
+  DemoSwc.PcCommandQlf.PcCommandQlf: can.qlf.RxP02   # uint8-Qualifier-Port (COM-13)
+  DemoSwc.Led1.Led1: can.tx.TxP02.Flag
+  DemoSwc.Led2.Led2: rte
+  DemoSwc.MotorNtcFiltered_mV.MotorNtcFiltered_mV: can.tx.TxP02.Value

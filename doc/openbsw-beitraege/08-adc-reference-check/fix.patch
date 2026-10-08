@@ -1,0 +1,76 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Your Name <you@example.com>
+Date: Thu, 17 Sep 2026 12:00:00 +0200
+Subject: [PATCH] Fix division by zero in the ADC reference check of SafeSystem
+
+checkAdcReference() divides the nominal bandgap voltage by the raw
+bandgap reading. AnalogInput::get() returns a BspReturnCode that the
+caller discards and leaves the output at zero when the conversion does
+not complete, so a single failed conversion makes the function divide
+by zero. That is undefined behaviour in a function whose result feeds a
+safety monitor, and the value derived from it is used again in
+checkInternalSupplies().
+
+A raw bandgap value of zero now reports the ADC reference fault
+directly, without the division, and keeps the last known reference.
+
+The valid window of the reference voltage and its nominal value moved
+into named constants with a comment saying where they come from. They
+are properties of the board: the S32K148EVB ties VREFH to the 5 V rail,
+so 4800 to 5200 mV is right here, but a board with a 3.3 V or an
+external 4.096 V reference reports a fault on every cycle and resets
+the MCU until the numbers are adapted. No change in behaviour for the
+S32K148EVB.
+
+Signed-off-by: Your Name <you@example.com>
+---
+ .../safeSystem/src/safeSystem/SafeSystem.cpp  | 26 ++++++++++++++++---
+ 1 file changed, 23 insertions(+), 3 deletions(-)
+
+diff --git a/executables/referenceApp/platforms/s32k148evb/safety/safeSystem/src/safeSystem/SafeSystem.cpp b/executables/referenceApp/platforms/s32k148evb/safety/safeSystem/src/safeSystem/SafeSystem.cpp
+index 950acf37..93b73d2c 100644
+--- a/executables/referenceApp/platforms/s32k148evb/safety/safeSystem/src/safeSystem/SafeSystem.cpp
++++ b/executables/referenceApp/platforms/s32k148evb/safety/safeSystem/src/safeSystem/SafeSystem.cpp
+@@ -18,7 +18,19 @@
+ 
+ namespace safety
+ {
+-SafeSystem::SafeSystem() : _counter(0U), _adcRef(5000U) {}
++namespace
++{
++// The ADC reference of this board is VREFH, which the S32K148EVB ties to the 5 V rail. A board that
++// feeds VREFH from another source (3.3 V, an external 4.096 V reference) has to adapt these three
++// values, otherwise checkAdcReference() reports a fault on every cycle and the supervisor resets
++// the MCU. They are named here rather than spelled out at the comparison so that a port does not
++// have to search for them.
++constexpr uint32_t ADC_REFERENCE_NOMINAL_MV = 5000U;
++constexpr uint32_t ADC_REFERENCE_MIN_MV     = 4800U;
++constexpr uint32_t ADC_REFERENCE_MAX_MV     = 5200U;
++} // namespace
++
++SafeSystem::SafeSystem() : _counter(0U), _adcRef(ADC_REFERENCE_NOMINAL_MV) {}
+ 
+ void SafeSystem::init()
+ {
+@@ -41,8 +53,16 @@ void SafeSystem::checkAdcReference(uint32_t const bandgapRawValue)
+ {
+     constexpr uint32_t adcMaxRaw      = 0xFFFU; // 12-bit ADC
+     constexpr uint32_t bandgapVoltage = 1000U;
+-    _adcRef                           = bandgapVoltage * adcMaxRaw / bandgapRawValue;
+-    if ((_adcRef < 4800U) || (_adcRef > 5200U))
++    if (bandgapRawValue == 0U)
++    {
++        // AnalogInput::get() leaves the value at zero when the conversion fails, and a bandgap
++        // reading of zero is a fault of the reference path anyway. Dividing by it would be
++        // undefined behaviour, so report the fault instead and keep the last reference.
++        safety::SafeSupervisor::getInstance().adcReferenceMonitor.trigger();
++        return;
++    }
++    _adcRef = bandgapVoltage * adcMaxRaw / bandgapRawValue;
++    if ((_adcRef < ADC_REFERENCE_MIN_MV) || (_adcRef > ADC_REFERENCE_MAX_MV))
+     {
+         auto& supervisor = safety::SafeSupervisor::getInstance();
+         supervisor.adcReferenceMonitor.trigger();
+-- 
+2.30.1.windows.1
+

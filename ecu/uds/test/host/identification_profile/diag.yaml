@@ -1,0 +1,68 @@
+# Test profile of COM-44, not the eval board's description: the identification values of the application stack
+# (hardware.number, nextbsw.version, compatibility.*) with the diagnostic addresses and memory layout of
+# projects/evalboard_s32k144_demo, served by the host build of ecu/uds (ecu/uds/test/host/test_app_uds_identification.py).
+#
+# F191 and F195 as in tools/diaggen/standard_diag.yaml. The compatibility record stands under 0xFD10: tools/nxconfig
+# (diagdesc.py BOOTLOADER_DIDS) refuses 0xF1A0 in a description of the application today, so the test answers the
+# record under a free identifier of the manufacturer - its bytes are compared with the bootloader's 0xF1A0.
+schema_version: 1
+
+sessions:
+  - name: Default
+    id: 0x01
+    p2_ms: 50
+    p2_star_ms: 5000
+  - name: Extended
+    id: 0x03
+    p2_ms: 50
+    p2_star_ms: 5000
+
+data_identifiers:
+  - identifier: 0xF191
+    name: EcuHardwareNumber
+    data:
+      - {name: hardwareNumber, type: ascii, length_bytes: 32, source: {bsw: hardware.number}}
+
+  - identifier: 0xF195
+    name: SystemSupplierSoftwareVersion
+    data:
+      - {name: nextbswVersion, type: ascii, length_bytes: 48, source: {bsw: nextbsw.version}}
+
+  - identifier: 0xFD10
+    name: TargetCompatibility
+    data:
+      - {name: recordVersion, type: uint8, source: {bsw: compatibility.version}}
+      - {name: targetId, type: uint32, source: {bsw: compatibility.target}}
+      - {name: layoutId, type: uint32, source: {bsw: compatibility.layout}}
+      - {name: appStart, type: uint32, source: {bsw: compatibility.app_start}}
+      - {name: appEnd, type: uint32, source: {bsw: compatibility.app_end}}
+      - {name: recordAddress, type: uint32, source: {bsw: compatibility.record_address}}
+      - name: recordState
+        type: uint8
+        source: {bsw: compatibility.state}
+        values:
+          - {value: 0x00, text: OK}
+          - {value: 0x01, text: FORMAT}
+          - {value: 0x02, text: TARGET}
+          - {value: 0x03, text: LAYOUT}
+          - {value: 0x04, text: AREA}
+          - {value: 0x10, text: NO_COMPATIBILITY_BLOCK}
+          - {value: 0xFF, text: NO_RECORD}
+
+  - identifier: 0xF186
+    name: ActiveDiagnosticSession
+    data:
+      - {name: activeSession, type: uint8, source: {bsw: uds.session}}
+
+  # PLAT-79: configuration identity as in tools/diaggen/standard_diag.yaml (last, the tests of COM-44 count the
+  # identifiers above by position)
+  - identifier: 0xF1F1
+    name: ConfigurationIdentity
+    data:
+      - {name: configurationIdentity, type: ascii, length_bytes: 64, source: {bsw: configuration.identity}}
+
+  # PLAT-93: commit of the customer workspace as in tools/diaggen/standard_diag.yaml
+  - identifier: 0xF1F2
+    name: WorkspaceVersion
+    data:
+      - {name: workspaceVersion, type: ascii, length_bytes: 48, source: {bsw: workspace.version}}

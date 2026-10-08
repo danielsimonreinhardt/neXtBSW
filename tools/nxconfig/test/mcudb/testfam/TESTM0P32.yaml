@@ -1,0 +1,31 @@
+# Synthetic derivative for tests (PLAT-09): Cortex-M0+ without FPU (core with a single FPU variant, fpu omitted).
+schema_version: 1
+
+derivative:
+  name: TESTM0P32
+  family: testfam
+  core: cortex-m0plus
+  packages: [QFN32]
+  pin_pattern: "P[AB]([0-9]|1[0-5])"
+  sources: [synthetic]
+
+memory:
+  - { name: FLASH, kind: code_flash, start: 0x00000000, size: 0x00020000, sector_size: 0x800 }
+  - { name: RAM, kind: ram, start: 0x20000000, size: 0x00004000 }
+
+instances:
+  CAN0: { class: can }
+  UART0: { class: uart }
+
+pinmux:
+  QFN32:
+    signals:
+      GPIO: { PA0: 1, PA1: 1, PB0: 1 }
+      CAN0_RX: { PA0: 5 }
+      CAN0_TX: { PA1: 5 }
+
+# BL-03: synthetische Chipkennung (Testdaten, keine Hardware)
+uid:
+  address: 0x1FFF0000
+  size: 12
+  source: "Testdaten"

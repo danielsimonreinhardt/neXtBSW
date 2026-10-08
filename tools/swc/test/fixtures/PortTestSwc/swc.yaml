@@ -1,0 +1,20 @@
+# SPDX-License-Identifier: Apache-2.0
+# Test component for writing ports into an existing model (TOOL-14, SwcPortsTest): two runnables, ports that
+# carry logic (RawLevel_mm, Offset_mm, Level_mm) and ports that only carry the placeholders of swc_create
+# (SpareIn, SpareOut) - the two cases the removal rule distinguishes. Mode is read by both runnables, so its
+# root line branches; Offset_mm branches inside Fast5ms (TOOL-107). Invented names, no board signal.
+version: 1
+name: PortTestSwc
+description: Port editing test (TOOL-14)
+runnables:
+  - name: Fast5ms
+    period_ms: 5
+  - name: Slow50ms
+    period_ms: 50
+ports:
+  - { name: RawLevel_mm, direction: in, type: uint16, runnables: [Fast5ms] }
+  - { name: Offset_mm, direction: in, type: sint16, runnables: [Fast5ms] }
+  - { name: SpareIn, direction: in, type: uint8, runnables: [Slow50ms] }
+  - { name: Mode, direction: in, type: uint8, runnables: [Fast5ms, Slow50ms] }
+  - { name: Level_mm, direction: out, type: sint16, runnables: [Fast5ms] }
+  - { name: SpareOut, direction: out, type: uint8, runnables: [Slow50ms] }

@@ -1,0 +1,41 @@
+# PLAT-69: family facts of the rm4x kind laid over the synthetic derivative TESTR4F (tools/nxconfig/test/mcudb/testfam)
+# for the profiles testboard_r4f/testproject_r4f. Test data only, no real chip: the numbers are chosen small so that
+# the tests can name every product of the output divider stages.
+#
+#   instances.*.clock.domain       peripherals on named clock domains, no clock select of their own
+#   instances.GIOA/GIOB            GPIO ports as instances of class gpio (channels = pins per port)
+#   clock.pll                      output divider in two stages (2 x 3) with a limit between them
+#   clock.flash_wait_states        three bands of HCLK
+#   vim.requests                   default channel of some requests (merged into vim of TESTR4F)
+#   device_header                  generated from a register description (regdesc2header)
+#
+# The overlay replaces or adds these keys (vim: merged); everything else stays as in TESTR4F.yaml.
+clock:
+  oscillator: { min_hz: 5000000, max_hz: 20000000, source: synthetic }
+  pll:
+    input_hz: [1000000, 20000000]
+    vco_hz: [150000000, 550000000]
+    input_divider: [1, 64]
+    multiplier: [1, 256]
+    output_divider_stages: [[1, 2], [1, 3]]
+    post_divider_input_max_hz: 400000000
+    output_dividers: [1, 2, 3, 4, 6]
+    source: synthetic
+  max_hz: { HCLK: 160000000, VCLK: 80000000, VCLKA1: 80000000 }
+  flash_wait_states:
+    clock: HCLK
+    bands:
+      - { max_hz: 50000000, data: 0 }
+      - { max_hz: 100000000, data: 1, pipeline: true }
+      - { max_hz: 160000000, data: 2, address: 1, pipeline: true }
+    source: synthetic
+  source: synthetic
+instances:
+  CAN1: { class: can, clock: { domain: VCLKA1, source: synthetic } }
+  CAN2: { class: can, clock: { domain: VCLKA1, source: synthetic } }
+  UART1: { class: uart, clock: { domain: VCLK, source: synthetic } }
+  GIOA: { class: gpio, channels: 8, clock: { domain: VCLK, source: synthetic } }
+  GIOB: { class: gpio, channels: 8, clock: { domain: VCLK, source: synthetic } }
+vim:
+  requests: { SYNTH_FIQ_A: 0, CAN1_LEVEL0: 5, CAN2_LEVEL0: 7, GIO_A: 9 }
+device_header: { file: testfam/TESTR4F_regs.h, describes: TESTR4F, generated_by: regdesc2header }

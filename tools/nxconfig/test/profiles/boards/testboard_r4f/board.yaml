@@ -1,0 +1,18 @@
+# Synthetic board for the core model tests (ARCH-23): Cortex-R4F derivative with a VIM, two CAN buses, 16 MHz
+# crystal, no SBC, JTAG probe other than J-Link (no J-Link targets).
+schema_version: 1
+
+board:
+  name: testboard_r4f
+  mcu: TESTR4F
+  package: BGA100
+  clock: { sosc_hz: 16000000 }
+  debug: { interface: JTAG, probe: XDS110 }
+
+devices:
+  - { name: PHY1, part: TJA1051 }
+  - { name: PHY2, part: TJA1051 }
+
+can:
+  - { name: BUS1, instance: CAN1, rx: { pin: GIOA0 }, tx: { pin: GIOA1 }, phy: PHY1 }
+  - { name: BUS2, instance: CAN2, rx: { pin: GIOB0 }, tx: { pin: GIOB1 }, phy: PHY2 }

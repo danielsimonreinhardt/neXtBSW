@@ -1,0 +1,85 @@
+# Port manifest of the family port template s32k1xx (PLAT-95, finding of TOOL-59).
+#
+# What this file is. `platforms/<family>/port` is the hand-written port of a family (PLAT-23): every board of the
+# family is built with it (root CMakeLists.txt, NX_FAMILY_PORT_DIR). Its code reads a handful of configured names
+# that no schema asks for - the internal ADC channels of the safety supervision, the pins of the safe state, the
+# CAN bus of the console and the bootloader. Until now a project that did not have them failed in the compiler,
+# with an error deep in the generated headers ("Ai_BANDGAP is not a member of bios::AnalogInput") instead of in
+# `nxconfig check`. A new ECU almost always brings its own board rather than a known eval board (TOOL-72), so the
+# port has to say what it needs, and tools/nxconfig has to check it.
+#
+# What this file is NOT. It carries **no value of the ECU**: it is not a fourth configuration level (architecture
+# section 4). Every value stays where it belongs - which ADC instance carries the bandgap is a derivative fact,
+# which pin shows the safe state is a project decision, the reference voltage is a board fact. This file only
+# states *that* the port needs such an entry and *why*, so that nxconfig can say what is missing, in which file, at
+# which YAML path. It is a property of the port, like the `requires:` of a module manifest - a second family that
+# needs the same entries brings its own copy of this file, a family without a port template has none.
+#
+# Who reads it. tools/nxconfig/checks.py (section "requirements of the family port", port_requirements): it reads
+# platforms/<family>/port/port.yaml of the family of the project's derivative and checks every requirement against
+# project, board and derivative. Findings carry file, line, YAML path and what to do.
+#
+# When it bites. The requirements are checked for a project that is **built** with this port, that is one whose
+# board has a board port `ecu/platforms/<board>/Options.cmake` (the root CMakeLists.txt refuses to configure a
+# board without one, and that file is what selects OPENBSW_PLATFORM). A board folder without a board port is a
+# configuration-only profile (the test profiles under tools/nxconfig/test and tools/bswgen/test): it is never
+# compiled, so a missing entry cannot fail a build and is not reported.
+schema_version: 1
+port: s32k1xx
+description: >-
+  Requirements the hand-written family port of the S32K1 family puts on a project, its board and its derivative -
+  configured names its code reads and that no schema asks for.
+
+requires:
+  # Internal ADC inputs without a pin (project.yaml adc_internal). `name` is the project's channel name, which the
+  # generator turns into the enumerator bios::AnalogInput::Ai_<name>; `channel` is the internal channel of the ADC
+  # instance of the derivative (mcudb instances.<adc>.internal_channels) that has to be behind it. Which instance
+  # carries it stays the project's choice - any ADC of the derivative that offers the channel will do.
+  adc_internal:
+    - name: BANDGAP
+      channel: BANDGAP
+      code: platforms/s32k1xx/port/safety/safeSystem/src/safeSystem/SafeSystem.cpp
+      reason: >-
+        the safety supervision computes the ADC reference voltage from the bandgap reading (1000 mV against VREFH)
+        and triggers the reference monitor outside board.adc_reference_mv +- the project's tolerance; without the
+        channel there is no reference monitor and the port does not compile
+    - name: ADCINTERNAL0
+      channel: INTERNAL0
+      code: platforms/s32k1xx/port/safety/safeSystem/src/safeSystem/SafeSystem.cpp
+      reason: >-
+        the internal supply monitor of the MCU reads it every safety cycle (SYS-41); without the channel the
+        supply of the core is unmonitored and the port does not compile
+
+  # No `can:` requirement: the port demands no bus by name or instance (ARCH-61). Until ARCH-61 it did - main.cpp
+  # enabled the message buffer interrupts of a bus named CAN0 by hand, and the dead copy
+  # bspConfiguration/include/bsp/can/canConfiguration.h held a FlexCAN0 device `Can0Config`. Both are gone: every
+  # bus of the project comes from the generated lists (NX_CAN_BUSES, NX_CAN_MB_VECTORS, NX_CAN_MB_IRQS) with its
+  # own name, instance, base address and interrupt vectors, and an application without a CAN bus compiles without
+  # the CAN parts (PLATFORM_SUPPORT_CAN follows use.can since ARCH-58). The group `can` of the manifest format exists
+  # (checks.py PORT_GROUPS, with tests) for a family port that really does demand a named bus on a named instance.
+
+  # Values of the board the port's code needs (board.yaml `board.<key>`).
+  board:
+    - key: adc_reference_mv
+      code: platforms/s32k1xx/port/safety/safeSystem/src/safeSystem/SafeSystem.cpp
+      reason: >-
+        the nominal voltage at VREFH the reference monitor compares its bandgap reading with (generated as
+        bsp/adc/adcReferenceConfiguration.h, ARCH-32); without it nothing can be said about the reference
+
+  # Sections of the project the port's code needs (project.yaml `<key>`).
+  project:
+    - key: safety
+      code: platforms/s32k1xx/port/safety/safeIo/src/safeIo/SafeState.cpp
+      reason: >-
+        the safe state of the port uses the pins of this section: safe_state_output as the indicator
+        (bios::Io::SAFETY_SAFE_STATE_PIN), locked_pin as the role pin of the SafeIo register check (SYS-24) and
+        test_pin as its input (bios::Io::SAFETY_TEST). Without the section the generator writes none of the three
+        and the safety package of the port does not compile
+    - key: memory
+      code: platforms/s32k1xx/port/main/CMakeLists.txt
+      reason: >-
+        the application linker script of the port places the image behind the bootloader (generated
+        memory/memoryLayout.h, ARCH-08); the port has no layout for an image without a bootloader, so the build
+        stops at configure without the section. The partitioning in turn needs the bootloader section and the
+        diagnostic addresses, and the bootloader needs a CAN bus of the board (bootloader.can) - an application
+        may use no CAN bus (ARCH-42, PLAT-96), but on this port the board needs one for the bootloader

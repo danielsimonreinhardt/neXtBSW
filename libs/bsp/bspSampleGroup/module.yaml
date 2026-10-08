@@ -1,0 +1,15 @@
+# Module manifest (doc/architecture/README.md, section 5), minimal (DOC-14): a contract is a catalogue entry only -
+# tools/nxconfig and tools/bswgen assign no board device, take no project values through the module and generate
+# nothing for it. The project describes its sample groups in `sample_groups` (tools/nxconfig/samplegroup.py); the
+# implementation is the sample group of a family (platforms/s32k1xx/bsp/bspSampleGroup, generated
+# bsp/sampleGroup/sampleGroupConfiguration.h). Concept: doc/architecture/fast-control-loop.md section 3 (IO-62).
+module: bspSampleGroup
+kind: contract
+description: Sample group contract - channels converted after every hardware trigger of a PWM group, one group complete interrupt with the raw values to a static consumer
+# Evidence (doc/changelog.d/IO-62.md): host tests of the contract and of the s32k1xx family part against register
+# models and a model of the trigger chain; no board run yet.
+cmake_target: bspSampleGroup
+verification: mock
+verification_note: >-
+  Host tests only (contract bookkeeping; s32k1xx chain TRGMUX -> PDB -> ADC against register models, mutants, target
+  compile); the sample instant and the interrupt have not been measured on a board yet.

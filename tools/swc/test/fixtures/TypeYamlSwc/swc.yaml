@@ -1,0 +1,52 @@
+# SPDX-License-Identifier: Apache-2.0
+# RTE-15 test component: the ports of the RTE-04 test model TypeSwc (tools/rtegen/test/types/TypeSwc, built by hand in
+# TypeSwc_create.m) described in swc.yaml - array, record with enumeration, fixed point, array and boolean, nested
+# record, enumeration, fixed point with slope and bias. swc_create builds the model from it (logic:
+# TypeYamlSwc_logic.m, the same as TypeSwc), SwcTypesTest generates code and RTE and compares them with TypeSwc.
+# The records are listed before the types they use on purpose: the order of types: is free.
+version: 1
+name: TypeYamlSwc
+description: Named data types from swc.yaml (RTE-15)
+runnables:
+  - { name: Run10ms, period_ms: 10 }
+types:
+  - name: TypeYamlSwc_StatBus
+    kind: record
+    description: status record (RTE-15 test)
+    elements:
+      - { name: Sum, type: uint32 }
+      - { name: Max, type: uint16 }
+      - { name: Mode, type: TypeYamlSwc_Mode }
+      - { name: Echo, type: TypeYamlSwc_CmdBus }
+  - name: TypeYamlSwc_CmdBus
+    kind: record
+    description: command record (RTE-15 test)
+    elements:
+      - { name: Mode, type: TypeYamlSwc_Mode }
+      - { name: Speed, type: TypeYamlSwc_Speed, unit: rpm }
+      - { name: Limits, type: uint8, dimension: 2 }
+      - { name: Enable, type: boolean }
+  - name: TypeYamlSwc_Mode
+    kind: enum
+    description: operating mode, Fault with a gap
+    literals: [Off, Run, {Fault: 3}]
+  - name: TypeYamlSwc_Speed
+    kind: fixed
+    base: sint16
+    lsb: 0.0625
+    unit: rpm
+  - name: TypeYamlSwc_Temp
+    kind: fixed
+    base: uint16
+    lsb: 0.1
+    offset: -40
+    unit: degC
+ports:
+  - { name: Samples, direction: in, type: uint16, dimension: 4, runnables: [Run10ms] }
+  - { name: Cmd, direction: in, type: TypeYamlSwc_CmdBus, runnables: [Run10ms] }
+  - { name: ModeIn, direction: in, type: TypeYamlSwc_Mode, runnables: [Run10ms] }
+  - { name: Temp, direction: in, type: TypeYamlSwc_Temp, unit: degC, min: -40, max: 125, runnables: [Run10ms] }
+  - { name: Scaled, direction: out, type: uint16, dimension: 4, runnables: [Run10ms] }
+  - { name: Stat, direction: out, type: TypeYamlSwc_StatBus, runnables: [Run10ms] }
+  - { name: ModeOut, direction: out, type: TypeYamlSwc_Mode, runnables: [Run10ms] }
+  - { name: TempOut, direction: out, type: TypeYamlSwc_Temp, unit: degC, runnables: [Run10ms] }

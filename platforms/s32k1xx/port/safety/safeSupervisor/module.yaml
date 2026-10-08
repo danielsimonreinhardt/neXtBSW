@@ -1,0 +1,55 @@
+# Module manifest (doc/architecture/README.md, section 5) of a module of the port (section 3, rule 2): tools/nxconfig
+# reads platforms/<family>/port/**/module.yaml (config.port_module_dirs), like safeLifecycle and safeSystem next to it.
+#
+# SYS-53 (after SYS-43 and SYS-29): the project values of the safe supervisor. Its code is family neutral
+# (ecu/safety/safeSupervisor, CMake target safeSupervisor); the manifest lives in the family port because the family
+# port decides that the supervisor runs in its safety task (SafetyManager, main.cpp) and counts its times in cycles
+# of that task (modules.safeLifecycle.task_period_ms). Another family port that uses the supervisor brings its own
+# copy of this manifest. Generated into integration/safeSupervisorConfiguration.h (tools/bswgen), read by main.cpp of
+# the family port (reset-loop limit, SYS-43) and by SafeSupervisor.h (window of the device-bus correlation, SYS-29).
+# Derived by tools/nxconfig, never set: the window in safety cycles, ceil(device_bus_window_ms / task_period_ms),
+# generated as NX_MODULE_SAFESUPERVISOR_DERIVED_DEVICE_BUS_WINDOW_CYCLES (checks.py _safe_supervisor).
+module: safeSupervisor
+kind: service
+description: Safe supervisor - reactions to safety events, reset-loop limit and device-bus correlation (safety task)
+# Evidence (CHANGELOG.md): SYS-43 board check B11 passed and B10 in part on 2026-09-22 with the values 3 / 60000 ms
+# (then provisional defaults in main.cpp, now the defaults below); the device-bus correlation has no reporting
+# device yet (SYS-28) and is covered by host tests only.
+verification: hardware
+verification_note: >-
+  The reset-loop limit with 3 resets and 60 s ran on the eval board (hold after three watchdog resets, count cleared
+  after a fault-free minute); the device-bus window and other values are covered by host and generator tests only.
+project_parameters: true
+parameters:
+  reset_loop_limit:
+    type: int
+    min: 1
+    max: 255
+    default: 3
+    description: >-
+      consecutive safety resets (a reset the supervisor marked before its reaction S1 + S2, a real watchdog reset, a
+      fault exception or core lockup) after which the start holds the safe state S1 without a reset
+      (RESET_LOOP_LIMIT, SSR-065); only a power cycle ends the hold. 1 holds at the first safety reset.
+  reset_loop_clear_ms:
+    type: int
+    min: 10
+    max: 86400000
+    default: 60000
+    unit: ms
+    description: >-
+      operation without a safety reset that clears the count of the reset-loop limit, counted in cycles of the
+      safety task (rounded up, so a slow task clears later, never earlier). At least one task period.
+  device_bus_window_ms:
+    type: int
+    min: 1
+    max: 60000
+    default: 200
+    unit: ms
+    description: >-
+      window of the per-bus correlation of device reports (SYS-29, F5): communication faults of two different
+      devices on one bus within this time are one event "bus lost", and the verdict ends after a window without
+      one. Counted in cycles of the safety task, ceil(device_bus_window_ms / task_period_ms) (derived by
+      tools/nxconfig, never shorter than the time set). It should span two supervision cycles (cycle_ms) of the
+      slowest device on a bus (warning otherwise).
+lifecycle: { level: 1, task: safety }
+cmake_target: safeSupervisor

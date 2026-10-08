@@ -1,0 +1,373 @@
+# Derivat NXP S32K146 (Herstellerfakten, nur lesen). Schema: tools/nxconfig/model.py (Derivative).
+# Abgleich ARCH-11 (2026-09-15) gegen Datenblatt, Reference Manual und Zephyr. Kurzbelege in den Einträgen:
+#   [DS]     S32K1xx Data Sheet Rev. 15 (5 March 2026), Figure 3 "S32K1xx product series comparison"
+#   [RM]     S32K1xx Series Reference Manual Rev. 13 (04/2020): Table 31-2, 36.1.2, 36.2.1.1/36.2.1.2
+#   [Zephyr] zephyr dts/arm/nxp/s32/nxp_s32k146.dtsi (Commit 8445f99, Apache-2.0): sram_l 64 KB, sram_u 60 KB,
+#            flash 1 MB mit erase-block-size 4 KB, lpi2c1/ftm6/ftm7 gelöscht
+#   [MAP]   S32K1xx_Memory_Map.xlsx, Dateianhang des [RM13] (doc/hardware/s32k1xx/S32K-RM.pdf, Anhang der PDF),
+#           Blatt "Overview Memory Map", Spalte des Derivats: Flash-Ende, FlexNVM, FlexRAM, SRAM_L-Anfang, SRAM_U-Ende
+# ARCH-36 (2026-09-18): Belege aus Herstellerdateien mit Vertraulichkeitsvermerk durch öffentliche ersetzt
+# (PLAT-46 F8, Belegregel doc/guide/new-derivative.md "The rule on sources"); kein Wert geändert.
+# SRAM: größte RAM-Ausführung (128 KB); die RAM-Größe hängt von der Bestelloption ab ([RM] Table 31-2).
+# ARCH-20 (2026-09-17): Belege aus den Unterlagen im Repository (doc/hardware/s32k1xx/), Seitenzahlen = PDF-Seiten:
+#   [RM13]  S32K1xx Series Reference Manual Rev. 13 (04/2020), S32K-RM.pdf
+#   [DS13]  S32K1xx Data Sheet Rev. 13 (04/2020), S32K-Datasheet.pdf
+schema_version: 1
+
+derivative:
+  name: S32K146
+  family: s32k1xx
+  core: cortex-m4f
+  nvic_priority_bits: 4                   # PLAT-10: [RM13] 7.2.1 'Interrupt priority levels' (S. 116): 16 Stufen, 4 Bit je Feld; Table 2-1 (S. 63)
+  features: [lmem_cache]                  # PLAT-10: [RM13] 7.1.4 'Caches' (S. 115) 4 KB Code-Cache; Table 3-3 (S. 84) LMEM an 0xE008_2000
+  packages: [LQFP144, LQFP100, MAPBGA100, LQFP64]            # [DS]
+  pin_pattern: "PT[A-E]([0-9]|[12][0-9]|3[01])"                # LQFP144 nutzt z. B. PTA25-31, PTE19-25 (hal_nxp)
+  sources:
+    - S32K1xx Data Sheet Rev. 15, Figure 3 (Speicher, Peripherieanzahl, Gehäuse)
+    - S32K1xx Series Reference Manual Rev. 13, Table 31-2 und Kapitel 36.1.2/36.2.1 (Flash, Sektoren, FlexRAM)
+    - S32K1xx_Memory_Map.xlsx, Anhang des Reference Manual Rev. 13 (Speicheradressen je Derivat)
+    - zephyr dts/arm/nxp/s32/nxp_s32k146.dtsi (SRAM, Flash, Instanzen)
+    - mcudb/s32k1xx/sources/hal_nxp/S32K146_*-pinctrl.h (Pin-Multiplexing je Gehäuse)
+
+memory:
+  - { name: PFLASH, kind: code_flash, start: 0x00000000, size: 0x00100000, sector_size: 0x1000, program_size: 8,
+      source: "[RM] 36.1.2 1 MB, 36.2.1.1 Sektor 4 KB; [Zephyr] erase-block-size 4 KB; [RM13] 36.1.2.5 2 x 512 KB verschränkt (S. 795); [MAP] Flash-Ende 000F_FFFF; program_size: FTFC Program Phrase 8 Byte wie S32K144" }
+  - { name: FLEXNVM, kind: data_flash, start: 0x10000000, size: 0x00010000, sector_size: 0x800,
+      source: "[RM] 36.1.2 64 KB, 36.2.1.2 Sektor 2 KB ([RM13] S. 805); [MAP] FlexNVM 1000_0000-1000_FFFF" }
+  - { name: SRAM_L, kind: ram, start: 0x1FFF0000, size: 0x00010000,
+      source: "[Zephyr] sram_l 64 KB; [RM13] Table 31-2 64 KB (S. 709); [MAP] SRAM_L-Anfang 1FFF_0000; [DS] 128 KB gesamt" }
+  - { name: SRAM_U, kind: ram, start: 0x20000000, size: 0x0000F000,
+      source: "[Zephyr] sram_u 60 KB; [RM13] Table 31-2 60 KB (S. 709); [MAP] SRAM_U-Ende 2000_EFFF" }
+  - { name: FLEXRAM, kind: eeprom_ram, start: 0x14000000, size: 0x00001000,
+      source: "[RM] 36.1.2 4 KB; [MAP] FlexRAM 1400_0000-1400_0FFF" }
+
+# NVM-07: Codes des Partitionierbefehls PGMPART (einmalig, irreversibel - nur Chip-Löschen macht ihn rückgängig).
+# `sizes` = EEPROM Data Set Size Code (FCCOB4, IFR EEESIZE), `partitions` = FlexNVM Partition Code (FCCOB5, IFR
+# DEPART). Belegt (TOOL-243, F8, nur oeffentliche Dokumente): DEPART [RM13] Table 36-21 (S. 798) zeilenweise
+# mit `pdftotext -raw` (Reihenfolge des Inhaltsstroms) gelesen - dort stehen Code, D-Flash und Backup je Zeile
+# beisammen; die verschobene Spaltenzuordnung (Befund NVM-02) entsteht nur bei der Layout-Extraktion. Gegengeprueft
+# mit AN11983 Rev. 2 Table 4 (gleiche Zeilen) und der Definition im RM ('FlexNVM memory not partitioned for
+# data flash is used to store EEPROM records': D-Flash + Backup = 64 KB in jeder Zeile). EEESIZE [RM13] Table 36-19
+# (S. 797) und AN11983 Table 2.
+eeprom_emulation:
+  sizes:                                 # code: FCCOB4[3:0], eeprom_bytes
+    - { code: 0x2, eeprom_bytes: 4096 }
+    - { code: 0xF, eeprom_bytes: 0 }
+  partitions:                            # code: FCCOB5[3:0] (DEPART), D-Flash / EEPROM-Backup
+    - { code: 0x0, data_flash_bytes: 0x10000, backup_bytes: 0x00000 }   # 0000b 64 KB / 0 KB
+    - { code: 0x3, data_flash_bytes: 0x08000, backup_bytes: 0x08000 }   # 0011b 32 KB / 32 KB
+    - { code: 0x4, data_flash_bytes: 0x00000, backup_bytes: 0x10000 }   # 0100b 0 KB / 64 KB
+    - { code: 0x8, data_flash_bytes: 0x00000, backup_bytes: 0x10000 }   # 1000b 0 KB / 64 KB
+    - { code: 0xA, data_flash_bytes: 0x04000, backup_bytes: 0x0C000 }   # 1010b 16 KB / 48 KB
+    - { code: 0xB, data_flash_bytes: 0x08000, backup_bytes: 0x08000 }   # 1011b 32 KB / 32 KB
+    - { code: 0xC, data_flash_bytes: 0x10000, backup_bytes: 0x00000 }   # 1100b 64 KB / 0 KB
+  timing:
+    backups:
+      - { backup_bytes: 0x08000, write_max_us: 2000, partition_typ_ms: 70 }
+      - { backup_bytes: 0x0C000, write_max_us: 2125 }
+      - { backup_bytes: 0x10000, write_max_us: 2250, partition_typ_ms: 71 }
+    first_write_factor: 2
+    source: "[DS13] Table 35 'Flash command timing specifications for S32K14x series' (S. 43-45): teewr32b max, tpgmpart typ, Fußnote 4 (erste Schreibzugriffe nach Reset bis 2x)"
+  # NVM-11: CSEc-Schluesselraum (PGMPART FCCOB1[1:0]), vom Ende der EEPROM-Emulation abgezogen; mit Schluesseln belegt
+  # der CSEc selbst 3 Plaetze (MASTER_ECU_KEY, BOOT_MAC_KEY, BOOT_MAC). Teile ohne CSEc (SIM SDID FEATURES Bit 7) nehmen
+  # nur Code 0 an. Schreibzyklen je Verhaeltnis EEPROM-Backup zu genutztem FlexRAM: [DS13] Table 38 (nnvmwree16/256);
+  # unter 16 nennt das Datenblatt keine Zahl.
+  keys:                                  # code: FCCOB1, slots, eeprom_bytes (vom EEPROM abgezogen)
+    - { code: 0x0, slots: 0, system_slots: 0, eeprom_bytes: 0 }
+    - { code: 0x1, slots: 5, system_slots: 3, eeprom_bytes: 128 }
+    - { code: 0x2, slots: 10, system_slots: 3, eeprom_bytes: 256 }
+    - { code: 0x3, slots: 20, system_slots: 3, eeprom_bytes: 512 }
+  endurance:
+    - { ratio: 16, writes: 100000 }
+    - { ratio: 256, writes: 1600000 }
+  source: "[RM13] 36.1.2.5.1 Table 36-19 EEESIZE (S. 797), 36.1.2.5.2 Table 36-21 DEPART (S. 798), 36.5.11.14 Table 36-62 (CSEc-Schluessel), Table 36-65/36-67 (S. 866-867); AN11983 Rev. 2 Table 2/4"
+
+# Anzahl je Peripherie: [DS] Figure 3 und [RM13] Figure 2-3 "S32K1xx product series comparison" (S. 69), Spalte
+# K146 (ADC 2, FTM 6, LPSPI 3, FlexCAN 3, LPUART 3, LPI2C 1, FlexIO 1). ADC 12 Bit, 24 externe Kanäle je ADC
+# ([DS]/[RM13] "2x (24)"). FTM: 8 Kanäle ([DS]/[RM13] "FlexTimer (16-bit counter) 8 channels").
+# internal_channels (ARCH-20): ADCH-Codes aus [RM13] 44.4.2 SC1n[ADCH] (S. 1222-1223): INTERNAL0 010101b,
+# BANDGAP 011011b, VREFSH 011101b, VREFS (= VREFSL) 011110b; Namen wie bspAdc adc/adcPhysicalName.h (bswgen
+# ADC_INTERNAL). [RM13] 43.1.2 Table 43-3 "Internal channel availability" (S. 1193): belegt ist nur Kanal 0 des ADC0
+# (Versorgungsmessung, SIM_CHIPCTL[ADC_SUPPLY], [RM13] 11.1.1.1 S. 171); Kanal 1-3 beider ADCs und Kanal 0 des ADC1
+# sind "Reserved". ADC0: INTERNAL1..3 gestrichen (ARCH-20). ADC1: INTERNAL0..3 gestrichen (ARCH-21), es bleiben
+# BANDGAP, VREFSH und VREFS.
+# PLAT-22/ARCH-18: `clock` je Instanz ist der Funktionstakt am PCC-Taktschalter PCCn.PCS. Das Derivat nennt nur
+# die **möglichen** Quellen (`sources`), den asynchronen Ausgang, an dem die Instanz hängt (`divider` = DIV1/DIV2),
+# die Obergrenze des Funktionstakts (`max_hz`, nur wo das RM eine Zahl nennt) und die **Vorgabe** (`default`), die
+# gilt, solange das Projekt nichts wählt; gewählt wird im Projekt (`peripheral_clocks.<Instanz>`).
+# Kurzbelege der Takteinträge:
+#   [RM27] S32K1xx Series Reference Manual Rev. 14 (09/2021, öffentliches NXP-Dokument S32K1XXRM,
+#          gleiche Tabelle und Fußnoten in [RM13] Table 27-8 S. 564-567),
+#          Kapitel 27 "Clock Distribution", 27.6 Table 27-8 "Peripheral
+#          clock summary" (S. 568-571): Spalte "Clocks controlled by [PCS] of PCC" (mögliche Quellen und ihr
+#          Ausgang DIV1/DIV2) und Spalte "Comments and maximum frequencies". Die Tabelle gilt je Modul
+#          (FlexTimer, ADC, LPUART, ...), nicht je Instanz; sie ersetzt den ungegengelesenen [DIV]-Beleg aus
+#          PLAT-22 (Befund 2), deshalb steht an den Takteinträgen kein `verify` mehr.
+#   [PORT] external/openbsw/executables/referenceApp/platforms/s32k148evb/bspConfiguration/include/bsp/clock/
+#          boardClock.h, Zeilen 128-151: CLOCK_SOURCE_<Gate> des OpenBSW-Referenz-Ports, Beleg der
+#          **Vorgabe** (gleiche Familie, gleicher
+#          Treiber platforms/s32k1xx/bsp/bspClock/src/clockConfig.cpp)
+# FlexCAN hat keinen PCC-Taktschalter (select: none): der Protokolltakt wird in CTRL1.CLKSRC gewählt
+# (0 = SOSCDIV2, 1 = Bustakt); das Taktmodell rechnet ihn aus dem Quarz.
+instances:
+  ADC0: { class: adc, resolution_bits: 12, channel_pattern: "SE([0-9]|1[0-9]|2[0-3])",
+          internal_channels: [BANDGAP, INTERNAL0, VREFSH, VREFS],
+          clock: { sources: [SOSC, SIRC, FIRC, SPLL], divider: [2],
+                   max_hz: 50000000,
+                   default: { select: FIRC, divider: 2 },
+                   source: "[RM27] ADC, PCS SPLLDIV2/FIRCDIV2/SIRCDIV2/SOSCDIV2, Fußnote 8 'maximum conversion clock
+                     frequency is 50 MHz'; Vorgabe [PORT] CLOCK_SOURCE_ADC0" } }
+  ADC1: { class: adc, resolution_bits: 12, channel_pattern: "SE([0-9]|1[0-9]|2[0-3])",
+          internal_channels: [BANDGAP, VREFSH, VREFS],
+          clock: { sources: [SOSC, SIRC, FIRC, SPLL], divider: [2],
+                   max_hz: 50000000,
+                   default: { select: FIRC, divider: 2 },
+                   source: "[RM27] ADC, PCS SPLLDIV2/FIRCDIV2/SIRCDIV2/SOSCDIV2, Fußnote 8 'maximum conversion clock
+                     frequency is 50 MHz'; Vorgabe [PORT] CLOCK_SOURCE_ADC1" } }
+  FTM0: { class: timer, channels: 8,
+          clock: { sources: [SOSC, SIRC, FIRC, SPLL], divider: [1],
+                   default: { select: SOSC, divider: 1 },
+                   source: "[RM27] FlexTimer, PCS SPLLDIV1/FIRCDIV1/SIRCDIV1/SOSCDIV1; Vorgabe [PORT]
+                     CLOCK_SOURCE_FTM0" } }
+  FTM1: { class: timer, channels: 8,
+          clock: { sources: [SOSC, SIRC, FIRC, SPLL], divider: [1],
+                   default: { select: SPLL, divider: 1 },
+                   source: "[RM27] FlexTimer, PCS SPLLDIV1/FIRCDIV1/SIRCDIV1/SOSCDIV1; Vorgabe [PORT]
+                     CLOCK_SOURCE_FTM1" } }
+  FTM2: { class: timer, channels: 8,
+          clock: { sources: [SOSC, SIRC, FIRC, SPLL], divider: [1],
+                   default: { select: SOSC, divider: 1 },
+                   source: "[RM27] FlexTimer, PCS SPLLDIV1/FIRCDIV1/SIRCDIV1/SOSCDIV1; Vorgabe [PORT]
+                     CLOCK_SOURCE_FTM2" } }
+  FTM3: { class: timer, channels: 8,
+          clock: { sources: [SOSC, SIRC, FIRC, SPLL], divider: [1],
+                   default: { select: SPLL, divider: 1 },
+                   source: "[RM27] FlexTimer, PCS SPLLDIV1/FIRCDIV1/SIRCDIV1/SOSCDIV1; Vorgabe [PORT]
+                     CLOCK_SOURCE_FTM3" } }
+  FTM4: { class: timer, channels: 8,
+          clock: { sources: [SOSC, SIRC, FIRC, SPLL], divider: [1],
+                   default: { select: SPLL, divider: 1 },
+                   source: "[RM27] FlexTimer, PCS SPLLDIV1/FIRCDIV1/SIRCDIV1/SOSCDIV1; Vorgabe [PORT]
+                     CLOCK_SOURCE_FTM4" } }
+  FTM5: { class: timer, channels: 8,
+          clock: { sources: [SOSC, SIRC, FIRC, SPLL], divider: [1],
+                   default: { select: SOSC, divider: 1 },
+                   source: "[RM27] FlexTimer, PCS SPLLDIV1/FIRCDIV1/SIRCDIV1/SOSCDIV1; Vorgabe [PORT]
+                     CLOCK_SOURCE_FTM5" } }
+  LPSPI0: { class: spi,
+            clock: { sources: [SOSC, SIRC, FIRC, SPLL], divider: [2],
+                     default: { select: FIRC, divider: 2 },
+                     source: "[RM27] LPSPI, PCS SPLLDIV2/FIRCDIV2/SIRCDIV2/SOSCDIV2; Vorgabe [PORT]
+                       CLOCK_SOURCE_LPSPI0" } }
+  LPSPI1: { class: spi,
+            clock: { sources: [SOSC, SIRC, FIRC, SPLL], divider: [2],
+                     default: { select: FIRC, divider: 2 },
+                     source: "[RM27] LPSPI, PCS SPLLDIV2/FIRCDIV2/SIRCDIV2/SOSCDIV2; Vorgabe [PORT]
+                       CLOCK_SOURCE_LPSPI1" } }
+  LPSPI2: { class: spi,
+            clock: { sources: [SOSC, SIRC, FIRC, SPLL], divider: [2],
+                     default: { select: FIRC, divider: 2 },
+                     source: "[RM27] LPSPI, PCS SPLLDIV2/FIRCDIV2/SIRCDIV2/SOSCDIV2; Vorgabe [PORT]
+                       CLOCK_SOURCE_LPSPI2" } }
+  # message_buffers (ARCH-42): [RM13] Table 55-1 "FlexCAN instances and features" (S. 1787), Zeile
+  #   S32K146, Spalte "Number of Message Buffers (MB)": 32/32/16. Buffer n liegt bei 8-Byte-Nutzlast bei
+  #   Offset 0x80 + 0x10 n (Table 55-16, S. 1884); Zugriffe auf nicht vorhandene Buffer sind Zugriffsfehler (S. 1942).
+  #   Vektoren: [RM13] Anhang S32K1xx_DMA_Interrupt_mapping.xlsx, Blatt S32K14x_INT_MAP_ARM: "OR'ed Message buffer
+  #   (16-31)" von CAN2 (IRQ 96) am S32K146 "-".
+  FlexCAN0: { class: can, message_buffers: 32, clock: { select: none, source: "[RM] Kapitel FlexCAN, CTRL1.CLKSRC; kein PCC-Taktschalter
+                (clockConfig.cpp schreibt PCC_FlexCAN0 ohne PCS)" } }
+  FlexCAN1: { class: can, message_buffers: 32, clock: { select: none, source: "wie FlexCAN0" } }
+  FlexCAN2: { class: can, message_buffers: 16, clock: { select: none, source: "wie FlexCAN0" } }
+  LPUART0: { class: uart,
+             clock: { sources: [SOSC, SIRC, FIRC, SPLL], divider: [2],
+                      default: { select: SOSC, divider: 2 },
+                      source: "[RM27] LPUART, PCS SPLLDIV2/FIRCDIV2/SIRCDIV2/SOSCDIV2; Vorgabe [PORT]
+                        CLOCK_SOURCE_LPUART0" } }
+  LPUART1: { class: uart,
+             clock: { sources: [SOSC, SIRC, FIRC, SPLL], divider: [2],
+                      default: { select: FIRC, divider: 2 },
+                      source: "[RM27] LPUART, PCS SPLLDIV2/FIRCDIV2/SIRCDIV2/SOSCDIV2; Vorgabe [PORT]
+                        CLOCK_SOURCE_LPUART1" } }
+  LPUART2: { class: uart,
+             clock: { sources: [SOSC, SIRC, FIRC, SPLL], divider: [2],
+                      default: { select: FIRC, divider: 2 },
+                      source: "[RM27] LPUART, PCS SPLLDIV2/FIRCDIV2/SIRCDIV2/SOSCDIV2; Vorgabe [PORT]
+                        CLOCK_SOURCE_LPUART2" } }
+  LPI2C0: { class: i2c,
+            clock: { sources: [SOSC, SIRC, FIRC, SPLL], divider: [2],
+                     default: { select: SOSC, divider: 2 },
+                     source: "[RM27] LPI2C, PCS SPLLDIV2/FIRCDIV2/SIRCDIV2/SOSCDIV2; Vorgabe [PORT]
+                       CLOCK_SOURCE_LPI2C0" } }
+  FlexIO: { class: flexio,
+            clock: { sources: [SOSC, SIRC, FIRC, SPLL], divider: [2],
+                     default: { select: SOSC, divider: 2 },
+                     source: "[RM27] FlexIO, PCS SPLLDIV2/FIRCDIV2/SIRCDIV2/SOSCDIV2; Vorgabe [PORT]
+                       CLOCK_SOURCE_FLEXIO" } }
+
+# MPU (ARCH-16): NXP System MPU am Crossbar, nicht die ARM-Core-MPU ([RM14] 15.1). `regions` ist die Zahl der
+# Regionendeskriptoren RGD[]; die Codierung in MPU_CESR[NRGD] (0 = 8, 1 = 12, 2 = 16 Regionen, [RM14] 15.4.2 S. 254)
+# ist Registerwissen der Familie und steht im Generator (tools/bswgen, MPU_NRGD_CODES), nicht hier.
+#   [RM14] S32K1xx Series Reference Manual Rev. 14 (09/2021), öffentliches NXP-Dokument S32K1XXRM (nicht im
+#          Repository); Table 15-4 steht gleichlautend in [RM13] S. 246 (doc/hardware/s32k1xx/S32K-RM.pdf)
+mpu:
+  regions: 8
+  source: "[RM14] Table 15-4 'MPU configurations' (S. 247): S32K146 8 Regionendeskriptoren, 4 Slave-Ports,
+           CESR-Reset 0081_4001h -> NRGD = 0"
+
+# Pin-Multiplexing je Gehäuse (Signal -> Pin -> PORT_PCR.MUX), erzeugt mit mcudb/tools/pinmux_hal_nxp.py.
+# LQFP100 hat laut hal_nxp denselben Inhalt wie MAPBGA100 (eigene Tabelle trotzdem).
+pinmux:
+  LQFP144: { file: S32K146_LQFP144.pinmux.yaml }
+  LQFP100: { file: S32K146_LQFP100.pinmux.yaml }
+  MAPBGA100: { file: S32K146_BGA100.pinmux.yaml }
+  LQFP64: { file: S32K146_LQFP64.pinmux.yaml }
+
+# OpenBSW liefert nur den S32K148-Header (Obermenge).
+device_header: { file: 3rdparty/nxp/S32K148.h, describes: S32K148 }
+
+# Takt (ARCH-06, Belege ARCH-20): Grenzen für das Taktmodell tools/nxconfig/clock.py (Familie s32k1xx).
+#   FIRC 48 MHz, SIRC 8 MHz: [DS13] 6.2.3.1 Table 29 F_FIRC (S. 40), 6.2.3.2 Table 31 F_SIRC (S. 41)
+#   Quarz 4..40 MHz: [DS13] 6.2.2 Table 28 f_osc_hi (S. 39), [RM13] 28.1.2 SCG_SOSCCFG[RANGE] 4-8 MHz und 8-40 MHz
+#     (S. 580). Der External-Clock-Modus erlaubt bis 50 MHz ([DS13] Table 28 f_ec_extal), das Modell kennt nur Quarze.
+#   PLL: [RM13] 28.3.19 SCG_SPLLCFG (S. 611-612) VCO_CLK = SOSC / (PREDIV + 1) x (MULT + 16), SPLL_CLK = VCO_CLK / 2,
+#     Table 28-3 Teiler 1..8, Table 28-2 Faktor 16..47; [DS13] 6.2.5 Table 34 (S. 42) F_SPLL_REF 8..16 MHz nach
+#     PREDIV, F_VCO_CLK 180..320 MHz (daraus F_SPLL_CLK 90..160 MHz), F_SPLL_Input 8..40 MHz vor PREDIV
+#     ([RM13] 28.1.3 S. 580: mit PLL nur der SOSC-Bereich 8-40 MHz; clock.py verlangt diesen Bereich ohnehin).
+#   RUN-Grenzen: [RM13] 27.4 "Internal clocking requirements" und Tabelle der Höchstfrequenzen (S. 558-562), Spalte
+#     S32K14x RUN: CORE_CLK/SYS_CLK 80 MHz, BUS_CLK 48 MHz, FLASH_CLK 26,67 MHz.
+#   ARCH-22 (Befunde 1 und 2 aus ARCH-20): BUS_CLK höchstens 40 MHz, wenn die SPLL Systemtakt ist
+#     (`system_source_max_hz.SPLL`), und die Grenzen der asynchronen Ausgänge DIV1/DIV2 im RUN-Modus (`output_max_hz`).
+#     Das Taktmodell wählt daraus DIVBUS und die Ausgangsteiler (kleinster Teiler innerhalb der Grenze).
+clock:
+  internal: { FIRC: 48000000, SIRC: 8000000 }
+  # SYS-53: LPO (Takt des WDOG und über LPO1K_CLK des LPTMR der Periodenprüfung). Spalte S32K1xx; ein S32K14xW-
+  # Derivat hätte max_hz 141000. nxconfig leitet daraus die Watchdog-Bedienung beim schnellsten LPO und die
+  # Promille-Grenzen der Periodenprüfung ab (bisher Konstanten in LptmrCycleTimer.h).
+  lpo: { nominal_hz: 128000, min_hz: 113000, max_hz: 139000,
+         source: "[DS13] 6.2.4 Table 33 'Low Power Oscillator (LPO) electrical specifications' (S. 41): F_LPO min
+           113 kHz, typ 128 kHz, max 139 kHz (S32K1xx; S32K14xW max 141 kHz)" }
+  oscillator: { min_hz: 4000000, max_hz: 40000000,
+                source: "[DS13] 6.2.2 Table 28 f_osc_hi 4-40 MHz (S. 39); [RM13] 28.1.2 SOSCCFG[RANGE] (S. 580)" }
+  pll: { input_hz: [8000000, 16000000], vco_hz: [180000000, 320000000], input_divider: [1, 8], multiplier: [16, 47],
+         output_dividers: [2],
+         source: "[RM13] 28.3.19 SCG_SPLLCFG, Table 28-2 MULT, Table 28-3 PREDIV (S. 611-612); [DS13] 6.2.5 Table 34
+           F_SPLL_REF, F_VCO_CLK (S. 42)" }
+  max_hz: { core: 80000000, bus: 48000000, slow: 26670000 }  # RUN ([RM13] 27.4); HSRUN (112 MHz) nutzt der Treiber nicht
+  system_source_max_hz:
+    SPLL: { max_hz: { bus: 40000000 },
+            source: "[RM13] 27.4 'Internal clocking requirements' (S. 558-559): BUS_CLK 48 MHz or less in RUN
+              'when using PLL as system clock source maximum bus clock frequency is 40 MHz'; Tabelle der
+              Höchstfrequenzen S. 562, Spalte S32K14x RUN" }
+  output_max_hz:
+    max_hz: { SPLLDIV1: 80000000, SPLLDIV2: 40000000, FIRCDIV1: 48000000, FIRCDIV2: 48000000,
+              SIRCDIV1: 8000000, SIRCDIV2: 8000000, SOSCDIV1: 40000000, SOSCDIV2: 40000000 }
+    source: "[RM13] 27.3 Table 27-1 'Clock descriptions' (S. 557-558), RUN-Modus: SPLLDIV1_CLK 80 MHz, SPLLDIV2_CLK
+      40 MHz, FIRCDIV1/2_CLK 48 MHz, SIRCDIV1/2_CLK 8 MHz, SOSCDIV1/2_CLK 40 MHz ('should be configured to ... or
+      less'); SPLLDIVx nur S32K14x (Fußnote 4)"
+  # PLAT-22: PCC-Gates ohne Instanz in `instances` (kein Generator konfiguriert LPIT/LPTMR bisher, der Taktreiber
+  # schaltet ihren Takt aber ein). Belege: [RM27] Table 27-8 (in [RM13] S. 564-567) und [RM13] Table 27-9 "Peripheral
+  # module clocking" (LPIT S. 568, LPTMR S. 574); Vorgabe [PORT].
+  pcc:
+    LPIT: { sources: [SOSC, SIRC, FIRC, SPLL], divider: [2], default: { select: SIRC, divider: 2 },
+            source: "[RM27] LPIT, PCS SPLLDIV2/FIRCDIV2/SIRCDIV2/SOSCDIV2 (LPO128K_CLK nur beim S32K14xW, [RM13]
+              Table 27-8 Fußnote 5, Table 27-9 Fußnote 2); Vorgabe [PORT] CLOCK_SOURCE_LPIT" }
+    LPTMR0: { sources: [SOSC, SIRC, FIRC, SPLL], divider: [2], default: { select: SOSC, divider: 2 },
+              source: "[RM27] LPTMR, PCS SPLLDIV2/FIRCDIV2/SIRCDIV2/SOSCDIV2 ([RM13] Table 27-9 S. 574; PCC_LPTMR0[PCD]
+                und LPTMR0_PSR[PCS] dahinter bildet das Modell nicht ab); Vorgabe [PORT] CLOCK_SOURCE_LPTMR0" }
+
+# BL-03: eindeutige Chipkennung (128 Bit), aus der der Tester den Geraeteschluessel des Bootloaders ableitet (DID
+# 0xF18C). SIM_UIDH, SIM_UIDMH, SIM_UIDML, SIM_UIDL an 0x4004_8054..0x4004_8063, in Adressreihenfolge gelesen,
+# jedes Wort hoechstwertiges Byte zuerst (= UID127..UID0). Derselbe SIM-Block in der ganzen Familie.
+uid:
+  address: 0x40048054
+  size: 16
+  source: "external/openbsw/platforms/s32k1xx/bsp/bspMcu/include/3rdparty/nxp/S32K148_SIM.h: IP_SIM_BASE 0x4004_8000, UIDH Offset 0x54 .. UIDL 0x60 (Geraeteheader, mit dem auch dieses Derivat gebaut wird, device_header oben)"
+
+# IO-51: Pin-Interrupts (Konzept doc/architecture/pin-interrupts.md Abschnitt 2, Derivat-Fakt). Jeder Pin hat eine
+# eigene Flankenerkennung (PORT_PCRn.IRQC), alle Pins eines Ports enden in EINEM Vektor PORTx: Ereignis-Eingänge
+# eines Ports teilen sich also eine Priorität (gleicher Rang). Der digitale Filter je Port (PORT_DFER/DFWR, eine
+# Breite für den ganzen Port) ist nicht beschrieben - die Entprellung macht die Software (Entscheidung F3).
+pin_interrupts:
+  edges: [rising, falling, both]
+  vectors:
+    - { name: PORTA, pins: "PTA([0-9]|[12][0-9]|3[01])" }
+    - { name: PORTB, pins: "PTB([0-9]|[12][0-9]|3[01])" }
+    - { name: PORTC, pins: "PTC([0-9]|[12][0-9]|3[01])" }
+    - { name: PORTD, pins: "PTD([0-9]|[12][0-9]|3[01])" }
+    - { name: PORTE, pins: "PTE([0-9]|[12][0-9]|3[01])" }
+  source: "[RM13] 12.5.1 PORT_PCRn[IRQC] (S. 213-214): Flanke steigend 1001b, fallend 1010b, beide 1011b je Pin, Flag PORT_ISFR; external/openbsw/platforms/s32k1xx/bsp/bspMcu/include/3rdparty/nxp/S32K148_COMMON.h (Gerätheader, device_header oben): PORTA_IRQn 59 .. PORTE_IRQn 63 ('Port A pin detect interrupt' ..)"
+
+# SYS-86: Komparator CMP0 mit 8-Bit-DAC als Hardware-Schwelle (Konzept doc/safety/hardware-mechanisms.md 2.2). Belege:
+#   [RM13] 45.1.1 (S. 1269): ein Komparator CMP0 mit eigenem 8-Bit-DAC, bis zu 8 externe Eingänge (welche Pins je
+#          Gehäuse: Pin-Multiplexing CMP0_IN0..7); 45.1.3 (S. 1271): Referenzen V_in1 = VDDA, V_in2 = Bandgap 1 V;
+#          45.8.2 (S. 1296) VOSEL: DACO = V_in / 256 * (VOSEL + 1).
+#   [RM13] 47.1.3 (S. 1347): FTM0..FTM3 FAULT0..2 = Pin oder TRGMUX-Ausgang, FAULT3 nur Pin; Figure 19-2 (S. 421):
+#          CMP0_COUT = TRGMUX-Eingang in14, TRGMUX_FTMx out = FTMx_FAULT0..2.
+#   [DS13] Table 44 (S. 59-60, S32K1xx series, -40..125 °C): VAIO Hochgeschwindigkeit max. 25 mV; Laufzeit tDHSS
+#          (kleine Übersteuerung, Fußnote 3) max. 500 ns - der größere der beiden Werte (tDHSB max. 300 ns);
+#          INL max. 0,75 LSB; tDDAC max. 30 µs (tIDHS max. 3 µs). Table 8 (S. 17): VBG 0,97 / 1,00 / 1,03 V.
+comparators:
+  - name: CMP0
+    inputs: 8
+    dac_bits: 8
+    supply_reference: VDDA
+    bandgap_mv: 1000
+    bandgap_min_mv: 970
+    bandgap_max_mv: 1030
+    offset_max_mv: 25
+    dac_inl_max_millilsb: 750
+    propagation_max_ns: 500
+    settling_max_us: 30
+    fault_inputs: { FTM0: [0, 1, 2], FTM1: [0, 1, 2], FTM2: [0, 1, 2], FTM3: [0, 1, 2] }
+    source: "[RM13] 45.1.1, 45.1.3, 45.8.2 (S. 1269, 1271, 1296); 47.1.3 (S. 1347), Figure 19-2 (S. 421); [DS13] Table 44 (S. 59-60), Table 8 (S. 17)"
+
+# IO-62: Hardware-Triggerkette PWM -> TRGMUX -> PDB -> ADC (Konzept doc/architecture/fast-control-loop.md 3.2). Belege:
+#   [RM13] Table 19-1 (S. 425-427): Quellcodes der SELx-Felder, FTMx_INIT_TRIG/FTMx_EXT_TRIG, CMP0_OUT 0x0E;
+#          Figure 19-2 (S. 421): out56 = PDB0_trigger_in0 (TRGMUX_PDB0 SEL0), out60 = PDB1_trigger_in0
+#          (TRGMUX_PDB1 SEL0), out41..43 = FTM0_FAULT0..2 (TRGMUX_FTM0 SEL1..3) usw.; Registerindex = out / 4,
+#          Feld = out % 4, bestaetigt durch den Geraeteheader S32K148_TRGMUX.h (TRGMUX_PDB0_INDEX 14,
+#          TRGMUX_PDB1_INDEX 15, TRGMUX_FTM0_INDEX 10); 19.4: LK sperrt das ganze Register bis zum Reset.
+#   [RM13] 43.7/43.7.1 (S. 1196-1199): PDB0 -> ADC0, PDB1 -> ADC1, Vortrigger m -> ADHWTS m -> SC1[m];
+#          Table 46-1 (S. 1307): 8 Vortrigger je PDB-Kanal; 46.1.3 Table 46-5 (S. 1309-1310): Back-to-back
+#          innerhalb CH0 je PDB (S32K14x); 46.3.5 (S. 1329) CHnC1 EN/TOS/BB; 46.4.1 (S. 1337-1338): Vortrigger
+#          2 Takte nach Trigger + Verzoegerung bzw. 2 Takte nach der Quittung (BB); MOD/DLY 16 Bit (46.3.2);
+#          Table 27-8 (S. 565): PDB-Takt SYS_CLK (= Kerntakt).
+trigger_router:
+  name: TRGMUX
+  register_lock: true
+  sources: { FTM0_INIT_TRIG: 0x16, FTM0_EXT_TRIG: 0x17, FTM1_INIT_TRIG: 0x18, FTM1_EXT_TRIG: 0x19, FTM2_INIT_TRIG: 0x1A, FTM2_EXT_TRIG: 0x1B, FTM3_INIT_TRIG: 0x1C, FTM3_EXT_TRIG: 0x1D, FTM4_INIT_TRIG: 0x45, FTM4_EXT_TRIG: 0x46, FTM5_INIT_TRIG: 0x47, FTM5_EXT_TRIG: 0x48, CMP0_OUT: 0x0E }
+  targets:
+    - { name: PDB0_TRIGGER_IN0, register_index: 14, selector: 0 }     # out56
+    - { name: PDB1_TRIGGER_IN0, register_index: 15, selector: 0 }     # out60
+    - { name: FTM0_FAULT0, register_index: 10, selector: 1 }          # out41
+    - { name: FTM0_FAULT1, register_index: 10, selector: 2 }          # out42
+    - { name: FTM0_FAULT2, register_index: 10, selector: 3 }          # out43
+    - { name: FTM1_FAULT0, register_index: 11, selector: 1 }          # out45
+    - { name: FTM1_FAULT1, register_index: 11, selector: 2 }          # out46
+    - { name: FTM1_FAULT2, register_index: 11, selector: 3 }          # out47
+    - { name: FTM2_FAULT0, register_index: 12, selector: 1 }          # out49
+    - { name: FTM2_FAULT1, register_index: 12, selector: 2 }          # out50
+    - { name: FTM2_FAULT2, register_index: 12, selector: 3 }          # out51
+    - { name: FTM3_FAULT0, register_index: 13, selector: 1 }          # out53
+    - { name: FTM3_FAULT1, register_index: 13, selector: 2 }          # out54
+    - { name: FTM3_FAULT2, register_index: 13, selector: 3 }          # out55
+  timer_triggers:
+    FTM0: { counter: FTM0_INIT_TRIG, match: FTM0_EXT_TRIG }
+    FTM1: { counter: FTM1_INIT_TRIG, match: FTM1_EXT_TRIG }
+    FTM2: { counter: FTM2_INIT_TRIG, match: FTM2_EXT_TRIG }
+    FTM3: { counter: FTM3_INIT_TRIG, match: FTM3_EXT_TRIG }
+    FTM4: { counter: FTM4_INIT_TRIG, match: FTM4_EXT_TRIG }
+    FTM5: { counter: FTM5_INIT_TRIG, match: FTM5_EXT_TRIG }
+  fault_inputs:
+    FTM0: [FTM0_FAULT0, FTM0_FAULT1, FTM0_FAULT2]
+    FTM1: [FTM1_FAULT0, FTM1_FAULT1, FTM1_FAULT2]
+    FTM2: [FTM2_FAULT0, FTM2_FAULT1, FTM2_FAULT2]
+    FTM3: [FTM3_FAULT0, FTM3_FAULT1, FTM3_FAULT2]
+  source: "[RM13] Table 19-1 (S. 425-427), Figure 19-2 (S. 421), 19.4; S32K148_TRGMUX.h TRGMUX_*_INDEX"
+sample_sequencers:
+  - { name: PDB0, adc: ADC0, trigger_target: PDB0_TRIGGER_IN0, slots: 8, back_to_back: true, counter_bits: 16,
+      clock: core, start_clocks: 2,
+      source: "[RM13] 43.7.1 (S. 1199), Table 46-1 (S. 1307), Table 46-5 (S. 1310), 46.3.5 (S. 1329), 46.4.1 (S. 1337-1338), Table 27-8 (S. 565)" }
+  - { name: PDB1, adc: ADC1, trigger_target: PDB1_TRIGGER_IN0, slots: 8, back_to_back: true, counter_bits: 16,
+      clock: core, start_clocks: 2,
+      source: "[RM13] 43.7.1 (S. 1199), Table 46-1 (S. 1307), Table 46-5 (S. 1310), 46.3.5 (S. 1329), 46.4.1 (S. 1337-1338), Table 27-8 (S. 565)" }

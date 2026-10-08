@@ -1,0 +1,17 @@
+# SPDX-License-Identifier: Apache-2.0
+# Test component of the SensorQualifier library block (RTE-07, SwcCreateTest): two instances in runnables
+# with different periods, one with a source qualifier port, one with the constant QLF_OK.
+version: 1
+name: QlfTestSwc
+description: SensorQualifier test (RTE-07)
+runnables:
+  - name: Run10ms
+    period_ms: 10
+  - name: Run20ms
+    period_ms: 20
+ports:
+  - { name: Voltage_mV, direction: in, type: uint16, runnables: [Run10ms] }
+  - { name: VoltageSrcQlf, direction: in, type: uint8, runnables: [Run10ms] }
+  - { name: Temp_dC, direction: in, type: float32, runnables: [Run20ms] }
+  - { name: VoltageQlf, direction: out, type: uint8, runnables: [Run10ms] }
+  - { name: TempQlf, direction: out, type: uint8, runnables: [Run20ms] }

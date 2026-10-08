@@ -1,0 +1,40 @@
+# Values the configuration does not contain, for the demo project (tools/schedana --budget).
+# Everything here is an assumption or a measured value from CHANGELOG.md, not configuration - that is why it is a
+# separate file and not part of rte.yaml or tasks.yaml.
+schema_version: 1
+
+# Longest interrupt lock of the BSW: the ADC single conversion under a lock (IO-14/IO-16, measured 1 709 ns).
+# It delays every task once per activation (assumption A4).
+max_lock_us: 1.71
+
+tasks:
+  # Deadlines that are not simply the period:
+  can:
+    deadline_ms: 5          # the 10 ms CAN messages should leave in the first half of their cycle
+  safety:
+    deadline_ms: 5          # the watchdog service must run well before the window closes
+  # Activation periods of the BSW tasks, in case no measurement is available. With --measure they come from
+  # "stats cpu" (runs per measurement window) and these values are overwritten.
+  bsp:
+    period_ms: 8
+    wcet_us: 157            # IO-17 board test: bsp maximum 134 ... 157 us
+    mean_us: 101
+  background:
+    period_ms: 100
+    wcet_us: 61
+  sysadmin:
+    period_ms: 500
+    wcet_us: 12
+
+isrs:
+  # The CAN mailbox interrupt: 0x110 and 0x111 every 10 ms plus received messages (CHANGELOG, board tests).
+  can:
+    period_ms: 1
+    wcet_us: 34
+    mean_us: 21
+  test:
+    period_ms: 1000
+    wcet_us: 5
+
+notes:
+  - "runtimes of the BSW tasks: board test IO-17/RTE-02 (CHANGELOG.md), not a proven worst case"

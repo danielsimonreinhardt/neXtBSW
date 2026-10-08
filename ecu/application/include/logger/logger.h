@@ -1,0 +1,29 @@
+/********************************************************************************
+ * Copyright (c) 2024 Accenture
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Apache License Version 2.0 which is available at
+ * https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ ********************************************************************************/
+
+#pragma once
+
+#include <logger/ComponentMapping.h>
+
+#ifdef BUILD_RUST
+#include <util/logger/Logger.h>
+
+DECLARE_LOGGER_COMPONENT(RUST)
+#endif
+
+namespace logger
+{
+void init();
+void run();
+void flush();
+/** SYS-12: log entries the ring buffer dropped before the console printed them, since start (any context). */
+uint32_t lostEntries();
+
+} // namespace logger

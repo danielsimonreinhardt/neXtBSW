@@ -1,0 +1,31 @@
+# Synthetic s32k1xx board for the center aligned PWM group with trigger output (IO-61): S32K144 LQFP64, 8 MHz
+# crystal, no SBC, a three-pair complementary group on FTM1 channels 2..7 (another instance and other channels than
+# the eval board), so channel 0 stays free for the trigger match. No gate driver, no power stage (the dead time is
+# not checked against a stage, the warning says so). Test data only, no hardware.
+#
+# [MUX] S32K144_LQFP64.pinmux.yaml: FTM1_CH2 PTC14, FTM1_CH3 PTC15, FTM1_CH4 PTA10, FTM1_CH5 PTA11, FTM1_CH6 PTA12,
+# FTM1_CH7 PTA13 (MUX 2)
+schema_version: 1
+
+board:
+  name: testboard_pwm_center
+  mcu: S32K144
+  package: LQFP64
+  clock: { sosc_hz: 8000000 }
+
+pwm:
+  - name: INVERTER
+    instance: FTM1
+    mode: complementary
+    active: { high_side: high, low_side: low }
+    pairs:
+      - { name: PHASE_U, high_side: PHASE_U_HS, low_side: PHASE_U_LS }
+      - { name: PHASE_V, high_side: PHASE_V_HS, low_side: PHASE_V_LS }
+      - { name: PHASE_W, high_side: PHASE_W_HS, low_side: PHASE_W_LS }
+    channels:
+      - { name: PHASE_U_HS, channel: 2, pin: PTC14 }
+      - { name: PHASE_U_LS, channel: 3, pin: PTC15 }
+      - { name: PHASE_V_HS, channel: 4, pin: PTA10 }
+      - { name: PHASE_V_LS, channel: 5, pin: PTA11 }
+      - { name: PHASE_W_HS, channel: 6, pin: PTA12 }
+      - { name: PHASE_W_LS, channel: 7, pin: PTA13 }

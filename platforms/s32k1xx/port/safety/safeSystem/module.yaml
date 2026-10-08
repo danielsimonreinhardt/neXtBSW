@@ -1,0 +1,55 @@
+# Module manifest (doc/architecture/README.md, section 5) of a module of the port. Ports may carry modules with a
+# manifest (section 3, rule 2); tools/nxconfig reads platforms/<family>/port/**/module.yaml and
+# ecu/platforms/<board>/**/module.yaml in addition to libs/bsw and libs/bsp (config.port_module_dirs), so the
+# project decides through its board and derivative which of them exist.
+#
+# SafeSystem monitors the ADC reference voltage (bandgap against VREFH) and the internal supplies of the MCU. It is
+# S32K1 specific (SIM supply monitor) and therefore lives in the family port template since PLAT-23 - before, every
+# board of the family needed its own copy of this file (finding ARCH-09 B6). It has no board device, so its
+# parameters are module parameters of the project (project.yaml modules.safeSystem, project_parameters: true). The
+# nominal reference voltage is not one of them: it is a board fact (board.adc_reference_mv), generated into
+# bsp/adc/adcReferenceConfiguration.h (ARCH-32).
+module: safeSystem
+kind: service
+description: Safety supervision of the ADC reference voltage and the internal supplies of the MCU (safety task)
+# Evidence (CHANGELOG.md): "Board-Test IO-16 (2026-09-16)", "Board-Tests nach der Wiederinbetriebnahme
+# (2026-09-16)" (IO-19: safeadc stats 0 read errors, reference 4165 mV, PLAT-23/PLAT-24 regression after the move
+# into the family port) and "Board-Termin 2026-09-18" (PLAT-52: safeadc 0 errors, no safety reset).
+verification: hardware
+verification_note: >-
+  Reference and supply monitoring run on the eval board without false alarms (bandgap readings, safeadc counters
+  at 0, no safety reset); a wrong reference voltage and failed readings up to the limit are covered by host
+  tests only.
+project_parameters: true
+parameters:
+  adc_read_error_limit:
+    type: int
+    min: 1
+    max: 100000
+    default: 10
+    description: >-
+      failed readings in a row before the monitor concerned is triggered, applied separately to the bandgap
+      (reference monitor, context 2) and to the internal supply channel (internal supply monitor, context 2; since
+      SYS-41) - in both cases "no measurement possible". A single failed reading is not evidence of a wrong voltage
+      and must not reset the ECU; readings that keep failing mean the voltage can no longer be monitored, which is
+      safety relevant itself. A good reading ends the series; a supply reading skipped for want of a valid
+      reference does not count (that is the reference monitor's case). The limit counts cycles of the safety task,
+      so the time it corresponds to follows from that task's period.
+  adc_reference_tolerance_mv:
+    type: int
+    min: 1
+    max: 1000
+    default: 200
+    unit: mV
+    description: >-
+      allowed deviation of the measured ADC reference voltage (VREFH, computed from the bandgap reading) from its
+      nominal value; outside nominal +- tolerance the reference monitor is triggered (context 1). The nominal value
+      is a board fact (board.yaml board.adc_reference_mv), the tolerance is decided by the project: it has to cover
+      the accuracy of the reference source and the spread of the bandgap (taken as 1000 mV). The maximum of 1000 mV
+      keeps the lower limit above 0 for every real reference.
+provides:
+  - adc_reference_monitor
+  - internal_supply_monitor
+lifecycle: { level: 1, task: safety }
+cmake_target: safeSystem
+console: safeadc

@@ -1,0 +1,46 @@
+# ECU description of the RTE-04 tests: data types at sender-receiver ports. Component paths are relative to this file (RTE-22); BSW task profile: test/multitask/tasks.yaml (comm 20, io 40, guard 90).
+#
+#   TypeSwc   Simulink test model (TypeSwc.slx, code and ARXML from tools/swc/swc_build.m): array, record with
+#             enumeration, fixed point, array and boolean, nested record, enumeration, fixed point with bias
+#   TypeSink  synthetic receiver of the record and the array in a second task (test/types/TypeSink)
+#
+#   fast (10 ms): TypeSwc.Run10ms, TypeSink.Sink10ms      slow (20 ms): TypeSink.Sink20ms
+#
+# Expected hand-over: Stat (record) fast -> slow as task copies; Scaled (array) written in fast, read by TypeSwc in
+# fast and by TypeSink in fast and slow (published value under the lock); Samples <- Scaled and ModeIn <- ModeOut
+# are loops inside TypeSwc (the value of the previous cycle); Cmd and Temp keep their init values (rte.init), the
+# host test writes their buffers.
+
+schema_version: 2
+
+tasks:
+  - name: fast
+    period_ms: 10
+    priority: 35
+    stack_bytes: 1024
+    runnables: [TypeSwc.Run10ms, TypeSink.Sink10ms]
+  - name: slow
+    period_ms: 20
+    priority: 25
+    stack_bytes: 1024
+    runnables: [TypeSink.Sink20ms]
+
+components:
+  - name: TypeSwc
+    path: TypeSwc
+  - name: TypeSink
+    path: TypeSink
+
+connections:
+  TypeSwc.Samples.Samples: TypeSwc.Scaled.Scaled
+  TypeSwc.Cmd.Cmd: rte.init
+  TypeSwc.ModeIn.ModeIn: TypeSwc.ModeOut.ModeOut
+  TypeSwc.Temp.Temp: rte.init
+  TypeSwc.Stat.Stat: rte
+  TypeSwc.TempOut.TempOut: rte
+  TypeSink.Stat.Stat: TypeSwc.Stat.Stat
+  TypeSink.Scaled.Scaled: TypeSwc.Scaled.Scaled
+  TypeSink.Check.Check: rte
+  TypeSink.Peak.Peak: rte
+  TypeSink.LastMode.LastMode: rte
+  TypeSink.LastTemp.LastTemp: rte

@@ -1,0 +1,476 @@
+/********************************************************************************
+ * Copyright (c) 2024 Accenture
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Apache License Version 2.0 which is available at
+ * https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ ********************************************************************************/
+
+// neXtBSW (COM-26): copy of external/openbsw/platforms/s32k1xx/bsp/bspFlexCan/src/can/FlexCANDevice.cpp, replacing
+// the translation unit of the target bspFlexCan (bspConfiguration/CMakeLists.txt). Deviations, all marked COM-26:
+// buffer split per instance (fLayout instead of FIRST_TRANSMIT_BUFFER/CALLBACK_TRANSMIT_BUFFER/e_TRANSMIT_BUFFER_MAX),
+// MCR[MAXMB] = count - 1 written into the field (the OpenBSW driver ORed 32 into the reset value 0x0F, i.e. 47),
+// transmit mask of the callback buffer from the start, transmitISR() only on the flag of that buffer.
+
+#include "can/FlexCANDevice.h"
+
+#include "can/canframes/CANFrame.h"
+#include "can/transceiver/ICanTransceiver.h"
+#include "interrupts/SuspendResumeAllInterruptsScopedLock.h"
+
+#include <bsp/timer/SystemTimer.h>
+#include <bsp/timer/isEqualAfterTimeout.h>
+#include <etl/byte_stream.h>
+#include <etl/error_handler.h>
+#include <etl/span.h>
+#include <etl/unaligned_type.h>
+
+using namespace can;
+
+namespace bios
+{
+
+FlexCANDevice::FlexCANDevice(
+    Config const& config,
+    CanPhy& canPhy,
+    ::etl::delegate<void()> frameSentCallback,
+    IEcuPowerStateController& powerManager)
+: fConfig(config)
+, fLayout(messageBufferLayout(config))
+, fPhy(canPhy)
+, fpDevice(reinterpret_cast<FLEXCAN_Type*>(fConfig.baseAddress))
+, fLastMessageBuffer(fLayout.firstTransmit)
+// COM-26: the callback buffer, the only one transmitting with an interrupt (OpenBSW: 1 << (31 - 16), i.e. buffer 15,
+// a receive buffer - harmless with a separate transmit vector, but a shared vector cleared and disabled it)
+, fTxInterruptMask0(1UL << fLayout.callback)
+, fRxInterruptMask(0)
+, fRxQueue()
+, fFirstRxId(0)
+, fFramesReceived(0)
+, fFramesReceivedTotal(0)
+, fFrameSentCallback(frameSentCallback)
+, fPowerManager(powerManager)
+, fBusOff(false)
+{
+    checkConfiguration();
+}
+
+FlexCANDevice::FlexCANDevice(
+    Config const& config, CanPhy& canPhy, IEcuPowerStateController& powerManager)
+: fConfig(config)
+, fLayout(messageBufferLayout(config))
+, fPhy(canPhy)
+, fpDevice(reinterpret_cast<FLEXCAN_Type*>(fConfig.baseAddress))
+, fLastMessageBuffer(fLayout.firstTransmit)
+, fTxInterruptMask0(1UL << fLayout.callback)
+, fRxInterruptMask(0)
+, fRxQueue()
+, fFirstRxId()
+, fFramesReceived(0)
+, fFramesReceivedTotal(0)
+, fFrameSentCallback()
+, fPowerManager(powerManager)
+, fBusOff(false)
+{
+    checkConfiguration();
+}
+
+void FlexCANDevice::checkConfiguration()
+{
+    switch (fConfig.baseAddress)
+    {
+        case 0x40024000UL: fIndex = 0; break;
+        case 0x40025000UL: fIndex = 1; break;
+        case 0x4002B000UL: fIndex = 2; break;
+
+        default: ETL_ASSERT_FAIL(ETL_ERROR_GENERIC("Unsupported baseAddress"));
+    }
+
+    // COM-26: buffers 0..count/2-1 receive, count/2..count-2 transmit (application), count-1 is the callback buffer
+    // for transport transmission; count is the number of message buffers of this instance
+    ETL_ASSERT(
+        (fLayout.count >= MIN_MESSAGE_BUFFERS) && (fLayout.count <= MAX_MESSAGE_BUFFERS)
+            && ((fLayout.count % 2U) == 0U),
+        ETL_ERROR_GENERIC("Bad number of message buffers"));
+    ETL_ASSERT(
+        fConfig.numRxBufsExt + fConfig.numRxBufsStd <= fLayout.firstTransmit,
+        ETL_ERROR_GENERIC("Bad reception buffer"));
+    ETL_ASSERT(
+        endOfApplicationBuffers() <= static_cast<uint32_t>(fLayout.callback),
+        ETL_ERROR_GENERIC("Bad transmission buffer"));
+}
+
+ICanTransceiver::ErrorCode FlexCANDevice::init()
+{
+    Io::setDefaultConfiguration(fConfig.txPort);
+    Io::setDefaultConfiguration(fConfig.rxPort);
+    fPhy.init(fConfig.BusId);
+
+    // Enable module
+    fpDevice->MCR = fpDevice->MCR & ~FLEXCAN_MCR_MDIS_MASK;
+
+    // Soft reset
+    fpDevice->MCR = fpDevice->MCR | FLEXCAN_MCR_SOFTRST_MASK;
+    if (::bsp::isEqualAfterTimeout<vuint32_t>(
+            &fpDevice->MCR,
+            FLEXCAN_MCR_SOFTRST_MASK,
+            FLEXCAN_MCR_SOFTRST_MASK,
+            INIT_DELAY_TIMEOUT_US))
+    {
+        return ICanTransceiver::ErrorCode::CAN_ERR_INIT_FAILED;
+    }
+
+    // Enter freeze mode
+    fpDevice->MCR = fpDevice->MCR | (FLEXCAN_MCR_FRZ_MASK | FLEXCAN_MCR_HALT_MASK);
+    if (::bsp::isEqualAfterTimeout<vuint32_t>(
+            &fpDevice->MCR, FLEXCAN_MCR_FRZACK_MASK, 0UL, INIT_DELAY_TIMEOUT_US))
+    {
+        return ICanTransceiver::ErrorCode::CAN_ERR_INIT_FAILED;
+    }
+
+    // Setup MCR:
+    // Disable self reception
+    // IRQM have to be switched on
+    // COM-26: MAXMB is the number of the last message buffer ([RM] Rev. 13, 55.4.2.2, p. 1811-1812: at most the
+    // buffers the instance has); the field is replaced, not ORed into its reset value 0x0F
+    fpDevice->MCR = (fpDevice->MCR & ~FLEXCAN_MCR_MAXMB_MASK)
+                    | (FLEXCAN_MCR_MAXMB(static_cast<uint32_t>(fLayout.count) - 1U)
+                       | FLEXCAN_MCR_SRXDIS_MASK | FLEXCAN_MCR_IRMQ_MASK);
+
+    // Setup CTRL
+    fpDevice->CTRL1 = 0;
+    fpDevice->CTRL1 = fpDevice->CTRL1 | fConfig.clockSetupRegister;
+    fpDevice->CTRL2 = fpDevice->CTRL2 | FLEXCAN_CTRL2_MRP_MASK;
+
+    // Setup message buffers
+    fRxInterruptMask = 0;
+    uint32_t mask    = 1;
+    for (uint8_t i = 0; i < fConfig.numRxBufsStd; ++i)
+    {
+        setupMessageBuffer(i, CANRxBuffer::CODE_EMPTY, false);
+        fRxInterruptMask |= mask;
+        mask <<= 1;
+    }
+    mask = (1UL << fConfig.numRxBufsStd);
+    for (uint8_t i = fConfig.numRxBufsStd; i < fConfig.numRxBufsStd + fConfig.numRxBufsExt; ++i)
+    {
+        setupMessageBuffer(i, CANRxBuffer::CODE_EMPTY, true);
+        fRxInterruptMask |= mask;
+        mask <<= 1;
+    }
+    for (uint32_t i = fLayout.firstTransmit; i < endOfApplicationBuffers(); ++i)
+    {
+        setupMessageBuffer(static_cast<uint8_t>(i), CANTxBuffer::CODE_INACTIVE, false);
+    }
+    setupMessageBuffer(fLayout.callback, CANTxBuffer::CODE_INACTIVE, false);
+
+    // Clear and disable interrupts
+    fpDevice->RXMGMASK = 0;
+    fpDevice->RX14MASK = 0;
+    fpDevice->RX15MASK = 0;
+
+    fpDevice->IMASK1 = 0;
+
+    fpDevice->IFLAG1 = 0xffffffff;
+
+    fpDevice->ESR1 = 0xffffffff;
+
+    fFirstRxId           = 0;
+    fFramesReceived      = 0;
+    fFramesReceivedTotal = 0;
+    return ICanTransceiver::ErrorCode::CAN_ERR_OK;
+}
+
+ICanTransceiver::ErrorCode FlexCANDevice::start()
+{
+    // Clear interrupt flags
+    fpDevice->IFLAG1 = 0xffffffff;
+
+    // Enable receive interrupts
+    fpDevice->IMASK1 = fRxInterruptMask;
+
+    // Leave freeze mode
+    fpDevice->MCR = fpDevice->MCR & (~FLEXCAN_MCR_HALT_MASK & ~FLEXCAN_MCR_FRZ_MASK);
+    if (::bsp::isEqualAfterTimeout<vuint32_t>(
+            &fpDevice->MCR,
+            (FLEXCAN_MCR_NOTRDY_MASK),
+            (FLEXCAN_MCR_NOTRDY_MASK),
+            INIT_DELAY_TIMEOUT_US))
+    {
+        return ICanTransceiver::ErrorCode::CAN_ERR_ILLEGAL_STATE;
+    }
+
+    fBusOff            = false;
+    fLastMessageBuffer = fLayout.firstTransmit;
+    fFirstRxId         = 0;
+    fFramesReceived    = 0;
+    fPowerManager.clearWakeupSourceMonitoring(fConfig.wakeUp);
+    return ICanTransceiver::ErrorCode::CAN_ERR_OK;
+}
+
+void FlexCANDevice::stop()
+{
+    interrupts::SuspendResumeAllInterruptsScopedLock lock;
+    fpDevice->IMASK1 = 0;
+
+    fpDevice->IFLAG1 = 0xffffffff;
+
+    fPowerManager.setWakeupSourceMonitoring(fConfig.wakeUp, true, true);
+}
+
+void FlexCANDevice::mute()
+{
+    for (uint32_t i = fLayout.firstTransmit; i < endOfApplicationBuffers(); ++i)
+    {
+        messageBuffer(static_cast<uint8_t>(i)).FLAGS.B.CODE = CANTxBuffer::CODE_INACTIVE;
+    }
+    messageBuffer(fLayout.callback).FLAGS.B.CODE = CANTxBuffer::CODE_INACTIVE;
+}
+
+uint8_t FlexCANDevice::receiveISR(uint8_t const* filterMap)
+{
+    uint32_t currentInterruptFlag = 1;
+    uint8_t bufIdx                = 0;
+    uint32_t interruptsToProcessMask;
+    uint32_t interruptProcessEnableMask = 0xffffffff;
+    uint8_t framesReceived              = 0;
+    uint32_t volatile dummyRegisterValue; // used for lock/unlock
+
+    fBusOff = false; // bus is not in off state when frames are received
+
+    interruptsToProcessMask = fpDevice->IFLAG1; // get current pending interrupts
+    interruptsToProcessMask &= fRxInterruptMask;
+
+    while (interruptsToProcessMask > 0)
+    {
+        fFramesReceivedTotal++;
+        if (interruptsToProcessMask & currentInterruptFlag)
+        {
+            do
+            {
+                dummyRegisterValue = messageBuffer(bufIdx).FLAGS.R; // lock buffer
+            } while (dummyRegisterValue & CANRxBuffer::FLAG_BUSY);
+            fpDevice->IFLAG1 = currentInterruptFlag; // clear interrupt
+
+            uint32_t id = messageBuffer(bufIdx).FLAGS.B.IDE == 0
+                              ? messageBuffer(bufIdx).ID.B.ID_STD
+                              : (messageBuffer(bufIdx).ID.R & can::CANFrame::MAX_FRAME_ID_EXTENDED);
+            if (fFirstRxId == 0)
+            {
+                fFirstRxId = id;
+            }
+            framesReceived += enqueueRxFrame(
+                id,
+                messageBuffer(bufIdx).FLAGS.B.DLC,
+                const_cast<vuint32_t*>(messageBuffer(bufIdx).DATA.W),
+                messageBuffer(bufIdx).FLAGS.B.IDE == 1,
+                filterMap);
+        }
+        currentInterruptFlag <<= 1;
+        interruptProcessEnableMask <<= 1;
+        interruptsToProcessMask = fpDevice->IFLAG1 & interruptProcessEnableMask;
+        interruptsToProcessMask &= fRxInterruptMask;
+        ++bufIdx;
+    }
+    dummyRegisterValue = fpDevice->TIMER; // unlock buffer
+    fFramesReceived += framesReceived;
+    return framesReceived;
+}
+
+uint8_t FlexCANDevice::enqueueRxFrame(
+    uint32_t id, uint8_t length, vuint32_t payload[], bool extended, uint8_t const* filterMap)
+{
+    if (!fRxQueue.full())
+    {
+        bool acceptRxFrame = true;
+        if ((nullptr != filterMap) && !extended)
+        {
+            // apply filter only for std. IDs
+            uint32_t index = id / 8U;
+            uint8_t mask   = 1U << (id % 8U);
+            if ((filterMap[index] & mask) == 0)
+            {
+                acceptRxFrame = false;
+            }
+        }
+        if (acceptRxFrame)
+        {
+            can::CANFrame& frame{fRxQueue.emplace(CanId::id(id, extended))};
+            frame.setTimestamp(getSystemTimeUs32Bit());
+            frame.setPayloadLength(length);
+            etl::be_uint32_ext_t{frame.getPayload()}                            = payload[0];
+            etl::be_uint32_ext_t{frame.getPayload() + sizeof(etl::be_uint32_t)} = payload[1];
+            return 1;
+        }
+    }
+    return 0;
+}
+
+uint8_t FlexCANDevice::getTransmitBuffer(CANFrame const& frame, bool callbackRequested)
+{
+    uint8_t free         = TRANSMIT_BUFFER_UNAVAILABLE;
+    bool busyBufferFound = false;
+
+    if (callbackRequested)
+    {
+        if (CANTxBuffer::CODE_INACTIVE == messageBuffer(fLayout.callback).FLAGS.B.CODE)
+        {
+            return fLayout.callback;
+        }
+
+        return TRANSMIT_BUFFER_UNAVAILABLE;
+    }
+
+    uint32_t frameId = CanId::rawId(frame.getId());
+    for (uint8_t bufIdx = fLastMessageBuffer; bufIdx >= fLayout.firstTransmit; --bufIdx)
+    {
+        if (CANTxBuffer::CODE_INACTIVE == messageBuffer(bufIdx).FLAGS.B.CODE)
+        {
+            free = bufIdx;
+            if (!busyBufferFound)
+            {
+                fLastMessageBuffer = free;
+            }
+        }
+        else
+        {
+            busyBufferFound = true;
+
+            bool extendedBufferId = (messageBuffer(bufIdx).FLAGS.B.IDE == 1);
+            uint32_t bufId
+                = extendedBufferId ? messageBuffer(bufIdx).ID.R : messageBuffer(bufIdx).ID.B.ID_STD;
+            if ((bufId == frameId) && (extendedBufferId == CanId::isExtended(frame.getId())))
+            { // buffer with same id
+                if (TRANSMIT_BUFFER_UNAVAILABLE == free)
+                {
+                    if (fLastMessageBuffer < (endOfApplicationBuffers() - 1U))
+                    {
+                        free = static_cast<uint8_t>(++fLastMessageBuffer);
+                    }
+                }
+                return free;
+            }
+        }
+    }
+
+    if (TRANSMIT_BUFFER_UNAVAILABLE == free)
+    {
+        if (fLastMessageBuffer < (endOfApplicationBuffers() - 1U))
+        {
+            free = static_cast<uint8_t>(++fLastMessageBuffer);
+        }
+    }
+    return free;
+}
+
+ICanTransceiver::ErrorCode
+FlexCANDevice::transmit(CANFrame const& frame, uint8_t bufIdx, bool txInterruptNeeded)
+{
+    interrupts::SuspendResumeAllInterruptsScopedLock lock;
+    bool const isValidBufferIdx
+        = ((bufIdx >= fLayout.firstTransmit) && (static_cast<uint32_t>(bufIdx) < endOfApplicationBuffers()))
+          || (fLayout.callback == bufIdx);
+    if (isValidBufferIdx && (CANTxBuffer::CODE_INACTIVE == messageBuffer(bufIdx).FLAGS.B.CODE))
+    {
+        if (txInterruptNeeded)
+        {
+            fTxInterruptMask0 = 1UL << bufIdx;
+        }
+        if (CanId::isExtended(frame.getId()))
+        {
+            messageBuffer(bufIdx).ID.R        = CanId::rawId(frame.getId());
+            messageBuffer(bufIdx).FLAGS.B.IDE = 1;
+            messageBuffer(bufIdx).FLAGS.B.SRR = 1;
+        }
+        else
+        {
+            messageBuffer(bufIdx).ID.B.ID_STD = CanId::rawId(frame.getId());
+            messageBuffer(bufIdx).FLAGS.B.IDE = 0;
+        }
+        ::etl::byte_stream_reader byte_stream{frame.getPayload(), 8, etl::endian::big};
+        messageBuffer(bufIdx).DATA.W[0]   = byte_stream.read_unchecked<uint32_t>();
+        messageBuffer(bufIdx).DATA.W[1]   = byte_stream.read_unchecked<uint32_t>();
+        messageBuffer(bufIdx).FLAGS.B.DLC = frame.getPayloadLength();
+        if (txInterruptNeeded)
+        {
+            enableTransmitInterrupt();
+        }
+        messageBuffer(bufIdx).FLAGS.B.CODE = CANTxBuffer::CODE_TRANSMIT;
+        return ICanTransceiver::ErrorCode::CAN_ERR_OK;
+    }
+
+    return ICanTransceiver::ErrorCode::CAN_ERR_TX_FAIL;
+}
+
+unsigned char FlexCANDevice::dequeueRxFrameStream(unsigned char* data)
+{
+    uint32_t id;
+    unsigned char* ptr;
+    unsigned char i;
+    if (isRxQueueEmpty())
+    {
+        return 0;
+    }
+
+    can::CANFrame& frame = fRxQueue.front();
+    data[0]              = frame.getPayloadLength();
+    id                   = frame.getId();
+    data[1]              = static_cast<unsigned char>(id >> 8);
+    data[2]              = static_cast<unsigned char>(id);
+    ptr                  = frame.getPayload();
+    for (i = 0; i < data[0]; ++i)
+    {
+        data[3 + i] = ptr[i];
+    }
+    fRxQueue.pop();
+    return 1;
+}
+
+ICanTransceiver::ErrorCode
+FlexCANDevice::transmitStream(uint8_t* /* Txframe */, bool /* txInterruptNeeded */)
+{
+    return ICanTransceiver::ErrorCode::CAN_ERR_TX_FAIL;
+}
+
+bool FlexCANDevice::wokenUp()
+{
+    bool ret = true;
+    if (fpDevice->IMASK1 == 0)
+    {
+        // CAN Device in Stop
+        if ((fPowerManager.getWakeupSource() & fConfig.wakeUp) == 0)
+        {
+            ret = false;
+        }
+    }
+    else
+    {
+        {
+            interrupts::SuspendResumeAllInterruptsScopedLock lock;
+            if (fFramesReceivedTotal == 0)
+            {
+                ret = false;
+            }
+            fFramesReceivedTotal = 0;
+        }
+    }
+    return ret;
+}
+
+void FlexCANDevice::transmitISR()
+{
+    // COM-26: on an instance with 16 message buffers (and on the S32K11x) receive and transmit share one vector, and
+    // its handler calls this before receiveISR(). Without the check every received frame reported the frame in the
+    // callback buffer as sent (the transceiver then sent the next one into a busy buffer and dropped its queue) and
+    // cleared the flag of the real transmit event.
+    if ((fpDevice->IFLAG1 & fpDevice->IMASK1 & fTxInterruptMask0) == 0U)
+    {
+        return;
+    }
+    disableTransmitInterrupt();
+    fFrameSentCallback();
+}
+
+} // namespace bios

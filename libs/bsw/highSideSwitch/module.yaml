@@ -1,0 +1,66 @@
+# Module manifest (doc/architecture/README.md, section 5). Checked by tools/nxconfig (checks.py), rendered by
+# tools/bswgen (modules.py) as integration/highSideSwitchConfiguration.h.
+module: highSideSwitch
+kind: device_driver
+description: Smart high-side switch with input IN, diagnosis enable DEN and current sense IS (PROFET-like)
+# Evidence (CHANGELOG.md): "IO-13 am Board, geänderter Aufbau (2026-09-18)" (current sense, overcurrent) and
+# "Last-Tests 2026-09-18 abends" (off check, open load); fault threshold not run (needs >= 7 A, supply limited to 5 A).
+# IO-21 (thresholds in mA load current) is verified by host tests and target builds only; the effective thresholds
+# of the eval board projects are the same ADC codes as before.
+verification: hardware
+verification_note: >-
+  Current sense, overcurrent switch-off with latch, open load and the off check are confirmed on the eval board
+  (BTS5030-1EJA, electronic load); the fault current threshold needs a real device fault and is covered by host
+  tests only.
+# Board parts this driver serves (fnmatch patterns on board.yaml devices[].part). Only parts whose IS behaviour
+# (sense ratio, fault current, DEN) matches the state machine; add further parts after checking their data sheet.
+parts:
+  - BTS5030-1EJA
+# Wiring of each instance: board.yaml devices[].connect maps these names to board entries of the given kind.
+connect:
+  # safe_off (IO-37, after the finding of SYS-06): IN carries the load, so the fault handlers and the halt deadman
+  # drive it inactive first, before dump and UART - the same rank as the DRV_EN of a gate driver. Whether an output
+  # belongs into the safe outputs table is stated here, by the module, not by a board or a project: a board without
+  # a high-side switch and a project that does not use the module keep an empty table. DEN only enables the
+  # diagnosis of the part and carries no load, so it stays out (the part pulls IS down when IN is low anyway).
+  in:  { kind: digital_output, safe_off: true, description: "input IN (switch on)" }
+  den: { kind: digital_output, description: "diagnosis enable DEN (IS active)" }
+  is:  { kind: analog_input,   description: "current sense IS; the board's adc[].sensor of this channel converts it into the load current in mA (highside_is: k_ILIS, R_IS)" }
+# Parameters of each instance: project.yaml modules.<device> (highside::HighSideSwitchConfig, HighSideSwitchNames).
+# IO-21: every current level is a load current in mA, the physical quantity of the function
+# (doc/architecture/treiber-granularitaet.md section 5). The conversion from the IS signal is board knowledge: sense
+# ratio k_ILIS and sense resistor R_IS stand once, at the sensor of the ADC channel wired to connection is
+# (board.yaml adc[].sensor, kind highside_is); the integration converts each sample with that characteristic
+# (adc.phys) before the state machine sees it. `sense: is` lets tools/nxconfig check that the channel delivers mA and
+# that each level lies in the range the channel can report. The levels depend on the load of the project, so the
+# module has no defaults for them.
+parameters:
+  cycle_ms:                { type: int, min: 1, max: 1000,    default: 10, unit: ms, description: supervision period }
+  overcurrent_ma:          { type: int, min: 1, max: 1000000, unit: mA, sense: is, description: load current at or above which it is an overcurrent }
+  overcurrent_debounce_ms: { type: int, min: 1, max: 1000,    unit: ms, description: overcurrent duration before switching off }
+  fault_ma:                { type: int, min: 1, max: 1000000, unit: mA, sense: is, description: load current at or above which the fault current of the switch is assumed (IS saturated) }
+  fault_debounce_ms:       { type: int, min: 1, max: 1000,    unit: ms, description: fault level duration before switching off }
+  switch_on_blanking_ms:   { type: int, min: 0, max: 1000,    unit: ms, description: current thresholds ignored after switching on }
+  open_load_ma:            { type: int, min: 0, max: 1000000, unit: mA, sense: is, description: load current below this while on is an open load (warning; 0 = off) }
+  off_max_ma:              { type: int, min: 1, max: 1000000, unit: mA, sense: is, description: reading above this while off is implausible }
+  off_debounce_ms:         { type: int, min: 1, max: 1000,    unit: ms, description: implausible off reading duration before a fault }
+  console:                 { type: str, pattern: "^[a-z][a-z0-9_]{0,15}$", description: console command group of the instance }
+# Same rules as highside::isValidHighSideSwitchConfig (checked again by static_assert in the integration).
+constraints:
+  - fault_ma > overcurrent_ma
+  - open_load_ma < overcurrent_ma
+  - off_max_ma < fault_ma
+  - overcurrent_debounce_ms >= cycle_ms
+  - fault_debounce_ms >= cycle_ms
+  - off_debounce_ms >= cycle_ms
+provides:
+  - switched_output
+lifecycle: { level: 1, task: bsp }
+cmake_target: highSideSwitchSystem
+console: instance                   # command group per instance: parameter console (e.g. kl30b)
+# ARCH-66: integration generated by tools/bswgen (integration/moduleBinding.h, ARCH-52) from this manifest and the
+# trait: pins on the family binders, one system per instance in level and task of `lifecycle`, the generic safe_off
+# adapter for `in` (debug halt guard and hold of S1). No line of this driver in the family port.
+binding:
+  include: highSideSwitch/HighSideSwitchBinding.h
+  trait: ::highside::HighSideSwitchBinding

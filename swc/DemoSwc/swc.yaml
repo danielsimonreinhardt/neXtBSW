@@ -1,0 +1,24 @@
+# SPDX-License-Identifier: Apache-2.0
+# Hand-written C substitute of the Simulink component DemoSwc (PLAT-119, decision F9 A): the same RTE interface as
+# swc/DemoSwc (ports, data types, runnables, periods, the calibration parameter), so a project builds it in place of
+# the code Embedded Coder generates from DemoSwc.slx. Not a component folder of its own: the export copies this file
+# and src/DemoSwc.c into swc/DemoSwc (tools/distcheck/distribution.yaml, export.overlay); the tests assemble the same
+# folder (test/assemble.py). The calibration value stays in swc/DemoSwc/DemoSwc_data.m.
+version: 1
+name: DemoSwc
+description: Board demo (Led1 follows Button1, Led2 blinks when PC_Command is valid, NTC low-pass) - C substitute
+implementation: c
+runnables:
+  - name: Run10ms
+    period_ms: 10
+  - name: Run100ms
+    period_ms: 100
+ports:
+  - { name: Button1, direction: in, type: boolean, runnables: [Run10ms] }
+  - { name: MotorNtc_mV, direction: in, type: uint32, runnables: [Run100ms] }
+  - { name: PcCommandQlf, direction: in, type: uint8, runnables: [Run10ms] }     # QLF_* of Rte_Qlf.h
+  - { name: Led1, direction: out, type: boolean, runnables: [Run10ms] }
+  - { name: Led2, direction: out, type: boolean, runnables: [Run10ms] }
+  - { name: MotorNtcFiltered_mV, direction: out, type: uint32, runnables: [Run100ms] }
+parameters:                       # value only in swc/DemoSwc/DemoSwc_data.m
+  - { name: FilterAlpha, type: float32, runnables: [Run100ms] }

@@ -1,0 +1,14 @@
+# Module manifest (doc/architecture/README.md, section 5), minimal (DOC-14): a contract is a catalogue entry only -
+# tools/nxconfig and tools/bswgen assign no board device, take no project values and generate nothing for it. Device
+# drivers state their need for it as `requires: { spi_device: 1 }`; the implementation is the family SPI driver
+# (platforms/<family>/bsp/bspLpspi for S32K1xx).
+module: bspSpi
+kind: contract
+description: SPI device contract ISpiDevice - one slave behind a master, full-duplex frames of up to 64 bits with chip select held for the frame
+# Evidence (CHANGELOG.md): "Hardware-Test SBC-Treiber (2026-09-14)" (SBC over LPSPI1, no SPI errors) and
+# IO-25 Board-Nachweis (2026-09-18, TMC6200 40-bit datagrams through transferLong, no SPI errors).
+verification: hardware
+verification_note: >-
+  Exercised on the eval board through the S32K1xx LPSPI implementation with 16-bit frames to the SBC and 40-bit
+  frames to the TMC6200; other frame sizes are covered by host tests only.
+cmake_target: bspSpi

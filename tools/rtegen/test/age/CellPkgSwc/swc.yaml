@@ -1,0 +1,16 @@
+# SPDX-License-Identifier: Apache-2.0
+# SYS-32 test component: stands for a device package (stage 2) that reads a cell controller every 20 ms and writes
+# the values with Rte_Write only when the device delivered new ones. The host test switches the "device" off and
+# on (CellPkgSwc_DeviceAnswers); the runnable keeps running on time either way, so SM-05 sees nothing - only the
+# age supervision of the RTE (age.qlf.*) does.
+version: 1
+name: CellPkgSwc
+description: Cell controller package stand-in (writes only new values)
+implementation: c
+runnables:
+  - name: Run20ms
+    period_ms: 20
+ports:
+  - { name: Cells_mV, direction: out, type: uint16, runnables: [Run20ms], dimension: 4 }
+  - { name: Current_mA, direction: out, type: sint32, runnables: [Run20ms] }
+  - { name: Runs, direction: out, type: uint16, runnables: [Run20ms] }           # written in every run

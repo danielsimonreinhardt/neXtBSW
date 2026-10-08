@@ -1,0 +1,82 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Your Name <you@example.com>
+Date: Thu, 17 Sep 2026 12:00:00 +0200
+Subject: [PATCH] Log the measured voltage with the ADC and supply safety
+ events
+
+ADC_REFERENCE_ERROR and INTERNAL_SUPPLIES_ERROR were the only two
+events of SafeSystem whose log line carried no context, although the
+monitors are declared with a uint32_t context and both checks have the
+measured value in hand when they trigger. Every entry therefore looked
+the same, and the reset that follows leaves nothing else behind: after
+the restart there is no way to tell a reference that is slightly off
+from one that reads zero, or which of the three internal rails was
+being sampled at what voltage.
+
+SafeSystem now passes the measured value in mV as the context, and
+SafeSupervisor prints it the way it already does for
+MPU_CONFIGURATION_ERROR and LOCK_REGISTER_ERROR. This also removes the
+"use event.getContext" note at these two cases, which is now done.
+
+Signed-off-by: Your Name <you@example.com>
+---
+ .../safety/safeSystem/src/safeSystem/SafeSystem.cpp    |  8 ++++++--
+ .../src/safeSupervisor/SafeSupervisor.cpp              | 10 ++++++----
+ 2 files changed, 12 insertions(+), 6 deletions(-)
+
+diff --git a/executables/referenceApp/platforms/s32k148evb/safety/safeSystem/src/safeSystem/SafeSystem.cpp b/executables/referenceApp/platforms/s32k148evb/safety/safeSystem/src/safeSystem/SafeSystem.cpp
+index 950acf37..399b4260 100644
+--- a/executables/referenceApp/platforms/s32k148evb/safety/safeSystem/src/safeSystem/SafeSystem.cpp
++++ b/executables/referenceApp/platforms/s32k148evb/safety/safeSystem/src/safeSystem/SafeSystem.cpp
+@@ -45,7 +45,9 @@ void SafeSystem::checkAdcReference(uint32_t const bandgapRawValue)
+     if ((_adcRef < 4800U) || (_adcRef > 5200U))
+     {
+         auto& supervisor = safety::SafeSupervisor::getInstance();
+-        supervisor.adcReferenceMonitor.trigger();
++        // The measured reference in mV tells the reader whether the reference is low, high or
++        // absurd; without it the log line is the same for every cause.
++        supervisor.adcReferenceMonitor.trigger(_adcRef);
+     }
+ }
+ 
+@@ -85,7 +87,9 @@ void SafeSystem::checkInternalSupplies(uint32_t const internalSupplyRawValue)
+             if ((supplyVoltage < (ref - 200U)) || (supplyVoltage > (ref + 200U)))
+             {
+                 auto& supervisor = safety::SafeSupervisor::getInstance();
+-                supervisor.internalSuppliesMonitor.trigger();
++                // Which rail was measured is in SIM->CHIPCTL, the measured value is not stored
++                // anywhere else, so pass it on as the context of the event.
++                supervisor.internalSuppliesMonitor.trigger(supplyVoltage);
+             }
+             break;
+         }
+diff --git a/executables/referenceApp/safety/safeSupervisor/src/safeSupervisor/SafeSupervisor.cpp b/executables/referenceApp/safety/safeSupervisor/src/safeSupervisor/SafeSupervisor.cpp
+index 55bebf16..73cfded4 100644
+--- a/executables/referenceApp/safety/safeSupervisor/src/safeSupervisor/SafeSupervisor.cpp
++++ b/executables/referenceApp/safety/safeSupervisor/src/safeSupervisor/SafeSupervisor.cpp
+@@ -146,16 +146,18 @@ void SafeSupervisor::handle(Event const& event)
+         }
+         case Event::ADC_REFERENCE_ERROR:
+         {
+-            Logger::error(SAFETY, "Event: ADC_REFERENCE_ERROR");
++            uint32_t const referenceMv = adcReferenceMonitor.getContext();
++            Logger::error(
++                SAFETY, "Event: ADC_REFERENCE_ERROR, measured reference: %d mV", referenceMv);
+             // TODO: remove the log, and replace it with writing the event to no-init ram
+-            // Note: use event.getContext to get extra information about the event
+             break;
+         }
+         case Event::INTERNAL_SUPPLIES_ERROR:
+         {
+-            Logger::error(SAFETY, "Event: INTERNAL_SUPPLIES_ERROR");
++            uint32_t const supplyMv = internalSuppliesMonitor.getContext();
++            Logger::error(
++                SAFETY, "Event: INTERNAL_SUPPLIES_ERROR, measured supply: %d mV", supplyMv);
+             // TODO: remove the log, and replace it with writing the event to no-init ram
+-            // Note: use event.getContext to get extra information about the event
+             break;
+         }
+         case Event::CHECK_REGISTER_ERROR:
+-- 
+2.30.1.windows.1
+

@@ -1,0 +1,272 @@
+# Documentation website (DOC-71): MkDocs Material over the Markdown + Mermaid sources of the repository.
+# Packages: pip install -r tools/requirements-site.txt. Build only through the export (published pages, links to
+# unpublished pages replaced): python -m tools.docgen.site build --out <dir>. Details: tools/docgen/README.md.
+site_name: neXtBSW
+site_description: Hardware-neutral, configurable basic software for 32-bit automotive MCUs, built on Eclipse OpenBSW
+copyright: Copyright 2026 Daniel Simon Reinhardt-Probul - Apache-2.0
+
+# The pages come from the whole tree (doc/, README.md, module documents next to the code). The hook
+# tools/docgen/mkdocs_hooks.py stages the published ones - open profile of tools/distcheck/distribution.yaml, never
+# doc/confidential - with their repository paths into a temporary folder and makes that the docs_dir; `doc` here is
+# only the starting value MkDocs checks before the hook runs.
+docs_dir: doc
+hooks:
+  - tools/docgen/mkdocs_hooks.py
+
+# second barrier besides the hook (patterns relative to the staged folder)
+exclude_docs: |
+  doc/confidential/
+  doc/hardware/
+  /CHANGELOG.md
+  /CLAUDE.md
+  platforms/stm32/
+  mcudb/stm32/
+  mcudb/rm4x/
+  mcudb/s32k3xx/
+  boards/nucleo_f446re/
+  platforms/**/3rdparty/
+  mcudb/*/sources/
+  doc/openbsw-beitraege/*/issue.md
+  bootloader/test/layouts/README.md
+
+theme:
+  name: material
+  language: de
+  features:
+    - navigation.sections
+    - navigation.indexes
+    - navigation.top
+    - navigation.footer
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: teal
+      toggle: { icon: material/brightness-7, name: Dunkel }
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: teal
+      toggle: { icon: material/brightness-4, name: Hell }
+
+plugins:
+  - search
+  # i18n scaffold DE/EN (DOC-71). Today every page exists in ONE language (most in English, new texts in German);
+  # the switcher shows the same page in both trees (fallback). The translations of DOC-70 go next to the page as
+  # <name>.en.md / <name>.de.md (suffix structure); the generated reference stays English in both trees (K3).
+  - i18n:
+      docs_structure: suffix
+      fallback_to_default: true
+      reconfigure_material: true
+      reconfigure_search: true
+      languages:
+        - locale: de
+          name: Deutsch
+          default: true
+          build: true
+        - locale: en
+          name: English
+          build: true
+
+extra:
+  # one documentation version per release with mike (tools/requirements-site.txt); published by the manual workflow
+  # .github/workflows/docs.yml (DOC-87): mike deploy --push --update-aliases <version from VERSION> latest
+  version:
+    provider: mike
+  nextbsw:
+    # Links to folders of code and to external/openbsw work on the code host but have no page in the site. Empty:
+    # the site shows the link text plus the repository path. On publication: the tree URL of the tagged release,
+    # e.g. https://github.com/<owner>/neXtBSW/tree/v1.0.0 (tools/docgen/site.py rewrite_links)
+    source_url: ""
+
+markdown_extensions:
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+      slugify: !!python/object/apply:pymdownx.slugs.slugify
+        kwds:
+          case: lower
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  # Mermaid natively (Material renders <pre class="mermaid">); the B1 init line (%%{init: ...}%%) stays in the block
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+
+validation:
+  nav:
+    omitted_files: info
+    not_found: warn
+    absolute_links: warn
+  links:
+    not_found: warn
+    absolute_links: warn
+    unrecognized_links: warn
+    anchors: warn
+
+# Navigation along the reading paths of doc/README.md (integrator, safety assessor, contributor). Only published pages
+# (open profile); the test docgen-site checks that every entry is one. Entries without a label take the page title.
+# Each page appears once: the integrator path ends in the safety manual, which lives under the safety assessor.
+nav:
+  - Start: README.md
+  - Wegweiser: doc/README.md
+  - Integrator:
+      - Anleitung: doc/guide/README.md
+      - Erste Schritte: doc/guide/getting-started.md
+      - Host-Durchlauf ohne Hardware: doc/guide/host-durchlauf.md
+      - Das erste Board: doc/guide/your-first-board.md
+      - Die Anwendung: doc/guide/the-application.md
+      - Bauen und Flashen: doc/guide/build-and-flash.md
+      - Eigenes ECU-Repository: doc/guide/customer-project.md
+      - Neues Derivat: doc/guide/new-derivative.md
+      - Vorlage Board-README: doc/guide/board-readme-template.md
+      - Konfigurationsreferenz:
+          - doc/reference/README.md
+          - doc/reference/derivative.md
+          - doc/reference/board.md
+          - doc/reference/project.md
+          - doc/reference/rte.md
+          - doc/reference/diag.md
+          - doc/reference/console.md
+      - Projekte, Komponenten, Boards:
+          - Projekte: projects/README.md
+          - Software-Komponenten: swc/README.md
+          - C-Ersatz der DemoSwc: swc/DemoSwcSubstitute/README.md
+          - Board-Ports: ecu/platforms/README.md
+          - boards/buildtest_s32k148/README.md
+      - Release Notes:
+          - v1.0.0-rc2: doc/release-notes/v1.0.0-rc2.md
+          - v1.0.0-rc1: doc/release-notes/v1.0.0-rc1.md
+  - Safety-Assessor:
+      - Einstieg Safety: doc/safety/start/README.md
+      - Sicherheitshandbuch: doc/safety/safety-manual.md
+      - Sicherheitskonzept: doc/safety/concept.md
+      - Bilder zum Konzept: doc/safety/figures/concept-figures.md
+      - Anomalie-Register: doc/safety/anomaly-register.md
+      - Arbeitsprodukte:
+          - doc/safety/safety-plan.md
+          - doc/safety/verification-plan.md
+          - doc/safety/safety-case.md
+          - doc/safety/cm-plan.md
+          - doc/safety/sw-architecture.md
+          - doc/safety/architecture-safety-analysis.md
+          - doc/safety/fmea.md
+          - doc/safety/figures/fmea-figures.md
+          - doc/safety/dfa.md
+          - doc/safety/unit-design.md
+          - doc/safety/coexistence.md
+          - doc/safety/partner-and-degraded.md
+          - doc/safety/config-range.md
+          - doc/safety/hsi-s32k1xx.md
+          - doc/safety/hardware-mechanisms.md
+          - doc/safety/security-interplay.md
+          - doc/safety/static-analysis.md
+          - doc/safety/tool-classification.md
+          - doc/safety/component-qualification.md
+          - doc/safety/dev-environment.md
+          - doc/safety/board-test-spec.md
+  - Contributor:
+      - Architektur:
+          - doc/architecture/overview.md
+          - doc/architecture/README.md
+          - doc/architecture/openbsw.md
+          - doc/architecture/openbsw-naehe.md
+          - doc/architecture/autosar.md
+          - doc/architecture/autosar-standard-set.md
+          - doc/architecture/autosar-ecuc-map.md
+          - doc/architecture/autosar-ecuc-evaluation.md
+          - doc/architecture/plattformen.md
+          - doc/architecture/customer-project.md
+          - doc/architecture/versioning.md
+          - doc/architecture/csec-concept.md
+          - doc/architecture/kalibrierung.md
+          - doc/architecture/pin-interrupts.md
+          - doc/architecture/signal-qualifier.md
+          - doc/architecture/treiber-granularitaet.md
+          - doc/architecture/treiber-anbindung-analyse.md
+          - doc/architecture/openbsw-console-number-arguments.md
+          - Geplant nach R1:
+              - doc/architecture/planned.md
+              - doc/architecture/non-cortex-m-audit.md
+              - doc/architecture/rm4x-quellen.md
+              - doc/architecture/stm32-nucleo.md
+      - Bilder:
+          - doc/figures/README.md
+          - doc/figures/01-schichten.md
+          - doc/figures/02-konfigurationsfluss.md
+          - doc/figures/03-startablauf.md
+          - doc/figures/04-flash-uds.md
+          - doc/figures/05-ecu-zustaende.md
+          - doc/figures/06-safety-kette.md
+          - doc/figures/07-modulkarte.md
+          - doc/figures/08-lesepfade.md
+      - Moduldokumentation:
+          - doc/reference/modules.md
+          - Bootloader: bootloader/doc/README.md
+          - bootloader/doc/iso14229-1-clause16-conformance.md
+          - libs/bsw/autosarBase/doc/autosarBase.md
+          - libs/bsw/canPhyPassive/doc/canPhyPassive.md
+          - libs/bsw/canSystem/doc/canSystem.md
+          - libs/bsw/consoleContext/doc/consoleContext.md
+          - libs/bsw/dem/doc/dem.md
+          - libs/bsw/e2e/doc/e2e.md
+          - libs/bsw/ecuState/doc/ecuState.md
+          - libs/bsw/gdTmc6200/doc/gdTmc6200.md
+          - libs/bsw/hallDecoder/doc/hallDecoder.md
+          - libs/bsw/highSideSwitch/doc/highSideSwitch.md
+          - libs/bsw/mcuLink/doc/mcuLink.md
+          - libs/bsw/nvm/doc/nvm.md
+          - libs/bsw/nvmDataFlash/doc/nvmDataFlash.md
+          - libs/bsw/sbcUja113x/doc/sbcUja113x.md
+          - libs/bsp/bspAdcAccess/doc/bspAdcAccess.md
+          - libs/bsp/bspI2c/doc/bspI2c.md
+          - libs/bsp/bspPinEdge/doc/bspPinEdge.md
+          - libs/bsp/bspPinEvent/doc/bspPinEvent.md
+          - libs/bsp/bspSampleGroup/doc/bspSampleGroup.md
+          - libs/bsp/bspSpi/doc/bspSpi.md
+          - platforms/common/clockCheck/README.md
+          - platforms/common/interruptPriority/README.md
+          - platforms/s32k1xx/bsp/bspCsec/README.md
+          - platforms/s32k1xx/bsp/bspMcu/README.md
+          - platforms/s32k1xx/startup/README.md
+          - platforms/s32k1xx/port/safety/safeLifecycle/doc/safeLifecycle.md
+          - platforms/s32k1xx/port/safety/safeMemory/doc/safeMemory.md
+          - platforms/s32k1xx/port/safety/safeSupervisor/doc/safeSupervisor.md
+          - platforms/s32k1xx/port/safety/safeSystem/doc/safeSystem.md
+          - platforms/s32k1xx/port/bspConfiguration/src/bsp/capture/doc/capture.md
+          - platforms/s32k1xx/port/bspConfiguration/src/bsp/hall/doc/hall.md
+      - Tests und Werkzeuge:
+          - tools/test/README.md
+          - tools/docgen/README.md
+          - Doku-Website: tools/docgen/website.md
+          - tools/ci/README.md
+          - tools/setup/README.md
+          - tools/distcheck/README.md
+          - tools/canflash/README.md
+          - tools/boardtest/README.md
+          - tools/misra/README.md
+          - tools/trace/README.md
+          - tools/a2lgen/README.md
+          - tools/calgen/README.md
+          - tools/csec/README.md
+          - tools/elfcheck/README.md
+          - tools/nxupdate/README.md
+          - tools/schedana/README.md
+          - tools/stackuse/README.md
+      - Beitragen: CONTRIBUTING.md
+      - Sicherheitsluecken melden: SECURITY.md
+      - Beitraege an OpenBSW: doc/openbsw-beitraege/README.md
+      - Ableitung der Chipdaten (mcudb): mcudb/README.md

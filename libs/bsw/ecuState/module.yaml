@@ -1,0 +1,115 @@
+# Module manifest (doc/architecture/README.md, section 5). Read by tools/nxconfig (manifest checks, project values)
+# and tools/rtegen (EcuStateConfig.h). Parameters: project values under project.yaml modules.ecuState (SYS-08,
+# project_parameters), checked by tools/nxconfig with file, line and YAML path; missing values from the defaults.
+# The order of the parameters is the field order of ecustate::EcuStateConfig / ECU_STATE_CONFIG()
+# (checked by tools/rtegen/test_rtegen.py::test_manifest_matches_the_module).
+module: ecuState
+kind: service
+description: ECU state management Startup/Run/Standby/Rundown/Shutdown/Sleep on top of the OpenBSW lifecycle; uses the role power_supply (0..1, without provider the supply is permanent)
+# Evidence (CHANGELOG.md): SYS-01 (a) (2026-09-15), SYS-02 (b) (2026-09-16, sleep from the model, CAN wake-up),
+# SYS-12, SYS-09/SYS-11 and SYS-13 (2026-09-18: sleep and wake-up, standby cancelled by "ecu run").
+verification: hardware
+verification_note: >-
+  Run, standby with withdrawal, run-down, sleep and the start after a CAN wake-up are confirmed on the eval board;
+  local and cyclic wake-up and the run-down step time-outs are covered by host tests only.
+provides:
+  - ecu_state                      # RTE targets ecu.state, ecu.wakeup, ecu.wakeup.<source>, ecu.sleep_request
+project_parameters: true            # a service without board device: one entry modules.ecuState per project
+parameters:
+  min_run_ms:
+    type: int
+    min: 0
+    max: 3600000
+    default: 5000
+    unit: ms
+    description: RUN at least this long after the start before a sleep request is served (diagnostic access, reflashing after a wake-up)
+  post_run_ms:
+    type: int
+    min: 0
+    max: 3600000
+    default: 2000
+    unit: ms
+    description: STANDBY (post-run) before the run-down, the application runs on and can withdraw the request
+  shutdown_timeout_ms:
+    type: int
+    min: 100
+    max: 3600000
+    default: 5000
+    unit: ms
+    description: >
+      lifecycle shutdown not finished within this time -> restart. Also the bound of the restart itself (SYS-173):
+      the lifecycle has not reached level 0 within this time after the restart request -> direct reset of the MCU
+  sleep_timeout_ms:
+    type: int
+    min: 101
+    max: 3600000
+    default: 2000
+    unit: ms
+    description: MCU still running this long after the power down request -> restart (more than POWER_DOWN_DELAY_MS 100 ms)
+  # Run-down before the sleep (SYS-02): one time limit per step of ecuState/IShutdownStep.h, in that order
+  nvm_timeout_ms:
+    type: int
+    min: 10
+    max: 3600000
+    default: 1000
+    unit: ms
+    description: >
+      step NvM of the run-down: writing the non-volatile data not finished within this time -> see step_error.
+      Without a NvM provider the step is reported as not present (NVM-01 is blocked) and the limit never applies
+  can_stop_timeout_ms:
+    type: int
+    min: 10
+    max: 3600000
+    default: 500
+    unit: ms
+    description: >
+      step CAN of the run-down: stopping the transmission and leaving the transceivers ready for a wake-up not
+      finished within this time -> see step_error
+  # Wake-up sources armed before the power down (SYS-02). Which of them a board can serve answers the module with
+  # the role power_supply; a selected source it cannot arm is reported by "ecu status" and the log.
+  wakeup_can:
+    type: str
+    pattern: "all|none|[A-Za-z][A-Za-z0-9_]*(,[A-Za-z][A-Za-z0-9_]*)*"
+    names: can_bus                  # every listed name must be a CAN bus of use.can (tools/nxconfig)
+    default: all
+    description: >
+      CAN buses that may wake the ECU: all (every bus of the project), none, or a comma separated list of bus
+      names of the project (board can[], one wake-up bit per bus, ARCH-07)
+  wakeup_local:
+    type: str
+    pattern: "all|none|LOCAL[0-7](,LOCAL[0-7])*"
+    names: any                      # none twice (tools/nxconfig)
+    default: none
+    description: >
+      local wake-up inputs of the power supply that may wake the ECU (SBC UJA113x: WAKE/HVIO pins, bank 0 of
+      register 0x37). Default none, because an input that is not wired on the board wakes the ECU at random
+  wakeup_cyclic_ms:
+    type: int
+    min: 0
+    max: 3600000
+    default: 0
+    unit: ms
+    description: >
+      cyclic wake-up (wakeup::TIMER): 0 off, otherwise the requested period. The supply rounds it up to its own
+      grid (SBC UJA113x: watchdog periods 8..4096 ms in Sleep) and reports the value it really uses
+  wakeup_during_shutdown:
+    type: str
+    pattern: "restart|sleep"
+    default: restart
+    description: wake-up event during RUNDOWN/SHUTDOWN, restart (evaluate it in a new start) or sleep anyway
+  after_watchdog_reset:
+    type: str
+    pattern: "run|sleep"
+    default: run
+    description: start after a watchdog reset, run (application decides) or sleep without request
+  step_error:
+    type: str
+    pattern: "restart|continue"
+    default: restart
+    description: >
+      a run-down step failed or ran into its time limit: restart the ECU (a half prepared ECU must not sleep) or
+      continue and note the step. Never continued: the NvM step (SYS-174, a data flash write must not meet the power
+      down) - tools/rtegen refuses continue for a project with NvM blocks or data flash areas
+lifecycle: { level: 1, task: bsp }   # same level and task as the power supply provider, survives the shutdown
+cmake_target: ecuState
+console: ecu

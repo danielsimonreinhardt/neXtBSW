@@ -1,0 +1,55 @@
+# Test profile of COM-43, not the eval board: CommunicationControl (28) and ControlDTCSetting (85) of the application
+# in a development build (the extended session suffices) and in a product build (NX_PRODUCT_BUILD, SYS-74: security
+# access as well). One security level that can be unlocked in the extended session - tools/diaggen derives the mask
+# of the product build from it -, and one DTC reported by a BSW monitor (the test reports it, app_dem_report) to show
+# that the fault memory takes nothing while 85 is off.
+# Served with the diagnostic addresses of projects/buildtest_s32k148_min (ecu/uds/test/host/test_app_uds_product.py).
+schema_version: 1
+
+sessions:
+  - name: Default
+    id: 0x01
+    p2_ms: 50
+    p2_star_ms: 5000
+  - name: Extended
+    id: 0x03
+    p2_ms: 50
+    p2_star_ms: 5000
+
+security:
+  - name: Application
+    level: 0x01
+    seed_bytes: 4
+    key_bytes: 4
+    attempts: 3
+    delay_ms: 10000
+    sessions: [Extended]
+
+operation_cycles:
+  - name: PowerCycle
+    kind: power
+    autostart: true
+
+data_identifiers:
+  - identifier: 0xF186
+    name: ActiveDiagnosticSession
+    data:
+      - {name: activeSession, type: uint8, source: {bsw: uds.session}}
+
+fault_memory:
+  max_entries: 2
+  overflow: replace_oldest
+  snapshot_records_max: 1
+  extended_records_max: 1
+  cycle_ms: 10
+  write_interval_ms: 0
+
+dtcs:
+  - number: 0x123456
+    name: MonitorFault
+    severity: check_at_next_halt
+    operation_cycle: PowerCycle
+    confirmation_threshold: 1
+    priority: 1
+    event: {bsw: test.monitor}
+    debounce: {counter: {failed_threshold: 1, passed_threshold: -1}}

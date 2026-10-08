@@ -1,0 +1,357 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Synthetic XML Component Description for ModeSwc (tools/rtegen RTE-08 host test, written by hand in the style of the
+Embedded Coder export). Three required mode ports on the ECU mode manager ecu.mode, all with the interface EcuModeIf
+(mode group EcuMode, declaration group EcuModes in EXPLICIT_ORDER with values that differ from the ecustate::State
+numbers, so the test sees the mapping):
+  EcuMode   read by Run1ms and OnStandbyToRun (task fast)            -> view of task fast
+  SlowMode  read by Run10ms and the entry/exit runnables (task slow) -> view of task slow
+  AnyMode   read by Run1ms (fast) and Run10ms (slow)                 -> the mode manager directly
+Mode switch events: OnStartupEntry (entry STARTUP), OnRunEntry (entry RUN), OnRunExit (exit RUN), OnStandbyToRun
+(transition STANDBY -> RUN). OnRunEntry writes EntryCount, which Run1ms reads in the other task (EntryCountIn).
+-->
+<AUTOSAR xmlns="http://autosar.org/schema/r4.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://autosar.org/schema/r4.0 AUTOSAR_00051.xsd">
+    <AR-PACKAGES>
+        <AR-PACKAGE>
+            <SHORT-NAME>Components</SHORT-NAME>
+            <ELEMENTS>
+                <APPLICATION-SW-COMPONENT-TYPE>
+                    <SHORT-NAME>ModeSwc</SHORT-NAME>
+                    <PORTS>
+                        <R-PORT-PROTOTYPE>
+                            <SHORT-NAME>EcuMode</SHORT-NAME>
+                            <REQUIRED-INTERFACE-TREF DEST="MODE-SWITCH-INTERFACE">/Interfaces/EcuModeIf</REQUIRED-INTERFACE-TREF>
+                        </R-PORT-PROTOTYPE>
+                        <R-PORT-PROTOTYPE>
+                            <SHORT-NAME>SlowMode</SHORT-NAME>
+                            <REQUIRED-INTERFACE-TREF DEST="MODE-SWITCH-INTERFACE">/Interfaces/EcuModeIf</REQUIRED-INTERFACE-TREF>
+                        </R-PORT-PROTOTYPE>
+                        <R-PORT-PROTOTYPE>
+                            <SHORT-NAME>AnyMode</SHORT-NAME>
+                            <REQUIRED-INTERFACE-TREF DEST="MODE-SWITCH-INTERFACE">/Interfaces/EcuModeIf</REQUIRED-INTERFACE-TREF>
+                        </R-PORT-PROTOTYPE>
+                        <P-PORT-PROTOTYPE>
+                            <SHORT-NAME>EntryCount</SHORT-NAME>
+                            <PROVIDED-COM-SPECS>
+                                <NONQUEUED-SENDER-COM-SPEC>
+                                    <DATA-ELEMENT-REF DEST="VARIABLE-DATA-PROTOTYPE">/Interfaces/EntryCount/EntryCount</DATA-ELEMENT-REF>
+                                    <INIT-VALUE>
+                                        <NUMERICAL-VALUE-SPECIFICATION>
+                                            <VALUE>0</VALUE>
+                                        </NUMERICAL-VALUE-SPECIFICATION>
+                                    </INIT-VALUE>
+                                </NONQUEUED-SENDER-COM-SPEC>
+                            </PROVIDED-COM-SPECS>
+                            <PROVIDED-INTERFACE-TREF DEST="SENDER-RECEIVER-INTERFACE">/Interfaces/EntryCount</PROVIDED-INTERFACE-TREF>
+                        </P-PORT-PROTOTYPE>
+                        <R-PORT-PROTOTYPE>
+                            <SHORT-NAME>EntryCountIn</SHORT-NAME>
+                            <REQUIRED-COM-SPECS>
+                                <NONQUEUED-RECEIVER-COM-SPEC>
+                                    <DATA-ELEMENT-REF DEST="VARIABLE-DATA-PROTOTYPE">/Interfaces/EntryCountIn/EntryCountIn</DATA-ELEMENT-REF>
+                                    <INIT-VALUE>
+                                        <NUMERICAL-VALUE-SPECIFICATION>
+                                            <VALUE>0</VALUE>
+                                        </NUMERICAL-VALUE-SPECIFICATION>
+                                    </INIT-VALUE>
+                                </NONQUEUED-RECEIVER-COM-SPEC>
+                            </REQUIRED-COM-SPECS>
+                            <REQUIRED-INTERFACE-TREF DEST="SENDER-RECEIVER-INTERFACE">/Interfaces/EntryCountIn</REQUIRED-INTERFACE-TREF>
+                        </R-PORT-PROTOTYPE>
+                    </PORTS>
+                    <INTERNAL-BEHAVIORS>
+                        <SWC-INTERNAL-BEHAVIOR>
+                            <SHORT-NAME>ModeSwc_IB</SHORT-NAME>
+                            <EVENTS>
+                                <TIMING-EVENT>
+                                    <SHORT-NAME>Event_Run1ms</SHORT-NAME>
+                                    <START-ON-EVENT-REF DEST="RUNNABLE-ENTITY">/Components/ModeSwc/ModeSwc_IB/Run1ms</START-ON-EVENT-REF>
+                                    <PERIOD>0.001</PERIOD>
+                                </TIMING-EVENT>
+                                <TIMING-EVENT>
+                                    <SHORT-NAME>Event_Run10ms</SHORT-NAME>
+                                    <START-ON-EVENT-REF DEST="RUNNABLE-ENTITY">/Components/ModeSwc/ModeSwc_IB/Run10ms</START-ON-EVENT-REF>
+                                    <PERIOD>0.01</PERIOD>
+                                </TIMING-EVENT>
+                                <SWC-MODE-SWITCH-EVENT>
+                                    <SHORT-NAME>Event_OnStartupEntry</SHORT-NAME>
+                                    <START-ON-EVENT-REF DEST="RUNNABLE-ENTITY">/Components/ModeSwc/ModeSwc_IB/OnStartupEntry</START-ON-EVENT-REF>
+                                    <ACTIVATION>ON-ENTRY</ACTIVATION>
+                                    <MODE-IREFS>
+                                        <MODE-IREF>
+                                            <CONTEXT-PORT-REF DEST="R-PORT-PROTOTYPE">/Components/ModeSwc/SlowMode</CONTEXT-PORT-REF>
+                                            <CONTEXT-MODE-DECLARATION-GROUP-PROTOTYPE-REF DEST="MODE-DECLARATION-GROUP-PROTOTYPE">/Interfaces/EcuModeIf/EcuMode</CONTEXT-MODE-DECLARATION-GROUP-PROTOTYPE-REF>
+                                            <TARGET-MODE-DECLARATION-REF DEST="MODE-DECLARATION">/ModeDeclarationGroups/EcuModes/STARTUP</TARGET-MODE-DECLARATION-REF>
+                                        </MODE-IREF>
+                                    </MODE-IREFS>
+                                </SWC-MODE-SWITCH-EVENT>
+                                <SWC-MODE-SWITCH-EVENT>
+                                    <SHORT-NAME>Event_OnRunEntry</SHORT-NAME>
+                                    <START-ON-EVENT-REF DEST="RUNNABLE-ENTITY">/Components/ModeSwc/ModeSwc_IB/OnRunEntry</START-ON-EVENT-REF>
+                                    <ACTIVATION>ON-ENTRY</ACTIVATION>
+                                    <MODE-IREFS>
+                                        <MODE-IREF>
+                                            <CONTEXT-PORT-REF DEST="R-PORT-PROTOTYPE">/Components/ModeSwc/SlowMode</CONTEXT-PORT-REF>
+                                            <CONTEXT-MODE-DECLARATION-GROUP-PROTOTYPE-REF DEST="MODE-DECLARATION-GROUP-PROTOTYPE">/Interfaces/EcuModeIf/EcuMode</CONTEXT-MODE-DECLARATION-GROUP-PROTOTYPE-REF>
+                                            <TARGET-MODE-DECLARATION-REF DEST="MODE-DECLARATION">/ModeDeclarationGroups/EcuModes/RUN</TARGET-MODE-DECLARATION-REF>
+                                        </MODE-IREF>
+                                    </MODE-IREFS>
+                                </SWC-MODE-SWITCH-EVENT>
+                                <SWC-MODE-SWITCH-EVENT>
+                                    <SHORT-NAME>Event_OnRunExit</SHORT-NAME>
+                                    <START-ON-EVENT-REF DEST="RUNNABLE-ENTITY">/Components/ModeSwc/ModeSwc_IB/OnRunExit</START-ON-EVENT-REF>
+                                    <ACTIVATION>ON-EXIT</ACTIVATION>
+                                    <MODE-IREFS>
+                                        <MODE-IREF>
+                                            <CONTEXT-PORT-REF DEST="R-PORT-PROTOTYPE">/Components/ModeSwc/SlowMode</CONTEXT-PORT-REF>
+                                            <CONTEXT-MODE-DECLARATION-GROUP-PROTOTYPE-REF DEST="MODE-DECLARATION-GROUP-PROTOTYPE">/Interfaces/EcuModeIf/EcuMode</CONTEXT-MODE-DECLARATION-GROUP-PROTOTYPE-REF>
+                                            <TARGET-MODE-DECLARATION-REF DEST="MODE-DECLARATION">/ModeDeclarationGroups/EcuModes/RUN</TARGET-MODE-DECLARATION-REF>
+                                        </MODE-IREF>
+                                    </MODE-IREFS>
+                                </SWC-MODE-SWITCH-EVENT>
+                                <SWC-MODE-SWITCH-EVENT>
+                                    <SHORT-NAME>Event_OnStandbyToRun</SHORT-NAME>
+                                    <START-ON-EVENT-REF DEST="RUNNABLE-ENTITY">/Components/ModeSwc/ModeSwc_IB/OnStandbyToRun</START-ON-EVENT-REF>
+                                    <ACTIVATION>ON-TRANSITION</ACTIVATION>
+                                    <MODE-IREFS>
+                                        <MODE-IREF>
+                                            <CONTEXT-PORT-REF DEST="R-PORT-PROTOTYPE">/Components/ModeSwc/EcuMode</CONTEXT-PORT-REF>
+                                            <CONTEXT-MODE-DECLARATION-GROUP-PROTOTYPE-REF DEST="MODE-DECLARATION-GROUP-PROTOTYPE">/Interfaces/EcuModeIf/EcuMode</CONTEXT-MODE-DECLARATION-GROUP-PROTOTYPE-REF>
+                                            <TARGET-MODE-DECLARATION-REF DEST="MODE-DECLARATION">/ModeDeclarationGroups/EcuModes/STANDBY</TARGET-MODE-DECLARATION-REF>
+                                        </MODE-IREF>
+                                        <MODE-IREF>
+                                            <CONTEXT-PORT-REF DEST="R-PORT-PROTOTYPE">/Components/ModeSwc/EcuMode</CONTEXT-PORT-REF>
+                                            <CONTEXT-MODE-DECLARATION-GROUP-PROTOTYPE-REF DEST="MODE-DECLARATION-GROUP-PROTOTYPE">/Interfaces/EcuModeIf/EcuMode</CONTEXT-MODE-DECLARATION-GROUP-PROTOTYPE-REF>
+                                            <TARGET-MODE-DECLARATION-REF DEST="MODE-DECLARATION">/ModeDeclarationGroups/EcuModes/RUN</TARGET-MODE-DECLARATION-REF>
+                                        </MODE-IREF>
+                                    </MODE-IREFS>
+                                </SWC-MODE-SWITCH-EVENT>
+                            </EVENTS>
+                            <RUNNABLES>
+                                <RUNNABLE-ENTITY>
+                                    <SHORT-NAME>Run1ms</SHORT-NAME>
+                                    <DATA-RECEIVE-POINT-BY-ARGUMENTS>
+                                        <VARIABLE-ACCESS>
+                                            <SHORT-NAME>IN_EntryCountIn_EntryCountIn</SHORT-NAME>
+                                            <ACCESSED-VARIABLE>
+                                                <AUTOSAR-VARIABLE-IREF>
+                                                    <PORT-PROTOTYPE-REF DEST="R-PORT-PROTOTYPE">/Components/ModeSwc/EntryCountIn</PORT-PROTOTYPE-REF>
+                                                    <TARGET-DATA-PROTOTYPE-REF DEST="VARIABLE-DATA-PROTOTYPE">/Interfaces/EntryCountIn/EntryCountIn</TARGET-DATA-PROTOTYPE-REF>
+                                                </AUTOSAR-VARIABLE-IREF>
+                                            </ACCESSED-VARIABLE>
+                                        </VARIABLE-ACCESS>
+                                    </DATA-RECEIVE-POINT-BY-ARGUMENTS>
+                                    <MODE-ACCESS-POINTS>
+                                        <MODE-ACCESS-POINT>
+                                            <MODE-GROUP-IREF>
+                                                <R-MODE-GROUP-IN-ATOMIC-SWC-INSTANCE-REF>
+                                                    <CONTEXT-R-PORT-REF DEST="R-PORT-PROTOTYPE">/Components/ModeSwc/EcuMode</CONTEXT-R-PORT-REF>
+                                                    <TARGET-MODE-GROUP-REF DEST="MODE-DECLARATION-GROUP-PROTOTYPE">/Interfaces/EcuModeIf/EcuMode</TARGET-MODE-GROUP-REF>
+                                                </R-MODE-GROUP-IN-ATOMIC-SWC-INSTANCE-REF>
+                                            </MODE-GROUP-IREF>
+                                        </MODE-ACCESS-POINT>
+                                        <MODE-ACCESS-POINT>
+                                            <MODE-GROUP-IREF>
+                                                <R-MODE-GROUP-IN-ATOMIC-SWC-INSTANCE-REF>
+                                                    <CONTEXT-R-PORT-REF DEST="R-PORT-PROTOTYPE">/Components/ModeSwc/AnyMode</CONTEXT-R-PORT-REF>
+                                                    <TARGET-MODE-GROUP-REF DEST="MODE-DECLARATION-GROUP-PROTOTYPE">/Interfaces/EcuModeIf/EcuMode</TARGET-MODE-GROUP-REF>
+                                                </R-MODE-GROUP-IN-ATOMIC-SWC-INSTANCE-REF>
+                                            </MODE-GROUP-IREF>
+                                        </MODE-ACCESS-POINT>
+                                    </MODE-ACCESS-POINTS>
+                                    <SYMBOL>ModeSwc_Run1ms</SYMBOL>
+                                </RUNNABLE-ENTITY>
+                                <RUNNABLE-ENTITY>
+                                    <SHORT-NAME>Run10ms</SHORT-NAME>
+                                    <MODE-ACCESS-POINTS>
+                                        <MODE-ACCESS-POINT>
+                                            <MODE-GROUP-IREF>
+                                                <R-MODE-GROUP-IN-ATOMIC-SWC-INSTANCE-REF>
+                                                    <CONTEXT-R-PORT-REF DEST="R-PORT-PROTOTYPE">/Components/ModeSwc/SlowMode</CONTEXT-R-PORT-REF>
+                                                    <TARGET-MODE-GROUP-REF DEST="MODE-DECLARATION-GROUP-PROTOTYPE">/Interfaces/EcuModeIf/EcuMode</TARGET-MODE-GROUP-REF>
+                                                </R-MODE-GROUP-IN-ATOMIC-SWC-INSTANCE-REF>
+                                            </MODE-GROUP-IREF>
+                                        </MODE-ACCESS-POINT>
+                                        <MODE-ACCESS-POINT>
+                                            <MODE-GROUP-IREF>
+                                                <R-MODE-GROUP-IN-ATOMIC-SWC-INSTANCE-REF>
+                                                    <CONTEXT-R-PORT-REF DEST="R-PORT-PROTOTYPE">/Components/ModeSwc/AnyMode</CONTEXT-R-PORT-REF>
+                                                    <TARGET-MODE-GROUP-REF DEST="MODE-DECLARATION-GROUP-PROTOTYPE">/Interfaces/EcuModeIf/EcuMode</TARGET-MODE-GROUP-REF>
+                                                </R-MODE-GROUP-IN-ATOMIC-SWC-INSTANCE-REF>
+                                            </MODE-GROUP-IREF>
+                                        </MODE-ACCESS-POINT>
+                                    </MODE-ACCESS-POINTS>
+                                    <SYMBOL>ModeSwc_Run10ms</SYMBOL>
+                                </RUNNABLE-ENTITY>
+                                <RUNNABLE-ENTITY>
+                                    <SHORT-NAME>OnStartupEntry</SHORT-NAME>
+                                    <MODE-ACCESS-POINTS>
+                                        <MODE-ACCESS-POINT>
+                                            <MODE-GROUP-IREF>
+                                                <R-MODE-GROUP-IN-ATOMIC-SWC-INSTANCE-REF>
+                                                    <CONTEXT-R-PORT-REF DEST="R-PORT-PROTOTYPE">/Components/ModeSwc/SlowMode</CONTEXT-R-PORT-REF>
+                                                    <TARGET-MODE-GROUP-REF DEST="MODE-DECLARATION-GROUP-PROTOTYPE">/Interfaces/EcuModeIf/EcuMode</TARGET-MODE-GROUP-REF>
+                                                </R-MODE-GROUP-IN-ATOMIC-SWC-INSTANCE-REF>
+                                            </MODE-GROUP-IREF>
+                                        </MODE-ACCESS-POINT>
+                                    </MODE-ACCESS-POINTS>
+                                    <SYMBOL>ModeSwc_OnStartupEntry</SYMBOL>
+                                </RUNNABLE-ENTITY>
+                                <RUNNABLE-ENTITY>
+                                    <SHORT-NAME>OnRunEntry</SHORT-NAME>
+                                    <DATA-SEND-POINTS>
+                                        <VARIABLE-ACCESS>
+                                            <SHORT-NAME>OUT_EntryCount_EntryCount</SHORT-NAME>
+                                            <ACCESSED-VARIABLE>
+                                                <AUTOSAR-VARIABLE-IREF>
+                                                    <PORT-PROTOTYPE-REF DEST="P-PORT-PROTOTYPE">/Components/ModeSwc/EntryCount</PORT-PROTOTYPE-REF>
+                                                    <TARGET-DATA-PROTOTYPE-REF DEST="VARIABLE-DATA-PROTOTYPE">/Interfaces/EntryCount/EntryCount</TARGET-DATA-PROTOTYPE-REF>
+                                                </AUTOSAR-VARIABLE-IREF>
+                                            </ACCESSED-VARIABLE>
+                                        </VARIABLE-ACCESS>
+                                    </DATA-SEND-POINTS>
+                                    <MODE-ACCESS-POINTS>
+                                        <MODE-ACCESS-POINT>
+                                            <MODE-GROUP-IREF>
+                                                <R-MODE-GROUP-IN-ATOMIC-SWC-INSTANCE-REF>
+                                                    <CONTEXT-R-PORT-REF DEST="R-PORT-PROTOTYPE">/Components/ModeSwc/SlowMode</CONTEXT-R-PORT-REF>
+                                                    <TARGET-MODE-GROUP-REF DEST="MODE-DECLARATION-GROUP-PROTOTYPE">/Interfaces/EcuModeIf/EcuMode</TARGET-MODE-GROUP-REF>
+                                                </R-MODE-GROUP-IN-ATOMIC-SWC-INSTANCE-REF>
+                                            </MODE-GROUP-IREF>
+                                        </MODE-ACCESS-POINT>
+                                    </MODE-ACCESS-POINTS>
+                                    <SYMBOL>ModeSwc_OnRunEntry</SYMBOL>
+                                </RUNNABLE-ENTITY>
+                                <RUNNABLE-ENTITY>
+                                    <SHORT-NAME>OnRunExit</SHORT-NAME>
+                                    <MODE-ACCESS-POINTS>
+                                        <MODE-ACCESS-POINT>
+                                            <MODE-GROUP-IREF>
+                                                <R-MODE-GROUP-IN-ATOMIC-SWC-INSTANCE-REF>
+                                                    <CONTEXT-R-PORT-REF DEST="R-PORT-PROTOTYPE">/Components/ModeSwc/SlowMode</CONTEXT-R-PORT-REF>
+                                                    <TARGET-MODE-GROUP-REF DEST="MODE-DECLARATION-GROUP-PROTOTYPE">/Interfaces/EcuModeIf/EcuMode</TARGET-MODE-GROUP-REF>
+                                                </R-MODE-GROUP-IN-ATOMIC-SWC-INSTANCE-REF>
+                                            </MODE-GROUP-IREF>
+                                        </MODE-ACCESS-POINT>
+                                    </MODE-ACCESS-POINTS>
+                                    <SYMBOL>ModeSwc_OnRunExit</SYMBOL>
+                                </RUNNABLE-ENTITY>
+                                <RUNNABLE-ENTITY>
+                                    <SHORT-NAME>OnStandbyToRun</SHORT-NAME>
+                                    <MODE-ACCESS-POINTS>
+                                        <MODE-ACCESS-POINT>
+                                            <MODE-GROUP-IREF>
+                                                <R-MODE-GROUP-IN-ATOMIC-SWC-INSTANCE-REF>
+                                                    <CONTEXT-R-PORT-REF DEST="R-PORT-PROTOTYPE">/Components/ModeSwc/EcuMode</CONTEXT-R-PORT-REF>
+                                                    <TARGET-MODE-GROUP-REF DEST="MODE-DECLARATION-GROUP-PROTOTYPE">/Interfaces/EcuModeIf/EcuMode</TARGET-MODE-GROUP-REF>
+                                                </R-MODE-GROUP-IN-ATOMIC-SWC-INSTANCE-REF>
+                                            </MODE-GROUP-IREF>
+                                        </MODE-ACCESS-POINT>
+                                    </MODE-ACCESS-POINTS>
+                                    <SYMBOL>ModeSwc_OnStandbyToRun</SYMBOL>
+                                </RUNNABLE-ENTITY>
+                            </RUNNABLES>
+                        </SWC-INTERNAL-BEHAVIOR>
+                    </INTERNAL-BEHAVIORS>
+                </APPLICATION-SW-COMPONENT-TYPE>
+            </ELEMENTS>
+        </AR-PACKAGE>
+        <AR-PACKAGE>
+            <SHORT-NAME>Interfaces</SHORT-NAME>
+            <ELEMENTS>
+                <MODE-SWITCH-INTERFACE>
+                    <SHORT-NAME>EcuModeIf</SHORT-NAME>
+                    <IS-SERVICE>true</IS-SERVICE>
+                    <MODE-GROUP>
+                        <SHORT-NAME>EcuMode</SHORT-NAME>
+                        <TYPE-TREF DEST="MODE-DECLARATION-GROUP">/ModeDeclarationGroups/EcuModes</TYPE-TREF>
+                    </MODE-GROUP>
+                </MODE-SWITCH-INTERFACE>
+                <SENDER-RECEIVER-INTERFACE>
+                    <SHORT-NAME>EntryCount</SHORT-NAME>
+                    <IS-SERVICE>false</IS-SERVICE>
+                    <DATA-ELEMENTS>
+                        <VARIABLE-DATA-PROTOTYPE>
+                            <SHORT-NAME>EntryCount</SHORT-NAME>
+                            <TYPE-TREF DEST="IMPLEMENTATION-DATA-TYPE">/DataTypes/uint32</TYPE-TREF>
+                        </VARIABLE-DATA-PROTOTYPE>
+                    </DATA-ELEMENTS>
+                </SENDER-RECEIVER-INTERFACE>
+                <SENDER-RECEIVER-INTERFACE>
+                    <SHORT-NAME>EntryCountIn</SHORT-NAME>
+                    <IS-SERVICE>false</IS-SERVICE>
+                    <DATA-ELEMENTS>
+                        <VARIABLE-DATA-PROTOTYPE>
+                            <SHORT-NAME>EntryCountIn</SHORT-NAME>
+                            <TYPE-TREF DEST="IMPLEMENTATION-DATA-TYPE">/DataTypes/uint32</TYPE-TREF>
+                        </VARIABLE-DATA-PROTOTYPE>
+                    </DATA-ELEMENTS>
+                </SENDER-RECEIVER-INTERFACE>
+            </ELEMENTS>
+        </AR-PACKAGE>
+        <AR-PACKAGE>
+            <SHORT-NAME>ModeDeclarationGroups</SHORT-NAME>
+            <ELEMENTS>
+                <MODE-DECLARATION-GROUP>
+                    <SHORT-NAME>EcuModes</SHORT-NAME>
+                    <CATEGORY>EXPLICIT_ORDER</CATEGORY>
+                    <INITIAL-MODE-REF DEST="MODE-DECLARATION">/ModeDeclarationGroups/EcuModes/STARTUP</INITIAL-MODE-REF>
+                    <MODE-DECLARATIONS>
+                        <MODE-DECLARATION>
+                            <SHORT-NAME>RUN</SHORT-NAME>
+                            <VALUE>10</VALUE>
+                        </MODE-DECLARATION>
+                        <MODE-DECLARATION>
+                            <SHORT-NAME>STARTUP</SHORT-NAME>
+                            <VALUE>5</VALUE>
+                        </MODE-DECLARATION>
+                        <MODE-DECLARATION>
+                            <SHORT-NAME>STANDBY</SHORT-NAME>
+                            <VALUE>20</VALUE>
+                        </MODE-DECLARATION>
+                        <MODE-DECLARATION>
+                            <SHORT-NAME>RUNDOWN</SHORT-NAME>
+                            <VALUE>30</VALUE>
+                        </MODE-DECLARATION>
+                        <MODE-DECLARATION>
+                            <SHORT-NAME>SHUTDOWN</SHORT-NAME>
+                            <VALUE>40</VALUE>
+                        </MODE-DECLARATION>
+                        <MODE-DECLARATION>
+                            <SHORT-NAME>SLEEP</SHORT-NAME>
+                            <VALUE>50</VALUE>
+                        </MODE-DECLARATION>
+                    </MODE-DECLARATIONS>
+                    <ON-TRANSITION-VALUE>255</ON-TRANSITION-VALUE>
+                </MODE-DECLARATION-GROUP>
+            </ELEMENTS>
+        </AR-PACKAGE>
+        <AR-PACKAGE>
+            <SHORT-NAME>DataTypes</SHORT-NAME>
+            <ELEMENTS>
+                <IMPLEMENTATION-DATA-TYPE>
+                    <SHORT-NAME>uint32</SHORT-NAME>
+                    <CATEGORY>VALUE</CATEGORY>
+                    <SW-DATA-DEF-PROPS>
+                        <SW-DATA-DEF-PROPS-VARIANTS>
+                            <SW-DATA-DEF-PROPS-CONDITIONAL>
+                                <BASE-TYPE-REF DEST="SW-BASE-TYPE">/DataTypes/SwBaseTypes/uint32</BASE-TYPE-REF>
+                            </SW-DATA-DEF-PROPS-CONDITIONAL>
+                        </SW-DATA-DEF-PROPS-VARIANTS>
+                    </SW-DATA-DEF-PROPS>
+                </IMPLEMENTATION-DATA-TYPE>
+            </ELEMENTS>
+            <AR-PACKAGES>
+                <AR-PACKAGE>
+                    <SHORT-NAME>SwBaseTypes</SHORT-NAME>
+                    <ELEMENTS>
+                        <SW-BASE-TYPE>
+                            <SHORT-NAME>uint32</SHORT-NAME>
+                            <NATIVE-DECLARATION>uint32</NATIVE-DECLARATION>
+                        </SW-BASE-TYPE>
+                    </ELEMENTS>
+                </AR-PACKAGE>
+            </AR-PACKAGES>
+        </AR-PACKAGE>
+    </AR-PACKAGES>
+</AUTOSAR>

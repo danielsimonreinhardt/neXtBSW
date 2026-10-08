@@ -1,0 +1,139 @@
+# Adapter rules for the NXP RTD device headers of the s32k1xx family from Zephyr hal_nxp (PLAT-32).
+#
+# Tool: mcudb/tools/rtd_adapter.py (generate | check | symbols). Origin, license and file list of the vendor headers:
+# platforms/s32k1xx/bsp/bspMcu/include/3rdparty/nxp/rtd/README.md.
+#
+# Target names are those of the S32K148.h the OpenBSW s32k1xx drivers are written against (external/openbsw/
+# platforms/s32k1xx/bsp/bspMcu/include/3rdparty/nxp/S32K148.h, rev. 1.1a, BSD-3-Clause). The vendor files stay
+# unchanged; every difference is handled here, once per module, not per used symbol:
+#   modules.<M>.vendor_type/type     layout copy under the driver type name (vendor type name redirected to it)
+#   modules.<M>.members              member of the vendor layout replaced by one of the same size (offsets proven)
+#   modules.<M>.append               member behind the vendor layout (offset given and proven)
+#   modules.<M>.macro_prefix         every macro of the vendor module file with the prefix also under the driver prefix
+#   derivatives.<D>.core             values of the vendor header that are wrong for the derivative (with source)
+#   derivatives.<D>.absent           instances the vendor header describes but the derivative does not have
+#   derivatives.<D>.compat           macros for bits that are reserved on the derivative but written by shared code
+#                                    (each one an open point against that code, with reason)
+#   derivatives.<D>.not_on_derivative
+#                                    driver symbols that do not resolve because the hardware is not there (reason);
+#                                    `check` fails for any other unresolved symbol and for patterns that match nothing
+schema_version: 1
+family: s32k1xx
+origin:
+  repository: https://github.com/zephyrproject-rtos/hal_nxp
+  commit: bb740b2e6dd0a192130caf76d45f1a8f40050346
+  path: s32/drivers/s32k1/BaseNXP/header
+  license: BSD-3-Clause
+  license_file: {name: LICENSE.BSD-3, sha256: 85fe643c33c6ea5d81a6c5db68cbb2fdcc811a63233febf367a2574eb1c5d9b3}
+include_dir: platforms/s32k1xx/bsp/bspMcu/include
+vendor_dir: 3rdparty/nxp/rtd
+
+modules:
+  FLEXCAN:
+    why: RTD names the module CAN (CAN_Type, CAN_*) and the message buffer RAM MB[]; the drivers use FLEXCAN_* and RAMn[]
+    vendor_type: CAN_Type
+    type: FLEXCAN_Type
+    members:
+      # MB[32] (4 words each) and RAMn[CAN_RAMn_COUNT = 128] are the same 0x200 bytes at 0x80
+      - match: 'struct \{[^{}]*\}\s*MB\[32\];[^\n]*'
+        replace: '__IO uint32_t RAMn[CAN_RAMn_COUNT];'
+        why: Message buffer RAM as words, as in S32K148.h (bootloader hal_s32k1xx.c)
+    macro_prefix:
+      - {vendor: CAN_, driver: FLEXCAN_}
+  ADC:
+    why: RTD has one SC1[] field set (ADC_SC1_*); the drivers use the names of the first element (ADC_SC1A_*)
+    macro_prefix:
+      - {vendor: ADC_SC1_, driver: ADC_SC1A_}
+  ERM:
+    why: RTD has EAR[] as plain array; the drivers use the cluster EARn[].EAR of S32K148.h
+    vendor_type: ERM_Type
+    type: ERM_Type
+    members:
+      - match: '__I\s+uint32_t\s+EAR\[ERM_EARn_COUNT\];[^\n]*'
+        replace: 'struct { __I uint32_t EAR; } EARn[ERM_EARn_COUNT];'
+        why: EARn[n].EAR as in S32K148.h (safeMemory IntegrityEccHandler.cpp)
+  GPIO:
+    why: RTD S32K116_GPIO.h leaves out PIDR, which S32K11x has (S32K1xx RM Rev. 14, 13.3.1.1 GPIO memory map, offset 18h)
+    vendor_type: GPIO_Type
+    type: GPIO_Type
+    append:
+      - decl: '__IO uint32_t PIDR;'
+        offset: 0x18
+        why: >-
+          Port Input Disable Register, S32K1xx RM Rev. 14, 13.3.1.1 and 13.3.1.8 (offset 18h, all S32K1xx); 13.1 note:
+          on S32K11x PIDR cannot be set to 1 in GPIO mode (bspIo Io.cpp writes it)
+
+derivatives:
+  S32K116:
+    header: 3rdparty/nxp/S32K116.h
+    include: [S32K116.h]
+    core:
+      __NVIC_PRIO_BITS:
+        value: 2U
+        source: >-
+          RTD S32K116_COMMON.h says 4; the Cortex-M0+ implements 2 priority bits: S32K1xx RM Rev. 14, 8.2.1 (p. 123)
+          "This device supports four priority levels"; Keil S32K116.svd 1.6 nvicPrioBits 2; mcudb nvic_priority_bits 2
+    absent:
+      LMEM: S32K1xx RM Rev. 14, 33.1 (p. 721) "Variants of S32K11x series do not have LMEM" (RTD S32K116_LMEM.h has it)
+    not_on_derivative:
+      - {match: 'SIM_CHIPCTL_PDB_BB_SEL_MASK',
+         why: "bit 13 of SIM_CHIPCTL (PDB_BB_SEL) is reserved on S32K11x (RM Rev. 14, 11.1.1.1.4), RTD S32K116_SIM.h has no macro; bsp/adc/AnalogInput.cpp clears it only #ifdef SIM_CHIPCTL_PDB_BB_SEL_MASK (PLAT-48)"}
+      - {match: 'ENET_\w+|IP_ENET|\.(EIMR|EIR|GALR|GAUR|IALR|IAUR|MIBC|MRBR|MSCR|OPD|PALR|PAUR|RACC|RCR|RDAR|RDSR|TACC|TCR|TDAR|TDSR|TFWR)',
+         why: "no ENET on S32K11x (RM Rev. 14, Figure 2-3 module availability); bspEthernet is not built"}
+      - {match: 'IP_(ADC1|FTM[2-5]|LPSPI[12]|LPUART2)|PCC_(ADC1|FTM[2-5]|LPSPI[12]|LPUART2|FlexCAN[12]|PDB1|ENET|EWM)_INDEX',
+         why: "instances the S32K116 does not have (mcudb/s32k1xx/S32K116.yaml peripherals); mcu.h and bspClock guard them"}
+      - {match: 'IP_LMEM',
+         why: "removed by absent.LMEM; mcu.h defines LMEM only #ifdef IP_LMEM, the cache driver is cacheUnavailable.cpp"}
+      - {match: 'SCG_SPLL\w+|\.SPLL(CFG|CSR|DIV)',
+         why: "no SPLL on S32K11x (RM Rev. 13, 28.1 p. 579); bspClock guards with PLL_AVAILABLE (finding PLAT-11)"}
+      - {match: 'LPIT0_Ch1_IRQn',
+         why: "the S32K11x gives all LPIT channels one vector and names it LPIT_IRQn (RM Rev. 14, Table 3-3 interrupt vector assignments); bswgen defines LPIT0_Ch1_IRQn as LPIT_IRQn in mcu/mcuDerivative.h (FAMILY_IRQ_ALIASES), the debug halt guard uses the family name (IO-32)"}
+      - {match: 'RCM_SRS_LOL_MASK',
+         why: "no SPLL on S32K11x (RM Rev. 13, 28.1 p. 579), so no loss-of-lock reset source; McuResetReason.cpp checks the bit position only #ifdef RCM_SRS_LOL_MASK (RTE-16)"}
+      - {match: 'ERM_SR0_(NCE1|SBC1)_MASK',
+         why: "one ERM memory channel on S32K11x (RTD ERM_EARn_COUNT 1); IntegrityEccHandler.cpp guards NCE1/SBC1 with #ifdef (SYS-41)"}
+      - {match: 'EIM_EICHEN_EICH1EN_MASK|ERM_CR0_(ESCIE1|ENCIE1)_MASK',
+         why: "EIM and ERM channel 1 are reserved on S32K11x (RM Rev. 13, Tables 21-1 and 22-1: one RAM array, SRAM_U, on channel 0; RTD EIM_EICHDn_COUNT and ERM_EARn_COUNT 1); EccLatentTest.cpp uses channel 1 only #if ERM_EARn_COUNT > 1 (SYS-73)"}
+      - {match: 'WDOG_EWM_IRQn',
+         why: "S32K11x has no EWM, the vector is WDOG_IRQn; bswgen maps the name in mcu/mcuDerivative.h (FAMILY_IRQ_ALIASES)"}
+    files:
+      S32K116.h: 4db418498c77f61111dcfe0ae2f610a6b647180083e6b600a8405a169e49e624
+      S32K116_ADC.h: 62b2cd8099478e5903fa7a9bdc159762aa7d4408da59b293807e34638e7632ec
+      S32K116_AIPS.h: c0692291463dfe186d30abf268c129e87f0aa96d3d454f369d1542edd9dd077e
+      S32K116_CMP.h: bf67b7e676d47e68822ff336f1fb64efe93c21861ca53c07ac4629850ce960f2
+      S32K116_CMU.h: 4ad73f6e796e206150326484da219ed8b48bf34aafdf6caeaeba795288781539
+      S32K116_COMMON.h: 471a3279f336d21eeb653bdecaccc53538c750c4dd134525bacdb7486745f256
+      S32K116_CRC.h: 93eebdf30dfcac9fe31e640ae7375cd985b0def6e6348c7af156a456a0801bd7
+      S32K116_DMA.h: 498ddefe0688eaf7a769856caf97a28f88b55512db8c13bb4d7ef6c91ba4fb5f
+      S32K116_DMAMUX.h: 1c6fabf12ae0990a657321344f4e81389f96a8ae707ade85351571bc9d9ba787
+      S32K116_EIM.h: f657181b2bb9f7a66454d8947b46b8c71267346d0635e3f27a327f6d83dcad9b
+      S32K116_ERM.h: 3c35b2191b88db9572a8ccb7bb52ce1a5f8d743dc97aedcabf90e2f08adb198a
+      S32K116_FLEXCAN.h: e8a75ecedf958459ddd23d7bfe4563074097998bc9d26efd518290856b4805cb
+      S32K116_FLEXIO.h: 24a0793e0bb70d525efbca4cda6f3de1ce6a89fff2f46a0d355478f9d42ba2f7
+      S32K116_FTFC.h: 5e48e4d94509deec0d44b48ba9e42e6153d1507ee3912c1ac251cd2d1d528684
+      S32K116_FTM.h: 7976beeb1690e26ca1d117249e9d808487ae3fd92306b273407874336fe5e6d7
+      S32K116_GPIO.h: 00d822d560d08f2c99024f0275f36d63e7f1200fa8ef284dc75e2ed227c646f6
+      S32K116_LMEM.h: dbf7d0c3ef53ad8bd0abb59f63dcbc0f6b90970f2bb9c9a414561c8cb6a497a2
+      S32K116_LPI2C.h: 855e6c38493b2a73bea2beaec326e7151e48bfd7e21d079747e69ca406878de6
+      S32K116_LPIT.h: 0a8b93a5afb1eccfcaa9ca7c4ecc1f5d61fd2b33c3d00dd30acf62dab4b06287
+      S32K116_LPSPI.h: 3138865e920da3dad68f665ad2769f8fb55154dbf40b0702be1561dfdd6438b8
+      S32K116_LPTMR.h: af498f74fc8aba918299a49b7a25b96d21360f21d0227e31ba7bda4fc3629cd8
+      S32K116_LPUART.h: f42e99ac2f7274c1239e72a011cb82a0a66aeeab9cf2a3654dbf7293a3099d9f
+      S32K116_MCM.h: 3df1fa4f749add18534d5a7f08b9f4a727e015d12b60d0cc01418882b0f1ccc1
+      S32K116_MPU.h: 2d80bcde2c2c1d08e272273b1cc9cecc31d511d876764d2837ef402cfc7246df
+      S32K116_MSCM.h: 0c917835735cb041ed61a73bc9c209c3cc5f041c92c7131e9873ec84b8a769dc
+      S32K116_MTB_DWT.h: 9a31d3682b4431b1f1c355db481e6149bcfb205ae8e2e4207831e2c38724ea64
+      S32K116_NVIC.h: 6eeb24b3c5d59fe288ce0b51f57404092b078e9220bd086e6e1cbc4fa1937b0a
+      S32K116_PCC.h: 5eb0d48b1515331c2f6e5e1e0d1991787f919869c4776f963c40e781dc05ff4a
+      S32K116_PDB.h: 61aa974f9497b25ab2230dd2e7ea51dc3a12f50b53c7a18bca7aa2f5ea24d230
+      S32K116_PMC.h: 3c34c225774ccdc9017757ed71d4b4b0f3b234c7740f2447d3f5ff8f8ead8b19
+      S32K116_PORT.h: 105ce74f17940ab596d930899f71b743301a9cd8cb19efa099eaf5a09f136157
+      S32K116_RCM.h: f81cef307b64423a554522b745710d351397cb6d5de4ce3b5aa687f9de9a656b
+      S32K116_RTC.h: bc4ceecf173ac2d5e04f6b659099437a8c1ee0c35333314a8830d04ef62d4d20
+      S32K116_SCB.h: a6405158d15348ec172a556ccdbcfac24743655c6b0980ca3b6250bf76be3118
+      S32K116_SCG.h: 632cc41363a7a9afa42d40dfb2867cf8328a08a16d2961f35c46b4542d673a32
+      S32K116_SIM.h: 01d93b95929a3756f8c0a43199479ac742d1c61efec5d30ee4632626f27713ef
+      S32K116_SMC.h: 111119e426f3833d4634daa1ee1db877b56b58ad7eabac89cf10828f9acc5090
+      S32K116_SYSTICK.h: 599c96a5670ce25e03a11e02ba5c15c158e885ca5b741ddc6f4b2a53914bccb6
+      S32K116_TRGMUX.h: 20bff5091dae75077bae1c6deb469d7d9f1ab5babb2108b07b151188981d0ec4
+      S32K116_WDOG.h: 722451b2161b3bc518ce47cc914a0aa052c1a5fa7affbedb116c40268c6a0563

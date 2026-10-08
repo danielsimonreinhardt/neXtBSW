@@ -1,0 +1,78 @@
+# Module manifest (doc/architecture/README.md, section 5). Checked by tools/nxconfig (checks.py, adc.py),
+# rendered by tools/bswgen as integration/bspAdcAccessConfiguration.h and bsp/adc/adcAccessConfiguration.h.
+#
+# bspAdcAccess has no board device: it serializes the synchronous conversions of the ADC contract. Its parameters
+# are therefore module parameters of the project (project.yaml modules.bspAdcAccess, project_parameters: true),
+# not values of an instance.
+module: bspAdcAccess
+kind: mcu_driver
+description: Serialized synchronous ADC access (lock policy per conversion, polling bound derived from the conversion time)
+# Evidence (CHANGELOG.md): "Integration und Board-Test IO-14 (2026-09-15)", "Board-Test IO-16 (2026-09-16)".
+verification: hardware
+verification_note: >-
+  Policy interrupt_lock with the derived polling bound is confirmed on the eval board (conversion counters, longest
+  exclusive time, no poll time-outs); policy rtos_mutex and converter failures are covered by host tests only.
+project_parameters: true
+parameters:
+  # --- how a conversion is serialized (IO-14, IO-16)
+  lock_policy:
+    type: str
+    pattern: "interrupt_lock|rtos_mutex"
+    default: interrupt_lock
+    description: >-
+      interrupt_lock: every conversion runs with the interrupts suspended (no RTOS object, no waiting, no priority
+      inversion, interrupt latency = one conversion). rtos_mutex: one RTOS mutex per ADC instance with priority
+      inheritance, the conversion itself runs with the interrupts released; callers that cannot wait (ISR,
+      interrupts suspended, before the scheduler) keep the exclusive path either way.
+  lock_timeout_ms:
+    type: int
+    min: 1
+    max: 60000
+    default: 100
+    unit: ms
+    description: longest wait for the lock of an ADC instance; only used with lock_policy rtos_mutex
+  # --- polling bound of one conversion (adc/AdcPollLimit.h)
+  poll_safety_factor:
+    type: int
+    min: 1
+    max: 4096
+    default: 16
+    description: >-
+      the polling bound is this factor times the derived conversion time, counted in iterations of the polling core.
+      A healthy conversion must never reach it, a dead converter must be detected well inside the watchdog window.
+  max_interrupt_suspend_us:
+    type: int
+    min: 1
+    max: 1000000
+    default: 50
+    unit: us
+    description: >-
+      longest interrupt suspension the project accepts for one ADC conversion. Checked against the derived
+      conversion time (tools/nxconfig/adc.py); it does not change any generated value.
+  # --- converter settings the conversion time follows from. They belong to the ADC contract (libs/bsp/bspAdc,
+  # ARCH-03) and move there with it; until then they are parameters of the access module, because only here they
+  # are read: the generator turns them into the ADC register values and into the polling bound.
+  sample_clocks:
+    type: int
+    min: 1
+    max: 256
+    default: 42
+    unit: ADC clocks
+    description: sample (acquisition) phase of one conversion; a high source impedance needs a long one
+  clock_divider:
+    type: int
+    min: 1
+    max: 8
+    default: 1
+    description: "divider of the converter clock (family values only, s32k1xx CFG1[ADIV]: 1, 2, 4, 8)"
+  averages:
+    type: int
+    min: 1
+    max: 32
+    default: 1
+    description: >-
+      conversions per result of the hardware averaging (1: off; family values only, s32k1xx SC3[AVGS]: 4, 8, 16, 32).
+      It multiplies the conversion time and therefore the interrupt suspension.
+provides:
+  - adc_access
+cmake_target: bspAdcAccess

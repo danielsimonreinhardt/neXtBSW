@@ -1,0 +1,212 @@
+# Naming rules of the S32K1xx device headers generated from SVD files (mcudb/tools/svd2header.py, PLAT-11).
+#
+# Target names: the NXP S32K1xx headers used by OpenBSW (external/openbsw/platforms/s32k1xx/bsp/bspMcu/include/
+# 3rdparty/nxp/S32K148*.h, rev. 1.1a, BSD-3-Clause) and, for interrupts of the Cortex-M0+ derivatives, the NXP RTD
+# headers in Zephyr hal_nxp (s32/drivers/s32k1/BaseNXP/header/S32K116_COMMON.h, BSD-3-Clause). Only names are taken
+# from these headers; register data (addresses, offsets, bit positions, instances, interrupt numbers) always comes
+# from the SVD file.
+#
+# Two SVD dialects are covered by the same match expressions:
+#   - NXP S32K148_M4.svd rev. 1.1a (CMSIS-SVD 1.3, dims and clusters: CONTROLS[%s].CSC)
+#   - S32K116.svd version 1.6 from Keil.S32K116_SDK_DFP 1.2.1 (CMSIS-SVD 1.1, flat names: C0SC..C7SC)
+# The generator flattens dims and clusters first (PCR[%s] -> PCR0, CONTROLS[%s] + CSC -> CONTROLS0_CSC), so every
+# match below works on flat register names. The group of a match is the element index (number or letter A=0).
+#
+# Layout entries (per module, applied in this order, then plain numbered arrays are folded automatically):
+#   skip: REGEX                               drop registers
+#   rename: NAME, match: REGEX                one register under another name
+#   array: NAME, match: REGEX                 NAME[n]; by_offset: elements numbered in address order
+#   sparse_array: NAME, match, index_macro    PCCn[0..last]; one index macro per matched register
+#   cluster: NAME, stride, members[]          struct { ... } NAME[n]; member macro = name of the field macros;
+#                                             member array: true -> NAME[n].MEMBER[m] (groups: n, then m);
+#                                             member element: k -> fixed element k, match without index group
+#   union: NAME, members[]                    union of registers/structs at one address
+# Module options: strip_prefix, alternates (error | first), auto_arrays (default true),
+#   instance_fields: first (instances with different fields in one register: keep the first instance's fields).
+schema_version: 1
+family: s32k1xx
+
+peripherals:
+  CAN0: {module: FLEXCAN, instance: FLEXCAN0}       # Keil SVD names the instance CAN0, the headers FLEXCAN0
+  QuadSPI: {module: QuadSPI}
+  CMU_FC_0: {module: CMU, instance: CMU0}           # RTD header: CMU_Type with CMU0/CMU1, PCC_CMU0_INDEX
+  CMU_FC_1: {module: CMU, instance: CMU1}
+  CSE_PRAM: {skip: "CSEc parameter RAM, byte views only; not in the OpenBSW or RTD headers"}
+  # Arm core registers: CMSIS core_cm0plus.h/core_cm4.h provide SCB, SysTick and NVIC (as in the OpenBSW header,
+  # which has none of them). Two definitions of the same registers would only invite mixing them up.
+  S32_NVIC: {skip: "core register, CMSIS core header (NVIC)"}
+  S32_SCB: {skip: "core register, CMSIS core header (SCB)"}
+  S32_SysTick: {skip: "core register, CMSIS core header (SysTick)"}
+
+modules:
+  ADC:
+    layout:
+      # S32K148 has a second register bank (alternate result registers) whose names differ by one letter
+      - {rename_all: '^a(SC1[A-P]|R[A-P])$', to: 'A\1'}
+      - {array: SC1, match: '^SC1([A-P])$', element_macros: true}     # macros ADC_SC1A_ADCH..ADC_SC1P_ADCH
+      - {array: R, match: '^R([A-P])$', element_macros: true}
+      - {array: CV, match: '^CV([12])$', index_base: 1}
+      # OpenBSW renamed the two nameless S32K148 banks at 0x148/0x1C8 to zzSC1/zzR (S32K148_ADC.h header note)
+      - {array: zzSC1, match: '^SC1([Q-Z]|A[A-F])$', by_offset: true, count_macro: ADC_SC1ZZ_COUNT}
+      - {array: zzR, match: '^R([Q-Z]|A[A-F])$', by_offset: true, count_macro: ADC_RZZ_COUNT}
+  AIPS:
+    layout:
+      - {array: OPACR, match: '^OPACR([A-L])$'}
+  CRC:
+    layout:
+      - union: DATAu
+        members:
+          - struct: DATA_8
+            members:
+              - {name: LL, match: '^DATALL$'}
+              - {name: LU, match: '^DATALU$'}
+              - {name: HL, match: '^DATAHL$'}
+              - {name: HU, match: '^DATAHU$'}
+          - struct: DATA_16
+            members:
+              - {name: L, match: '^DATAL$'}
+              - {name: H, match: '^DATAH$'}
+          - {name: DATA, match: '^DATA$'}
+  DMA:
+    alternates: first
+    layout:
+      - {array: DCHPRI, match: '^DCHPRI(\d+)$', by_offset: true}
+  EIM:
+    layout:
+      - cluster: EICHDn
+        stride: 0x100
+        members:
+          - {name: WORD0, match: '^EICHD(\d+)_WORD0$', macro: EICHDn_WORD0}
+          - {name: WORD1, match: '^EICHD(\d+)_WORD1$', macro: EICHDn_WORD1}
+  ERM:
+    layout:
+      - cluster: EARn
+        stride: 0x10
+        members:
+          - {name: EAR, match: '^EAR(\d+)$', macro: EAR}
+  FLEXCAN:
+    layout:
+      - cluster: WMB
+        stride: 0x10
+        members:
+          - {name: WMBn_CS, match: '^WMB(\d+)_(?:WMB_)?CS$'}
+          - {name: WMBn_ID, match: '^WMB(\d+)_(?:WMB_)?ID$'}
+          - {name: WMBn_D03, match: '^WMB(\d+)_(?:WMB_)?D03$'}
+          - {name: WMBn_D47, match: '^WMB(\d+)_(?:WMB_)?D47$'}
+  FTFC:
+    layout:
+      - {array: FCCOB, match: '^FCCOB([0-9A-F])$', by_offset: true}
+      - {array: FPROT, match: '^FPROT([0-3])$', by_offset: true}
+  FTM:
+    layout:
+      - cluster: CONTROLS
+        stride: 8
+        members:
+          - {name: CnSC, match: '^(?:C(\d)SC|CONTROLS(\d)_CSC)$'}
+          - {name: CnV, match: '^(?:C(\d)V|CONTROLS(\d)_CV)$'}
+      - {array: CV_MIRROR, match: '^(?:C(\d)V_MIRROR|CV_MIRROR(\d))$'}
+  ENET:
+    layout:
+      - cluster: TC
+        stride: 8
+        members:
+          - {name: TCSR, match: '^TCSR(\d)$', macro: TCSR}
+          - {name: TCCR, match: '^TCCR(\d)$', macro: TCCR}
+  LMEM:
+    strip_prefix: LMEM_
+  MCM:
+    layout:
+      - {array: LMDR, match: '^LMDR([01])$'}
+  MSCM:
+    layout:
+      - {array: OCMDR, match: '^OCMDR(\d)$'}
+  LPIT:
+    layout:
+      - cluster: TMR
+        stride: 0x10
+        members:
+          - {name: TVAL, match: '^(?:TVAL(\d)|CHANNEL(\d)_TVAL)$', macro: TMR_TVAL}
+          - {name: CVAL, match: '^(?:CVAL(\d)|CHANNEL(\d)_CVAL)$', macro: TMR_CVAL}
+          - {name: TCTRL, match: '^(?:TCTRL(\d)|CHANNEL(\d)_TCTRL)$', macro: TMR_TCTRL}
+  MPU:
+    layout:
+      - cluster: EAR_EDR
+        stride: 8
+        members:
+          - {name: EAR, match: '^EAR(\d)$', macro: EAR}
+          - {name: EDR, match: '^EDR(\d)$', macro: EDR}
+      - cluster: RGD
+        stride: 0x10
+        members:
+          - {name: WORD0, match: '^RGD(\d+)_WORD0$', macro: RGD_WORD0}
+          - {name: WORD1, match: '^RGD(\d+)_WORD1$', macro: RGD_WORD1}
+          - {name: WORD2, match: '^RGD(\d+)_WORD2$', macro: RGD_WORD2}
+          - {name: WORD3, match: '^RGD(\d+)_WORD3$', macro: RGD_WORD3}
+  MTB_DWT:
+    layout:
+      - cluster: CMF
+        stride: 0x10
+        members:
+          - {name: COMP, match: '^COMP(\d)$', macro: COMP}
+          - {name: MASK, match: '^MASK(\d)$', macro: MASK}
+          - {name: FCT, match: '^FCT(\d)$', macro: FCT}
+      # CoreSight order: PERIPHID4 lies at 0xFD0, before PERIPHID0..3 (array in address order)
+      - {array: PERIPHID, match: '^PERIPHID(\d)$', by_offset: true}
+      - {array: COMPID, match: '^COMPID(\d)$', by_offset: true}
+  PCC:
+    layout:
+      - {sparse_array: PCCn, match: '^PCC_(\w+)$', stride: 4, index_macro: 'PCC_{}_INDEX'}
+  PORT:
+    layout:
+      # the S32K116 SVD describes different fields per pin (locked/analog-only pins); the header has one PCR layout
+      - {array: PCR, match: '^PCR(\d+)$'}
+  PDB:
+    alternates: first              # S32K116: 16-bit views DLY2/DLY1 of PODLY (the S32K148 SVD has none)
+    layout:
+      # IO-62 (bspSampleGroup) uses pdb.CH[0].S and PDB_C1_*/PDB_S_ERR_*, as in the OpenBSW/RTD headers
+      - cluster: CH
+        stride: 0x28
+        members:
+          - {name: C1, match: '^CH(\d)C1$'}
+          - {name: S, match: '^CH(\d)S$'}
+          - {name: DLY, match: '^CH(\d)DLY(\d)$', array: true}
+      - cluster: POnDLY
+        stride: 4
+        members:
+          - {name: PODLY, match: '^PODLY$', element: 0}
+  SAI:
+    instance_fields: first         # S32K148: SAI0/SAI1 field widths differ (TCR3.TCE), layout of SAI0 is used
+  TRGMUX:
+    strip_prefix: TRGMUX_
+    layout:
+      - {sparse_array: TRGMUXn, match: '^(\w+)$', stride: 4, index_macro: 'TRGMUX_{}_INDEX'}
+
+derivatives:
+  S32K148:
+    # Reference for the naming rules only: OpenBSW ships this SVD next to the header it was released with.
+    svd: {file: S32K148_M4.svd}
+  S32K116:
+    # Since PLAT-32 the build uses the checked-in RTD headers (s32k1xx_rtd.yaml); this entry only serves the optional
+    # cross-check with NX_SVD_DIR (platforms/s32k1xx/bsp/bspMcu/test/test_device_header.py, SvdCrossCheckTest).
+    svd:
+      file: S32K116.svd
+      origin: Keil.S32K116_SDK_DFP 1.2.1, platform/devices/S32K116/S32K116.svd (see sources/keil_s32k116_dfp/README.md)
+      sha256: 3e1865846ea598ad68fa86564f9ef3135e0ab1187a26ca242119c400b2986aa9
+    header:
+      # SHA-256 of the generated S32K116.h: proves the same result on every workstation (svd2header.py --check).
+      # Update deliberately (and say why in the changelog) whenever generator or rules change the output.
+      sha256: f32bc0fe0ca11523ffd9c522224f6422d9bc61e14f2d9ffa5a83647d8742e422
+    cpu:
+      # SVD: fpuPresent true, but the core is a Cortex-M0+ without FPU (S32K1xx RM Rev. 14, Chapter 8 CM0+ Overview;
+      # S32K1xx Data Sheet Rev. 13, Figure 3: IEEE-754 FPU only on S32K14x).
+      fpuPresent: false
+    peripherals:
+      LMEM: {skip: "S32K1xx RM Rev. 14, 33.1: Variants of S32K11x series do not have LMEM (the SVD still lists it)"}
+    interrupts:
+      # SVD name -> header name (without _IRQn), names as in hal_nxp S32K116_COMMON.h; numbers stay from the SVD
+      ERM_fault: ERM
+      CAN0_ORed_Err_Wakeup: CAN0_ORed
+      FTM0_Ch0_7: FTM0_Ch0_Ch7
+      FTM1_Ch0_7: FTM1_Ch0_Ch7
+      LPIT0: LPIT
+      SCG_CMU_LVD_LVWSCG: PMC_SCG_CMU

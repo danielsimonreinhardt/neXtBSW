@@ -1,0 +1,45 @@
+# Test profile of tools/stackuse for the interrupt stack budget (SYS-97): the made-up image of profile_test.yaml plus a
+# start-up path on the interrupt stack, static constructors in a table section, a default handler with a weak stub,
+# and the vector table. The disassembly and the section dump are written by test_stackuse.py (FIXTURE_MSP_*).
+name: msp-test-image
+exception_frame_bytes: 32
+isr_stack_bytes: 600
+isr_stack_guard_bytes: 480
+
+frames:
+  asm_helper: {bytes: 12, source: hand-counted in the test}
+
+bounded_recursion:
+  - {function: rec, times: 3}
+
+vectors:
+  section: .interrupts
+  skip: {0: initial stack pointer}
+  default_handlers: [Default_Handler]
+
+contexts:
+  - name: startup
+    kind: task
+    on_isr_stack: true
+    note: reset handler, constructors and main before the scheduler
+    entries: [Reset_Handler]
+    indirect:
+      run_init_array: ["table:.init_array"]
+  - name: fault
+    kind: isr
+    level: -1
+    entries: [Fault_Handler]
+  - name: timer
+    kind: isr
+    level: 3
+    entries: [Timer_IRQHandler]
+    indirect:
+      Timer_IRQHandler: [leaf]
+  - name: timer2
+    kind: isr
+    level: 3
+    entries: [Timer2_IRQHandler]
+  - name: can
+    kind: isr
+    level: 7
+    entries: [Can_IRQHandler]

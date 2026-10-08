@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Synthetic XML Component Description for AlphaSwc (tools/rtegen RTE-08 host test, written by hand). One required mode
+port Mode on ecu.mode with the declaration group AlphaModes: no CATEGORY (AUTOSAR default ALPHABETIC_ORDER, values
+0.. in alphabetical order, transition value = number of modes) and mode names in mixed case. The component has no
+access points at all, so every runnable counts as reader of the mode port (both run in task slow -> view of slow).
+OnStandbyExit runs on exit of Standby.
+-->
+<AUTOSAR xmlns="http://autosar.org/schema/r4.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://autosar.org/schema/r4.0 AUTOSAR_00051.xsd">
+    <AR-PACKAGES>
+        <AR-PACKAGE>
+            <SHORT-NAME>Components</SHORT-NAME>
+            <ELEMENTS>
+                <APPLICATION-SW-COMPONENT-TYPE>
+                    <SHORT-NAME>AlphaSwc</SHORT-NAME>
+                    <PORTS>
+                        <R-PORT-PROTOTYPE>
+                            <SHORT-NAME>Mode</SHORT-NAME>
+                            <REQUIRED-INTERFACE-TREF DEST="MODE-SWITCH-INTERFACE">/Interfaces/AlphaModeIf</REQUIRED-INTERFACE-TREF>
+                        </R-PORT-PROTOTYPE>
+                    </PORTS>
+                    <INTERNAL-BEHAVIORS>
+                        <SWC-INTERNAL-BEHAVIOR>
+                            <SHORT-NAME>AlphaSwc_IB</SHORT-NAME>
+                            <EVENTS>
+                                <TIMING-EVENT>
+                                    <SHORT-NAME>Event_Run10ms</SHORT-NAME>
+                                    <START-ON-EVENT-REF DEST="RUNNABLE-ENTITY">/Components/AlphaSwc/AlphaSwc_IB/Run10ms</START-ON-EVENT-REF>
+                                    <PERIOD>0.01</PERIOD>
+                                </TIMING-EVENT>
+                                <SWC-MODE-SWITCH-EVENT>
+                                    <SHORT-NAME>Event_OnStandbyExit</SHORT-NAME>
+                                    <START-ON-EVENT-REF DEST="RUNNABLE-ENTITY">/Components/AlphaSwc/AlphaSwc_IB/OnStandbyExit</START-ON-EVENT-REF>
+                                    <ACTIVATION>ON-EXIT</ACTIVATION>
+                                    <MODE-IREFS>
+                                        <MODE-IREF>
+                                            <CONTEXT-PORT-REF DEST="R-PORT-PROTOTYPE">/Components/AlphaSwc/Mode</CONTEXT-PORT-REF>
+                                            <CONTEXT-MODE-DECLARATION-GROUP-PROTOTYPE-REF DEST="MODE-DECLARATION-GROUP-PROTOTYPE">/Interfaces/AlphaModeIf/Mode</CONTEXT-MODE-DECLARATION-GROUP-PROTOTYPE-REF>
+                                            <TARGET-MODE-DECLARATION-REF DEST="MODE-DECLARATION">/ModeDeclarationGroups/AlphaModes/Standby</TARGET-MODE-DECLARATION-REF>
+                                        </MODE-IREF>
+                                    </MODE-IREFS>
+                                </SWC-MODE-SWITCH-EVENT>
+                            </EVENTS>
+                            <RUNNABLES>
+                                <RUNNABLE-ENTITY>
+                                    <SHORT-NAME>Run10ms</SHORT-NAME>
+                                    <SYMBOL>AlphaSwc_Run10ms</SYMBOL>
+                                </RUNNABLE-ENTITY>
+                                <RUNNABLE-ENTITY>
+                                    <SHORT-NAME>OnStandbyExit</SHORT-NAME>
+                                    <SYMBOL>AlphaSwc_OnStandbyExit</SYMBOL>
+                                </RUNNABLE-ENTITY>
+                            </RUNNABLES>
+                        </SWC-INTERNAL-BEHAVIOR>
+                    </INTERNAL-BEHAVIORS>
+                </APPLICATION-SW-COMPONENT-TYPE>
+            </ELEMENTS>
+        </AR-PACKAGE>
+        <AR-PACKAGE>
+            <SHORT-NAME>Interfaces</SHORT-NAME>
+            <ELEMENTS>
+                <MODE-SWITCH-INTERFACE>
+                    <SHORT-NAME>AlphaModeIf</SHORT-NAME>
+                    <IS-SERVICE>true</IS-SERVICE>
+                    <MODE-GROUP>
+                        <SHORT-NAME>Mode</SHORT-NAME>
+                        <TYPE-TREF DEST="MODE-DECLARATION-GROUP">/ModeDeclarationGroups/AlphaModes</TYPE-TREF>
+                    </MODE-GROUP>
+                </MODE-SWITCH-INTERFACE>
+            </ELEMENTS>
+        </AR-PACKAGE>
+        <AR-PACKAGE>
+            <SHORT-NAME>ModeDeclarationGroups</SHORT-NAME>
+            <ELEMENTS>
+                <MODE-DECLARATION-GROUP>
+                    <SHORT-NAME>AlphaModes</SHORT-NAME>
+                    <INITIAL-MODE-REF DEST="MODE-DECLARATION">/ModeDeclarationGroups/AlphaModes/Startup</INITIAL-MODE-REF>
+                    <MODE-DECLARATIONS>
+                        <MODE-DECLARATION>
+                            <SHORT-NAME>Startup</SHORT-NAME>
+                        </MODE-DECLARATION>
+                        <MODE-DECLARATION>
+                            <SHORT-NAME>Run</SHORT-NAME>
+                        </MODE-DECLARATION>
+                        <MODE-DECLARATION>
+                            <SHORT-NAME>Standby</SHORT-NAME>
+                        </MODE-DECLARATION>
+                        <MODE-DECLARATION>
+                            <SHORT-NAME>Rundown</SHORT-NAME>
+                        </MODE-DECLARATION>
+                        <MODE-DECLARATION>
+                            <SHORT-NAME>Shutdown</SHORT-NAME>
+                        </MODE-DECLARATION>
+                        <MODE-DECLARATION>
+                            <SHORT-NAME>Sleep</SHORT-NAME>
+                        </MODE-DECLARATION>
+                    </MODE-DECLARATIONS>
+                </MODE-DECLARATION-GROUP>
+            </ELEMENTS>
+        </AR-PACKAGE>
+    </AR-PACKAGES>
+</AUTOSAR>

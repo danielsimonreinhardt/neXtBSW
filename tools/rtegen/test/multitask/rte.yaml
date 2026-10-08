@@ -1,0 +1,44 @@
+# ECU description of the RTE-02 host test: two synthetic components in two application tasks.
+# Component paths are relative to this file (RTE-22).
+#
+#   motor (1 ms, key 35, between the test BSW tasks io 40 and app 25): MotorSwc.Run1ms
+#   app  (10 ms, key 25, between comm 20 and motor 35): MotorSwc.RunDiag10ms, AppSwc.Run10ms,
+#        AppSwc.Run50ms with offset 20 ms
+# Resulting contexts (test tasks.yaml): comm 1, app 2, motor 3, io 4, guard 5, timer 6.
+#
+# Expected hand-over: Speed/Wide motor -> app (task copies), Setpoint app -> motor (copy in app, read in two tasks by
+# MotorSwc: published value under the lock), Enable (dio.in) and Led (dio.out) stay in one task.
+
+schema_version: 2
+
+tasks:
+  - name: motor
+    period_ms: 1
+    priority: 35
+    stack_bytes: 1024
+    runnables: [MotorSwc.Run1ms]
+  - name: app
+    period_ms: 10
+    priority: 25
+    stack_bytes: 2048
+    runnables:
+      - MotorSwc.RunDiag10ms
+      - AppSwc.Run10ms
+      - { runnable: AppSwc.Run50ms, offset_ms: 20 }
+
+components:
+  - name: MotorSwc
+    path: MotorSwc
+  - name: AppSwc
+    path: AppSwc
+
+connections:
+  MotorSwc.Setpoint.Setpoint: AppSwc.Setpoint.Setpoint
+  MotorSwc.Enable.Enable: dio.in.BUTTON1
+  MotorSwc.Speed.Speed: rte
+  MotorSwc.Wide.Wide: rte
+  AppSwc.Speed.Speed: MotorSwc.Speed.Speed
+  AppSwc.Wide.Wide: MotorSwc.Wide.Wide
+  AppSwc.Setpoint.Setpoint: rte
+  AppSwc.Led.Led: dio.out.LED1
+  AppSwc.SlowCount.SlowCount: rte

@@ -1,0 +1,60 @@
+# Test profile of tools/schedana for mode switch runnables (RTE-08/RTE-17): event driven load per task.
+# Own names and periods, no eval board (review question 7). Values chosen so that the results are computed by hand
+# (tools/schedana/test_schedana.py, ModeSwitchTest):
+#   slow: worst switch STANDBY -> RUN = exit STANDBY 40 + transition STANDBY -> RUN 60 + entry RUN 200 = 300 us
+#         (RUN -> STARTUP 150 + 50 = 200, first cycle into RUN 50 + 200 = 250); response time
+#         500 + 300 (own switch) + 100 (one cycle of fast) + 30 (one switch of fast, A8) = 930 us
+#   fast: 100 + 30 = 130 us; utilisation without the switches: 10 % + 5 %
+schema_version: 1
+name: modes
+tick_us: 1000
+
+tasks:
+  - name: slow
+    kind: application
+    priority: 25
+    period_ms: 10
+    runnables:
+      - name: Slow.Run10ms
+        period_ms: 10
+        wcet_us: 500
+        reads: [entry_count]
+    mode_runnables:
+      - name: Slow.OnStartupEntry
+        event: entry
+        mode: STARTUP
+        wcet_us: 50
+      - name: Slow.OnRunEntry
+        event: entry
+        mode: RUN
+        wcet_us: 200
+        writes: [entry_count]
+      - name: Slow.OnRunExit
+        event: exit
+        mode: RUN
+        wcet_us: 150
+      - name: Slow.OnStandbyExit
+        event: exit
+        mode: STANDBY
+        wcet_us: 40
+      - name: Slow.OnWake
+        event: transition
+        from: STANDBY
+        mode: RUN
+        wcet_us: 60
+
+  - name: fast
+    kind: application
+    priority: 35
+    period_ms: 1
+    runnables:
+      - name: Fast.Run1ms
+        period_ms: 1
+        wcet_us: 100
+        reads: [entry_count]
+    mode_runnables:
+      - name: Fast.OnWake
+        event: transition
+        from: standby
+        mode: run
+        wcet_us: 30

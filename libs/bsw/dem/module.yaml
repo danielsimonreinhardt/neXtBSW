@@ -1,0 +1,16 @@
+# Module manifest (doc/architecture/README.md, section 5). The fault memory takes no project parameters of its own:
+# everything that describes it (DTCs, events, debouncing, operation cycles, enable conditions, aging, snapshots,
+# extended data, size) is the diagnostic description of the project (projects/<project>/diag.yaml, ARCH-51), from
+# which tools/rtegen generates the tables (rte::DEM_*) and the NvM blocks. Integration: ecu/application/src/systems
+# (RteSystem, console "dem"); readers of 19/14/85 through dem::IFaultMemory (NVM-04).
+module: dem
+kind: service
+description: Fault memory (simplified AUTOSAR DEM) - ISO 14229-1 status byte, counter and time debouncing with fault detection counter, enable conditions, operation cycles, confirmation, aging, snapshots and extended data, persistent through the NvM; no warning lamp, no OBD
+# Evidence (CHANGELOG.md): NVM-03 (2026-09-21), host tests libs/bsw/dem/test/test_dem.py (with deliberate faults) and
+# the generator and SIL tests tools/rtegen/test_rtegen_dem.py; not yet on the board.
+verification: mock
+verification_note: >-
+  Status byte, debouncing, confirmation, aging, overflow and persistence are covered by host tests with deliberate
+  faults; the board check (DTCs set by the NTC and by the missing PC_Command message, kept over a power cycle) is open.
+cmake_target: dem
+console: dem

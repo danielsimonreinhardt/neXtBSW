@@ -1,0 +1,22 @@
+# Synthetic project for the core model tests (ARCH-23) on testboard_r4f: two CAN buses with interrupt ranks on a
+# VIM core (ranks order the free channels, no max_syscall_level).
+schema_version: 1
+
+project:
+  name: testproject_r4f
+  board: ../../boards/testboard_r4f
+
+clock:
+  system_hz: 80000000
+
+use:
+  can: all
+
+can:
+  BUS1: { bitrate: 500000 }
+  BUS2: { bitrate: 250000 }
+
+interrupts:
+  ranks:
+    - { source: can, name: BUS2, rank: 1 }
+    - { source: can, name: BUS1, rank: 0 }

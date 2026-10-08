@@ -1,0 +1,37 @@
+# Default semantic roles of task and ISR group names for the priority check (tools/schedana, priorities.py).
+#
+# Why a table and not a rule in the code: the role of a task is a property of the configuration, not of the tool.
+# tasks.yaml cannot carry it yet (tools/rtegen rejects unknown keys, RTE-02), so the defaults live here as data and
+# can be replaced per project with "schedana ... --roles <file>". A name that is not listed gets no role, and a task
+# without a role never produces a priority warning.
+#
+# Proposal to tools/rtegen / ARCH-05: an optional "roles: [safety, communication]" per task in
+# ecu/asyncCoreConfiguration/tasks.yaml and rte.yaml would make this file unnecessary.
+schema_version: 1
+
+# Roles that make a warning when an application task runs above the task (priorities.py):
+#   safety         watchdog, supervision, limp home
+#   communication  bus stacks and diagnostics whose timing a peer expects (CAN cycle times, UDS timeouts)
+tasks:
+  safety: [safety]
+  watchdog: [safety]
+  guard: [safety]
+  can: [communication]
+  comm: [communication]
+  com: [communication]
+  lin: [communication]
+  eth: [communication]
+  diag: [communication, diagnostics]
+  bsp: [supply, io]
+  io: [io]
+  sysadmin: [lifecycle]
+  background: [statistics]
+
+isr_groups:
+  can: [communication]
+  comm: [communication]
+  lin: [communication]
+  eth: [communication]
+  adc: [io]
+  timer: [io]
+  test: []

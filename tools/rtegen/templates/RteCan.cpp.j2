@@ -1,0 +1,586 @@
+// ---- CAN ({{ can.dbc.path.name }}, node {{ can.node }}, bus {{ can.bus }}, task {{ can_task.name }}) ----
+// Received frames are copied in the CAN task under a lock and unpacked in readInputs(). Due messages are
+// packed and written to the transceiver in writeOutputs().
+//
+// Signal qualifier (COM-03, doc/architecture/signal-qualifier.md): every received message has one qualifier
+// (Rte_Qlf.h, RTE target can.qlf.<Message>). It is decided here, not in the component:
+//   QLF_ERROR         bus error: transceiver of the bus not open (muted, closed) or bus off; error
+//                     passive is not an error (COM-12). Highest precedence.
+//   QLF_ERROR_TIMEOUT no frame within timeoutMs
+//   QLF_ERROR_CRC     E2E checksum or data id wrong for longer than debounceMs
+//   QLF_ERROR_ALIVE   E2E counter repeated or out of sequence for longer than debounceMs
+//   QLF_OK            a valid message arrived and nothing is pending (healing after one valid message)
+//   QLF_DEBOUNCE      nothing valid yet, or an E2E error still inside debounceMs
+// Signal values are taken over from valid messages only. While an error is reported, on_error decides:
+// hold keeps the last valid values, init writes the DBC start values (GenSigStartValue).
+
+CanRxStatus CAN_RX_STATUS[{{ [can_rx | length, 1] | max }}] = {
+{% for e in can_rx %}
+    {"{{ e.message.name }}", CANDB_{{ e.message.name | upper }}_ID, {{ e.ticks * can_task.period_ms }}U, {{ e.qlf.debounce_ms }}U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, QLF_DEBOUNCE, 0U, false, false, {{ "true" if e.qlf.on_error == "init" else "false" }}},
+{% endfor %}
+};
+
+CanTxStatus CAN_TX_STATUS[{{ [can_tx | length, 1] | max }}] = {
+{% for e in can_tx %}
+    {"{{ e.message.name }}", CANDB_{{ e.message.name | upper }}_ID, {{ e.message.cycle_ms }}U, 0U, 0U, 0U},
+{% endfor %}
+};
+
+namespace
+{
+{% if can_rx %}
+constexpr uint32_t CAN_ID_MASK = ::can::CanId::EXTENDED_QUALIFIER_BIT | ::can::CanId::MAX_RAW_EXTENDED_ID;
+
+struct RxSlot
+{
+    uint8_t data[8];
+    bool pending;
+};
+
+uint8_t const RX_LENGTH[{{ can_rx | length }}] = {
+{% for e in can_rx %}
+    CANDB_{{ e.message.name | upper }}_LENGTH,
+{% endfor %}
+};
+
+RxSlot rxSlots[{{ can_rx | length }}];
+
+size_t rxIndex(uint32_t const id)
+{
+    uint32_t const masked = id & CAN_ID_MASK;
+    for (size_t i = 0U; i < CAN_RX_COUNT; ++i)
+    {
+        if (CAN_RX_STATUS[i].id == masked)
+        {
+            return i;
+        }
+    }
+    return CAN_RX_COUNT;
+}
+
+class RxListener final : public ::can::ICANFrameListener
+{
+public:
+    RxListener() : _filter() {}
+
+    void frameReceived(::can::CANFrame const& frame) override
+    {
+        size_t const index = rxIndex(frame.getId());
+        if (index < CAN_RX_COUNT)
+        {
+            uint8_t const* const payload = frame.getPayload();
+            ::async::LockType const lock;
+            if (frame.getPayloadLength() < RX_LENGTH[index])
+            {
+                ++CAN_RX_STATUS[index].lengthErrors;
+            }
+            else
+            {
+                for (uint8_t i = 0U; i < RX_LENGTH[index]; ++i)
+                {
+                    rxSlots[index].data[i] = payload[i];
+                }
+                rxSlots[index].pending = true;
+                ++CAN_RX_STATUS[index].received;
+            }
+        }
+    }
+
+    ::can::IFilter& getFilter() override { return _filter; }
+
+private:
+    // Standard IDs are merged into the transceiver's hardware filter, match() also covers extended IDs.
+    class Filter final : public ::can::BitFieldFilter
+    {
+    public:
+        Filter()
+        {
+            for (size_t i = 0U; i < CAN_RX_COUNT; ++i)
+            {
+                if (!::can::CanId::isExtended(CAN_RX_STATUS[i].id))
+                {
+                    add(CAN_RX_STATUS[i].id);
+                }
+            }
+        }
+
+        bool match(uint32_t const id) const override { return rxIndex(id) < CAN_RX_COUNT; }
+    };
+
+    Filter _filter;
+};
+
+RxListener rxListener;
+
+bool takeRx(size_t const index, uint8_t data[])
+{
+    ::async::LockType const lock;
+    bool const pending = rxSlots[index].pending;
+    if (pending)
+    {
+        for (uint8_t i = 0U; i < RX_LENGTH[index]; ++i)
+        {
+            data[i] = rxSlots[index].data[i];
+        }
+        rxSlots[index].pending = false;
+    }
+    return pending;
+}
+{% for e in can_rx %}
+{% set p = "CanDb_" ~ e.message.name %}
+
+void apply{{ e.message.name }}({{ p }}_t const& msg)
+{
+{% for l in e.links %}
+{% set f = p ~ "_" ~ l.signal.name %}
+{% if l.kind == "bool" %}
+    {{ l.buffer.ref(can_task) }} = ({{ f }}_ToInt(msg.{{ l.signal.name }}) != 0) ? 1U : 0U;
+{% elif l.kind == "int" %}
+    {{ l.buffer.ref(can_task) }} = static_cast<{{ l.buffer.ctype }}>({{ f }}_ToInt(msg.{{ l.signal.name }}));
+{% else %}
+    {{ l.buffer.ref(can_task) }} = static_cast<{{ l.buffer.ctype }}>({{ f }}_ToDouble(msg.{{ l.signal.name }}));
+{% endif %}
+{% endfor %}
+{% if not e.links %}
+    (void)msg;
+{% endif %}
+}
+{% endfor %}
+{% if e2e_rx %}
+
+/** E2E check result of one message as a qualifier value; QLF_DEBOUNCE: no verdict (no new data). */
+uint8_t qualifierOf(E2E_PCheckStatusType const status)
+{
+    switch (status)
+    {
+        case E2E_P_OK: return QLF_OK;
+        case E2E_P_REPEATED:
+        case E2E_P_WRONGSEQUENCE: return QLF_ERROR_ALIVE;
+        case E2E_P_NONEWDATA: return QLF_DEBOUNCE;
+        default: return QLF_ERROR_CRC; // E2E_P_ERROR (checksum or data id), E2E_P_NOTAVAILABLE
+    }
+}
+{% endif %}
+{% for e in e2e_rx %}
+{% set c = e.e2e %}
+
+// E2E {{ c.profile }} of {{ e.message.name }}: CRC {{ c.crc_signal }} (bit offset {{ c.crc_offset }}), counter {{ c.counter_signal }} ({{ c.counter_offset }}){% if c.nibble_signal %}, data id nibble {{ c.nibble_signal }} ({{ c.nibble_offset }}){% endif %}
+
+{{ c.config_type }} const {{ e.message.name }}_E2E_CONFIG = {{ c.initializer }};
+E2E_{{ c.profile }}CheckStateType {{ e.message.name }}_E2E_CHECK;
+
+uint8_t check{{ e.message.name }}(uint8_t const* const data)
+{
+    E2E_{{ c.profile }}CheckStateType& state = {{ e.message.name }}_E2E_CHECK;
+    // Called for received frames only: the counter tolerance of the legacy profiles grows with every call,
+    // so calling it in every task cycle would widen it until it accepts any counter. "No new data" is the
+    // job of the timeout supervision below.
+    E2E_ReturnType const rc
+        = E2E_{{ c.profile }}Check(&{{ e.message.name }}_E2E_CONFIG, &state, data, CANDB_{{ e.message.name | upper }}_LENGTH);
+    return qualifierOf({{ c.map_call }});
+}
+{% endfor %}
+{% for e in can_rx %}
+
+void startValue{{ e.message.name }}()
+{
+    CanDb_{{ e.message.name }}_t msg;
+    CanDb_{{ e.message.name }}_Init(&msg);
+    apply{{ e.message.name }}(msg);
+}
+{% endfor %}
+
+void applyStartValues()
+{
+{% for e in can_rx %}
+    startValue{{ e.message.name }}();
+{% endfor %}
+}
+
+uint32_t addSaturating(uint32_t const value, uint32_t const step)
+{
+    return ((UINT32_MAX - value) < step) ? UINT32_MAX : (value + step);
+}
+
+/**
+ * Timeout supervision and qualifier of one received message. fresh: a frame of the right length arrived in
+ * this cycle, verdict: its E2E result (QLF_DEBOUNCE without E2E or without a frame).
+ */
+void superviseRx(
+    size_t const index, bool const fresh, uint8_t const verdict, bool const busError, void (*const applyStart)())
+{
+    CanRxStatus& s = CAN_RX_STATUS[index];
+    if (fresh)
+    {
+        s.ageMs    = 0U;
+        s.timedOut = false;
+    }
+    else
+    {
+        s.ageMs = addSaturating(s.ageMs, CAN_PERIOD_MS);
+        if ((s.timeoutMs != 0U) && !s.timedOut && (s.ageMs >= s.timeoutMs))
+        {
+            s.timedOut = true;
+            ++s.timeouts;
+        }
+    }
+    if (fresh && (verdict == QLF_OK))
+    {
+        // valid message: healing (QLF_OK again after one valid message)
+        s.valid      = true;
+        s.errorFlags = 0U;
+        s.errorMs    = 0U;
+    }
+    else
+    {
+        if (s.errorFlags != 0U)
+        {
+            s.errorMs = addSaturating(s.errorMs, CAN_PERIOD_MS);
+        }
+        if ((verdict == QLF_ERROR_CRC) || (verdict == QLF_ERROR_ALIVE))
+        {
+            if (s.errorFlags == 0U)
+            {
+                s.errorMs = 0U; // first error after a valid message: debounce starts now
+            }
+            s.errorFlags = static_cast<uint8_t>(s.errorFlags | verdict);
+            if (verdict == QLF_ERROR_CRC)
+            {
+                ++s.crcErrors;
+            }
+            else
+            {
+                ++s.aliveErrors;
+            }
+        }
+    }
+
+    uint8_t qualifier;
+    if (busError)
+    {
+        qualifier = QLF_ERROR;
+    }
+    else if (s.timedOut)
+    {
+        qualifier = QLF_ERROR_TIMEOUT;
+    }
+    else if ((s.errorFlags != 0U) && (s.errorMs >= s.debounceMs))
+    {
+        // both kinds seen while debouncing: the checksum has precedence over the counter
+        qualifier = ((s.errorFlags & QLF_ERROR_CRC) != 0U) ? QLF_ERROR_CRC : QLF_ERROR_ALIVE;
+    }
+    else
+    {
+        qualifier = ((s.errorFlags == 0U) && s.valid) ? QLF_OK : QLF_DEBOUNCE;
+    }
+    if (s.startOnError && (qualifier > QLF_OK) && (s.qlf <= QLF_OK))
+    {
+        applyStart(); // on_error: init - the signals take the DBC start values while the error lasts
+    }
+    s.qlf = qualifier;
+}
+{% endif %}
+
+::can::ICanTransceiver* canTransceiver = nullptr;
+bool canStarted                        = false;
+uint32_t canTick                       = 0U;
+{% if can_tx %}
+/**
+ * CommunicationControl (UDS 0x28, COM-29): may the application still send its non-diagnostic messages?
+ * Default after a reset: yes. A diagnostic stack switches it off before a programming event
+ * (ISO 14229-1 16.3.1.1 step (7)) through setApplicationTxEnabled() and back on when the session ends; the
+ * RTE never asks a diagnostic module, so a project without one simply keeps the default. Written in the
+ * diagnostic context, read in the CAN task: a single bool, written and read atomically on every target of
+ * this project.
+ */
+bool applicationTxEnabled = true;
+{% endif %}
+{% if e2e_tx %}
+
+{% for e in e2e_tx %}
+{% set c = e.e2e %}
+// E2E {{ c.profile }} of {{ e.message.name }}: CRC {{ c.crc_signal }} (bit offset {{ c.crc_offset }}), counter {{ c.counter_signal }} ({{ c.counter_offset }}){% if c.nibble_signal %}, data id nibble {{ c.nibble_signal }} ({{ c.nibble_offset }}){% endif %}
+
+{{ c.config_type }} const {{ e.message.name }}_E2E_CONFIG = {{ c.initializer }};
+E2E_{{ c.profile }}ProtectStateType {{ e.message.name }}_E2E_PROTECT;
+{% endfor %}
+{% endif %}
+{% if tx_events %}
+
+/**
+ * Event and mixed messages (COM-38, GenMsgSendType of the DBC): a message goes out when its packed signal
+ * values differ from the last sent ones, a mixed message also in its cycle. The comparison is made before the
+ * E2E protection, so counter and CRC are no change; the counter advances with every frame that is sent, event
+ * or cyclic. GenMsgDelayTime is the minimum gap between two sends: a change inside it waits and goes out
+ * with the value it has then, so a port that is written fast does not flood the bus. After the start the DBC
+ * start values count as sent; a refused write keeps the change pending.
+ */
+struct TxEvent
+{
+    uint8_t last[8];    // payload of the last send (start: the DBC start values), before E2E
+    uint32_t sinceLast; // CAN task cycles since the last send, saturating
+    bool cyclicPending; // mixed message: its cycle is due, held back by the minimum gap
+};
+
+TxEvent txEvents[{{ tx_events | length }}];
+
+void txEventInit()
+{
+{% for e in tx_events %}
+    {
+        CanDb_{{ e.message.name }}_t msg;
+        CanDb_{{ e.message.name }}_Init(&msg);
+        TxEvent& event = txEvents[{{ e.event_index }}U];
+        (void)std::memset(event.last, 0, sizeof(event.last));
+        CanDb_{{ e.message.name }}_Pack(&msg, event.last);
+        event.sinceLast     = 0xFFFFFFFFU;
+        event.cyclicPending = false;
+    }
+{% endfor %}
+}
+{% endif %}
+{% if e2e_rx or e2e_tx %}
+
+void e2eInit()
+{
+{% for e in e2e_rx %}
+    (void)E2E_{{ e.e2e.profile }}CheckInit(&{{ e.message.name }}_E2E_CHECK);
+{% endfor %}
+{% for e in e2e_tx %}
+    (void)E2E_{{ e.e2e.profile }}ProtectInit(&{{ e.message.name }}_E2E_PROTECT);
+{% endfor %}
+}
+{% endif %}
+
+void startCan()
+{
+{% if can_rx %}
+    applyStartValues();
+{% endif %}
+{% if e2e_rx or e2e_tx %}
+    e2eInit();
+{% endif %}
+{% if tx_events %}
+    txEventInit();
+{% endif %}
+    canStarted = true;
+}
+{% if can_rx %}
+
+/** Bus error for every received message of the bus: transceiver not open (muted, closed) or bus off. */
+bool canBusError()
+{
+    // Before the RTE is attached (CAN comes up in an earlier lifecycle level) nothing is known about the
+    // bus: the messages stay QLF_DEBOUNCE, as after a reset.
+    if (canTransceiver == nullptr)
+    {
+        return false;
+    }
+    // Not open: muted because the transceiver part is not ready, or closed (CanPhyGate).
+    if (canTransceiver->getState() != ::can::ICanTransceiver::State::OPEN)
+    {
+        return true;
+    }
+    // Bus off only. PASSIVE (error passive) is not a bus error: the bus still works, and a node alone
+    // on its bus reaches that state regularly - reporting it would hide timeout, checksum and counter
+    // states again, exactly the effect the COM-03 board test showed (COM-12).
+    return canTransceiver->getCANTransceiverState()
+           == ::can::ICANTransceiverStateListener::CANTransceiverState::BUS_OFF;
+}
+{% endif %}
+
+void readCan()
+{
+    if (!canStarted)
+    {
+        startCan();
+    }
+    if (canTransceiver == nullptr)
+    {
+        ::can::ICanTransceiver* const transceiver = ::systems::getCanSystem().getCanTransceiver(::busid::{{ can.bus_ident }});
+        if (transceiver != nullptr)
+        {
+{% if can_rx %}
+            transceiver->addCANFrameListener(rxListener);
+{% endif %}
+            canTransceiver = transceiver;
+        }
+    }
+{% if can_rx %}
+    bool const busError = canBusError();
+{% endif %}
+{% for e in can_rx %}
+    {
+        uint8_t data[8];
+        bool const fresh = takeRx({{ e.index }}U, data);
+{% if e.e2e %}
+        uint8_t const verdict = fresh ? check{{ e.message.name }}(data) : QLF_DEBOUNCE;
+{% else %}
+        uint8_t const verdict = fresh ? QLF_OK : QLF_DEBOUNCE; // no E2E: every frame of the right length counts
+{% endif %}
+        if (fresh && (verdict == QLF_OK))
+        {
+            CanDb_{{ e.message.name }}_t msg;
+            CanDb_{{ e.message.name }}_Unpack(&msg, data);
+            apply{{ e.message.name }}(msg);
+        }
+        superviseRx({{ e.index }}U, fresh, verdict, busError, &startValue{{ e.message.name }});
+        {{ e.qlf_buffer.ref(can_task) }} = CAN_RX_STATUS[{{ e.index }}].qlf; // can.qlf.{{ e.message.name }}
+    }
+{% endfor %}
+}
+
+void writeCan()
+{
+{% if can_tx %}
+    // canTick keeps running while the transmission is off: the messages come back in their own phase, and
+    // the E2E counter continues where it stopped, so the receiver sees no gap in the sequence.
+    if ((canTransceiver != nullptr) && (canTransceiver->getState() == ::can::ICanTransceiver::State::OPEN)
+        && applicationTxEnabled)
+{% else %}
+    if ((canTransceiver != nullptr) && (canTransceiver->getState() == ::can::ICanTransceiver::State::OPEN))
+{% endif %}
+    {
+{% for e in can_tx %}
+{% set p = "CanDb_" ~ e.message.name %}
+{% if e.on_change %}
+        {
+            // {{ e.message.name }}: GenMsgSendType {{ e.message.send_type }} - on change{% if e.send_mode == "mixed" %} and every {{ e.message.cycle_ms }} ms{% endif %}, minimum gap {{ e.message.delay_ms }} ms (COM-38)
+            {{ p }}_t msg;
+            {{ p }}_Init(&msg);
+{% for l in e.links %}
+{% set f = p ~ "_" ~ l.signal.name %}
+{% if l.kind == "bool" %}
+            msg.{{ l.signal.name }} = {{ f }}_FromInt(({{ l.buffer.ref(can_task) }} != 0U) ? 1 : 0);
+{% elif l.kind == "int" %}
+            msg.{{ l.signal.name }} = {{ f }}_FromInt(static_cast<int64_t>({{ l.buffer.ref(can_task) }}));
+{% else %}
+            msg.{{ l.signal.name }} = {{ f }}_FromDouble(static_cast<double>({{ l.buffer.ref(can_task) }}));
+{% endif %}
+{% endfor %}
+            uint8_t data[8] = {0U};
+            {{ p }}_Pack(&msg, data);
+            TxEvent& event = txEvents[{{ e.event_index }}U];
+{% if e.send_mode == "mixed" %}
+            if ((canTick % {{ e.ticks }}U) == 0U)
+            {
+                event.cyclicPending = true;
+            }
+{% endif %}
+            bool const changed = (std::memcmp(data, event.last, sizeof(data)) != 0);
+{% if e.delay_ticks > 0 %}
+            if ((changed || event.cyclicPending) && (event.sinceLast >= {{ e.delay_ticks }}U))
+{% else %}
+            if (changed || event.cyclicPending)
+{% endif %}
+            {
+                uint8_t plain[8];
+                (void)std::memcpy(plain, data, sizeof(plain)); // the signal values, before E2E
+                event.sinceLast     = 0U;
+                event.cyclicPending = false;
+{% if e.e2e %}
+                // E2E after packing: counter and CRC overwrite their signal positions
+                if (E2E_{{ e.e2e.profile }}Protect(
+                        &{{ e.message.name }}_E2E_CONFIG,
+                        &{{ e.message.name }}_E2E_PROTECT,
+                        data,
+                        CANDB_{{ e.message.name | upper }}_LENGTH)
+                    != E2E_E_OK)
+                {
+                    ++CAN_TX_STATUS[{{ e.index }}].protectErrors;
+                }
+{% endif %}
+                ::can::CANFrame const frame(CANDB_{{ e.message.name | upper }}_ID, data, CANDB_{{ e.message.name | upper }}_LENGTH);
+                if (canTransceiver->write(frame) == ::can::ICanTransceiver::ErrorCode::CAN_ERR_OK)
+                {
+                    ++CAN_TX_STATUS[{{ e.index }}].sent;
+                    (void)std::memcpy(event.last, plain, sizeof(plain));
+                }
+                else
+                {
+                    ++CAN_TX_STATUS[{{ e.index }}].failed; // the change stays pending
+                }
+            }
+        }
+{% else %}
+        if ((canTick % {{ e.ticks }}U) == 0U)
+        {
+            {{ p }}_t msg;
+            {{ p }}_Init(&msg);
+{% for l in e.links %}
+{% set f = p ~ "_" ~ l.signal.name %}
+{% if l.kind == "bool" %}
+            msg.{{ l.signal.name }} = {{ f }}_FromInt(({{ l.buffer.ref(can_task) }} != 0U) ? 1 : 0);
+{% elif l.kind == "int" %}
+            msg.{{ l.signal.name }} = {{ f }}_FromInt(static_cast<int64_t>({{ l.buffer.ref(can_task) }}));
+{% else %}
+            msg.{{ l.signal.name }} = {{ f }}_FromDouble(static_cast<double>({{ l.buffer.ref(can_task) }}));
+{% endif %}
+{% endfor %}
+            uint8_t data[8] = {0U};
+            {{ p }}_Pack(&msg, data);
+{% if e.e2e %}
+            // E2E after packing: counter and CRC overwrite their signal positions
+            if (E2E_{{ e.e2e.profile }}Protect(
+                    &{{ e.message.name }}_E2E_CONFIG,
+                    &{{ e.message.name }}_E2E_PROTECT,
+                    data,
+                    CANDB_{{ e.message.name | upper }}_LENGTH)
+                != E2E_E_OK)
+            {
+                ++CAN_TX_STATUS[{{ e.index }}].protectErrors;
+            }
+{% endif %}
+            ::can::CANFrame const frame(CANDB_{{ e.message.name | upper }}_ID, data, CANDB_{{ e.message.name | upper }}_LENGTH);
+            if (canTransceiver->write(frame) == ::can::ICanTransceiver::ErrorCode::CAN_ERR_OK)
+            {
+                ++CAN_TX_STATUS[{{ e.index }}].sent;
+            }
+            else
+            {
+                ++CAN_TX_STATUS[{{ e.index }}].failed;
+            }
+        }
+{% endif %}
+{% endfor %}
+    }
+{% if tx_events %}
+    for (TxEvent& event : txEvents)
+    {
+        if (event.sinceLast < 0xFFFFFFFFU)
+        {
+            ++event.sinceLast;
+        }
+    }
+{% endif %}
+    ++canTick;
+}
+} // namespace
+{% if can_tx %}
+
+void setApplicationTxEnabled(bool const enabled) { applicationTxEnabled = enabled; }
+{% endif %}
+
+bool isCanAttached() { return canTransceiver != nullptr; }
+
+char const* canBusStateName()
+{
+    if (canTransceiver == nullptr)
+    {
+        return "not attached";
+    }
+    switch (canTransceiver->getState())
+    {
+        case ::can::ICanTransceiver::State::CLOSED: return "closed";
+        case ::can::ICanTransceiver::State::INITIALIZED: return "initialized";
+        case ::can::ICanTransceiver::State::WAKING: return "waking";
+        case ::can::ICanTransceiver::State::MUTED: return "muted (phy not ready)";
+        default: break; // OPEN: the state of the bus itself decides
+    }
+    switch (canTransceiver->getCANTransceiverState())
+    {
+        case ::can::ICANTransceiverStateListener::CANTransceiverState::BUS_OFF: return "bus off";
+        case ::can::ICANTransceiverStateListener::CANTransceiverState::PASSIVE: return "error passive";
+        default: return "error active";
+    }
+}

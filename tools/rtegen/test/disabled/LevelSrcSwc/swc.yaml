@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: Apache-2.0
+# Test component of the RTE-23 profile tools/rtegen/test/disabled: a hand-written C component that the ECU
+# description switches off (components[].enabled: false). Its init and its runnable must never run; the host test
+# checks that with LevelSrcSwc_Calls. Level_mV has no init value (swc.yaml has none), so rte.yaml gives the value it
+# delivers while disabled (disabled_values); LevelQlf needs none - its reader is a qualifier port (QLF_NOT_AVAILABLE).
+version: 1
+name: LevelSrcSwc
+description: Level source that is disabled in the ECU description (RTE-23 test)
+implementation: c
+runnables:
+  - name: Run10ms
+    period_ms: 10
+ports:
+  - { name: Level_mV, direction: out, type: uint32, runnables: [Run10ms] }
+  - { name: LevelQlf, direction: out, type: uint8, runnables: [Run10ms] }

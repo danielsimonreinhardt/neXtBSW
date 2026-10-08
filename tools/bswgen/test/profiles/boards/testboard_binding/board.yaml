@@ -1,0 +1,57 @@
+# Synthetic s32k1xx board for the generated module binding (ARCH-52): S32K144 LQFP64 with an 8 MHz crystal, no SBC,
+# two devices of the synthetic driver module synthDriver (tools/bswgen/test/binding/modules, known only to the test)
+# on two SPI buses with other instances and chip selects, one with and one without its optional fault input. Test
+# data only, no hardware, no real part.
+schema_version: 1
+
+board:
+  name: testboard_binding
+  mcu: S32K144
+  package: LQFP64
+  clock: { sosc_hz: 8000000 }
+  adc_reference_mv: 3300
+
+devices:
+  - name: SYN_A
+    part: SYNTH-DRV-2
+    module: synthDriver
+    connect: { en: SYN_A_EN, fault: SYN_A_FAULT, sense: SYN_A_SENSE }
+  - name: SYN_B
+    part: SYNTH-DRV-2
+    module: synthDriver
+    connect: { en: SYN_B_EN, sense: SYN_B_SENSE }      # fault is optional and left open on this board
+
+spi:     # [MUX] S32K144_LQFP64.pinmux.yaml: LPSPI1 PTD0..PTD3 MUX 3, LPSPI0 PTB2..PTB5 MUX 3
+  - name: A_SPI
+    instance: LPSPI1
+    sck:  { pin: PTD0 }
+    sin:  { pin: PTD1 }
+    sout: { pin: PTD2 }
+    pcs:  { pin: PTD3, index: 0 }
+    device: SYN_A
+  - name: B_SPI
+    instance: LPSPI0
+    sck:  { pin: PTB2 }
+    sin:  { pin: PTB3 }
+    sout: { pin: PTB4 }
+    pcs:  { pin: PTB5, index: 1 }
+    device: SYN_B
+
+adc:     # [MUX] ADC0_SE12 PTC14, ADC0_SE13 PTC15
+  - name: SYN_A_SENSE
+    instance: ADC0
+    channel: SE12
+    pin: PTC14
+    scale: { divider: { r_top: 10000, r_bottom: 10000 }, offset_mv: 0 }
+  - name: SYN_B_SENSE
+    instance: ADC0
+    channel: SE13
+    pin: PTC15
+    scale: { divider: { r_top: 30000, r_bottom: 10000 }, offset_mv: 0 }
+
+dio:
+  inputs:
+    - { name: SYN_A_FAULT, pin: PTE8, active: high }
+  outputs:
+    - { name: SYN_A_EN, pin: PTD16 }
+    - { name: SYN_B_EN, pin: PTD15 }

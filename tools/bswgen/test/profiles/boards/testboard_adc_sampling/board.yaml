@@ -1,0 +1,51 @@
+# Synthetic s32k1xx board for the averaging of ADC channels over one PWM period (IO-31): S32K144 LQFP100 with an
+# 8 MHz crystal, one complementary half bridge on FTM1, a DC link shunt amplifier and a bus voltage divider on ADC0
+# and an unfitted channel on ADC1. Test data only, no hardware; the numbers are not those of the eval board.
+schema_version: 1
+
+board:
+  name: testboard_adc_sampling
+  mcu: S32K144
+  package: LQFP100
+  clock: { sosc_hz: 8000000 }
+  adc_reference_mv: 5000
+
+rails:
+  - { name: VREF_2V5, mv: 2500, source: "synthetic test rail IO-31" }
+
+adc:
+  - name: DC_LINK_I
+    instance: ADC0
+    channel: SE13
+    pin: PTC15
+    sensor:
+      kind: shunt_amplifier
+      shunt_uohm: 2000
+      gain: 50
+      reference: { rail: VREF_2V5 }
+      source: "synthetic test circuit IO-31"
+  - name: BUS_VOLTAGE
+    instance: ADC0
+    channel: SE12
+    pin: PTC14
+    scale: { divider: { r_top: 47000, r_bottom: 4700 }, offset_mv: 0 }
+  - { name: SPARE_I, instance: ADC1, channel: SE11, pin: PTE6, fitted: false, note: "not fitted (IO-31 test)" }
+
+pwm:
+  - name: BRIDGE
+    instance: FTM1
+    mode: complementary
+    active: { high_side: high, low_side: high }
+    pairs:
+      - { name: BRIDGE_A, high_side: BRIDGE_A_HS, low_side: BRIDGE_A_LS }
+    channels:
+      - { name: BRIDGE_A_HS, channel: 0, pin: PTB2 }
+      - { name: BRIDGE_A_LS, channel: 1, pin: PTB3 }
+    # synthetic power stage (numbers of testboard_s32k_8mhz, IO-24), only so that the dead time is checked
+    power_stage:
+      switch: { turn_on_delay_ns: 8, rise_time_ns: 12, turn_off_delay_ns: 30, fall_time_ns: 10,
+                test_gate_resistance_mohm: 4700, internal_gate_resistance_mohm: 1000, gate_charge_nc: 30,
+                r_ds_on_mohm: 5, r_ds_on_hot_mohm: 8, source: "synthetic test stage IO-31" }
+      driver: { turn_on_delay_ns: 40, turn_off_delay_ns: 55, source: "synthetic test stage IO-31" }
+      gate: { turn_on_resistance_mohm: 4700, turn_off_resistance_mohm: 2200, source: "synthetic test stage IO-31" }
+      short_circuit: { vds_threshold_mv: 500, blanking_ns: 200, source: "synthetic test stage IO-31" }

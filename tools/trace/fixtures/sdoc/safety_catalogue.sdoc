@@ -1,0 +1,96 @@
+[DOCUMENT]
+TITLE: Synthetic safety catalogue (tools/trace fixture)
+OPTIONS:
+  VIEW_STYLE: Table
+
+[GRAMMAR]
+IMPORT_FROM_FILE: @nextbsw
+
+[TEXT]
+STATEMENT: >>>
+Fixture of tools/trace (DOC-21): the same catalogue as the synthetic concept.md of test_trace.py, as StrictDoc
+nodes. A line inside a multi-line value that looks like a node ID must not count as one:
+UID: SSR-999
+<<<
+
+[[SECTION]]
+TITLE: Assumed safety goals
+
+[ASG]
+UID: ASG-01
+TITLE: Outputs off on fault
+STATEMENT: Outputs off on fault
+ASIL: B
+COVERAGE: partial
+STATUS: assumed
+
+[ASG]
+UID: ASG-02
+TITLE: Program flow supervised
+STATEMENT: Program flow supervised
+ASIL: B
+COVERAGE: covered
+STATUS: assumed
+
+[ASG]
+UID: ASG-03
+TITLE: Withdrawn goal
+STATEMENT: A goal that was dropped keeps its ID.
+ASIL: B
+COVERAGE: none
+STATUS: withdrawn
+
+[[/SECTION]]
+
+[[SECTION]]
+TITLE: Assumptions of use
+
+[AOU]
+UID: AoU-01
+TITLE: Outputs declared
+STATEMENT: The integrator declares every output.
+STATUS: concept
+
+[AOU]
+UID: AoU-02
+TITLE: Restart often enough
+STATEMENT: restart often enough
+STATUS: proposed
+SOURCE: fmea.md section 6
+
+[[/SECTION]]
+
+[[SECTION]]
+TITLE: Safety mechanisms
+
+[SM]
+UID: SM-01
+TITLE: Watchdog
+STAGE: 1
+STATUS: implemented
+LOCATION: ecu/wd.cpp
+FAULT_MODEL: task stops
+
+[SM]
+UID: SM-02
+TITLE: Configuration check
+STAGE: 1
+STATUS: implemented
+FAULT_MODEL: watchdog reconfigured
+
+[SM]
+UID: SM-33
+TITLE: Transceiver status
+STAGE: 2
+STATUS: implemented
+FAULT_MODEL: bus
+
+[SM]
+UID: SM-40
+TITLE: Gate driver
+STAGE: 2
+STATUS: implemented
+LOCATION: libs/bsw/gd
+FAULT_MODEL: bridge faults
+
+[[/SECTION]]

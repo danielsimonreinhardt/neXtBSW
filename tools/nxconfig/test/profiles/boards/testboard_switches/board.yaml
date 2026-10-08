@@ -1,0 +1,44 @@
+# Synthetic board for the module tests (ARCH-12): two smart high-side switches wired through connect, other
+# derivative and family, no SBC, no CAN. LAMP_SW gets its module from the part, PUMP_SW names it.
+schema_version: 1
+
+board:
+  name: testboard_switches
+  mcu: TESTMCU64
+  package: QFP64
+  adc_reference_mv: 3300
+
+devices:
+  - name: LAMP_SW
+    part: BTS5030-1EJA
+    connect: { in: LAMP_IN, den: LAMP_DEN, is: LAMP_IS }
+  - name: PUMP_SW
+    part: BTS5030-1EJA
+    module: highSideSwitch
+    connect: { is: PUMP_IS, in: PUMP_IN, den: PUMP_DEN }
+  - { name: EEPROM, part: 25LC320 }
+
+# IO-21: the sense channels convert IS into the load current in mA (thresholds of the project are mA); other
+# sense ratios and resistors than the eval board, test data only.
+#   LAMP_IS: 1500 * U / 1000 ohm -> 0..4950 mA over 12 bit at 3300 mV, about 1.2 mA per code
+#   PUMP_IS: 4700 * U / 2200 ohm -> 0..7050 mA, about 1.7 mA per code
+adc:
+  - name: LAMP_IS
+    instance: ADC1
+    channel: IN1
+    pin: PA0
+    sensor: { kind: highside_is, device: LAMP_SW, k_ilis: 1500, r_is_ohm: 1000, source: "synthetic test switch IO-21" }
+  - name: PUMP_IS
+    instance: ADC1
+    channel: IN2
+    pin: PA1
+    sensor: { kind: highside_is, device: PUMP_SW, k_ilis: 4700, r_is_ohm: 2200, source: "synthetic test switch IO-21" }
+
+dio:
+  inputs:
+    - { name: KEY, pin: PC13, active: low, pull: up }
+  outputs:
+    - { name: LAMP_IN, pin: PB2 }
+    - { name: LAMP_DEN, pin: PB4 }
+    - { name: PUMP_IN, pin: PB5 }
+    - { name: PUMP_DEN, pin: PC15 }

@@ -1,0 +1,14 @@
+# Packages only neXtBSW Studio needs (TOOL-63, gap N8 of doc/architecture/customer-project.md).
+# Installed in addition to tools/requirements.txt, never instead of it:
+#   python -m tools.setup venv <workspace> --studio
+#   python -m pip install -r tools/requirements.txt -r tools/requirements-studio.txt -c tools/ci/constraints.txt
+# Who needs what (checked in the code, not guessed):
+#   PySide6     tools/studio/gui and tools/studio/__main__.py (tools/studio/core stays Qt-free)
+#   pytest      the Studio test suite is the only pytest entry in tools/test/tests.yaml (group "pytest")
+#   pytest-qt   the qtbot fixture of the offscreen GUI tests
+#   pyinstaller tools/studio/build_exe.py (the .exe build), nothing else
+# Exact versions for all of them: tools/ci/constraints.txt.
+PySide6~=6.11
+pytest~=9.1
+pytest-qt~=4.5
+pyinstaller~=6.22

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Invented test board in the XML netlist format of KiCad 5 (no pinfunction at the nodes: the pin names come
+     from libparts). Same wiring as a part of acme_ctrl.net. -->
+<export version="D">
+  <design>
+    <source>/home/dev/acme_ctrl/acme_ctrl.sch</source>
+    <tool>Eeschema 5.1.12</tool>
+  </design>
+  <components>
+    <comp ref="U1">
+      <value>TESTMCU64</value>
+      <footprint>Package_QFP:LQFP-64_10x10mm_P0.5mm</footprint>
+      <libsource lib="acme" part="TESTMCU64_QFP64" description="invented MCU"/>
+    </comp>
+    <comp ref="U2">
+      <value>TJA1051T/3</value>
+      <libsource lib="Interface_CAN_LIN" part="TJA1051T-3" description="CAN transceiver"/>
+    </comp>
+    <comp ref="D1">
+      <value>LED</value>
+      <libsource lib="Device" part="LED" description=""/>
+    </comp>
+  </components>
+  <libparts>
+    <libpart lib="acme" part="TESTMCU64_QFP64">
+      <pins>
+        <pin num="44" name="PA11/FDCAN1_RX" type="BiDi"/>
+        <pin num="45" name="PA12/FDCAN1_TX" type="BiDi"/>
+        <pin num="2" name="PC13" type="BiDi"/>
+        <pin num="12" name="VSS" type="power_in"/>
+      </pins>
+    </libpart>
+  </libparts>
+  <nets>
+    <net code="1" name="/CAN_VEH_RX">
+      <node ref="U1" pin="44"/>
+      <node ref="U2" pin="4"/>
+    </net>
+    <net code="2" name="/CAN_VEH_TX">
+      <node ref="U1" pin="45"/>
+      <node ref="U2" pin="1"/>
+    </net>
+    <net code="3" name="/LED_ERR_N">
+      <node ref="U1" pin="2"/>
+      <node ref="D1" pin="1"/>
+    </net>
+    <net code="4" name="GND">
+      <node ref="U1" pin="12"/>
+    </net>
+  </nets>
+</export>

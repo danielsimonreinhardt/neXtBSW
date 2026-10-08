@@ -1,0 +1,146 @@
+# Module manifest (doc/architecture/README.md, section 5). Checked by tools/nxconfig (checks.py), rendered by
+# tools/bswgen as integration/hallConfiguration.h (connections and parameter values) and, as register values
+# derived from them, as bsp/hall/hallSensorConfiguration.h.
+#
+# `hall` drives a set of three digital Hall signals (U/V/W) of a brushless motor: state, sector, electrical and
+# mechanical period, speed, direction and a quality, measured in the pin interrupt of the port with a time stamp
+# per edge (IO-07). It is a device driver, so every sensor set of a board is one instance:
+#
+#   board.yaml   devices[] with module: hall and connect: {u, v, w} -> three dio.inputs  (what is wired)
+#   project.yaml modules.<device>                                                        (what the motor is)
+#
+# Why the values are split that way (doc/architecture/README.md, section 4):
+#   Board  - which pins carry the signals, whether the MCU has to supply the pull (dio.inputs[].pull: up/down;
+#            omitted means the board brings it or the sensor drives both levels) and whether the board inverts a
+#            signal (dio.inputs[].active: low). All three are properties of the printed circuit board.
+#   Project- arrangement, pole pairs, lowest and highest speed, debounce time, standstill time and which
+#            direction counts as forward. All of these belong to the *motor* and to its use, and the motor is
+#            not on the board - the same argument as for the characteristic of a motor NTC.
+# Nothing is configured twice: the sector table, the invalid states, the inversion mask, the pin masks, the
+# interrupt vectors with their level and the plausibility of the times are derived by tools/bswgen.
+#
+# The manifest lies in the family port (interrupt glue: bsp/pinIrq/PinIrqConfig.cpp since IO-54) because the pin
+# interrupt is family knowledge; the access is platforms/s32k1xx/bsp/bspHall (cmake_target below), the evaluation
+# the family neutral service libs/bsw/hallDecoder (doc/architecture/treiber-granularitaet.md). A second family - or
+# a timer capture access - brings its own access and manifest for the same parameter names and links the decoder.
+module: hall
+kind: device_driver
+description: >-
+  Three digital Hall signals of a brushless motor (state, sector, period, speed, direction and quality),
+  measured in the pin interrupt of the port with a time stamp per edge
+# Evidence (CHANGELOG.md): IO-07 is built without known Hall hardware (user decision 2026-09-16), host tests only;
+# the board test with a signal source is IO-23 and still open.
+verification: mock
+verification_note: >-
+  Host tests only (decoder and pin interrupt access against two profiles); no Hall sensor or signal source has
+  been connected to a board yet.
+# Board parts this driver serves (fnmatch patterns on board.yaml devices[].part). `hall3*` is the class of the
+# interface: three digital signals U/V/W, one level per signal, open collector, open emitter or push-pull - the
+# driver only sees levels. A board with a *fitted* Hall sensor adds its part number here (like BTS5030-1EJA for
+# highSideSwitch).
+parts:
+  - hall3
+  - hall3_*
+# Wiring of each instance: board.yaml devices[].connect maps these names to board entries of the given kind.
+# The order is the electrical order of the motor phases; together with `forward` it decides which direction of
+# the sector sequence is reported as forward.
+connect:
+  u: { kind: digital_input, description: "Hall signal of phase U (H1)" }
+  v: { kind: digital_input, description: "Hall signal of phase V (H2)" }
+  w: { kind: digital_input, description: "Hall signal of phase W (H3)" }
+parameters:
+  arrangement:
+    type: str
+    pattern: "deg120|deg60"
+    default: deg120
+    description: >-
+      electrical angle between the Hall sensors. deg120 (the usual brushless arrangement) has the six valid
+      states 100, 110, 010, 011, 001, 101 in that order and reports 000 and 111 as invalid; deg60 has the six
+      valid states 111, 110, 100, 000, 001, 011 in that order and reports 010 and 101 as invalid. The generator
+      turns the choice into the sector table, so no state list is written down twice.
+  pole_pairs:
+    type: int
+    min: 1
+    max: 64
+    description: >-
+      pole pairs of the motor: one mechanical revolution is this many electrical revolutions. The mechanical
+      period and the speed use it, state, sector and the electrical period do not. There is no default - it is
+      a fact of the motor, not a value to guess.
+  forward:
+    type: str
+    pattern: "sector_up|sector_down"
+    default: sector_up
+    description: >-
+      which way through the sector sequence of `arrangement` is reported as direction +1. sector_up is the
+      documented order above (U -> V -> W); sector_down mirrors it, for a motor whose phase order or sensor
+      order is the other way round. It only changes the sign of hall.<Sensor>.direction, never the sector
+      numbers, the period or the speed.
+  min_speed_rpm:
+    type: int
+    min: 1
+    max: 200000
+    unit: rpm
+    description: >-
+      lowest mechanical speed that still has to be measured. The generator checks standstill_ms against it: one
+      electrical revolution at this speed has to fit into the standstill time, otherwise a healthy slowly
+      turning motor would be reported as standing still.
+  max_speed_rpm:
+    type: int
+    min: 1
+    max: 200000
+    unit: rpm
+    description: >-
+      highest mechanical speed the motor reaches. The generator derives the shortest sector time from it
+      (60e6 / (rpm * pole_pairs * 6) microseconds) and checks debounce_us against it: debouncing must not
+      swallow real edges at full speed. It refuses the combination with both numbers instead of measuring
+      wrongly.
+  debounce_us:
+    type: int
+    min: 0
+    max: 100000
+    default: 20
+    unit: us
+    description: >-
+      an edge closer than this to the last accepted edge is counted as bouncing and ignored (0 switches the
+      debouncing off). It is done in the driver, not with the input filter of the port: the filter width of the
+      s32k1xx (PORT DFCR/DFWR) is one register per port and would change every other input of that port too.
+  standstill_ms:
+    type: int
+    min: 1
+    max: 60000
+    default: 200
+    unit: ms
+    description: >-
+      time without an accepted edge after which the quality becomes QLF_ERROR_TIMEOUT (standstill): period,
+      speed and direction are not current any more, while state and sector still are - the sensors report the
+      position of a motor that stands still. It also bounds the time base: the driver stamps every edge with
+      the microsecond time of the system timer (32 bit, wraps after about 71.6 minutes), a standstill throws the
+      running revolution away, and the generator checks that six standstill times stay well inside one wrap, so
+      no period can be measured across an ambiguous time.
+constraints:
+  - max_speed_rpm >= min_speed_rpm
+provides:
+  - hall_sensor
+# RTE-18: values the application reads through the RTE, targets hall.<Sensor>.<value> (tools/rtegen reads them from
+# here). access hall: one HallSensors::get() per sensor and task samples the pins and takes an interrupt-safe
+# snapshot, so the values need no cycle and no lock from the RTE and may be read from several tasks.
+rte:
+  prefix: hall
+  access: hall
+  instance: Sensor
+  noun: hall sensor
+  which: board devices with module hall and an entry modules.<device>
+  values:
+    state:          { types: [uint8, uint16, uint32], unit: "(u << 2) | (v << 1) | w" }
+    sector:         { types: [uint8, uint16, uint32], unit: "1..6, 0 = unknown" }
+    period_us:      { types: [uint32], unit: "microseconds, electrical revolution" }
+    mech_period_us: { types: [uint32], unit: "microseconds, mechanical revolution (pole pairs)" }
+    speed_rpm:      { types: [uint32], unit: mechanical revolutions per minute }
+    direction:      { types: [sint8, sint16, sint32], unit: "+1, -1 or 0" }
+    qlf:
+      types: [uint8, uint16, uint32]
+      field: quality
+      unit: QLF_* of Rte_Qlf.h
+      qualifier: true
+      without: a measured value from a held one (standstill, invalid state combination, jumped sector)
+cmake_target: bspHall

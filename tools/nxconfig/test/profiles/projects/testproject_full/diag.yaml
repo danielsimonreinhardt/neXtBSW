@@ -1,0 +1,501 @@
+# Diagnostic description of the synthetic test profile testproject_full (PLAT-62, schema tools/nxconfig/model.py
+# DiagDescription, checks tools/nxconfig/diagdesc.py): what the demo component answers on the diagnostic connection
+# and what its fault memory stores - two sessions, one security level, identification and measurement DIDs (BSW and
+# component sources), a routine, two DTCs with counter and time debouncing, snapshots, extended data and DTC groups.
+# Test data only; the addresses of the connection are project values (project.yaml diagnostics).
+schema_version: 1
+
+sessions:
+  - name: Default
+    id: 0x01
+    label: Default session
+    description: Always active; only reading identifiers here.
+    p2_ms: 50
+    p2_star_ms: 5000
+  - name: Extended
+    id: 0x03
+    label: Extended diagnostic session
+    description: Writing and routines only here; the fault memory (19/14) in every session.
+    p2_ms: 50
+    p2_star_ms: 5000
+
+security:
+  - name: Application
+    level: 0x01
+    label: Application unlock
+    description: Unlocks the writing identifiers and the test routines.
+    seed_bytes: 4
+    key_bytes: 4
+    attempts: 3
+    delay_ms: 10000
+    sessions: [Extended]
+
+operation_cycles:
+  - name: PowerCycle
+    kind: power
+    label: Power cycle
+    description: Starts when the ECU is supplied and ends with the shutdown.
+    autostart: true
+
+enable_conditions:
+  - name: EcuRunning
+    label: ECU in run state
+    description: The fault memory is only updated in the RUN state of the ECU state machine.
+    bsw: ecu.state
+    initial: false
+
+data_identifiers:
+  - identifier: 0xF180
+    name: BootSoftwareIdentification
+    label: Boot software identification
+    description: Version text of the bootloader, read from its flash.
+    group: identification
+    read: true
+    read_sessions: [Default, Extended]
+    data:
+      - name: numberOfModules
+        label: Number of modules
+        description: This ECU describes exactly one module.
+        type: uint8
+        source: {constant: 1}
+      - name: bootSoftwareIdentification
+        label: Boot software version string
+        description: Text with the prefix of diagnostics.bootloader.version_prefix.
+        type: ascii
+        length_bytes: 32
+        source: {bsw: bootloader.version}
+  - identifier: 0xF181
+    name: ApplicationSoftwareIdentification
+    label: Application software identification
+    description: Version text of the application.
+    group: identification
+    read: true
+    read_sessions: [Default, Extended]
+    data:
+      - name: numberOfModules
+        label: Number of modules
+        description: This ECU describes exactly one module.
+        type: uint8
+        source: {constant: 1}
+      - name: applicationSoftwareIdentification
+        label: Application software version string
+        type: ascii
+        length_bytes: 32
+        source: {bsw: application.version}
+  - identifier: 0xF186
+    name: ActiveDiagnosticSession
+    label: Active diagnostic session
+    description: Number of the session the ECU is in (01 default, 03 extended).
+    group: identification
+    read: true
+    read_sessions: [Default, Extended]
+    data:
+      - name: activeSession
+        label: Active session
+        type: uint8
+        source: {bsw: uds.session}
+        values:
+          - {value: 0x01, text: Default}
+          - {value: 0x03, text: Extended}
+  - identifier: 0xF18C
+    name: EcuSerialNumber
+    label: ECU serial number (chip UID)
+    description: Unique identifier of the chip; the tester derives the device key for 27 from it.
+    group: identification
+    read: true
+    read_sessions: [Default, Extended]
+    data:
+      - {name: chipUid, label: Chip UID, type: bytes, length_bytes: 16, source: {bsw: chip.uid}}
+  - identifier: 0xF1F1
+    name: ConfigurationIdentity
+    label: Configuration identity
+    description: SHA-256 over the configuration of the project and the generators that made the image.
+    group: identification
+    read: true
+    read_sessions: [Default, Extended]
+    data:
+      - name: configurationIdentity
+        label: Configuration identity
+        type: ascii
+        length_bytes: 64
+        source: {bsw: configuration.identity}
+  - identifier: 0xF1F2
+    name: WorkspaceVersion
+    label: Workspace commit
+    description: Commit of the customer workspace the project was built from.
+    group: identification
+    read: true
+    read_sessions: [Default, Extended]
+    data:
+      - name: workspaceVersion
+        label: Workspace commit
+        type: ascii
+        length_bytes: 48
+        source: {bsw: workspace.version}
+  - identifier: 0xFD00
+    name: RamTestValue
+    label: RAM test value
+    description: Harmless RAM value the tester writes and reads back to check 2E.
+    group: test
+    read: true
+    write: true
+    read_sessions: [Default, Extended]
+    write_sessions: [Extended]
+    write_security: Application
+    data:
+      - name: ramTestValue
+        label: RAM test value
+        type: uint32
+        source: {bsw: uds.ram_test}
+  - identifier: 0x0110
+    name: MotorNtcFiltered
+    label: Motor NTC voltage, filtered
+    description: Filtered NTC voltage as the demo component sends it on CAN.
+    group: measurement
+    read: true
+    read_sessions: [Default, Extended]
+    data:
+      - name: motorNtcFiltered
+        label: Motor NTC voltage
+        type: uint16
+        unit: mV
+        min: 0
+        max: 5000
+        source: {port: DemoSwc.MotorNtcFiltered_mV.MotorNtcFiltered_mV}
+  - identifier: 0x0120
+    name: EcuConditions
+    label: ECU conditions
+    description: ECU state, supply, reset reason and uptime from the basic software.
+    group: measurement
+    read: true
+    read_sessions: [Default, Extended]
+    data:
+      - {name: ecuState, type: uint8, source: {bsw: ecu.state}}
+      - {name: supply, type: uint16, unit: mV, source: {bsw: bsw.power.supply_mv}}
+      - {name: supplyQlf, type: uint8, source: {bsw: bsw.power.qlf}}
+      - {name: resetReason, type: uint8, source: {bsw: bsw.reset.reason}}
+      - {name: uptime, type: uint32, unit: ms, source: {bsw: bsw.time.ms}}
+      - {name: tsVoltage, type: uint16, unit: mV, source: {bsw: adc.mv.SENSE_TSVOLTAGE}}
+  - identifier: 0x0130
+    name: EcuStatistics
+    label: Operating time and reset statistics
+    description: Operating time, starts and the reset causes of every start as the MCU and the power supply saw them.
+    group: measurement
+    read: true
+    read_sessions: [Default, Extended]
+    data:
+      - {name: operatingTime, label: Operating time, type: uint32, unit: s, source: {bsw: bsw.stats.operating_s}}
+      - {name: starts, label: Starts, type: uint32, source: {bsw: bsw.stats.starts}}
+      - name: persistent
+        label: Stored in the NvM block EcuStatistics
+        type: uint8
+        source: {bsw: bsw.stats.persistent}
+        values:
+          - {value: 0, text: THIS_START_ONLY}
+          - {value: 1, text: STORED}
+      - {name: lastMcuReasons, label: Reasons of the latest start (MCU), type: uint32, source: {bsw: bsw.stats.last_mcu}}
+      - name: lastSupplyReasons
+        label: Reasons of the latest start (power supply)
+        type: uint32
+        source: {bsw: bsw.stats.last_supply}
+      - {name: mcuPower, label: MCU power-on resets, type: uint16, source: {bsw: bsw.stats_mcu.power}}
+      - {name: mcuReset, label: "MCU resets (pin, software, debugger)", type: uint16, source: {bsw: bsw.stats_mcu.reset}}
+      - {name: mcuWatchdog, label: MCU watchdog resets, type: uint16, source: {bsw: bsw.stats_mcu.watchdog}}
+      - {name: mcuSupply, label: MCU low-voltage resets, type: uint16, source: {bsw: bsw.stats_mcu.supply}}
+      - {name: mcuUnknown, label: MCU starts without known cause, type: uint16, source: {bsw: bsw.stats_mcu.unknown}}
+      - {name: supplyPower, label: Supply power-on starts, type: uint16, source: {bsw: bsw.stats_supply.power}}
+      - {name: supplyReset, label: Supply resets, type: uint16, source: {bsw: bsw.stats_supply.reset}}
+      - {name: supplyWatchdog, label: Supply watchdog resets, type: uint16, source: {bsw: bsw.stats_supply.watchdog}}
+      - {name: supplyFault, label: Supply fault restarts, type: uint16, source: {bsw: bsw.stats_supply.supply}}
+      - {name: supplyTimer, label: Cyclic wake-ups, type: uint16, source: {bsw: bsw.stats_supply.timer}}
+      - {name: supplyCan, label: CAN wake-ups, type: uint16, source: {bsw: bsw.stats_supply.can}}
+      - {name: supplyLocal, label: Local wake-ups, type: uint16, source: {bsw: bsw.stats_supply.local}}
+      - {name: supplyUnknown, label: Supply starts without known cause, type: uint16, source: {bsw: bsw.stats_supply.unknown}}
+
+routines:
+  - identifier: 0x0301
+    name: LedSelfTest
+    label: LED self test
+    description: Switches both LEDs one after the other and reports whether the run is finished.
+    group: actuator_test
+    sessions: [Extended]
+    security: Application
+    start:
+      call: {runnable: DemoSwc.Run100ms}
+      request:
+        - name: durationCycles
+          label: Duration in 100 ms cycles
+          type: uint8
+          unit: cycle
+          min: 1
+          max: 50
+      response:
+        - name: accepted
+          label: Accepted
+          type: uint8
+          values:
+            - {value: 0, text: rejected}
+            - {value: 1, text: accepted}
+    stop:
+      call: {runnable: DemoSwc.Run100ms}
+    results:
+      call: {runnable: DemoSwc.Run100ms}
+      response:
+        - name: state
+          label: State of the self test
+          type: uint8
+          values:
+            - {value: 0, text: idle}
+            - {value: 1, text: running}
+            - {value: 2, text: finished}
+
+fault_memory:
+  max_entries: 16
+  overflow: replace_oldest
+  snapshot_records_max: 1
+  extended_records_max: 1
+  aging_cycle: PowerCycle
+  cycle_ms: 10
+  write_interval_ms: 1000
+
+dtcs:
+  - number: 0x904001
+    name: MotorNtcOpenCircuit
+    label: Motor NTC open circuit
+    description: The NTC voltage stays at the upper limit - sensor or wire open.
+    group: measurement
+    severity: check_at_next_halt
+    operation_cycle: PowerCycle
+    enable_conditions: [EcuRunning]
+    confirmation_threshold: 1
+    priority: 2
+    event:
+      port: DemoSwc.MotorNtcFiltered_mV.MotorNtcFiltered_mV
+      description: Filtered NTC voltage above the limit.
+      failed_above: 4900
+    debounce:
+      counter:
+        failed_threshold: 10
+        passed_threshold: -10
+        increment: 1
+        decrement: 1
+    aging:
+      threshold_cycles: 40
+      cycle: PowerCycle
+    snapshots:
+      - record_number: 0x01
+        label: Conditions at first confirmation
+        dids: [MotorNtcFiltered, ActiveDiagnosticSession, EcuConditions]
+    extended_data:
+      - record_number: 0x01
+        label: Counters of the fault memory
+        data:
+          - name: occurrenceCounter
+            label: Occurrence counter
+            counter: occurrence_counter
+          - name: agingCounter
+            label: Aging counter
+            counter: aging_counter
+          - name: faultDetectionCounter
+            label: Fault detection counter
+            counter: fault_detection_counter
+  - number: 0xC10016
+    name: PcCommandTimeout
+    label: PC_Command message missing
+    description: The supervised CAN message PC_Command is missing or permanently invalid.
+    group: communication
+    severity: none
+    operation_cycle: PowerCycle
+    enable_conditions: [EcuRunning]
+    confirmation_threshold: 1
+    priority: 1
+    event:
+      port: DemoSwc.PcCommandQlf.PcCommandQlf
+      description: The qualifier of the message reports timeout, CRC or counter error.
+      result: qualifier
+    debounce:
+      time:
+        failed_ms: 500
+        passed_ms: 500
+    aging:
+      threshold_cycles: 40
+    snapshots:
+      - record_number: 0x01
+        dids: [ActiveDiagnosticSession]
+    extended_data:
+      - record_number: 0x01
+        data:
+          - name: occurrenceCounter
+            label: Occurrence counter
+            counter: occurrence_counter
+
+  # PLAT-62: the BSW DTCs of the standard description (tools/diaggen/standard_diag.yaml), as in the eval
+  # board demo
+  # SYS-113 (taken over from tools/diaggen/standard_diag.yaml): the cause of a safety reset (safe state S1 + reset S2 of the safe supervisor, a fault exception, the MCU
+  # watchdog), reported after the next start: the reset-loop record of the family port (no-init RAM, SYS-43) keeps
+  # the cause, the BSP task hands it to the fault memory (libs/bsw/dem dem/SafetyResetReport.h) - FAILED until the
+  # fault memory took it over, then PASSED; every other cause PASSED. Recording only, the reaction was the
+  # supervisor's. One report per start matures the DTC (no enable condition: a fault that resets again soon after
+  # the start still gets its DTC). The number: +0x05FD MCU watchdog, +0x05FC fault exception, +0x05FB a safety
+  # reset whose cause has no DTC of its own here (fixed sub-types, no bsw_instance); an event of the supervisor takes
+  # its number in SafeSupervisor::Event as bsw_instance (+0x05nn, checked by nxconfig). Further causes: a DTC with event safety.<event in lower case> and its number, e.g.
+  # safety.stack_overflow with bsw_instance 0x15. The held safe states (ROM check, watchdog self-test, the hold at
+  # the reset-loop limit) end only with a power cycle, which clears the record - no DTC after the next start.
+  - name: SafetyResetMcuWatchdog
+    label: Safety reset by the MCU watchdog
+    description: The MCU watchdog reset the ECU (program-flow supervision); reported after the next start (SYS-113).
+    group: nextbsw
+    severity: check_immediately
+    operation_cycle: PowerCycle
+    confirmation_threshold: 1
+    priority: 1
+    event:
+      bsw: safety.mcu_watchdog
+      description: The BSP task reports the cause of the safety reset before this start once (FAILED or PASSED).
+    debounce:
+      counter: {failed_threshold: 1, passed_threshold: -1}
+    aging:
+      threshold_cycles: 40
+    snapshots:
+      - record_number: 0x01
+        dids: [EcuConditions]
+    extended_data:
+      - record_number: 0x01
+        data:
+          - {name: occurrenceCounter, label: Occurrence counter, counter: occurrence_counter}
+          - {name: agingCounter, label: Aging counter, counter: aging_counter}
+
+  - name: SafetyResetFaultException
+    label: Safety reset by a fault exception
+    description: A fault exception of the core (hard fault, MPU, bus, usage, lockup) reset the ECU (SYS-113).
+    group: nextbsw
+    severity: check_immediately
+    operation_cycle: PowerCycle
+    confirmation_threshold: 1
+    priority: 1
+    event:
+      bsw: safety.fault_exception
+      description: The BSP task reports the cause of the safety reset before this start once (FAILED or PASSED).
+    debounce:
+      counter: {failed_threshold: 1, passed_threshold: -1}
+    aging:
+      threshold_cycles: 40
+    snapshots:
+      - record_number: 0x01
+        dids: [EcuConditions]
+    extended_data:
+      - record_number: 0x01
+        data:
+          - {name: occurrenceCounter, label: Occurrence counter, counter: occurrence_counter}
+          - {name: agingCounter, label: Aging counter, counter: aging_counter}
+
+  - name: SafetyResetDeadmanConfiguration
+    label: Safety reset by the deadman configuration check
+    description: The configuration of the halt deadman deviated; the safe supervisor reset the ECU (SYS-41, SYS-113).
+    group: nextbsw
+    severity: check_immediately
+    operation_cycle: PowerCycle
+    confirmation_threshold: 1
+    priority: 1
+    bsw_instance: 0x10
+    event:
+      bsw: safety.deadman_configuration_error
+      description: The BSP task reports the cause of the safety reset before this start once (FAILED or PASSED).
+    debounce:
+      counter: {failed_threshold: 1, passed_threshold: -1}
+    aging:
+      threshold_cycles: 40
+    snapshots:
+      - record_number: 0x01
+        dids: [EcuConditions]
+    extended_data:
+      - record_number: 0x01
+        data:
+          - {name: occurrenceCounter, label: Occurrence counter, counter: occurrence_counter}
+          - {name: agingCounter, label: Aging counter, counter: aging_counter}
+
+  - name: SafetyResetOther
+    label: Safety reset, other cause
+    description: >-
+      The safe supervisor reset the ECU for a cause without a DTC of its own in this description (SYS-113); the
+      console line SAFETY RESET of that start names it.
+    group: nextbsw
+    severity: check_immediately
+    operation_cycle: PowerCycle
+    confirmation_threshold: 1
+    priority: 1
+    event:
+      bsw: safety.reset_other
+      description: The BSP task reports a safety reset before this start whose cause has no DTC here (fallback).
+    debounce:
+      counter: {failed_threshold: 1, passed_threshold: -1}
+    aging:
+      threshold_cycles: 40
+    snapshots:
+      - record_number: 0x01
+        dids: [EcuConditions]
+    extended_data:
+      - record_number: 0x01
+        data:
+          - {name: occurrenceCounter, label: Occurrence counter, counter: occurrence_counter}
+          - {name: agingCounter, label: Aging counter, counter: aging_counter}
+
+  # SYS-43/SYS-113: this start followed two or more safety resets in a row (the reset-loop counter of the no-init
+  # record); the start at the configured limit holds the safe state without the fault memory and is not reported.
+  - name: SafetyResetLoop
+    label: Safety resets in a row
+    description: The ECU started after two or more consecutive safety resets (reset-loop limit, SYS-43, SYS-113).
+    group: nextbsw
+    severity: check_immediately
+    operation_cycle: PowerCycle
+    confirmation_threshold: 1
+    priority: 1
+    event:
+      bsw: safety.reset_loop
+      description: The BSP task reports the reset-loop counter of the start once (FAILED from two in a row).
+    debounce:
+      counter: {failed_threshold: 1, passed_threshold: -1}
+    aging:
+      threshold_cycles: 40
+    snapshots:
+      - record_number: 0x01
+        dids: [EcuConditions]
+    extended_data:
+      - record_number: 0x01
+        data:
+          - {name: occurrenceCounter, label: Occurrence counter, counter: occurrence_counter}
+          - {name: agingCounter, label: Aging counter, counter: aging_counter}
+
+  # NVM-30: one of the two places of the QM block EcuStatistics (NVM-05) failed its CRC or could not be read - the
+  # value of the other place was loaded, possibly the previous one (operating time, starts). bsw_instance 2 = index
+  # of the block in the NvM table (DemEvents 0, DemEntries 1, EcuStatistics 2; nvm status lists them in that order).
+  - name: NvmEcuStatisticsPlaceDefective
+    label: NvM block EcuStatistics had one defective place
+    description: >-
+      One place of the QM block EcuStatistics was defective at the start; the value of the other place, possibly
+      the previous one, was loaded (NVM-30). The next write of the block replaces the defective place.
+    group: nextbsw
+    severity: check_immediately
+    operation_cycle: PowerCycle
+    confirmation_threshold: 1
+    priority: 1
+    bsw_instance: 2
+    event:
+      bsw: nvm.place_defective.EcuStatistics
+      description: nvm::reportToFaultMemory() reports it once per start, FAILED or PASSED.
+    debounce:
+      counter: {failed_threshold: 1, passed_threshold: -1}
+
+dtc_groups:
+  - name: Body
+    label: Body
+    description: Body DTCs, here the motor NTC (0x904001).
+    group: 0x800000
+    first: 0x800000
+    last: 0xBFFFFF
+  - name: Network
+    label: Network communication
+    description: Communication DTCs, here the missing message PC_Command (0xC10016).
+    group: 0xC00000
+    first: 0xC00000
+    last: 0xFFFEFF

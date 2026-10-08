@@ -1,0 +1,14 @@
+# SPDX-License-Identifier: Apache-2.0
+# RTE-25 test component: writes an array port whose dimension is a name of the init data, as an imported model
+# sizes it (PortDimensions pack.number_cells). swc_yaml.load() resolves it from CellSrcSwc_init.m without MATLAB;
+# the generated RTE only has the number.
+version: 1
+name: CellSrcSwc
+description: Cell voltage source (array port with symbolic dimension)
+implementation: c
+runnables:
+  - name: Run10ms
+    period_ms: 10
+ports:
+  - { name: BaseVoltage_mV, direction: in, type: uint16, runnables: [Run10ms] }
+  - { name: CellVoltages, direction: out, type: uint16, runnables: [Run10ms], dimension: pack.number_cells }

@@ -1,0 +1,66 @@
+# Synthetic board for tests: no SBC, 8 MHz crystal, two CAN buses with passive transceivers, other derivative.
+schema_version: 1
+
+board:
+  name: testboard
+  mcu: TESTMCU64
+  package: QFP64
+  clock: { sosc_hz: 8000000 }
+  adc_reference_mv: 3300
+
+devices:
+  - { name: PHY_A, part: TJA1051 }
+  - { name: PHY_B, part: TJA1051 }
+  - { name: EEPROM, part: 25LC320 }
+
+spi:
+  - name: MEM_SPI
+    instance: SPI1
+    sck: { pin: PA5 }
+    sin: { pin: PA6 }
+    sout: { pin: PA7 }
+    pcs: { pin: PA4, index: 0 }
+    device: EEPROM
+
+can:
+  - { name: VEH, instance: FDCAN1, rx: { pin: PA11 }, tx: { pin: PA12 }, phy: PHY_A }
+  - { name: DIAG, instance: FDCAN2, rx: { pin: PB12 }, tx: { pin: PB13 }, phy: PHY_B }
+
+uart:
+  - { name: CONSOLE, instance: USART2, rx: { pin: PA3 }, tx: { pin: PA2 } }
+
+adc:
+  - { name: VBAT, instance: ADC1, channel: IN1, pin: PA0, scale: { divider: { r_top: 30000, r_bottom: 10000 } } }
+  - { name: TEMP_EXT, instance: ADC1, channel: IN2, pin: PA1 }
+
+pwm:
+  - name: BRIDGE
+    instance: TIM1
+    mode: complementary
+    active: { high_side: high, low_side: low }
+    pairs:
+      - { name: BRIDGE_A, high_side: BRIDGE_A_HS, low_side: BRIDGE_A_LS }
+    channels:
+      - { name: BRIDGE_A_HS, channel: 0, pin: PA8 }
+      - { name: BRIDGE_A_LS, channel: 1, pin: PA9 }
+    # IO-24: synthetic fast power stage, no component. Minimum dead time: switch max(0, (30 + 10) - 8) = 32 ns
+    # (off path not shortened by the smaller turn-off resistor) + driver 55 - 40 = 15 ns + project margin
+    power_stage:
+      switch: { turn_on_delay_ns: 8, rise_time_ns: 12, turn_off_delay_ns: 30, fall_time_ns: 10,
+                test_gate_resistance_mohm: 4700, internal_gate_resistance_mohm: 1000, gate_charge_nc: 30,
+                r_ds_on_mohm: 5, r_ds_on_hot_mohm: 8, source: "synthetic test stage IO-24" }
+      driver: { turn_on_delay_ns: 40, turn_off_delay_ns: 55, source: "synthetic test stage IO-24" }
+      gate: { turn_on_resistance_mohm: 4700, turn_off_resistance_mohm: 2200, source: "synthetic test stage IO-24" }
+      short_circuit: { vds_threshold_mv: 500, blanking_ns: 200, source: "synthetic test stage IO-24" }
+
+input_capture:
+  - { name: SPEED, instance: TIM1, channel: 3, pin: PA10 }
+  - { name: RC_IN, instance: TIM2, channel: 0, pin: PA15 }
+  - { name: RC_IN2, instance: TIM2, channel: 1, pin: PB3 }
+
+dio:
+  inputs:
+    - { name: KEY, pin: PC13, active: low, pull: up }
+  outputs:
+    - { name: LED_GREEN, pin: PB0 }
+    - { name: LED_RED, pin: PB1 }

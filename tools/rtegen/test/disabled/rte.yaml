@@ -1,0 +1,56 @@
+# ECU description of the RTE-23 test profile: a disabled component and a disabled runnable, both still in the file.
+# BSW task profile: tools/rtegen/test/multitask/tasks.yaml. Component paths are relative to this file (RTE-22).
+#
+#   slow (10 ms, key 25): LevelSrcSwc.Run10ms (component disabled), AuxSrcSwc.RunMain10ms,
+#                         AuxSrcSwc.RunAux10ms (runnable disabled), SinkSwc.Run10ms
+#   fast (1 ms, key 35):  AuxSrcSwc.RunAux10ms would fit here too - the task keeps no runnable of the components
+#
+# SinkSwc stays enabled and reads: Level_mV of the disabled LevelSrcSwc (C component without init values: the value
+# 1234 of disabled_values), LevelQlf of it (qualifier port: QLF_NOT_AVAILABLE, no value needed), the age qualifier
+# of LevelSrcSwc.Level_mV (writer disabled: QLF_NOT_AVAILABLE instead of a timeout), Main of the running
+# AuxSrcSwc.RunMain10ms and Aux of the disabled AuxSrcSwc.RunAux10ms (disabled_values 77).
+# Used by: tools/rtegen/test_rtegen_disabled.py (host test rte_disabled_host_test.cpp, target compile and link).
+
+schema_version: 2
+
+tasks:
+  - name: fast
+    period_ms: 1
+    priority: 35
+    stack_bytes: 1024
+    runnables: []
+  - name: slow
+    period_ms: 10
+    priority: 25
+    stack_bytes: 2048
+    runnables:
+      - LevelSrcSwc.Run10ms
+      - AuxSrcSwc.RunMain10ms
+      - { runnable: AuxSrcSwc.RunAux10ms, enabled: false }
+      - SinkSwc.Run10ms
+
+components:
+  - name: LevelSrcSwc
+    path: LevelSrcSwc
+    enabled: false
+    disabled_values:
+      Level_mV.Level_mV: 1234
+  - name: AuxSrcSwc
+    path: AuxSrcSwc
+    disabled_values:
+      Aux.Aux: 77
+  - name: SinkSwc
+    path: SinkSwc
+
+connections:
+  SinkSwc.Level_mV.Level_mV: LevelSrcSwc.Level_mV.Level_mV
+  SinkSwc.LevelQlf.LevelQlf: LevelSrcSwc.LevelQlf.LevelQlf
+  SinkSwc.LevelAge.LevelAge: age.qlf.LevelSrcSwc.Level_mV.Level_mV
+  SinkSwc.Main.Main: AuxSrcSwc.Main.Main
+  SinkSwc.Aux.Aux: AuxSrcSwc.Aux.Aux
+  SinkSwc.Echo_mV.Echo_mV: rte
+  SinkSwc.EchoQlf.EchoQlf: rte
+  SinkSwc.EchoAge.EchoAge: rte
+  SinkSwc.EchoMain.EchoMain: rte
+  SinkSwc.EchoAux.EchoAux: rte
+  SinkSwc.Runs.Runs: rte

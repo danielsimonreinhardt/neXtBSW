@@ -1,0 +1,52 @@
+# ECU description of the NVM-02 tests: non-volatile blocks (targets nvm.<Block>). Used with the build-test project
+# buildtest_s32k148_min (other derivative, no SBC, FlexRAM 4 KB) and the BSW task profile test/multitask/tasks.yaml,
+# not with the eval board. Component paths are relative to this file (RTE-22).
+#
+#   NvmSwc    synthetic (test/nvm/NvmSwc): boot counter written by its init runnable into the block it reads
+#             (nvm.BootCount), trim value read every cycle and written on request (nvm.Trim)
+#   TypeSwc   Simulink test model of RTE-04: its record Stat and its fixed-point array Scaled are stored
+#   TypeSink  reads the stored record in a second task (slow): the block has task copies
+#
+#   fast (10 ms): TypeSwc.Run10ms, TypeSink.Sink10ms, NvmSwc.Run10ms      slow (20 ms): TypeSink.Sink20ms
+
+schema_version: 2
+
+tasks:
+  - name: fast
+    period_ms: 10
+    priority: 35
+    stack_bytes: 1024
+    runnables: [TypeSwc.Run10ms, TypeSink.Sink10ms, NvmSwc.Run10ms]
+  - name: slow
+    period_ms: 20
+    priority: 25
+    stack_bytes: 1024
+    runnables: [TypeSink.Sink20ms]
+
+components:
+  - name: NvmSwc
+    path: NvmSwc
+  - name: TypeSwc
+    path: ../types/TypeSwc
+  - name: TypeSink
+    path: ../types/TypeSink
+
+connections:
+  NvmSwc.StoredCount.StoredCount: nvm.BootCount
+  NvmSwc.Count.Count: nvm.BootCount
+  NvmSwc.Trim.Trim: nvm.Trim
+  NvmSwc.TrimOut.TrimOut: nvm.Trim
+  NvmSwc.WideTrim.WideTrim: rte.init
+  TypeSwc.Samples.Samples: TypeSwc.Scaled.Scaled
+  TypeSwc.Cmd.Cmd: rte.init
+  TypeSwc.ModeIn.ModeIn: TypeSwc.ModeOut.ModeOut
+  TypeSwc.Temp.Temp: rte.init
+  TypeSwc.Stat.Stat: nvm.Stat
+  TypeSwc.TempOut.TempOut: rte
+  TypeSwc.Scaled.Scaled: nvm.Scaled
+  TypeSink.Stat.Stat: nvm.Stat
+  TypeSink.Scaled.Scaled: TypeSwc.Scaled.Scaled
+  TypeSink.Check.Check: rte
+  TypeSink.Peak.Peak: rte
+  TypeSink.LastMode.LastMode: rte
+  TypeSink.LastTemp.LastTemp: rte

@@ -1,0 +1,28 @@
+# SYS-116: synthetic project for the safe states of a PWM group on testboard_active_short - the group BRIDGE (FTM1,
+# channels 2..5, low sides active low) allows freewheel and both active shorts and offers the start test. GD_A's
+# enable (PTD16, active high) is bound to BRIDGE and stays as it is in a short; GD_B's enable (PTA7, active low) is
+# bound to no group and goes off in every state. Test data only, no hardware.
+schema_version: 1
+
+project:
+  name: testproject_active_short
+  board: ../../boards/testboard_active_short
+
+clock:
+  system_hz: 64000000
+
+use:
+  spi: all
+  dio: all
+
+pwm:
+  BRIDGE:
+    frequency_hz: 16000
+    deadtime_ns: 500
+    safe_states: [freewheel, active_short_low, active_short_high]
+    safe_state_test: true
+    safe_state_test_us: 500
+
+modules:
+  GD_A: { console: gda }
+  GD_B: { console: gdb }

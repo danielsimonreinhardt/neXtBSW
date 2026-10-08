@@ -1,0 +1,37 @@
+# What the hand-written port of the family s32k1xx provides (ARCH-58, customer-project.md N5).
+#
+# What this file is. The feature switches of the build (`PLATFORM_SUPPORT_*`) used to be written by hand per board
+# in `ecu/platforms/<board>/Options.cmake`, and the root CMakeLists.txt refused to configure a board without that
+# file. Since ARCH-58 they are derived: what the **project** uses (I/O, CAN, transport, UDS) comes from
+# `project.yaml`, Ethernet from the build option `NX_ETHERNET`. Two switches are left that neither the project nor
+# the board nor the derivative can answer - they say whether the **port of the family** has the driver at all. That
+# is what this file states, for every board of the family at once.
+#
+# What this file is NOT. It carries no value of an ECU and is not a fourth configuration level (architecture
+# section 4). A project that wants to run without the MPU or without the watchdog is a decision nobody has asked
+# for yet; when it comes it belongs into `project.yaml` and is ANDed with what stands here (a project cannot use
+# what the port does not drive). The derivative cannot answer it either: `mcudb` knows the MPU region count of
+# every derivative but nothing about a driver, and it has no watchdog instance at all.
+#
+# Where it lies. `ecu/platforms/<family>` is the place the platform rule (architecture section 6, P5) gives the
+# family port at application level; the hand-written port itself still lies in `platforms/s32k1xx/port` (PLAT-23)
+# and moves here with PLAT-54/55. When it does, this file and `platforms/<family>/port/port.yaml` (PLAT-95, what
+# the port *needs*) become neighbours - one file for what the port needs, one for what it provides.
+#
+# Who reads it. `tools/nxconfig/features.py`; findings carry file, line and YAML path like every other check. The
+# root CMakeLists.txt sets `PLATFORM_SUPPORT_<NAME>` from the derived `NX_FEATURE_<NAME>`.
+schema_version: 1
+family: s32k1xx
+
+provides:
+  - name: watchdog
+    code: platforms/s32k1xx/port/safety/safeLifecycle, external/openbsw/platforms/s32k1xx/safety/safeBspMcuWatchdog
+    reason: >-
+      the port drives the MCU watchdog (WDOG) of the family through safeBspMcuWatchdog: the safety task services
+      it (ecu/safety/safeWatchdog, SYS-40/SYS-41) and the hold in the safe state services it itself (SYS-23).
+      Without the switch neither library is linked and the watchdog is never served
+  - name: mpu
+    code: platforms/s32k1xx/port/safety/safeMemory
+    reason: >-
+      the port programs the NXP system MPU of the family (8 region descriptors on the S32K1, [RM] Table 15-4);
+      the region count of the derivative reaches the generated board header as NX_MPU_REGIONS

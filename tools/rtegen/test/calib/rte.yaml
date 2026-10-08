@@ -1,0 +1,29 @@
+# ECU description of the RTE-26 test profile (calibration stage K1, doc/architecture/kalibrierung.md): one
+# hand-written C component with every kind of calibration object - value, array, value table, a shared axis used by
+# a curve and a map, a curve with own breakpoints and a map with one shared and one own axis - on the build test
+# project buildtest_s32k148_min (no SBC, two CAN buses), not the eval board. Component paths are relative to this
+# file (RTE-22).
+# Used by: tools/rtegen/test_rtegen_c_swc.py (CalibrationTest: model, records, rte::PARAMETERS rows, errors) and
+# tools/a2lgen/test_a2lgen.py (A2L of the cross-compiled image: CURVE, MAP, AXIS_PTS, STD_AXIS/COM_AXIS, limits).
+# calibration/: example dataset of stage K2 (TOOL-145, base + variant sport) for tools/calgen/test_calgen.py. The
+# tests above render this file against buildtest_s32k148_min, whose project folder has no dataset, so they keep the
+# <Swc>_data.m defaults; a dataset reaches the build only through the project (calibration/ next to project.yaml).
+
+schema_version: 2
+
+tasks:
+  - name: fast
+    period_ms: 10
+    priority: 35
+    stack_bytes: 1024
+    runnables: [CalMapSwc.Run10ms]
+
+components:
+  - name: CalMapSwc
+    path: CalMapSwc
+
+connections:
+  CalMapSwc.Speed_rpm.Speed_rpm: rte.init
+  CalMapSwc.Temp_degC.Temp_degC: rte.init
+  CalMapSwc.Torque_Nm.Torque_Nm: rte
+  CalMapSwc.Boost_mbar.Boost_mbar: rte

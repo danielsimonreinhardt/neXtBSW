@@ -1,0 +1,28 @@
+# BSW tasks of the ECU application (RTE-02). tools/rtegen reads this file together with the tasks of the ECU
+# description (projects/<project>/rte.yaml, section tasks:) and generates async/Config.h (task enum, ISR groups) and
+# RteTasks.h (task objects of the application tasks for ecu/application/src/app/app.cpp).
+#
+# priority: ordering key, not the FreeRTOS priority. OpenBSW (asyncFreeRtos) runs every task with its context number
+# as FreeRTOS priority, so all tasks (BSW and application) are sorted by this key and numbered 1..N (idle 0,
+# timer N+1). Gaps leave room for application tasks; two tasks with the same key are a configuration error.
+# above_application: true: no application task may get a higher priority (e.g. the task that serves the watchdog).
+#
+# The BSW task objects themselves (stack sizes, names) stay in ecu/application/src/app/app.cpp and the board
+# integration until the generated integration (ARCH-05) takes them over; a task missing here fails to compile there.
+schema_version: 1
+
+tick_us: 1000          # ASYNC_CONFIG_TICK_IN_US, FreeRTOS tick
+max_priorities: 32     # FreeRTOS Cortex-M port with optimised task selection: idle + tasks + timer <= 32
+min_stack_bytes: 512   # plausibility limit for application task stacks
+
+tasks:
+  - { name: background, priority: 10 }                        # runtime statistics, console "stats"
+  - { name: bsp, priority: 20 }                               # BSP, SBC, power supply, ECU state
+  - { name: can, priority: 40 }                               # CAN transceivers, UDS
+  - { name: sysadmin, priority: 50 }                          # lifecycle manager
+  - { name: safety, priority: 60, above_application: true }   # watchdog service, safety supervision
+
+# ECU description without section tasks: one application task with the period of the runnables (gcd)
+application_default: { name: swc, priority: 30, stack_bytes: 2048 }
+
+isr_groups: [test, can]

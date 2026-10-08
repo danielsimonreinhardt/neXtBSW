@@ -1,0 +1,65 @@
+# Module manifest (doc/architecture/README.md, section 5) of a module of the port (section 3, rule 2): tools/nxconfig
+# reads platforms/<family>/port/**/module.yaml (config.port_module_dirs), like safeSystem and safeMemory next to it.
+#
+# safeLifecycle is the safety task of the S32K1 family: SafetyManager runs every cycle of the task (period check,
+# watchdog service, memory, supply and I/O supervision), SafetySystem (ecu/application) schedules it. SYS-25: the
+# three times of the task are one project value each (project.yaml modules.safeLifecycle, project_parameters: true),
+# generated into integration/safeLifecycleConfiguration.h; before, they were code constants in three files
+# (SYSTEM_CYCLE_TIME in SafetySystem.cpp, SafetyManager::CYCLE_PERIOD_MS/CYCLE_LATENESS_MS/WATCHDOG_CYCLIC_COUNTER,
+# SafeWatchdog::WATCHDOG_TIMEOUT_MS). Derived by tools/nxconfig, never set: the watchdog service interval in cycles
+# (finding F2 of doc/safety/concept.md: three service opportunities before the time-out), since SYS-53 at the
+# fastest LPO of the data sheet (decision sys25-lpo), floor(watchdog_timeout_ms x 1000 / (3 x task_period_ms x
+# lpo_max_per_mille)), generated as NX_MODULE_SAFELIFECYCLE_DERIVED_WATCHDOG_SERVICE_CYCLES; and the LPO limits in
+# per mille of nominal from mcudb clock.lpo (NX_MODULE_SAFELIFECYCLE_DERIVED_LPO_MIN/MAX_PER_MILLE).
+# tools/nxconfig checks the time-out against the counter of the family watchdog and the conditions of the
+# static_asserts of the period check (SafetyManager.cpp) with the YAML path of the value (checks.py safety_timing).
+module: safeLifecycle
+kind: service
+description: Safety task of the S32K1 family - cycle of the safety supervision, MCU watchdog service and period check
+# Evidence (CHANGELOG.md): the safety task with watchdog service runs on the eval board since milestone 1 (no
+# watchdog reset in every board run, e.g. "Board-Termin 2026-09-18"); the period check (SYS-40) and values other
+# than the demo's (SYS-25) are covered by host tests only.
+verification: hardware
+verification_note: >-
+  The demo values (10 ms, 250 ms time-out, service every 8 cycles until SYS-53) run on the eval board without
+  watchdog reset; 7 cycles (SYS-53), other values and the period check are covered by host and generator tests.
+project_parameters: true
+parameters:
+  task_period_ms:
+    type: int
+    min: 1
+    max: 1000
+    default: 10
+    unit: ms
+    description: >-
+      period of the safety task (SafetySystem schedules it at this fixed rate). Every cycle runs the whole safety
+      supervision, so the period bounds how late a fault the task checks is seen; counters in cycles of other
+      safety modules (e.g. safeSystem.adc_read_error_limit) scale with it. The watchdog is serviced every
+      floor(watchdog_timeout_ms x 1000 / (3 x task_period_ms x lpo_max_per_mille)) cycles, derived by
+      tools/nxconfig at the fastest LPO of the data sheet (mcudb clock.lpo).
+  watchdog_timeout_ms:
+    type: int
+    min: 1
+    max: 65535
+    default: 250
+    unit: ms
+    description: >-
+      time-out of the MCU watchdog. It has to hold three service intervals of the safety task (at least 3 x
+      task_period_ms), so that a single late service does not reset the ECU. The family bounds it by its watchdog
+      counter: S32K1 WDOG at the nominal 128 kHz LPO, at most 511 ms (TOVAL 16 bit). The LPO tolerance of the data
+      sheet shortens the real time-out (at 139 kHz 230 ms for 250 ms); the service interval is derived for that
+      shortest time-out (SYS-53).
+  cycle_lateness_ms:
+    type: int
+    min: 0
+    max: 999
+    default: 2
+    unit: ms
+    description: >-
+      how late a cycle of the safety task may start against its nominal grid point without a period violation
+      (SAFETY_CYCLE_PERIOD_VIOLATION, SM-04): interrupt load, critical sections, one tick of the OS timer. Below
+      task_period_ms. The value is an assumption until the board measurement B4 of doc/safety/fmea.md confirms it.
+constraints:
+  - cycle_lateness_ms < task_period_ms
+lifecycle: { level: 1, task: safety }
+cmake_target: safeLifecycle

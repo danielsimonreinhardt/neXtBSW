@@ -1,0 +1,79 @@
+# Ablauf der CI (TOOL-03), anbieterneutral. Welche Tests und Target-Builds es gibt, steht allein in
+# tools/test/tests.yaml (TOOL-04); diese Datei legt nur fest, was die CI darueber hinaus entscheidet:
+# welche Uebersprungenen erlaubt sind, welche Bau-Profile bewusst nicht gebaut werden und welche Schritte
+# ausserhalb der CI liegen. Jede Ausnahme nennt ihren Grund - er erscheint im Bericht.
+
+schema = 1
+
+[run]
+# Gruppen fuer `python -m tools.ci run` (eine Laeufer-Sitzung, damit `after`/`needs_files` ueber Gruppen greifen)
+groups = ["all"]
+# Target-Builds von Null: nur so sagt "warnungsfrei" etwas ueber den ganzen Baum (tools/test --clean)
+clean = true
+
+# Tests, die in CI uebersprungen werden duerfen. Jeder andere uebersprungene Test ist mit --strict rot: sonst
+# koennte ein fehlendes Werkzeug (ziglang, cmake, ARM-GCC) die CI unbemerkt aushoehlen.
+[allowed_skips]
+# TOOL-97: die beiden MATLAB/Simulink-Modelltests. Sie sind slow und werden von `run` ohne --slow gar nicht erst
+# ausgewaehlt; mit --slow waeren sie auf einem Laeufer ohne MATLAB uebersprungen und mit --strict rot. Dass die CI
+# MATLAB nicht faehrt, ist unten unter [[outside]] entschieden - hier steht dieselbe Entscheidung noch einmal an
+# der Stelle, an der der Lauf sie braucht.
+swc-matlab-create = "MATLAB/Simulink laeuft nicht in der CI (siehe [[outside]]); der Test laeuft am Arbeitsplatz"
+swc-matlab-ports = "MATLAB/Simulink laeuft nicht in der CI (siehe [[outside]]); der Test laeuft am Arbeitsplatz"
+
+# Sichtbare CMake-Presets, die kein Target-Eintrag in tools/test/tests.yaml baut. Jedes andere sichtbare Profil
+# ohne Eintrag macht den Lauf rot ("Profil ohne CI-Entscheidung"). Presets fuer Agenten-Worktrees (erben von
+# einem der `worktree_bases`) und Aliasse desselben Projekts zaehlen nicht als eigenes Profil. Ein Profil ist das
+# Projekt (NX_PROJECT) zusammen mit den Cache-Variablen des Presets (PLAT-71): ein Preset mit eigener
+# Cache-Variablen (z. B. NX_ETHERNET, BUILD_TARGET_RTOS) ist ein eigenes Profil und braucht eine eigene
+# Entscheidung.
+[presets]
+worktree_bases = ["nx-worktree"]
+
+# Optionen offen halten (PLAT-56/PLAT-71, ARCH-30 F7): buildtest-s32k148-ethernet (NX_ETHERNET) und
+# buildtest-s32k148-threadx (BUILD_TARGET_RTOS=THREADX) sind eigene Profile auf dem Projekt buildtest_s32k148_min;
+# tools/test baut sie als target-buildtest-s32k148-ethernet bzw. target-buildtest-s32k148-threadx. Faellt einer der
+# Eintraege in tests.yaml weg, ist `check` rot.
+
+# Schritte ausserhalb der CI - werden in jedem Bericht als "uebersprungen" genannt, nie still weggelassen.
+[[outside]]
+name = "MATLAB/Simulink"
+reason = "Modellcode (tools/swc/swc_build.m) ist eingecheckt; CI baut und testet ihn, erzeugt ihn aber nicht neu. Die Modelltests selbst stehen seit TOOL-97 als Gruppe matlab in tools/test/tests.yaml (slow, requires: [matlab]) und laufen am Arbeitsplatz"
+
+[[outside]]
+name = "Hardware"
+reason = "kein Flashen, kein J-Link, kein CAN-Adapter, keine Konsole; Board-Tests laufen nur am Arbeitsplatz"
+
+[[outside]]
+name = "doc/confidential"
+reason = "NDA-Dokumente liegen nur lokal (.gitignore), CI braucht sie nicht"
+
+[[outside]]
+name = "Schluessel"
+reason = "BL-03-Schluessel liegen ausserhalb des Repositoriums; Host-Tests nutzen nur den unsicheren Testschluessel"
+
+# Testabdeckung der C/C++-Host-Tests (TOOL-40, Stufe 2 der funktionalen Sicherheit, SYS-19). Gemessen wird mit
+# tools/test/coverage.py; die Schwellen je Modul stehen in tools/test/coverage.yaml. Heute ist das ein Bericht:
+# `enforce = false` heisst, ein Modul unter seiner Schwelle ist eine Warnung, kein rotes Ergebnis. Erst wenn die
+# Schwellen abgenommen sind (Nutzer), wird `enforce = true` gesetzt. `strict` entscheidet ueber einen
+# fehlgeschlagenen Messlauf (Uebersetzen, Lauf, fehlendes gcov): heute Warnung, damit eine neue Messung die CI
+# nicht rot macht, waehrend die Tests selbst gruen sind.
+[coverage]
+enabled = true
+enforce = false
+strict = false
+
+# Statische Analyse (PLAT-74, Stufe 2 der funktionalen Sicherheit): cppcheck mit MISRA-Addon und clang-tidy ueber
+# den eigenen Code, gelesen aus der Compile-Datenbank des Target-Builds (relativ zur Bau-Wurzel, target-demo in
+# tools/test/tests.yaml). Regelwerk, Abweichungen und Baseline stehen in tools/misra. `enforce = true`: jeder Befund,
+# der weder in der Baseline noch in der Abweichungsliste steht, macht den Lauf rot. `strict_tools`: mit --strict ist
+# ein fehlendes Werkzeug rot (setup installiert beide in den Werkzeug-Cache), sonst "uebersprungen" - nie gruen.
+[static_analysis]
+enabled = true
+enforce = true
+strict_tools = true
+compile_db = "demo/compile_commands.json"
+
+[artifacts]
+# Aus den Bau-Verzeichnissen der cmake_preset-Eintraege gesammelt (relativ zum binary_dir)
+patterns = ["**/RelWithDebInfo/**/*.elf", "**/RelWithDebInfo/**/*.hex", "**/RelWithDebInfo/**/*.map"]

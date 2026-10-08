@@ -1,0 +1,22 @@
+# Second synthetic project on testboard_full (PLAT-62): the control pilot measurement PILOT_DUTY on FTM0 CH6/7 -
+# the timer MOT1 uses in testproject_full, so this project has no PWM group (one board, two projects). Own test
+# profile of the input capture host test (platforms/s32k1xx/port/bspConfiguration/src/bsp/capture/test/host) in
+# place of the private eval board charge project. Test data only, no hardware.
+schema_version: 1
+
+project:
+  name: testproject_full_charge
+  board: ../../boards/testboard_full
+
+clock:
+  system_hz: 80000000
+
+use:
+  dio: [LED1, LED2]
+  input_capture: [PILOT_DUTY]
+
+modules:
+  capture:
+    min_frequency_hz: 40
+    timeout_ms: 200
+    update_period_ms: 10

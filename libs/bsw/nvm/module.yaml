@@ -1,0 +1,16 @@
+# Module manifest (doc/architecture/README.md, section 5). The NvM takes no project parameters of its own through
+# this manifest: the blocks (name, platform type, length, integrity, place, write policy) are project.yaml
+# nvm.blocks, checked by tools/nxconfig/nvm.py, and the connections nvm.<Block> / nvm.qlf.<Block> of the ECU
+# description; tools/rtegen generates the block table (rte::NVM_BLOCKS) from both. The memory is OpenBSW's
+# eeprom::IEepromDriver of the platform port; the NvM mechanisms (CRC, copies, repair) are BSW, never the driver's.
+module: nvm
+kind: service
+description: NvM core - non-volatile blocks on a virtual EEPROM; QM blocks with one value and CRC-16, ASIL blocks with two copies (CRC-32, write counter, repair of a defective copy, events for the fault memory, quality for the application)
+# Evidence (CHANGELOG.md): NVM-02 (QM core, 2026-09-21), NVM-18 (ASIL copies, 2026-09-29), host tests
+# libs/bsw/nvm/test/test_nvm_core.py with deliberate faults; not yet on the board.
+verification: mock
+verification_note: >-
+  QM and ASIL format, repair, events, quality, power loss at every byte and the write order are covered by host
+  tests with deliberate faults; the application uses it since NVM-19. The board check (read/write, ASIL fault case
+  by "nvm inject" in a development build) is open.
+cmake_target: nvm

@@ -1,0 +1,41 @@
+{
+    "vendor": {
+        "nextbsw.org/workspace": {
+            "note": [
+                "<workspace>/CMakePresets.json - one visible preset per project of the customer repository.",
+                "Written once by the wizard (TOOL-59) and extended per project; checked in.",
+                "The base presets come from the pinned neXtBSW tree: include <tree>/cmake/NxPresets.json. There,",
+                "${sourceDir} is this workspace - build directory (build/<preset>) and .venv come from the",
+                "workspace, while the tree contributes toolchain file, compiler options and the build check.",
+                "Placeholders of the template: @NX_TREE@ = nextbsw.path (the tree), @NX_PRESET@ = preset name,",
+                "@NX_PROJECT_DIR@ = the project folder below projects/."
+            ]
+        }
+    },
+    "version": 6,
+    "cmakeMinimumRequired": {
+        "major": 3,
+        "minor": 28,
+        "patch": 3
+    },
+    "include": [
+        "@NX_TREE@/cmake/NxPresets.json"
+    ],
+    "configurePresets": [
+        {
+            "name": "@NX_PRESET@",
+            "inherits": "nx-arm-gcc",
+            "displayName": "@NX_PROJECT_DIR@",
+            "cacheVariables": {
+                "NX_PROJECT": "${sourceDir}/projects/@NX_PROJECT_DIR@/project.yaml"
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "@NX_PRESET@",
+            "configurePreset": "@NX_PRESET@",
+            "configuration": "RelWithDebInfo"
+        }
+    ]
+}

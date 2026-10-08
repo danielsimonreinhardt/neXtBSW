@@ -1,0 +1,17 @@
+# Synthetic s32k1xx board for the UART tests (ARCH-15): S32K144 LQFP64 with an 8 MHz crystal and **two** UARTs on
+# other LPUART instances than the eval board (which uses LPUART2). Test data only, no hardware.
+#
+# Board order decides which UART is the console (the first used one), so CONSOLE stands first on purpose and AUX
+# second - the generated configuration must name CONSOLE on LPUART1 as the console and keep AUX on LPUART0 as a
+# second entry with its own interrupt level.
+schema_version: 1
+
+board:
+  name: testboard_uart
+  mcu: S32K144
+  package: LQFP64
+  clock: { sosc_hz: 8000000 }
+
+uart:
+  - { name: CONSOLE, instance: LPUART1, rx: { pin: PTC8 }, tx: { pin: PTC9 } }  # [MUX] LPUART1_RX/TX (MUX 2)
+  - { name: AUX, instance: LPUART0, rx: { pin: PTB0 }, tx: { pin: PTB1 } }      # [MUX] LPUART0_RX/TX (MUX 2)

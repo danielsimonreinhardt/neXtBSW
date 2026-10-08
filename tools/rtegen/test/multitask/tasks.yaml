@@ -1,0 +1,15 @@
+# Test profile of the BSW tasks for the RTE-02 tests (not the ECU application's tasks.yaml): other names,
+# priorities and ISR groups, so the tests do not depend on ecu/asyncCoreConfiguration/tasks.yaml.
+schema_version: 1
+tick_us: 500
+max_priorities: 16
+min_stack_bytes: 256
+
+tasks:
+  - { name: comm, priority: 20 }
+  - { name: io, priority: 40 }
+  - { name: guard, priority: 90, above_application: true }
+
+application_default: { name: app, priority: 30, stack_bytes: 1024 }
+
+isr_groups: [timer, comm, adc]

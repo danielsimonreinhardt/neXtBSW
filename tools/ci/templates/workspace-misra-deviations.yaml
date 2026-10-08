@@ -1,0 +1,44 @@
+# Abweichungsliste der statischen Analyse fuer den eigenen Code dieses Workspace (Vorlage aus tools/ci, TOOL-217,
+# Luecke N19).
+#
+#   python -m tools.ci template misra-deviations --out <workspace>     schreibt diese Datei nach ci/misra/deviations.yaml
+#
+# Format wie <baum>/tools/misra/deviations.yaml, geprueft mit
+#
+#   python -m tools.misra check --workspace <workspace>
+#
+# Daneben liegen in ci/misra/:
+#   baseline.yaml   bekannte Befunde der Bestandsaufnahme, erzeugt mit
+#                   python -m tools.misra baseline --workspace <workspace>   (nicht von Hand erweitern)
+#   defects.yaml    optional: echte Fehler unter den Befunden, mit Aufgabe
+#   rules.yaml      optional: eigenes Regelwerk und eigener Neueinstufungsplan; ohne die Datei gilt das Regelwerk
+#                   des gepinnten Baums (<baum>/tools/misra/rules.yaml)
+#
+# Eigener Code sind nur Dateien dieses Workspace; der gepinnte Baum, die Bau-Wurzel und .venv werden mitgelesen,
+# aber nie bewertet. Ein Befund, der weder in der Baseline noch hier steht, macht den Lauf rot
+# (ci/pipeline.toml [static_analysis] enforce).
+#
+# Felder je Eintrag:
+#   id           DEV-nnn, wird nie wiederverwendet
+#   kind         deviation | false-positive
+#   rule         Regel-Kennung(en) des Werkzeugs (Muster mit * erlaubt)
+#   files        Dateien/Muster relativ zum Workspace (** ueber Verzeichnisse)
+#   pattern      regulaerer Ausdruck auf die Quellzeile des Befunds - und/oder
+#   symbol       Bezeichner, der in der Quellzeile oder der Meldung vorkommen muss
+#   limit        hoechstens so viele Treffer - weitere derselben Art sind neue Befunde
+#   reason       Begruendung (eigene Worte, keine Regeltexte)
+#   raised_by    Wer hat sie aufgestellt,  date: Wann (JJJJ-MM-TT)
+#   approved_by  Freigabe (leer = offen; der Lauf warnt, bricht aber nicht)
+#   task         Aufgabe
+version: 1
+deviations: []
+#  - id: DEV-001
+#    kind: deviation
+#    rule: misra-c2012-11.4
+#    files: [swc/MeinRegler/src/**]
+#    pattern: '\bPERIPH->'
+#    limit: 4
+#    reason: Registerzugriff ueber eine feste Adresse des Peripheriemoduls
+#    raised_by: Projektteam
+#    date: 2026-10-02
+#    approved_by: ""

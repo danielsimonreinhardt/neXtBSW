@@ -1,0 +1,73 @@
+# SPDX-License-Identifier: Apache-2.0
+# Template of a software component description (RTE-07). Copy this file to swc/<Swc>/swc.yaml (reusable
+# component) or projects/<project>/swc/<Swc>/swc.yaml (project component), set name = folder name, then:
+#
+#   python tools/swc/swc_yaml.py check swc/<Swc>                        checks, messages with YAML path and line
+#   matlab -batch "addpath tools/swc; swc_create('swc/<Swc>')"          creates <Swc>.slx once, then edit it
+#   matlab -batch "addpath tools/swc; swc_build('swc/<Swc>')"           generated/{src,arxml}
+#
+# Afterwards the .slx is the master; this file stays as the description the model was created from.
+# Hand-written C instead of a model (RTE-20): implementation: c, then no MATLAB at all -
+#
+#   python tools/swc/swc_skeleton.py create swc/<Swc>                   creates src/<Swc>.c once (never overwritten)
+#   python tools/swc/swc_skeleton.py check swc/<Swc>                    runnable functions of src/*.c vs. this file
+#
+# and this file stays the master: rtegen reads runnables, ports and parameters from it (swc/README.md, "C components").
+# Rules: swc/README.md (Modellregeln), schema: tools/swc/swc_yaml.py.
+version: 1
+name: NewSwc                    # C identifier, equals the folder name
+description: Template component
+implementation: simulink        # simulink (default): model + Embedded Coder; c: hand-written src/*.c
+runnables:                      # each becomes a function-call inport <Runnable> + the subsystem <Swc>_task<period>ms
+  - name: Run10ms               # (<Swc>_task<period>ms_<Runnable> when runnables share a period, TOOL-180);
+    period_ms: 10               # NewSwc_Init comes from the AUTOSAR mapping. Periods: whole ms, multiples of the
+                                # task period the runnable is assigned to in the ECU description (rte.yaml).
+                                # Any C identifier is a runnable name; the Studio proposes task<period>ms.
+  - name: Run100ms
+    period_ms: 100
+ports:                          # sender-receiver ports, port = interface = data element name
+  - name: Speed_rpm             # in: required port (root inport), read by one or more runnables
+    direction: in
+    type: uint16                # boolean, uint8/16/32, sint8/16/32, float32/64
+    runnables: [Run10ms]
+    # dimension: 8              # optional array port (RTE-25): a number or a name of <Swc>_init.m (swc/README.md)
+  - name: SpeedQlf             # signal qualifier of the source (e.g. hall.<Sensor>.qlf), QLF_* of Rte_Qlf.m
+    direction: in
+    type: uint8
+    runnables: [Run10ms]
+  - name: SpeedValidQlf         # out: provided port, written by exactly one runnable
+    direction: out
+    type: uint8
+    runnables: [Run10ms]
+  - name: Temperature_dC
+    direction: in
+    type: sint16
+    runnables: [Run100ms]
+  - name: Heating
+    direction: out
+    type: boolean
+    runnables: [Run100ms]
+# Calibration parameters (RTE-03, swc/README.md): elements of the ParameterReceiver port CalPrm, read in the model
+# with Rte_Prm_CalPrm_<name>(). Their VALUES stand only in <Swc>_data.m next to this file, e.g. HeatOn_dC = 50;
+# parameters:
+#   - name: HeatOn_dC             # threshold in 0.1 degC
+#     type: sint16                # platform type of the stored value
+#     runnables: [Run100ms]
+#   - name: Gain                  # fixed point: physical = stored * lsb + offset
+#     type: uint16
+#     lsb: 0.001
+#     runnables: [Run10ms]
+#   - name: Curve                 # row vector with 8 values
+#     type: uint16
+#     dim: 8
+#     runnables: [Run10ms]
+# Calibration objects (RTE-26, swc/README.md "Calibration objects"): kind value/array/curve/map/axis, unit,
+# min/max (physical), safety qm/asil_a/asil_b, description, value_table, axis (curve) / axes {x, y} (map):
+#   - name: HeatCurve_dC          # curve with own breakpoints HeatCurve_dC_X in <Swc>_data.m
+#     kind: curve
+#     type: sint16
+#     unit: 0.1 degC
+#     min: 0
+#     max: 900
+#     axis: {dim: 4, type: uint16, unit: rpm, min: 0, max: 6000}
+#     runnables: [Run100ms]

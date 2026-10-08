@@ -1,0 +1,91 @@
+# Testliste dieses Workspace (Vorlage aus tools/ci, TOOL-67).
+#
+#   python -m tools.ci template tests --out <workspace>     schreibt diese Datei nach ci/tests.yaml
+#
+# Format und Felder sind die des Baums (<baum>/tools/test/tests.yaml und tools/test/README.md): name, group, kind,
+# comment (Pflicht), covers, requires, needs_files, after, needs, env, timeout, slow, parallel.
+# Zusaetzliche Platzhalter im Workspace-Lauf:
+#
+#   {workspace}  dieses Repository        {tree}  der gepinnte neXtBSW-Baum (nur lesend)
+#   {build}      Bau-Wurzel des Laufs     {tmp}   eigenes Arbeitsverzeichnis je Test
+#   {python}     der laufende Interpreter ({repo} bleibt der Baum)
+#
+# Eintraege dieser Liste laufen mit diesem Ordner als Arbeitsverzeichnis. Der Baum wird nur gelesen.
+# Aufruf:  <baum>/.venv/Scripts/python <baum>/tools/test --workspace .
+
+version: 1
+
+groups: [python, host, target]
+
+# Werkzeuge, die Eintraege mit `requires` verlangen; fehlt eines, wird der Eintrag uebersprungen statt rot.
+tools:
+  ziglang:
+    kind: python_module
+    module: ziglang
+    hint: "in der .venv des Workspace (python -m tools.setup venv .)"
+  cmake:
+    kind: executable
+    name: cmake
+  ninja:
+    kind: executable
+    name: ninja
+  arm_gcc:
+    kind: arm_gcc
+    hint: "PATH oder NX_ARM_GCC_BIN"
+
+defaults:
+  zig:
+    driver: c++
+    std: c++17
+    flags: [-O1, -Wall, -Wextra, -Wconversion, -Wno-sign-conversion, -Werror]
+    requires: [ziglang]
+    timeout: 600
+
+# Vollstaendigkeitspruefung: eine Testdatei dieses Workspace, die auf ein Muster passt und in keinem `covers`
+# und in keiner `ignore`-Zeile steht, macht den Lauf rot. Die Testdateien des neXtBSW-Baums zaehlen nie mit.
+inventory:
+  patterns: ["test_*.py", "*HostTest.cpp", "*HostTest.c", "*_host_test.cpp", "*_sil_test.c"]
+  skip_dirs: [nextbsw, build, .venv, .git, __pycache__, node_modules, generated]
+  ignore: []
+
+# Weitere Eintraege des Baums, die dieser Workspace zusaetzlich laufen lassen will (Name wie in
+# <baum>/tools/test/tests.yaml). Der Baum bringt von sich aus nur die Eintraege mit, die seine eigene Mechanik
+# pruefen (Feld in_workspace); alles andere baut und prueft die Projekte und Boards des Baums.
+inherit: []
+
+tests:
+
+  # ----------------------------------------------------------------- Konfiguration und Generat des Workspace
+  - name: konfiguration
+    group: python
+    kind: command
+    comment: >
+      Die Projektbeschreibung dieses Workspace gegen das Konfigurationsmodell des gepinnten Baums: Bezuege
+      zwischen Projekt, Board und Derivat, Ressourcenkonflikte, Meldungen mit YAML-Pfad
+    argv: ["{python}", "{tree}/tools/nxconfig", check, "{workspace}/projects/MEIN_PROJEKT/project.yaml"]
+    covers: []
+
+  # ----------------------------------------------------------------- Target-Builds dieses Workspace
+  # Jedes sichtbare Preset der eigenen CMakePresets.json braucht hier einen Eintrag - oder einen Grund unter
+  # presets.not_built in ci/pipeline.toml; sonst ist `tools.ci run` rot ("Profil ohne CI-Entscheidung").
+  - name: target-main
+    group: target
+    kind: cmake_preset
+    comment: Target-Image dieses Workspace, warnungsfrei (-Werror); Build-Verzeichnis aus dem Workspace
+    preset: main
+    binary_dir: "{build}/main"
+    requires: [cmake, ninja, arm_gcc]
+    expect_files:
+      Anwendung: "**/app.ecu.elf"
+    parallel: false
+    timeout: 2400
+    covers: []
+
+  # ----------------------------------------------------------------- eigene Host-Tests (C-Komponenten, SIL)
+  # - name: mein-regler
+  #   group: host
+  #   kind: zig
+  #   comment: Host-Test des eigenen Reglers gegen erfundene Messwerte
+  #   sources: ["{workspace}/swc/MeinRegler/test/host/MeinReglerHostTest.cpp"]
+  #   include: ["{workspace}/swc/MeinRegler/src"]
+  #   covers: [swc/MeinRegler/test/host/MeinReglerHostTest.cpp]

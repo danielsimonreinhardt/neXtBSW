@@ -1,0 +1,20 @@
+# SPDX-License-Identifier: Apache-2.0
+# DemoSwc as swc.yaml (RTE-07 test data): swc_create with this file and DemoSwc_logic.m must give the same
+# generated code as swc/DemoSwc/DemoSwc_create.m + DemoSwc_autosar.m (SwcCreateTest).
+version: 1
+name: DemoSwc
+description: Board demo (Led1 follows Button1, Led2 blinks when PC_Command is valid, NTC low-pass)
+runnables:
+  - name: Run10ms
+    period_ms: 10
+  - name: Run100ms
+    period_ms: 100
+ports:
+  - { name: Button1, direction: in, type: boolean, runnables: [Run10ms] }
+  - { name: MotorNtc_mV, direction: in, type: uint32, runnables: [Run100ms] }
+  - { name: PcCommandQlf, direction: in, type: uint8, runnables: [Run10ms] }
+  - { name: Led1, direction: out, type: boolean, runnables: [Run10ms] }
+  - { name: Led2, direction: out, type: boolean, runnables: [Run10ms] }
+  - { name: MotorNtcFiltered_mV, direction: out, type: uint32, runnables: [Run100ms] }
+parameters:                       # RTE-03: value in DemoSwc_data.m (copy of swc/DemoSwc/DemoSwc_data.m)
+  - { name: FilterAlpha, type: float32, runnables: [Run100ms] }

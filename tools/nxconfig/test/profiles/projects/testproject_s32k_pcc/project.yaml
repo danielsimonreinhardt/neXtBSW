@@ -1,0 +1,50 @@
+# Synthetic project for the peripheral clock decision (ARCH-18) on testboard_s32k_8mhz (8 MHz crystal, 64 MHz
+# core from the PLL, 32 MHz bus). Same board as testproject_s32k_8mhz, but this project does not take the
+# defaults of the derivative: the console runs from the crystal instead of FIRC and the FTM of the PWM group
+# from FIRC instead of the PLL. Everything derived follows (UART divider, NX_CLOCK_* and the generated PCC
+# writes in bsp/clock/peripheralClocks.h), so the test sees whether a project decision reaches the generat.
+# Test data only.
+schema_version: 1
+
+project:
+  name: testproject_s32k_pcc
+  board: ../../boards/testboard_s32k_8mhz
+
+clock:
+  system_hz: 64000000
+
+# ARCH-18: the derivative (mcudb S32K144) offers SOSC, SIRC, FIRC and SPLL for these instances; which one is
+# used is the decision of this project. Without an entry the default of the derivative applies (LPUART1
+# FIRCDIV2 48 MHz, FTM1 SPLLDIV1 128 MHz, LPSPI0 FIRCDIV2).
+peripheral_clocks:
+  LPUART1: { select: SOSC, divider: 2 }           # console from the crystal: 8 MHz instead of 48 MHz
+  FTM1: { select: FIRC, divider: 1 }              # PCC clock of the PWM timer (the counter runs on SYS_CLK)
+  ADC0: { select: SOSC, divider: 2, note: "ADC from the crystal: 8 MHz, below the 50 MHz limit of the ADC" }
+
+# ARCH-42: the application uses VEH only. DIAG is on FlexCAN1, which has 16 message buffers on the S32K144
+# (S32K-RM Rev. 13 Table 55-1); the FlexCAN driver of OpenBSW needed 32, the family port's driver splits 16 since
+# COM-26 (test data unchanged).
+# DIAG keeps its bit rate: the clock model still calculates its timing (second bit rate, prescaler 2) for a
+# bootloader on DIAG (blgen --can DIAG), which runs on buffers 0..8.
+use:
+  can: [VEH]
+  uart: all
+  dio: all
+
+can:
+  VEH: { bitrate: 500000 }
+  DIAG: { bitrate: 250000, sample_point_percent: 75 }
+
+# ARCH-33: every used CAN bus needs an interrupt rank (nxconfig rejects the project otherwise).
+interrupts:
+  ranks:
+    - { source: can, name: VEH, rank: 3 }
+
+uart:
+  CONSOLE: { baudrate: 115200 }                   # 8 MHz / (16 x 4) = 125000 Bd would be 8.5 % off: OSR 5 x 14
+
+pwm:
+  FAN: { frequency_hz: 25000, deadtime_ns: 2000, deadtime_margin_ns: 100 }
+
+adc_internal:
+  - { name: BANDGAP, instance: ADC0, channel: BANDGAP }

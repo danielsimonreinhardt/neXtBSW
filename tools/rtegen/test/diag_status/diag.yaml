@@ -1,0 +1,61 @@
+# Diagnostic description of the COM-45 RTE tests: status values of the basic software for the diagnosis only
+# (`source: {bsw: bsw.rte.*|bsw.calibration.*}`, tools/rtegen BSW_STATUS), read by the rte::diag functions through
+# the readers of the integration (bswstatus::rte, ecu/application RteSystem.cpp). Served with the ECU description
+# test/diag/rte.yaml (synthetic components of test/multitask) and the project buildtest_s32k148_min - not the eval
+# board. The first identifiers and the routine are those of test/diag/diag.yaml, because that ECU description connects
+# them.
+schema_version: 1
+
+data_identifiers:
+  - identifier: 0x0300
+    name: MotorSpeed
+    data:
+      - name: speed
+        type: uint16
+        source: {port: MotorSwc.Speed.Speed}
+  - identifier: 0x0301
+    name: MotorSetpoint
+    write: true
+    data:
+      - name: setpoint
+        type: uint16
+        source: {port: AppSwc.Setpoint.Setpoint}
+
+  # deadline violations of the RTE: whole and clamped to 16 bit - one reading for both
+  - identifier: 0x0400
+    name: RteStatus
+    data:
+      - {name: violations, type: uint32, source: {bsw: bsw.rte.deadline_violations}}
+      - {name: violations16, type: uint16, source: {bsw: bsw.rte.deadline_violations}}
+
+  # identity of the calibration segment and the result of its checks
+  - identifier: 0x0401
+    name: CalibrationState
+    data:
+      - {name: layout, type: uint32, source: {bsw: bsw.calibration.layout}}
+      - {name: dataset, type: uint32, source: {bsw: bsw.calibration.dataset}}
+      - {name: status, type: uint8, source: {bsw: bsw.calibration.status}}
+
+  # a port and a status value in one identifier: the status outside the RTE lock, the port under it
+  - identifier: 0x0402
+    name: MotorAndRte
+    data:
+      - {name: speed, type: uint16, source: {port: MotorSwc.Speed.Speed}}
+      - {name: violations, type: uint32, source: {bsw: bsw.rte.deadline_violations}}
+
+routines:
+  - identifier: 0x0500
+    name: SpinUp
+    start:
+      call: {runnable: MotorSwc.Run1ms}
+      request:
+        - name: enable
+          type: uint8
+          values:
+            - {value: 0, text: disabled}
+            - {value: 1, text: enabled}
+    results:
+      call: {runnable: AppSwc.Run10ms}
+      response:
+        - name: speed
+          type: int32

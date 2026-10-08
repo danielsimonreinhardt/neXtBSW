@@ -1,0 +1,45 @@
+# ECU-Beschreibung nur für den Host-Test des ereignisgesteuerten Sendens (COM-38, tools/rtegen/test_rtegen.py:
+# RteEventHostTest). Sie nutzt die eingecheckte DemoSwc-Komponente und die Testmatrix event.dbc:
+#   TxEvtP01   GenMsgSendType Spontaneous, Mindestabstand 30 ms, E2E-Profil P01
+#   TxMixP02   CyclicAndSpontaneous, Zyklus 50 ms, Mindestabstand 20 ms, E2E-Profil P02
+#   TxEvtPlain Spontaneous ohne Mindestabstand, ohne E2E
+#   TxCyc      zyklisch 20 ms (Standardwert von GenMsgSendType) - Verhalten wie vor COM-38
+#
+# Pfade sind wie in einem Projekt relativ zu dieser Datei (RTE-22, schema_version: 2).
+
+schema_version: 2
+
+tasks:
+  - name: swc
+    period_ms: 10
+    priority: 30
+    stack_bytes: 2048
+    runnables: [DemoSwc.Run10ms, DemoSwc.Run100ms]
+
+components:
+  - name: DemoSwc
+    path: ../../../../swc/DemoSwc
+
+can:
+  dbc: event.dbc
+  node: EVB
+  bus: CAN0
+  task: swc
+  qualifiers:
+    TxEvtP01:
+      e2e: { profile: P01, data_id: 0x0321, data_id_mode: BOTH, crc: Crc, counter: Counter }
+    TxMixP02:
+      e2e:
+        profile: P02
+        data_id_list: [0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28,
+                       0x29, 0x2A, 0x2B, 0x2C, 0x2D, 0x2E, 0x2F, 0x30]
+        crc: Crc
+        counter: Counter
+
+connections:
+  DemoSwc.MotorNtcFiltered_mV.MotorNtcFiltered_mV: can.tx.TxEvtP01.Value
+  DemoSwc.Led1.Led1: [can.tx.TxMixP02.Flag, can.tx.TxCyc.Flag]
+  DemoSwc.Led2.Led2: can.tx.TxEvtPlain.Flag
+  DemoSwc.Button1.Button1: rte.init
+  DemoSwc.MotorNtc_mV.MotorNtc_mV: rte.init
+  DemoSwc.PcCommandQlf.PcCommandQlf: rte.init

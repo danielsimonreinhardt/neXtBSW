@@ -1,0 +1,50 @@
+# ECU description of the RTE-20 test profile: a hand-written C component (LevelMonSwc, swc.yaml implementation: c)
+# next to a Simulink component (DemoSwc, ARXML of Embedded Coder) in one ECU, on the build test project
+# buildtest_s32k148_min (no SBC, two CAN buses). Component paths are relative to this file (RTE-22).
+#
+#   fast (10 ms, key 25): DemoSwc.Run10ms, LevelMonSwc.Run10ms, LevelMonSwc.Run100ms (offset 50 ms) - both runnables
+#                         of LevelMonSwc in one task, they share the state of the component
+#   slow (100 ms, key 35): DemoSwc.Run100ms
+#
+# Connections in both directions between the two kinds: LevelMonSwc reads the filtered level of DemoSwc (written in
+# slow, read in fast: copy at the task boundary), DemoSwc reads the qualifier of LevelMonSwc as its PcCommandQlf
+# (Led2 blinks while the level is plausible). The C component also drives a board output (LED2).
+# Used by: tools/rtegen/test_rtegen_c_swc.py (checks, reference output, host test), rtegen-reference (profile
+# test_c_swc) and the target build tools/rtegen/test/c_swc/target_build.py.
+
+schema_version: 2
+
+tasks:
+  - name: fast
+    period_ms: 10
+    priority: 25
+    stack_bytes: 2048
+    runnables:
+      - DemoSwc.Run10ms
+      - LevelMonSwc.Run10ms
+      - { runnable: LevelMonSwc.Run100ms, offset_ms: 50 }
+  - name: slow
+    period_ms: 100
+    priority: 35
+    stack_bytes: 1024
+    runnables: [DemoSwc.Run100ms]
+
+components:
+  - name: DemoSwc
+    path: ../../../../swc/DemoSwc
+  - name: LevelMonSwc
+    path: LevelMonSwc
+
+connections:
+  DemoSwc.Button1.Button1: dio.in.BUTTON1
+  DemoSwc.MotorNtc_mV.MotorNtc_mV: adc.mv.POTI
+  DemoSwc.Led1.Led1: dio.out.LED1
+  DemoSwc.Led2.Led2: rte
+  DemoSwc.MotorNtcFiltered_mV.MotorNtcFiltered_mV: rte
+  DemoSwc.PcCommandQlf.PcCommandQlf: LevelMonSwc.LevelQlf.LevelQlf
+  LevelMonSwc.Level_mV.Level_mV: DemoSwc.MotorNtcFiltered_mV.MotorNtcFiltered_mV
+  LevelMonSwc.Above.Above: dio.out.LED2
+  LevelMonSwc.Filtered_mV.Filtered_mV: rte
+  LevelMonSwc.LevelQlf.LevelQlf: rte
+  LevelMonSwc.Crossings.Crossings: rte
+  LevelMonSwc.Scaled.Scaled: rte

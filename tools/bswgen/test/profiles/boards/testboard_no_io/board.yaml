@@ -1,0 +1,46 @@
+# Synthetic s32k1xx board for the project without any I/O channel (PLAT-94): S32K144 LQFP100 with an 8 MHz crystal
+# that offers one of each I/O kind bswgen generates as a table - a digital input and output, an ADC channel, a
+# complementary PWM pair and an input capture channel - and a console. The project testproject_no_io uses none of
+# them, so every table is generated empty. Test data only, no hardware; the pins are S32K144 LQFP100 functions.
+schema_version: 1
+
+board:
+  name: testboard_no_io
+  mcu: S32K144
+  package: LQFP100
+  clock: { sosc_hz: 8000000 }
+  adc_reference_mv: 5000
+
+uart:
+  - { name: CONSOLE, instance: LPUART1, rx: { pin: PTC8 }, tx: { pin: PTC9 } }
+
+adc:
+  - { name: SUPPLY, instance: ADC0, channel: SE12, pin: PTC14, scale: { divider: { r_top: 47000, r_bottom: 4700 } } }
+
+pwm:
+  - name: BRIDGE
+    instance: FTM1
+    mode: complementary
+    active: { high_side: high, low_side: high }
+    pairs:
+      - { name: BRIDGE_A, high_side: BRIDGE_A_HS, low_side: BRIDGE_A_LS }
+    channels:
+      - { name: BRIDGE_A_HS, channel: 0, pin: PTB2 }
+      - { name: BRIDGE_A_LS, channel: 1, pin: PTB3 }
+    # synthetic power stage (numbers of testboard_adc_sampling), only so that the board passes the dead time check
+    power_stage:
+      switch: { turn_on_delay_ns: 8, rise_time_ns: 12, turn_off_delay_ns: 30, fall_time_ns: 10,
+                test_gate_resistance_mohm: 4700, internal_gate_resistance_mohm: 1000, gate_charge_nc: 30,
+                r_ds_on_mohm: 5, r_ds_on_hot_mohm: 8, source: "synthetic test stage PLAT-94" }
+      driver: { turn_on_delay_ns: 40, turn_off_delay_ns: 55, source: "synthetic test stage PLAT-94" }
+      gate: { turn_on_resistance_mohm: 4700, turn_off_resistance_mohm: 2200, source: "synthetic test stage PLAT-94" }
+      short_circuit: { vds_threshold_mv: 500, blanking_ns: 200, source: "synthetic test stage PLAT-94" }
+
+input_capture:
+  - { name: SPEED_IN, instance: FTM2, channel: 4, pin: PTE10 }
+
+dio:
+  inputs:
+    - { name: KEY, pin: PTA6, active: low }
+  outputs:
+    - { name: LAMP, pin: PTD16 }

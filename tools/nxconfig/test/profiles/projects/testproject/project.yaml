@@ -1,0 +1,35 @@
+# Synthetic project for tests: uses the bridge PWM, so the speed capture on TIM1 stays unused.
+schema_version: 1
+
+project:
+  name: testproject
+  board: ../../boards/testboard
+
+clock:
+  system_hz: 48000000
+
+use:
+  spi: all
+  can: [VEH, DIAG]
+  uart: all
+  adc: [VBAT]
+  input_capture: [RC_IN, RC_IN2]
+  dio: all
+
+can:
+  VEH: { bitrate: 500000, sample_point_percent: 80 }
+  DIAG: { bitrate: 250000 }
+
+uart:
+  CONSOLE: { baudrate: 921600 }
+
+pwm:
+  BRIDGE: { frequency_hz: 16000, deadtime_ns: 500, deadtime_margin_ns: 100 }
+
+adc_internal:
+  - { name: VREFINT, instance: ADC1, channel: VREFINT }
+
+safety:
+  safe_state_output: LED_RED
+  locked_pin: LED_GREEN
+  test_pin: PC14

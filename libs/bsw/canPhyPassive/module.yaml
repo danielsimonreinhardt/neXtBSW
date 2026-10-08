@@ -1,0 +1,19 @@
+# Module manifest (doc/architecture/README.md, section 5). Read by tools/bswgen (modules.py).
+# Also the role provider of CAN buses whose transceiver part has no module (bswgen warns then).
+module: canPhyPassive
+kind: device_driver
+description: CAN transceiver without software control (mode pins strapped by the board), always ready
+# Evidence (CHANGELOG.md): no board test yet - the D-CAN of the eval board (DIAG_PHY, CAN1) waits for the
+# COM-26 board checklist; ARCH-09 and the generator tests use it on buildtest_s32k148.
+verification: mock
+verification_note: >-
+  Covered by generator and target build tests only (build profile S32K148, D-CAN of the eval board); no bus
+  through a passive transceiver has been checked on a board yet.
+# Only parts whose mode pin the board may strap to normal operation. A board that drives STB/S/EN from a pin
+# needs a transceiver module with that pin instead.
+parts:
+  - SN65HVD1050*
+  - TJA1051*
+provides:
+  - can_phy
+cmake_target: canPhyPassive

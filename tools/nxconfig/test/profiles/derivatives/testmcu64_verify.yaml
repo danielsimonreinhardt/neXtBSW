@@ -1,0 +1,25 @@
+# ARCH-37: `verify: true` laid over the synthetic derivative TESTMCU64 (tools/nxconfig/test/mcudb/testfam) for the
+# profiles testboard/testproject and testboard/testproject_bootloader. Test data only, no real chip.
+#
+#   entry                used by testproject because ...                           expected
+#   clock.oscillator     board crystal 8 MHz is checked against 4..26 MHz          warning
+#   clock (max_hz)       system clock 48 MHz is checked against the core maximum   warning
+#   instances.ADC1       adc VBAT and adc_internal VREFINT are on ADC1             warning
+#   instances.USART3     no board entry, nothing uses it                           none
+#   memory[0] FLASH      testproject has no memory section                         none (warning with testproject_bootloader)
+#   mpu                  region count of the generated board header                warning
+#
+# The overlay replaces or adds these keys; everything else stays as in TESTMCU64.yaml.
+clock:
+  oscillator: { min_hz: 4000000, max_hz: 26000000, verify: true, source: "synthetic, as if the data sheet were missing" }
+  max_hz: { core: 64000000 }
+  verify: true
+instances:
+  ADC1: { class: adc, resolution_bits: 12, channel_pattern: "IN([0-9]|1[0-8])", internal_channels: [VREFINT, TEMP],
+          verify: true }
+  USART3: { class: uart, verify: true }
+memory:
+  - { name: FLASH, kind: code_flash, start: 0x08000000, size: 0x00040000, sector_size: 0x2000, program_size: 8,
+      verify: true }
+  - { name: RAM, kind: ram, start: 0x20000000, size: 0x00010000 }
+mpu: { regions: 8, verify: true }

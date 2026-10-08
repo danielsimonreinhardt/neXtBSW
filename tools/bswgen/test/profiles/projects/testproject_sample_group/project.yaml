@@ -1,0 +1,25 @@
+# Synthetic project for the hardware trigger chain (IO-62) on testboard_sample_group: bridge BRIDGE (FTM3) center
+# aligned at 20 kHz from the 80 MHz system clock, trigger in the middle of the zero vector with all low sides on
+# (turning point of the up-down counter, match of the free channel 6 -> FTM3_EXT_TRIG). Sample group MOT_SAMPLE:
+# the three phase currents and the DC link voltage 500 ns after the trigger point (40 clocks of the 80 MHz PDB clock,
+# plus 2 start clocks: first sample 525 ns), U current and DC link on ADC0 (PDB0), V and W on ADC1 (PDB1), 1709 ns per
+# conversion (converter defaults of bspAdcAccess) plus 2 clocks between two conversions. No channel of either ADC is
+# converted in software (the ADCs of a group are exclusive). Test data only, no hardware.
+schema_version: 1
+
+project:
+  name: testproject_sample_group
+  board: ../../boards/testboard_sample_group
+
+clock:
+  system_hz: 80000000
+
+pwm:
+  BRIDGE: { frequency_hz: 20000, deadtime_ns: 500, alignment: center, trigger: { point: zero_low } }
+
+sample_groups:
+  MOT_SAMPLE: { pwm: BRIDGE, channels: [PHASE_I_U, PHASE_I_V, PHASE_I_W, DC_LINK_U], delay_ns: 500 }
+
+interrupts:
+  ranks:
+    - { source: sample_group, name: MOT_SAMPLE, rank: 0 }

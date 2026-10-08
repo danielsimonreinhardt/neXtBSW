@@ -1,0 +1,22 @@
+# Synthetic project for the hardware threshold (SYS-86) on testboard_hw_threshold: the DC link current above 40 A
+# switches the bridge BRIDGE (FTM3) off without software, on the supply reference (ratiometric with the amplifier's
+# reference). Expected: 4100 mV at the pin, DAC level 208 of 256 (5000 mV * 209 / 256 = 4082.0 mV = 39.55 A, the
+# safe side of 40 A), fault input 0 of FTM3, filter 200 ns = 13 clocks of the 64 MHz timer clock. Test data only.
+schema_version: 1
+
+project:
+  name: testproject_hw_threshold
+  board: ../../boards/testboard_hw_threshold
+
+clock:
+  system_hz: 64000000
+
+use:
+  adc: all
+
+pwm:
+  BRIDGE: { frequency_hz: 20000, deadtime_ns: 500 }
+
+hw_thresholds:
+  DC_OVERCURRENT: { input: DC_LINK_I_CMP, trip: above, threshold: 40000, reference: supply, pwm: BRIDGE,
+                    filter_ns: 200 }

@@ -1,0 +1,497 @@
+# SPDX-License-Identifier: Apache-2.0
+#
+# Kopien aus Eclipse OpenBSW in neXtBSW (TOOL-21, Vorschlag V4 in doc/architecture/openbsw-naehe.md).
+# Prüfung: python -m tools.openbswsync check   Bericht: python -m tools.openbswsync report [--format markdown]
+#
+# Jede Wurzel ordnet ein Verzeichnis dieses Repositorys (path) einem Verzeichnis des Submoduls zu (original,
+# relativ zu openbsw.path). Die Schlüssel unter files sind relativ zur Wurzel, damit ein Umzug (PLAT-54) nur path
+# ändert.
+#
+#   status: identical  Kopie gleich dem Original (CRLF normalisiert)
+#   status: modified   bewusst geändert; task (Aufgaben-ID aus doc/todo.yaml oder "Meilenstein <n>") und reason Pflicht
+#   status: new        ohne Original; Schlüssel darf ein Muster sein (* ? **), task/reason freiwillig
+#   upstream           Hash des Originals (SHA-256, 16 Stellen, CRLF normalisiert) beim letzten Abgleich.
+#                      Ändert ein Submodul-Update das Original, wird der Test rot, bis die Änderung geprüft bzw.
+#                      nachgezogen und mit "python -m tools.openbswsync accept <pfad>" eingetragen ist.
+#
+# Dateien mit Original, aber ohne Eintrag, sind Fehler; neue Dateien ohne Eintrag nur Warnungen (Begründung im
+# Changelog TOOL-21: eine neue Datei kann nicht von OpenBSW abweichen, und parallel arbeitende Agenten legen laufend
+# neue Dateien an).
+version: 1
+openbsw:
+  path: external/openbsw
+  commit: 3b6e70210034b243dfc26d8d8c253f3be5ee382d
+roots:
+  - name: ecu
+    path: ecu
+    original: executables/referenceApp
+    files:
+      # --- identische Kopien
+      "application/include/app/DemoLogger.h": {status: identical, upstream: 432e896838b032d8}
+      "application/include/app/app.h": {status: identical, upstream: 2aafeb1468da2709}
+      "application/include/console/console.h": {status: identical, upstream: 887650e4f2130327}
+      "application/include/systems/RuntimeSystem.h":
+        status: modified
+        task: [PLAT-106]
+        reason: "PLAT-106: Konsolenbefehl und zugehoerige Member nur mit NX_CONSOLE (console.enabled), damit Projekte ohne Konsole keinen Befehlscode linken"
+        upstream: a6c01636ebc89e5f
+      "application/include/systems/SafetySystem.h":
+        status: modified
+        task: [SYS-74]
+        reason: "Produkt-Build (NX_PRODUCT_BUILD) ohne Konsolenbefehl safety - die Includes von AsyncCommandWrapper und SafetyCommand stehen nur im Entwicklungsbuild"
+        upstream: e12176c0703082be
+      "application/include/systems/SysAdminSystem.h":
+        status: modified
+        task: [PLAT-106]
+        reason: "PLAT-106: Konsolenbefehl und zugehoerige Member nur mit NX_CONSOLE (console.enabled), damit Projekte ohne Konsole keinen Befehlscode linken"
+        upstream: c02aef4c20105bcb
+      "application/src/console/console.cpp":
+        status: modified
+        task: [SYS-15]
+        reason: "InterleavedConsoleInput (libs/bsw/consoleContext) statt StdioConsoleInput und consoleOutputInterleave() fuer den Logger - Eingabezeile wird um die Logausgabe neu gezeichnet, damit das Echo keine Logzeilen zerschneidet; nur hier wird das Konsolenobjekt angelegt"
+        upstream: 1e73c5ffeabd19d9
+      "application/src/main.cpp": {status: modified, upstream: 7f58a6f03828874a, task: [SYS-98], reason: "ETL-Assert-Handler safety::etlAssertFailed (S1 + S2 des SafeSupervisor, Ereignis ETL_ASSERT) statt etl_assert_function mit etl::print (Befund STK-3, CX-3)"}
+      "application/src/systems/RuntimeSystem.cpp":
+        status: modified
+        task: [PLAT-106]
+        reason: "PLAT-106: Konsolenbefehl und zugehoerige Member nur mit NX_CONSOLE (console.enabled), damit Projekte ohne Konsole keinen Befehlscode linken"
+        upstream: 695b3982be98e820
+      "application/src/systems/SafetySystem.cpp": {status: modified, upstream: f1df2528a8b9397d, task: [SYS-25], reason: "Periode der Safety-Task aus dem Generat (modules.safeLifecycle.task_period_ms) statt Konstante 10; static_assert gegen SafetyManager::CYCLE_PERIOD_MS"}
+      "asyncBinding/CMakeLists.txt": {status: identical, upstream: 0cb3fe6880d5d4d9}
+      "asyncBinding/include/async/AsyncBinding.h": {status: identical, upstream: 2cc7dc8f7d7d3dff}
+      "configuration/include/app/appConfig.h": {status: modified, upstream: ac4c7599935a9fc0, task: [PLAT-26], reason: "Stack der Safety-Task aus dem Generat (tasks/BswTasks.h, project.yaml bsw_tasks, Vorgabe ecu/configuration/taskStacks.yaml) statt fester 2048U"}
+      "configuration/include/blob/ConfigType.h": {status: identical, upstream: 26e7c532aa7726fc}
+      "configuration/include/blob/configuration.h": {status: identical, upstream: f2ab1d9a4b24324b}
+      "configuration/include/routing/channelId.h": {status: identical, upstream: e1d1c2c0a655ba94}
+      "configuration/include/routing/constants.h": {status: identical, upstream: dbd8d2e3cd277e2b}
+      "configuration/include/systems/ICanSystem.h": {status: identical, upstream: fc6edba7b0a65900}
+      "configuration/include/systems/IEthernetDriverSystem.h": {status: identical, upstream: 7293054612ba18e8}
+      "consoleCommands/include/lifecycle/console/LifecycleControlCommand.h": {status: identical, upstream: a0ddbdd1c15ede65}
+      "consoleCommands/include/lifecycle/console/StatisticsCommand.h": {status: identical, upstream: e652ae8fb6f8b0eb}
+      "consoleCommands/include/safety/console/SafetyCommand.h": {status: identical, upstream: f0aa46debd6a9d7e}
+      "consoleCommands/src/lifecycle/console/StatisticsCommand.cpp": {status: identical, upstream: 6aff832a66db88b5}
+      "etl_profile/etl_profile.h": {status: identical, upstream: 0dd6a6d6ce2dee34}
+      "safety/CMakeLists.txt": {status: identical, upstream: f120094b45cf3370}
+      "safety/safeSupervisor/CMakeLists.txt":
+        status: modified
+        task: [SYS-23, SYS-37]
+        reason: "Host-Test des SafeSupervisor mit eigenen Stubs (test/host) eingehaengt; SYS-37: bspInterrupts PUBLIC fuer das Ereignis-Postfach"
+        upstream: be5dcd923f56a2dd
+      "safety/safeSupervisor/test/**": {status: new, task: [SYS-23, SYS-37], reason: "Host-Test der Reaktionen des SafeSupervisor mit eigenen Stubs; SYS-37: MPU-Host-Test und statische Regel safety-context"}
+      "safety/safeSupervisor/include/safeSupervisor/SafetyEventMailbox.h": {status: new, task: [SYS-37], reason: "Ereignis-Postfach: Meldung aus Nicht-Safety-Kontext ohne Schreibzugriff auf den MPU-geschuetzten Speicher"}
+      "safety/safeSupervisor/include/safeSupervisor/SafeSupervisor.h":
+        status: modified
+        task: [SYS-05, SYS-23, SYS-37]
+        reason: "Ereignis RTE_TIMING_VIOLATION und sein Monitor fuer die RTE-Laufzeitueberwachung; Upstream-Kandidat (openbsw-naehe.md E8). SYS-23: holdSafeState() fuer Fehler, die ein Reset nicht behebt. SYS-37: rteTimingMonitor als DeferredTriggerMonitor, deliverDeferredEvents()"
+        upstream: 1799eb58f1856532
+      "safety/safeSupervisor/include/safeSupervisor/utils/explicitly_constructible.h": {status: identical, upstream: 5ba759b5dc0d469a}
+      "safety/safeWatchdog/CMakeLists.txt": {status: modified, upstream: 4665ae3d0d27edeb, task: [SYS-41, SYS-40], reason: "linkt safeSupervisionCheck der Familie fuer die vollstaendige Konfigurationspruefung des Watchdogs (Befund F12 der FMEA)"}
+      "safety/safeWatchdog/include/safeWatchdog/SafeWatchdog.h":
+        status: modified
+        task: [SYS-23, SYS-25]
+        reason: "WATCHDOG_TIMEOUT_MS aus dem Generat (modules.safeLifecycle.watchdog_timeout_ms, Demo unveraendert 250 ms); nxconfig prueft die Watchdog-Zeitbeziehung"
+        upstream: adebab4f49d51b0e
+      "safety/safeWatchdog/src/safeWatchdog/SafeWatchdog.cpp": {status: modified, upstream: f429182ba587940b, task: [SYS-41], reason: "prueft zusaetzlich CS[INT], CS[WIN], CS[PRES] und CS[UPDATE] ueber checkWatchdogControl() der Familie, abweichende Felder im Kontext (Befund F12); Upstream-Kandidat"}
+      # --- bewusst geänderte Kopien
+      "CMakeLists.txt":
+        status: modified
+        task: [PLAT-23, PLAT-56]
+        reason: "Familienvorlage NX_FAMILY_PORT_DIR plus optionaler Board-Port statt platforms/${OPENBSW_TARGET}; RTOS-Weiche nach BUILD_TARGET_RTOS wie im Original (PLAT-56); middleware-, uds- und transportConfiguration nicht eingebunden, lwipConfiguration nur mit NX_ETHERNET (openbsw-naehe.md E2)"
+        upstream: a6859e47af9fc0ea
+      "application/CMakeLists.txt":
+        status: modified
+        task: ["Meilenstein 1", RTE-02, SYS-44, PLAT-27]
+        reason: "Ziel app.ecu statt app.referenceApp mit Endung .elf; EcuStateSystem/RteSystem statt DemoSystem; Transport, UDS-Demo, Ethernet, SOME/IP, DoIP und Rust nicht übernommen (openbsw-naehe.md E2, E5); SYS-44: app.ecu als Verbraucher von NX_ROM_CHECK_IMAGE, linkt safeMemory/romCheckFlashWrites wenn die Familie eine ROM-Pruefung hat; PLAT-27: console.cpp und NX_CONSOLE nur mit Konsole/Logger des Projekts (project.yaml console.enabled)"
+        upstream: 1cb658ef114599d1
+      "application/src/app/app.cpp":
+        status: modified
+        task: [RTE-02, SYS-08, SYS-44, SYS-91, PLAT-27]
+        reason: "RTE- und ECU-Zustand (EcuStateSystem, RteSystem, generierte RteTasks.h/EcuStateConfig.h), DiagSystem aus ecu/uds statt UdsSystem/DoCanSystem/TransportSystem, Rolle power_supply der Integration; Ethernet/Tracer/Demo entfernt (openbsw-naehe.md E5, E6); SYS-44: Idle-Handler ruft RomCheck::idle() wie die OpenBSW-Referenz (nur mit NX_ROM_CHECK_IMAGE); SYS-91: registriert die Nachpruefung des Kalibriersegments als Bereich mit eigener Referenz; PLAT-27: Logger, Konsole und Befehle version/info nur mit NX_CONSOLE"
+        upstream: e86eeef5c425f26d
+      "application/include/logger/logger.h":
+        status: modified
+        task: [SYS-12]
+        reason: "logger::lostEntries(): Zahl der Logzeilen, die der Ringpuffer vor der Ausgabe verworfen hat (Kommando logger lost, Verlustzeile)"
+        upstream: 130875ad93fc10ee
+      "application/src/logger/logger.cpp":
+        status: modified
+        task: [SYS-12, PLAT-27]
+        reason: "LossReportingLoggerComposition statt logger::LoggerComposition (gleiche Teile plus Meldung verlorener Einträge), Konsolenkommando logger lost; PLAT-27: ohne NX_CONSOLE nur die Logger-Komponenten (kein Puffer, kein Logger::init)"
+        upstream: 7efbe01c3b5b9781
+      "application/src/systems/SysAdminSystem.cpp":
+        status: modified
+        task: [SYS-13, PLAT-106]
+        reason: "PLAT-106: nur mit NX_CONSOLE. Kommando lc läuft im Konsolenkontext über den Stellvertreter LifecycleConsole.h; nur der Stufenwechsel wird im Task des Lifecycle-Managers ausgeführt (vorher lief das ganze Kommando dort, über Task can, und hielt beide an der UART)"
+        upstream: 724f732e179c7d39
+      "asyncCoreConfiguration/CMakeLists.txt":
+        status: modified
+        task: [RTE-02]
+        reason: "async/Config.h wird von tools/rtegen aus tasks.yaml und den Tasks der ECU-Beschreibung erzeugt (openbsw-naehe.md E4)"
+        upstream: 0e59ccf1e92cc796
+      "configuration/CMakeLists.txt":
+        status: modified
+        task: [ARCH-07]
+        reason: "Include-Pfad des Board-Generats für busid/busIdConfiguration.h (openbsw-naehe.md E3)"
+        upstream: f92214fdbf093168
+      "configuration/common/src/busid/BusId.cpp":
+        status: modified
+        task: [ARCH-07]
+        reason: "Busnamen aus der generierten CAN-Busliste statt fest CAN_0 (openbsw-naehe.md E3)"
+        upstream: 622819c21d813aed
+      "configuration/include/busid/BusId.h":
+        status: modified
+        task: [ARCH-07]
+        reason: "Bus-IDs je genutztem CAN-Bus generiert, Alias CAN_0 für OpenBSW-Module, CAN_BUS_COUNT (openbsw-naehe.md E3)"
+        upstream: 6e40067258679874
+      "consoleCommands/CMakeLists.txt":
+        status: modified
+        task: ["Meilenstein 2"]
+        reason: "CanCommand entfernt, SafetyCommand fest mit safeIo/bspIo, Include-Pfad bootloader/include für lc bootloader (openbsw-naehe.md E7)"
+        upstream: d118b95cac5e5c6e
+      "consoleCommands/src/lifecycle/console/LifecycleControlCommand.cpp":
+        status: modified
+        task: ["Meilenstein 2"]
+        reason: "Kommando 'lc bootloader': Boot-Anforderung setzen und Software-Reset in den CAN-Bootloader (openbsw-naehe.md E7)"
+        upstream: 240f7197124dede5
+      "consoleCommands/src/safety/console/SafetyCommand.cpp":
+        status: modified
+        task: [ARCH-05]
+        reason: "Rollen-Pin SAFETY_LOCKED_PIN mit Funktion GPIO statt Board-LED EVAL_LED_GREEN mit ALT2 (Board-Neutralität, openbsw-naehe.md T4)"
+        upstream: 02967694f6be727e
+      "safety/safeSupervisor/src/safeSupervisor/SafeSupervisor.cpp":
+        status: modified
+        task: [IO-16, SYS-05, SYS-23, SYS-37, SYS-39, SYS-40, SYS-41, SYS-29, SYS-52, SYS-59, SYS-117]
+        reason: "Kontext des ADC-Referenz- und Versorgungsmonitors im Log (Wert außerhalb / keine Messung), Ereignis RTE_TIMING_VIOLATION (SYS-05), Safe State halten ohne Reset bei Watchdog-Selbsttest- und ROM-Fehler (SYS-23), Postfach-Auslieferung und Kontexte CONTEXT_LOST/CORRUPTED (SYS-37), Meldezeile des Halts synchron über safeConsoleWrite() statt printf (SYS-39), Ereignis DEADMAN_CONFIGURATION_ERROR (SYS-41), synchrone Zeile SAFETY RESET vor dem Reset einer Periodenverletzung (SYS-52), seit SYS-59 vor jedem S1+S2-Reset mit begrenztem Leeren des Konsolensenders; Upstream-Kandidat (openbsw-naehe.md E8)"
+        upstream: 972b8d07e10ebb89
+      # --- neu in neXtBSW (kein Original); Muster decken künftige Dateien desselben Zwecks ab
+      "application/include/systems/EcuStateSystem.h": {status: new, task: [RTE-02], reason: "ECU-Zustandsverwaltung (openbsw-naehe.md E5)"}
+      "application/src/systems/EcuStateSystem.cpp": {status: new, task: [RTE-02], reason: "ECU-Zustandsverwaltung (openbsw-naehe.md E5)"}
+      "application/include/systems/RteSystem.h": {status: new, task: [RTE-02], reason: "RTE-Anbindung der Simulink-Komponenten (E5)"}
+      "application/src/systems/RteSystem.cpp": {status: new, task: [RTE-02], reason: "RTE-Anbindung der Simulink-Komponenten (E5)"}
+      "application/src/logger/EntryLoss.h": {status: new, task: [SYS-12], reason: "Zählung und Meldung verlorener Logzeilen"}
+      "application/src/logger/LossReporting*.h": {status: new, task: [SYS-12], reason: "Logger-Komposition und Ausgabe mit Verlustmeldung statt logger::LoggerComposition"}
+      "application/src/logger/test/**": {status: new, task: [SYS-12], reason: "Host-Test der Verlustmeldung"}
+      "application/src/systems/test/**": {status: new, task: [SYS-05], reason: "Host-Test der RTE-Laufzeitueberwachung mit eigenen Stubs"}
+      "application/src/systems/*Console.h": {status: new, task: [SYS-13], reason: "Konsolenausgaben von ecu, lc und rte im Konsolenkontext, Schnappschuss im Besitzer-Task"}
+      "xcp/**": {status: new, task: [TOOL-01, TOOL-26], reason: "XCP-Slave auf CAN (kein Gegenstück in OpenBSW)"}
+      "application/src/logger/InterleavedEntryOutput.h": {status: new, reason: "Logger-Ausgabe mit verschraenkten Eintraegen"}
+      "application/src/systems/nvm/**": {status: new, task: [NVM-02], reason: "NvM-Kern und RTE-Bloecke (speicherneutral ueber IEepromDriver)"}
+      "application/src/systems/dem/**": {status: new, task: [NVM-03], reason: "Anbindung des Fehlerspeichers an RTE und Konsole"}
+      "consoleCommands/test/**": {status: new, task: [SYS-13], reason: "statische Pruefung des Konsolenkontexts"}
+      "safety/safeSupervisor/include/safeSupervisor/DeviceReport.h": {status: new, task: [SYS-29], reason: "Kontextwort der Geraetemeldungen (Bus, Instanz, Fehlerklasse, Detail)"}
+      "safety/safeSupervisor/include/safeSupervisor/DeviceReportBox.h": {status: new, task: [SYS-29], reason: "Postfach je Treiberpaket fuer Meldungen ohne abschaltende Reaktion"}
+      "safety/safeSupervisor/src/safeSupervisor/DeviceReportRte.cpp": {status: new, task: [SYS-29], reason: "Busurteil des Supervisors fuer den Qualifier der Geraetewerte in der RTE"}
+      "safety/safeSupervisor/include/safeSupervisor/SafeConsole.h": {status: new, task: [SYS-39, SYS-59], reason: "Vertrag der synchronen Meldezeile des gehaltenen Safe State (safeConsoleWrite) und des begrenzten Leerens des Senders (safeConsoleFlush, SYS-59), je Familie umgesetzt"}
+      "safety/safeWatchdog/test/**": {status: new, task: [SYS-41], reason: "Host-Test der Watchdog-Konfigurationspruefung mit eigenen Stubs"}
+      "safety/safeWatchdog/include/safeWatchdog/CyclePeriodCheck.h": {status: new, task: [SYS-40], reason: "hardwareunabhaengige Periodenpruefung des Safety-Tasks (Befund F9)"}
+      "safety/safeWatchdog/src/safeWatchdog/CyclePeriodCheck.cpp": {status: new, task: [SYS-40], reason: "hardwareunabhaengige Periodenpruefung des Safety-Tasks (Befund F9)"}
+      "asyncCoreConfiguration/tasks.yaml": {status: new, task: [RTE-02], reason: "BSW-Tasks als Eingabe von tools/rtegen (E4)"}
+      "platforms/README.md": {status: new, task: [PLAT-23], reason: "Beschreibung der Board-Ports"}
+      "platforms/*/Options.cmake": {status: new, task: [PLAT-23], reason: "Funktionsschalter je Board wie OpenBSW (openbsw-naehe.md E9)"}
+      "rte/**": {status: new, reason: "generierte RTE der Anwendung (Meilenstein 4)"}
+      "uds/**": {status: new, reason: "eigene UDS- und Transport-Integration statt UdsSystem/DoCanSystem/TransportSystem (Welle 2, openbsw-naehe.md E6)"}
+
+  # PLAT-54 verschiebt die Familienvorlage nach ecu/platforms/s32k1xx: dann nur path anpassen, die Einträge
+  # bleiben (verschachtelte Wurzeln gehören der Wurzel mit dem längsten Pfad).
+  - name: port-s32k1xx
+    path: platforms/s32k1xx/port
+    original: executables/referenceApp/platforms/s32k148evb
+    files:
+      # --- identische Kopien
+      "bspConfiguration/include/bsp/charInputOutput/CharIOSerialCfg.h": {status: identical, upstream: 13a8301b988c35ff}
+      "main/src/os/isr/isr_erm.cpp": {status: modified, upstream: d3274eabe820fe14, task: [SYS-98], reason: "S1 + S2 ueber SafeSupervisor::reportEccError statt printf und Endlosschleife (Befund STK-4)"}
+      "main/src/os/isr/isr_ftfc.cpp": {status: modified, upstream: befe6758bfb46c28, task: [SYS-98], reason: "S1 + S2 ueber SafeSupervisor::reportEccError statt printf und Endlosschleife (Befund STK-4)"}
+      "main/src/osHooks/freertos/osHooks.cpp":
+        status: modified
+        task: [SYS-80]
+        reason: "vApplicationStackOverflowHook meldet den Ueberlauf an den SafeSupervisor (nxKernelStackOverflow) statt nur zu halten: Stackueberlauf fuehrt in den sicheren Zustand S1+S2 mit Konsolenzeile und Reset"
+        upstream: 713bc4cf90a62770
+      "mcuResetReason/**": {status: new, reason: "Startgrund aus dem RCM der Familie (SM-50)"}
+      "safety/safeSupervisionCheck/**": {status: new, task: [SYS-41], reason: "Konfigurationspruefung von Watchdog und Totmann der Familie (Befund F12)"}
+      "safety/safeSystem/doc/**": {status: new, task: [SYS-41], reason: "Beschreibung des safeSystem-Moduls"}
+      "safety/safeIo/CMakeLists.txt":
+        status: modified
+        task: [SYS-06, SYS-24]
+        reason: "safeIo haengt an nxHardFaultHandler: der Safe State arbeitet dieselbe Tabelle der safe outputs ab wie die Fault-Handler (openbsw-naehe.md T4); SYS-24: Bibliothek nxSafeIoRegisterList mit der generierten Registerliste im Flash (Linker verbietet .rodata in *libsafe*)"
+        upstream: f8ed60693a79608b
+      "safety/safeIo/include/safeIo/SafeIo.h": {status: identical, upstream: 18c7d2a8f91a8f44}
+      "safety/safeIo/include/safeIo/SafeState.h":
+        status: modified
+        task: [SYS-06, SYS-36]
+        reason: "Safe State sind die Leistungsausgaenge des Projekts (safe outputs), der konfigurierte Pin ist nur noch Anzeige (openbsw-naehe.md T4). SYS-36: S1 wird per Sperr-Merker gehalten, leaveSafeState gibt die Leistungsausgaenge nicht frei"
+        upstream: b7a701c4b202cd4d
+      "safety/safeLifecycle/include/safeLifecycle/IsrHooks.h": {status: identical, upstream: 39012332bd56e84e}
+      "safety/safeLifecycle/include/safeLifecycle/SafetyManager.h": {status: modified, upstream: b5a92914b29bbc14, task: [SYS-41, SYS-40, SYS-25], reason: "checkSupervisionPeripherals() fuer die Totmann-Konfigurationspruefung im Safety-Task, sechs Pruefpunkte der Ablaufueberwachung (SM-04); SYS-25: CYCLE_PERIOD_MS, CYCLE_LATENESS_MS und WATCHDOG_CYCLIC_COUNTER aus integration/safeLifecycleConfiguration.h (Zyklenzahl abgeleitet)"}
+      "safety/safeLifecycle/src/safeLifecycle/IsrHooks.cpp": {status: identical, upstream: 07242b3505380b8a}
+      "safety/safeMemory/include/safeMemory/IntegrityEccHandler.h": {status: modified, upstream: 94d79ec3eaa38a3f, task: [SYS-41], reason: "takeEccErrors() liest ERM_SR0 und FERSTAT[DFDIF] und loescht genau die gelesenen Flags vor der Meldung, Zaehler der Einzelbit-Korrekturen (Befund F11)"}
+      "safety/safeMemory/include/safeMemory/MemoryLocations.h": {status: modified, upstream: 460219196cf255cc, task: [SYS-97], reason: "Linker-Symbole __StackGuardStart/__StackGuardEnd des Schutzbereichs unter dem Interrupt-Stack"}
+      "safety/safeMemory/include/safeMemory/MemoryProtection.h": {status: modified, upstream: 0f3b0e298e585b6a, task: [SYS-97], reason: "initWithStackGuard() und Deskriptor STACK_GUARD_REGION fuer den Schutzbereich unter dem MSP (Befund STK-2)"}
+      "safety/safeMemory/include/safeMemory/ProtectedRamScopedUnlock.h": {status: identical, upstream: 4d6fb231a9408249}
+      "safety/safeMemory/include/safeMemory/SafeMemory.h": {status: identical, upstream: 635259e6dfe4e3f4}
+      "safety/safeMemory/include/safeMemory/SafetyShell.h": {status: identical, upstream: 962db03b493f61dd}
+      "safety/safeSystem/CMakeLists.txt": {status: identical, upstream: 5786e3cd7ed1b7f5}
+      # --- bewusst geänderte Kopien
+      "CMakeLists.txt":
+        status: modified
+        task: [PLAT-23, PLAT-71]
+        reason: "Familienvorlage ohne Board- und Derivatwerte; ethConfiguration nicht eingebunden; FreeRTOS-Port nach Kernarchitektur, bei THREADX threadXCoreConfiguration des Originals unverändert eingebunden und nur für armv7m (openbsw-naehe.md T1, T13)"
+        upstream: 3f890c9a0c7065a3
+      "bspConfiguration/CMakeLists.txt":
+        status: modified
+        task: [PLAT-24, PLAT-25, IO-03, IO-07, COM-26, PLAT-85]
+        reason: "Include-Pfad des Board-Generats, Capture/Hall/ADC-Zugriff, SBC- und LPSPI-Ziele nach genutzten Modulen und SPI-Bussen; Ethernet, EEPROM und FTM-PWM der Referenz entfernt; Übersetzungseinheit und Header von bspFlexCan durch die Kopie in bspConfiguration/bspFlexCan ersetzt (openbsw-naehe.md T9); PLAT-85: bindet platforms/s32k1xx/bsp/bspClock ein (Taktreiber mit Zeitgrenze ersetzt die Übersetzungseinheit von bspClock)"
+        upstream: 9704ff54d3037a1f
+      "bspConfiguration/include/bsp/adc/AnalogInput.h":
+        status: modified
+        task: [IO-19, PLAT-12]
+        reason: "ADC-Register (Teiler, Abtastzeit, Auflösung, Mittelung) aus dem Projekt; zweiter Wandler nur, wenn das Derivat ihn hat (openbsw-naehe.md T9)"
+        upstream: 8c3221ea8ce6c3e6
+      "bspConfiguration/include/bsp/adc/AnalogInputScale.h":
+        status: modified
+        task: [IO-16]
+        reason: "lineare Skalierung aus AnalogInputScaleLinear.h eingebunden (openbsw-naehe.md T9)"
+        upstream: f2811786fc7fca81
+      "bspConfiguration/include/bsp/uart/UartConfig.h":
+        status: modified
+        task: [ARCH-15]
+        reason: "UART-Kennungen aus Board und Projekt generiert, Konsole über NX_UART_CONSOLE (openbsw-naehe.md T9)"
+        upstream: 88046611d7039062
+      "bspConfiguration/src/bsp/SystemTimer/SystemTimer.cpp":
+        status: modified
+        task: [ARCH-13, ARCH-14, PLAT-12, PLAT-67]
+        reason: "Frequenzen aus dem Taktplan, DWT-Divisionsrest behalten (-166 ppm am Board), Taktumschaltung ohne Zeitverlust, LPIT0 auf ARMv6-M; PLAT-67: DWT nach Trennen des Debuggers (DEMCR.TRCENA geloescht) neu starten; Upstream-Kandidat (openbsw-naehe.md T8)"
+        upstream: bafe2c04e36acfbc
+      "bspConfiguration/src/bsp/adc/AnalogInput.cpp":
+        status: modified
+        task: [IO-14, IO-19, ARCH-26]
+        reason: "serialisierter ADC-Zugriff (bspAdcAccess) mit Sperrstrategie aus dem Projekt, Konsole adc (openbsw-naehe.md T9)"
+        upstream: 343231f6976d9970
+      "bspConfiguration/src/bsp/stdIo/stdIo.cpp":
+        status: modified
+        task: [IO-17]
+        reason: "LPUART-Empfang mit FIFO und RX-Interrupt (UartRxBuffer) statt Polling (openbsw-naehe.md T9)"
+        upstream: 724f7b52edbca0ca
+      "bspConfiguration/src/bsp/uart/UartConfig.cpp":
+        status: modified
+        task: [ARCH-15, ARCH-13, PLAT-21, SYS-170]
+        reason: "jede genutzte Board-UART mit Instanz, Pins, Baudraten-Register, RX-Interrupt und NVIC-Stufe generiert (openbsw-naehe.md T9); SYS-170: Kommentare auf die generierte Vektortabelle (Safe_<handler>) nachgezogen"
+        upstream: 002b7fb64fda4d03
+      "freeRtosCoreConfiguration/CMakeLists.txt":
+        status: modified
+        task: [ARCH-13, PLAT-12]
+        reason: "Board-Generat und nxInterruptPriority für Takt und Interrupt-Grenzen (openbsw-naehe.md T10)"
+        upstream: 3ebc1b86de7fb6d5
+      "freeRtosCoreConfiguration/include/os/FreeRtosPlatformConfig.h":
+        status: modified
+        task: [ARCH-13, PLAT-12, PLAT-21]
+        reason: "configCPU_CLOCK_HZ/configBUS_CLOCK_HZ aus dem Taktplan, Interrupt-Grenzen aus den generierten Prioritäten statt für 4 NVIC-Bits (openbsw-naehe.md T10)"
+        upstream: d9dad88622e33dc3
+      "main/CMakeLists.txt":
+        status: modified
+        task: [PLAT-20, PLAT-21, PLAT-12, PLAT-45, COM-08, PLAT-71, PLAT-85, SYS-170]
+        reason: "SYS-170: Startup mit NX_STARTUP_SAFE_ISR (jeder Vektor ueber seinen SAFE_ISR-Wrapper); eigener Hard-Fault-Handler, Prioritäten als Rang, Startup je Kernarchitektur, generierte Integration und Module, newlib-Syscalls, isr_can.cpp in startUp und Include des RTE-Generats für den Empfangsfilter; ThreadX-Zweig bindet tx_initialize_low_level.S, tx_execution_initialize.c und osHooks/threadx des Originals unverändert ein (openbsw-naehe.md T11, T13, T14); PLAT-85: Startmeldung der Taktpruefung (platforms/common/clockCheck) gelinkt"
+        upstream: a5732d66e35f2093
+      "main/include/lifecycle/StaticBsp.h":
+        status: modified
+        task: [ARCH-17, ARCH-07]
+        reason: "komplementäre PWM nur mit PWM-Gruppe, CAN-Transceiver/EEPROM/FTM der Referenz entfernt (openbsw-naehe.md T11)"
+        upstream: 5099c8a7ec12ae86
+      "main/include/systems/BspSystem.h":
+        status: modified
+        task: [IO-14, PLAT-20]
+        reason: "Konsolenkommandos adc und optional Hard-Fault-Test (openbsw-naehe.md T11)"
+        upstream: e67cc64941d3df2e
+      "main/include/systems/CanSystem.h":
+        status: modified
+        task: [ARCH-07, COM-12, PLAT-12, COM-23]
+        reason: "mehrere CAN-Busse mit generierten Vektoren, BusStateTransceiver (FLTCONF-Fehler in FlexCANDevice::getBusOffState), Sendefreigabe über can_phy, ereignisgesteuert per CanPhyReadiness (openbsw-naehe.md T7)"
+        upstream: 891904ecd6d8f31a
+      "main/linkerscript/application.dld.in":
+        status: modified
+        task: [ARCH-08, BL-05, PLAT-20, PLAT-12, SYS-38, SYS-97]
+        reason: "Speicher aus Derivat und Projekt, Dump-Region, Boot-Header für den Bootloader, beliebig viele RAM-Regionen (openbsw-naehe.md T12); SYS-38: Pruefsummenliste mit fuenf Bereichen direkt hinter dem Abbild statt Region CrcMeta, ASSERT"
+        upstream: 1b8bd0ba09a450ac
+      "main/linkerscript/hot-files.inc":
+        status: modified
+        task: ["Meilenstein 1"]
+        reason: "nur app.cpp.obj heiß; die Referenz nennt Transport-, DoCAN-, DoIP-, UDS- und Ethernet-Objekte, die neXtBSW nicht baut (openbsw-naehe.md T12)"
+        upstream: a8b82a46d1f7994c
+      "main/src/bsp/bootHeader.S":
+        status: modified
+        task: [PLAT-12]
+        reason: "ohne .arch armv7-m, damit auch für ARMv6-M übersetzbar (openbsw-naehe.md T12)"
+        upstream: 4d00b4083d30076e
+      "main/src/bsp/startUp.S":
+        status: modified
+        task: [BL-05, PLAT-20, ARCH-15, SYS-170]
+        reason: "SYS-170: externe Vektoren aus der generierten startup/nxIrqVectors.inc, jeder ueber Safe_<handler> (SAFE_ISR, MPU-Tor zu waehrend der ISR), SysTick ueber Safe_SysTick_Handler, schwache Stubs entfernt; .FlashConfig bei 0x400 (Upstream-Kandidat), Dump-Vorbereitung (openbsw-naehe.md T12)"
+        upstream: a0f3e6fd7b1d3df7
+      "main/src/lifecycle/StaticBsp.cpp":
+        status: modified
+        task: [ARCH-05, ARCH-17, PLAT-67]
+        reason: "generierte Integration statt fester UART/EEPROM/PHY/FTM-Konfiguration des S32K148EVB (openbsw-naehe.md T11); PLAT-67: Warnzeile, wenn die Systemzeit nach Trennen des Debuggers neu gestartet wurde"
+        upstream: 99d49346f3d9a957
+      "main/src/main.cpp":
+        status: modified
+        task: [ARCH-18, PLAT-21, PLAT-20, PLAT-71, SYS-37, PLAT-85, SYS-84, SYS-97]
+        reason: "SYS-84: die Zeile main(RCM::SRS ...) nennt den Reset-Status des Starts (rcm::printStartLine(), Erfassung vor main()) statt RCM_SRS nach dem Watchdog-Schnelltest; PLAT-85: Taktpruefung nxClockCheckReport() nach staticBsp.init() und der RCM::SRS-Zeile; SYS-37: Definition der Ereignis-Postfaecher im allgemeinen .bss; PCC-Takte der genutzten Peripherie generiert, Prioritäten als Rang, LMEM nur mit Feature, Dump-Vorbereitung; Ethernet entfernt; FreeRTOS-Prüfungen nur mit SUPPORT_FREERTOS, mit SUPPORT_THREADX Prüfung von SysTick-Takt und BASEPRI-Grenze (openbsw-naehe.md T11, T13)"
+        upstream: 32b6f0c754e0520d
+      "main/src/os/isr/isr_can.cpp":
+        status: modified
+        task: [COM-08, ARCH-07, PLAT-12]
+        reason: "Handler aus den generierten Message-Buffer-Vektoren aller genutzten Busse statt zwei festen CAN0-Vektoren, call_can_isr_RX/TX mit dem Geraet (FlexCAN-Instanz) als Parameter (openbsw-naehe.md T5, T7)"
+        upstream: c4adfc669310dacb
+      "main/src/os/isr/isr_sys.cpp":
+        status: modified
+        task: [PLAT-20, SYS-98, SYS-97]
+        reason: "HardFault_Handler naked ohne printf vor dem Sprung (printf zerstört EXC_RETURN und verschiebt MSP); Upstream-Kandidat (openbsw-naehe.md T6); SYS-98: kein checkEccErrors/Logger im Hard-Fault-Pfad; SYS-97: HardFault_Handler_Final naked mit MSP-Pruefung (Ueberlauf in den Schutzbereich), C-Teil nxHardFaultFinal, Fuellmuster und Wasserstand des MSP"
+        upstream: f067e1b6082b809e
+      "main/src/os/isr/isr_wdg.cpp":
+        status: modified
+        task: [IO-32]
+        reason: "Tabelle der sicheren Ausgänge des Projekts (nxSafeOutputs, Prüfung zur Übersetzungszeit); Watchdog-Vektor naked direkt in customHardFaultHandler ohne SafePreIsrHook davor, damit LR noch EXC_RETURN hält (Dump am Board 2026-09-18)"
+        upstream: db05924e33199e76
+      "main/src/systems/BspSystem.cpp":
+        status: modified
+        task: [IO-14, PLAT-20]
+        reason: "Konsolenkommandos adc und optional Hard-Fault-Test (openbsw-naehe.md T11)"
+        upstream: 2b79934950cf41e3
+      "main/src/systems/CanSystem.cpp":
+        status: modified
+        task: [ARCH-07, COM-12, PLAT-12, COM-08, COM-26, COM-23, COM-35]
+        reason: "mehrere CAN-Busse, generierte Vektoren und Prioritäten, Busstatus aus FLTCONF, Sendefreigabe über can_phy, Empfangsfilter aus dem Generat mit Pufferaufteilung je Bus, ISR-Rümpfe als call_can_isr_RX/TX für os/isr/isr_can.cpp (openbsw-naehe.md T7); COM-35: Bus-off-Wiederanlauf gehalten mit wachsender Pause, Logdrosselung, Verwerfen haengender Sendepuffer"
+        upstream: 6c1b529402bd466d
+      "safety/CMakeLists.txt":
+        status: modified
+        task: [IO-19]
+        reason: "Konsolengruppe safeadc (adcSafetyConsole) außerhalb der Safety-Region (openbsw-naehe.md T5)"
+        upstream: a78ffef521439d66
+      "safety/safeIo/src/safeIo/SafeIo.cpp":
+        status: modified
+        task: [ARCH-05, SYS-42, SYS-24]
+        reason: "Rollen-Pin SAFETY_LOCKED_PIN mit GPIO statt EVAL_LED_GREEN mit ALT2 (openbsw-naehe.md T4); Ruecklesen nach dem Sperren prueft auch PCR[LK] (SYS-42, Luecke in SM-21); SYS-24: Sperre und zyklische Pruefung ueber die generierte Registerliste (PCR, PDDR/PIDR, PCC CGC, FTM) statt eines Demo-Pins"
+        upstream: 75eb1f7baf814109
+      "safety/safeIo/src/safeIo/SafeState.cpp":
+        status: modified
+        task: [ARCH-05, SYS-06, SYS-36]
+        reason: "Rollen-Pin SAFETY_SAFE_STATE_PIN statt EVAL_LED_RED (openbsw-naehe.md T4). SYS-36: enterSafeState setzt vor der Tabelle der safe outputs den Sperr-Merker von S1"
+        upstream: 9dabfa55fd47a3dd
+      "safety/safeLifecycle/CMakeLists.txt":
+        status: modified
+        task: [IO-19, COM-08]
+        reason: "adcSafetyConsole gelinkt, bspFlexCan oeffentlich fuer die generierten CAN-Vektoren in IsrWrapper.h (openbsw-naehe.md T5)"
+        upstream: dc7afa6aaa76804b
+      "safety/safeLifecycle/include/safeLifecycle/IsrWrapper.h":
+        status: modified
+        task: [ARCH-07, COM-08, SYS-170]
+        reason: "CAN-Wrapper aus den generierten Message-Buffer-Vektoren aller genutzten Busse statt zwei festen CAN0-Wrappern (openbsw-naehe.md T5); SYS-170: Deklarationen fuer jeden Vektor der generierten Liste interrupts/nxSafeIsrVectors.h, SysTick und den Halt-Totmann"
+        upstream: def6992832285581
+      "safety/safeLifecycle/src/safeLifecycle/IsrWrapper.cpp":
+        status: modified
+        task: [ARCH-07, COM-08, SYS-170]
+        reason: "CAN-Wrapper aus den generierten Message-Buffer-Vektoren aller genutzten Busse statt zwei festen CAN0-Wrappern (openbsw-naehe.md T5); SYS-170 (SYS69-S1): SAFE_ISR fuer jeden Nicht-Safety-Vektor des Derivats und SysTick mit schwachen DefaultISR-Defaults, Halt-Totmann ohne Hook"
+        upstream: 272d85e0353efd05
+      "safety/safeLifecycle/src/safeLifecycle/SafetyManager.cpp":
+        status: modified
+        task: [IO-19, SYS-37, SYS-25]
+        reason: "registerAdcSafetyConsole() und getSafeSystem() (openbsw-naehe.md T5); SYS-37: Postfaecher und safeadc-Anforderung im Safety-Task ausliefern; SYS-25: static_assert der Watchdog-Beziehung auf den Generatwerten"
+        upstream: 004954ac9594e168
+      "safety/safeMemory/CMakeLists.txt":
+        status: modified
+        task: [SYS-38, SYS-44]
+        reason: "ROM-Pruefung nur mit NX_ROM_CHECK_IMAGE uebersetzt (Referenz vom Post-Link-Schritt geschrieben), Werkzeug romCheckImage.py; SYS-44: Bibliothek romCheckFlashWrites (Schreibanzeiger im ungeschuetzten RAM), bsp fuer die Systemzeit"
+        upstream: df7eddfb70f3144b
+      "safety/safeMemory/include/safeMemory/RomCheck.h":
+        status: modified
+        task: [SYS-38, SYS-44, SYS-91]
+        reason: "Ergebnis ROMCHECK_INVALID_LIST, Plausibilitaet der Pruefsummenliste; SYS-44: Wiederholperiode, Ergebnisse ROMCHECK_UNIT_FAILED/ROMCHECK_OVERDUE, Zaehler; SYS-91: Bereich mit eigener Referenz (OwnArea, setOwnAreaCheck, ROMCHECK_OWN_AREA_FAILED)"
+        upstream: 270d9ec75f74bb4c
+      "safety/safeMemory/src/safeMemory/RomCheck.cpp":
+        status: modified
+        task: [SYS-38, SYS-44, SYS-91]
+        reason: "Liste vor dem ersten Lesezugriff pruefen (Anzahl, Laenge, Ausrichtung, Grenzen), unplausible Liste meldet ROM_CHECK_FAILURE; Upstream-Kandidat; SYS-44: Selbsttest der CRC-Einheit, Periode aus dem Modulparameter, Aussetzen/Verwerfen bei Flash-Schreibvorgaengen, Frist; SYS-91: Pruefung des Bereichs mit eigener Referenz (Kalibriersegment) im selben Durchlauf"
+        upstream: e47e5b3722651be4
+      "safety/safeMemory/include/safeMemory/mpu.h":
+        status: modified
+        task: [ARCH-16, "Meilenstein 1"]
+        reason: "Regionenzahl aus mcudb statt 16, isGlobalEnabled nur VLD statt == 0x201, slot < SMPU_ENTRYS statt <= (BusFault bei RGD[8]); Upstream-Kandidat (openbsw-naehe.md T2)"
+        upstream: e8ba38da2aae2728
+      "safety/safeMemory/src/safeMemory/IntegrityEccHandler.cpp":
+        status: modified
+        task: [PLAT-12]
+        reason: "ERM-Kanäle je Derivat (S32K11x nur ein Kanal) (openbsw-naehe.md T2)"
+        upstream: e1a2d275ba12d996
+      "safety/safeMemory/src/safeMemory/MemoryProtection.cpp":
+        status: modified
+        task: [ARCH-16, SYS-97]
+        reason: "Regionenzahl des Derivats statt fest 16 (openbsw-naehe.md T2); SYS-97: Schutzbereich unter dem MSP aus der Vollzugriffsregion geschnitten (nur lesbar fuer den Kern), eigene Deskriptoren 6/7, Pruefung in areRegionsConfiguredCorrectly"
+        upstream: a91275920a50cfd4
+      "safety/safeMemory/src/safeMemory/SafeMemory.cpp":
+        status: modified
+        task: [ARCH-16, "Meilenstein 1"]
+        reason: "MPU gilt als aktiv mit VLD und Regionenzahl des Derivats (MPU_NOT_ENABLED am S32K144) (openbsw-naehe.md T2)"
+        upstream: 9faa354683c69d50
+      "safety/safeSystem/include/safeSystem/SafeSystem.h":
+        status: modified
+        task: [IO-16, IO-19]
+        reason: "ADC-Diagnosezähler und Projektparameter des Moduls (openbsw-naehe.md T3)"
+        upstream: 9eb494e1f92e526f
+      "safety/safeSystem/src/safeSystem/SafeSystem.cpp":
+        status: modified
+        task: [IO-16, ARCH-32, "Meilenstein 1"]
+        reason: "Sollwert der ADC-Referenz aus der Konfiguration statt fest 4 800-5 200 mV: Nennwert aus board.adc_reference_mv (Generat bsp/adc/adcReferenceConfiguration.h), Toleranz aus modules.safeSystem.adc_reference_tolerance_mv (Standard ± 200 mV); Lesefehler gezählt statt sofort Safe State; Upstream-Kandidat Grenzwerte als Konfiguration (openbsw-naehe.md T3)"
+        upstream: 4e9b44be517b7f42
+      # --- neu in neXtBSW (kein Original); Muster decken künftige Dateien desselben Zwecks ab
+      "safety/safeMemory/include/safeMemory/RomCheckList.h": {status: new, task: [SYS-38, SYS-44], reason: "Format und Plausibilitaet der Pruefsummenliste der ROM-Pruefung"}
+      "safety/safeMemory/include/safeMemory/RomCheckFlashWrites.h": {status: new, task: [SYS-44], reason: "Flash-Schreibanzeiger der ROM-Pruefung (Klammer FlashWriteScope)"}
+      "safety/safeMemory/src/romCheckFlashWrites/**": {status: new, task: [SYS-44], reason: "Schreibanzeiger in eigener Bibliothek ausserhalb der MPU-geschuetzten libsafe*-Sektionen"}
+      "safety/safeMemory/doc/**": {status: new, task: [SYS-44], reason: "Beschreibung des safeMemory-Moduls"}
+      "safety/safeLifecycle/doc/**": {status: new, task: [SYS-25], reason: "Beschreibung des safeLifecycle-Moduls (Zeitwerte der Safety-Task)"}
+      "safety/safeMemory/tools/**": {status: new, task: [SYS-38], reason: "Post-Link-Schritt romCheckImage.py (Referenz-CRC ins ELF, Hex erzeugen und nachpruefen) samt Test"}
+      "safety/safeMemory/test/**": {status: new, task: [SYS-38], reason: "Host-Test der ROM-Pruefung mit eigenen Stubs"}
+      "**/test/**": {status: new, reason: "Host-Tests und Stubs der Familienvorlage"}
+      "**/module.yaml": {status: new, task: [ARCH-05], reason: "Modul-Manifeste"}
+      "bspConfiguration/include/bsp/**": {status: new, reason: "Board-Konfiguration der Familie (ADC, CAN, Capture, Hall, BCC, GD, SBC, UART, PWM), Werte aus Generaten (openbsw-naehe.md T9)"}
+      "bspConfiguration/src/bsp/**": {status: new, reason: "Familiencode zur Board-Konfiguration (openbsw-naehe.md T9)"}
+      "main/include/**": {status: new, reason: "Integration, Systeme SBC/GateDriver/CellMonitor, Taktumschaltung, Hard-Fault-Test (openbsw-naehe.md T11)"}
+      "main/src/**": {status: new, reason: "Integration, Systeme SBC/GateDriver/CellMonitor, Hard-Fault-Test (openbsw-naehe.md T11)"}
+      "safety/adcSafetyConsole/**": {status: new, task: [IO-19], reason: "Konsolengruppe safeadc (openbsw-naehe.md T5)"}
+
+  # PLAT-85: Taktreiber der Familie als geänderte Kopie im Familienmodul (Muster PLAT-12/COM-26: die Übersetzungseinheit
+  # des OpenBSW-Ziels bspClock wird ersetzt, eingebunden über port/bspConfiguration/CMakeLists.txt).
+  - name: bspClock-s32k1xx
+    path: platforms/s32k1xx/bsp/bspClock
+    original: platforms/s32k1xx/bsp/bspClock
+    files:
+      "src/clockConfig.cpp":
+        status: modified
+        task: [PLAT-85]
+        reason: "Zeitgrenze fuer sircStart/fircStart/soscStart/spllStart und die Taktumschaltungen (RCCR/CSR): das Original wartet ohne Grenze auf SIRCVLD/FIRCVLD/SOSCVLD/SPLLVLD, ein fehlender oder defekter Quarz haelt den Start in boardInit() bei abgeschaltetem MCU-Watchdog fuer immer an (Board stumm, ohne SBC-Watchdog dauerhaft; Befund PLAT-72). Nicht gestartete Takte werden weder gewaehlt noch ueberwacht, RCCR nur bei gueltiger Quelle; Normalstart mit denselben Schreibzugriffen wie das Original (Host-Test); Upstream-Kandidat"
+        upstream: f980a368c2c78dc2
+      "CMakeLists.txt":
+        status: modified
+        task: [PLAT-85]
+        reason: "definiert das Ziel nicht neu, sondern ersetzt die Quellen des OpenBSW-Ziels bspClock durch src/clockConfig.cpp und src/ClockCheck.cpp und haengt include/ an (Muster PLAT-12/COM-26)"
+        upstream: 09f06ef325e0ff0a
+      "src/ClockCheck.cpp": {status: new, task: [PLAT-72, PLAT-85], reason: "Taktpruefung nxClockCheck() der Familie, liest was der Treiber im SCG hinterlassen hat"}
+      "include/clock/**": {status: new, task: [PLAT-12, PLAT-72], reason: "Vertrag nxClockCheck der Familie (Taktpruefung gegen den Taktplan); Zwangs-Include nxSpllUnavailable.h fuer Derivate ohne SPLL"}
+      "test/**": {status: new, task: [PLAT-72, PLAT-85], reason: "Host-Tests von Taktpruefung und Taktreiber (Register- und Verhaltensmodell des SCG, Vergleich mit dem unveraenderten OpenBSW-Treiber), Mutationstest"}
+
+  # COM-26: FlexCAN-Treiber der Familie als geänderte Kopie im Familien-Port (Muster PLAT-12: bspConfiguration/
+  # CMakeLists.txt ersetzt die Übersetzungseinheit des Ziels bspFlexCan und stellt den Header davor). Verschachtelt
+  # in port-s32k1xx; zieht mit PLAT-54 mit um.
+  - name: bspFlexCan-s32k1xx
+    path: platforms/s32k1xx/port/bspConfiguration/bspFlexCan
+    original: platforms/s32k1xx/bsp/bspFlexCan
+    files:
+      "include/can/FlexCANDevice.h":
+        status: modified
+        task: [COM-26]
+        reason: "Config::numMessageBuffers (0 = 32) und MessageBufferLayout je Instanz (Empfang unter n/2, Senden ab n/2, Callback n-1) statt fester Aufteilung für 32 Buffer; isValidLayout() für die Prüfung im Generat; feste Konstanten FIRST_TRANSMIT_BUFFER/CALLBACK_TRANSMIT_BUFFER/e_TRANSMIT_BUFFER_* entfernt; FlexCAN1/2 des S32K144 haben 16 Buffer (COM-05); Upstream-Kandidat"
+        upstream: 7bcbe9ce494f5e8c
+      "src/can/FlexCANDevice.cpp":
+        status: modified
+        task: [COM-26]
+        reason: "Aufteilung aus dem Layout der Instanz, MCR[MAXMB] = n-1 ins Feld geschrieben (OpenBSW odert 32 in den Resetwert 0x0F: 47), Sendemaske des Callback-Buffers von Anfang an (OpenBSW: Buffer 15, ein Empfangsbuffer), transmitISR() nur bei gesetztem Flag des Callback-Buffers, weil RX und TX bei 16 Buffern und am S32K11x einen Vektor teilen; Upstream-Kandidat"
+        upstream: 99f0192fefba1e65
+      "test/**": {status: new, task: [COM-26], reason: "Host-Test gegen ein FlexCAN-Registermodell mit 16 und 32 Buffern"}

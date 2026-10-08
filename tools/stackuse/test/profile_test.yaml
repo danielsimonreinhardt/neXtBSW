@@ -1,0 +1,48 @@
+# Test profile of tools/stackuse (SYS-65): a made-up image with two tasks and three interrupt levels, no board.
+# The disassembly and the .su files it belongs to are written by test_stackuse.py (FIXTURE_*).
+name: test-image
+exception_frame_bytes: 32
+isr_stack_bytes: 400
+safety_contexts: [control]
+
+frames:
+  asm_helper: {bytes: 12, source: hand-counted in the test}
+
+indirect:
+  dispatcher: [job_a, job_b]
+
+bounded_recursion:
+  - {function: chain_a, times: 1}
+  - {function: chain_b, times: 2}
+
+contexts:
+  - name: control
+    kind: task
+    stack_bytes: 512
+    context_bytes: 100
+    dispatch:
+      - task_entry
+      - [loop_one, loop_two]
+    entries: [runnable]
+  - name: comms
+    kind: task
+    stack_bytes: 256
+    entries: [comms_main]
+    indirect:
+      comms_main: [job_b]
+  - name: fault
+    kind: isr
+    level: -1
+    entries: [Fault_Handler]
+  - name: timer
+    kind: isr
+    level: 3
+    entries: [Timer_IRQHandler]
+  - name: timer2
+    kind: isr
+    level: 3
+    entries: [Timer2_IRQHandler]
+  - name: can
+    kind: isr
+    level: 7
+    entries: [Can_IRQHandler]

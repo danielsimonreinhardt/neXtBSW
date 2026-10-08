@@ -1,0 +1,51 @@
+{
+    "version": 6,
+    "cmakeMinimumRequired": {
+        "major": 3,
+        "minor": 28,
+        "patch": 3
+    },
+    "configurePresets": [
+        {
+            "name": "nx-arm-gcc",
+            "hidden": true,
+            "displayName": "neXtBSW, FreeRTOS, arm-none-eabi-gcc",
+            "description": "Base for all projects, of the neXtBSW tree and of a workspace alike (ARCH-57). Include this file from the CMakePresets.json next to the workspace root CMakeLists.txt: {\"include\": [\"nextbsw/cmake/NxPresets.json\"]}. ${sourceDir} is then the workspace (build directory and .venv come from it), ${fileDir} stays this cmake/ folder of the tree. NX_PROJECT selects the project; board, derivative, family and toolchain file follow from it (tools/nxconfig). arm-none-eabi-gcc comes from PATH, NX_ARM_GCC_BIN (environment, the bin folder of the pinned xPack GCC 11.3.1 that `python -m tools.ci setup` fetches) is put in front of it. A build directory whose cached compiler moved or vanished needs `cmake --preset <name> --fresh` (tools/test does that by itself).",
+            "generator": "Ninja Multi-Config",
+            "binaryDir": "${sourceDir}/build/${presetName}",
+            "environment": {
+                "PATH": "$penv{NX_ARM_GCC_BIN}${pathListSep}$penv{PATH}",
+                "CC": "arm-none-eabi-gcc",
+                "CXX": "arm-none-eabi-g++",
+                "PYTHONUTF8": "1"
+            },
+            "cacheVariables": {
+                "BUILD_TARGET_RTOS": "FREERTOS",
+                "Python3_EXECUTABLE": "${sourceDir}/.venv/Scripts/python.exe",
+                "CMAKE_COLOR_DIAGNOSTICS": "ON",
+                "CMAKE_COMPILE_WARNING_AS_ERROR": "ON",
+                "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+                "CMAKE_CONFIGURATION_TYPES": "RelWithDebInfo;Debug;Release",
+                "CMAKE_DEFAULT_BUILD_TYPE": "RelWithDebInfo",
+                "CMAKE_C_FLAGS": "-Wall -Wextra",
+                "CMAKE_CXX_FLAGS": "-Wall -Wextra -Wvla -Wno-deprecated-volatile",
+                "CMAKE_ASM_FLAGS_RELWITHDEBINFO": "-g3",
+                "CMAKE_C_FLAGS_RELWITHDEBINFO": "-g3 -O2 -DNDEBUG",
+                "CMAKE_CXX_FLAGS_RELWITHDEBINFO": "-g3 -O2 -DNDEBUG",
+                "CMAKE_C_FLAGS_DEBUG": "-g3",
+                "CMAKE_CXX_FLAGS_DEBUG": "-g3",
+                "CMAKE_C_FLAGS_RELEASE": "-O2 -DNDEBUG",
+                "CMAKE_CXX_FLAGS_RELEASE": "-O2 -DNDEBUG"
+            }
+        },
+        {
+            "name": "nx-worktree",
+            "hidden": true,
+            "description": "Only for git worktrees under <repo>/.claude/worktrees/<name>: builds in %TEMP%/s32k/<name> to stay below the Windows 260-character path limit and uses the .venv of the main repository.",
+            "binaryDir": "$env{TEMP}/s32k/${sourceDirName}",
+            "cacheVariables": {
+                "Python3_EXECUTABLE": "${sourceDir}/../../../.venv/Scripts/python.exe"
+            }
+        }
+    ]
+}

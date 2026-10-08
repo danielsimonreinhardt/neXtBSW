@@ -1,0 +1,76 @@
+# SPDX-FileCopyrightText: 2026 Daniel Simon Reinhardt-Probul
+# SPDX-License-Identifier: Apache-2.0
+#
+# Licence and copyright of every file of the tree in REUSE form (https://reuse.software, specification 3.3), PLAT-49.
+# Decisions of the user, 2026-09-17 (PLAT-46, doc/architecture/lizenz-und-release.md section 6): neXtBSW is
+# Apache-2.0 (F1), contributions under the DCO (F14, CONTRIBUTING.md), copyright notice
+# "Daniel Simon Reinhardt-Probul" (F13).
+#
+# How the annotations work: when several annotations match a file, the LAST one applies. The first annotation gives
+# every file the licence of the tree and adds the copyright of the project ("aggregate"): a file derived from
+# Eclipse OpenBSW keeps its own header (Accenture, BMW AG) and gets the modification notice of Apache-2.0 section 4 b
+# next to it. The annotations below take that back for third-party code ("closest": the file's own header first,
+# else the values given here) and set the licences that are not Apache-2.0. Licence texts: LICENSES/.
+#
+# Licence is not release class: which file may go into which release line (open, licensed, nda, private,
+# workstation) is the table distribution.yaml next to this file, checked by tools/distcheck.
+
+version = 1
+
+# ------------------------------------------------------------------------------------------------ the whole tree
+[[annotations]]
+path = "**"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2026 Daniel Simon Reinhardt-Probul"
+SPDX-License-Identifier = "Apache-2.0"
+
+# ------------------------------------------------------------------------------- third-party code, unmodified
+[[annotations]]
+path = "platforms/common/3rdparty/cmsis/**"
+precedence = "closest"
+SPDX-FileCopyrightText = "Arm Limited"
+SPDX-License-Identifier = "Apache-2.0"
+
+[[annotations]]
+path = ["platforms/s32k1xx/3rdparty/freertos_cm0_sysTick/**", "platforms/rm4x/3rdparty/freertos_crx/**"]
+precedence = "closest"
+SPDX-FileCopyrightText = "Amazon.com, Inc. or its affiliates"
+SPDX-License-Identifier = "MIT"
+
+[[annotations]]
+path = "platforms/s32k1xx/bsp/bspMcu/include/3rdparty/nxp/**"
+precedence = "closest"
+SPDX-FileCopyrightText = "NXP"
+SPDX-License-Identifier = "BSD-3-Clause"
+
+[[annotations]]
+path = ["mcudb/s32k1xx/sources/hal_nxp/**", "mcudb/s32k3xx/sources/hal_nxp/**"]
+precedence = "closest"
+SPDX-FileCopyrightText = "NXP"
+SPDX-License-Identifier = "Apache-2.0"
+
+# own provenance notes next to the third-party files (README.md written in this project)
+[[annotations]]
+path = ["platforms/**/3rdparty/**/README.md", "mcudb/*/sources/**/README.md"]
+precedence = "closest"
+SPDX-FileCopyrightText = "2026 Daniel Simon Reinhardt-Probul"
+SPDX-License-Identifier = "Apache-2.0"
+
+# ----------------------------------------------------------------- texts that quote SPDX lines of other files
+# The working log and the analyses quote headers of other files ("SPDX-License-Identifier: GPL-2.0" as an example
+# of what is NOT used); the quote is not the licence of the text itself.
+[[annotations]]
+path = ["CHANGELOG.md", "doc/**/*.md", "doc/todo.yaml", "tools/distcheck/**",
+        "mcudb/s32k1xx/sources/keil_s32k116_dfp/README.md"]
+precedence = "override"
+SPDX-FileCopyrightText = "2026 Daniel Simon Reinhardt-Probul"
+SPDX-License-Identifier = "Apache-2.0"
+
+# Generators and their tests that write or check SPDX lines of generated files: the string literals are output,
+# not the licence of the script.
+[[annotations]]
+path = ["mcudb/tools/**", "tools/docgen/**", "tools/ci/test_release.py", "platforms/common/test/test_cortex_r4f.py",
+        "tools/swc/swc_lib_create.m"]
+precedence = "override"
+SPDX-FileCopyrightText = "2026 Daniel Simon Reinhardt-Probul"
+SPDX-License-Identifier = "Apache-2.0"

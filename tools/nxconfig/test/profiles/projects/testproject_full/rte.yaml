@@ -1,0 +1,48 @@
+# ECU description of the synthetic test profile testproject_full (PLAT-62): the demo component (swc/DemoSwc) on
+# testboard_full with the demo CAN matrix TestFull.dbc - one task, E2E on both directions, a monitored receive
+# message, UDS on CAN0. Paths are relative to this file (RTE-22). Test data only.
+schema_version: 2
+
+tasks:
+  - name: swc
+    period_ms: 10
+    priority: 30
+    stack_bytes: 2048
+    runnables: [DemoSwc.Run10ms, DemoSwc.Run100ms]
+
+components:
+  - name: DemoSwc
+    path: ../../../../../../swc/DemoSwc
+
+can:
+  dbc: TestFull.dbc
+  node: EVB
+  bus: CAN0
+  task: swc
+  monitor: [PC_Command]
+  qualifiers:
+    PC_Command:
+      debounce_ms: 200
+      on_error: hold
+      e2e:
+        profile: P01
+        data_id: 0x0210
+        data_id_mode: BOTH
+        crc: PcCrc
+        counter: PcCounter
+    EVB_Status:
+      e2e: { profile: P11, data_id: 0x0110, data_id_mode: BOTH, crc: EvbCrc, counter: EvbCounter }
+
+uds:
+  bus: CAN0
+
+connections:
+  DemoSwc.Button1.Button1: dio.in.BUTTON1
+  DemoSwc.MotorNtc_mV.MotorNtc_mV: adc.mv.MOTOR_NTC
+  DemoSwc.PcCommandQlf.PcCommandQlf: can.qlf.PC_Command
+  DemoSwc.Led1.Led1: [dio.out.LED1, can.tx.EVB_Status.Led1]
+  DemoSwc.Led2.Led2: [dio.out.LED2, can.tx.EVB_Status.Led2]
+  DemoSwc.MotorNtcFiltered_mV.MotorNtcFiltered_mV:
+    - can.tx.EVB_Status.MotorNtcFiltered_mV
+    - can.tx.EVB_Analog.MotorNtcCoarse_mV
+    - can.tx.EVB_Analog.MotorNtcFine_mV

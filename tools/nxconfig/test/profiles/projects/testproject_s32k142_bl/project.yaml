@@ -1,0 +1,54 @@
+# Synthetic project for the bootloader generator tests (ARCH-08) on testboard_s32k142_bl: other memory partitioning
+# (24-KB bootloader, 16-KB SRAM_L for the bootloader, 0x300 no-init), bootloader on DIAG (FlexCAN1, 250 kbit/s,
+# 75 %) without SBC hook, 16 MHz crystal, 48 MHz system clock. Test data only.
+schema_version: 1
+
+project:
+  name: testproject_s32k142_bl
+  board: ../../boards/testboard_s32k142_bl
+
+clock:
+  system_hz: 48000000
+
+# ARCH-42: the application uses VEH only - FlexCAN1 of the S32K142 has 16 message buffers (S32K-RM Rev. 13
+# Table 55-1); the FlexCAN driver of OpenBSW needed 32, the family port's driver splits 16 since COM-26 (test
+# data unchanged). The bootloader on DIAG is not affected (buffers 0..8).
+use:
+  can: [VEH]
+  uart: all
+  dio: all
+
+can:
+  VEH: { bitrate: 500000 }
+  DIAG: { bitrate: 250000, sample_point_percent: 75 }
+
+# ARCH-33: every used CAN bus needs an interrupt rank (nxconfig rejects the project otherwise).
+interrupts:
+  ranks:
+    - { source: can, name: VEH, rank: 3 }
+
+uart:
+  CONSOLE: { baudrate: 115200 }
+
+# bootloader 0x0..0x5FFF (12 sectors of 2 KB), application 0x6000..0x3F7FF, record 0x3F800,
+# application RAM 0x1FFFC000..0x20002FFF, no-init 0x20002D00, boot request 0x20002FF0
+memory:
+  flash: PFLASH
+  bootloader: { size: 0x6000, ram: SRAM_L, stack_size: 0x800 }
+  application: { ram: [SRAM_L, SRAM_U], noinit_size: 0x300 }
+
+bootloader:
+  can: DIAG
+
+# Diagnostic addresses (COM-11): other ids than the eval board, an explicit search area (the family default
+# would be 0x410) and no functional addressing id in the 0x7Dx range.
+diagnostics:
+  request_id: 0x730
+  functional_id: 0x7DE
+  response_id: 0x738
+  tester_address: 0xF2
+  ecu_address: 0x11
+  isotp: { padding: 0x55, block_size: 4, stmin_ms: 2, n_cr_ms: 250, n_bs_ms: 250 }
+  bootloader:
+    version_prefix: nextbsw-bl
+    scan_start: 0x500               # project value instead of the family default 0x410

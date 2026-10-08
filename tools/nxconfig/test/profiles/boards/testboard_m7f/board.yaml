@@ -1,0 +1,19 @@
+# Synthetic board for the toolchain tests (PLAT-09): Cortex-M7 derivative with double precision FPU, 25 MHz crystal.
+schema_version: 1
+
+board:
+  name: testboard_m7f
+  mcu: TESTM7F176
+  package: LQFP176
+  clock: { sosc_hz: 25000000 }
+  debug: { interface: SWD }
+
+devices:
+  - { name: PHY, part: TJA1051 }
+
+can:
+  - { name: BUS, instance: FDCAN1, rx: { pin: PD0 }, tx: { pin: PD1 }, phy: PHY }
+
+dio:
+  outputs:
+    - { name: LED, pin: PB0 }

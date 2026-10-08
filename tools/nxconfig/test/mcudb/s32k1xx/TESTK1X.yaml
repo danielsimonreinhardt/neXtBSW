@@ -1,0 +1,98 @@
+# Synthetic s32k1xx derivative for the clock model tests (PLAT-22, ARCH-18). Test data only, no real chip.
+#
+# The instances deliberately differ from the S32K144 the eval board uses, so the family clock model cannot fall
+# back to a fixed instance list any more (finding ARCH-09 B5):
+#   - eight timers, but only FTM0/FTM1/FTM6/FTM7 exist (no FTM2..FTM5), so PCC gates of the OpenBSW clock driver
+#     stay unused and their CLOCK_SOURCE macros must not be generated
+#   - FTM6 has a default clock but is no gate of the OpenBSW driver (tools/bswgen writes its PCC register)
+#   - FTM7 offers sources but has no default: a project that uses it has to choose one (ARCH-18)
+#   - LPI2C1 instead of LPI2C0, and it runs from the bus clock (select: bus) instead of an asynchronous output
+#   - QSPI without any clock data, like a derivative whose data sheet values are missing
+#   - FTM6 with max_hz 100 MHz: the limit of the asynchronous output (ARCH-06); SPLLDIV1 of the profile is
+#     128 MHz, so neither the project nor a default may choose SPLL there
+#   - no ADC1, no LPSPI1/LPSPI2, no LPUART2, no ENET
+# No device_header: the clock of a gate must come from this derivative alone.
+schema_version: 1
+
+derivative:
+  name: TESTK1X
+  family: s32k1xx
+  core: cortex-m4f
+  nvic_priority_bits: 4
+  packages: [LQFP64]
+  pin_pattern: "PT[A-E]([0-9]|1[0-7])"
+  sources: [synthetic]
+
+memory:
+  - { name: PFLASH, kind: code_flash, start: 0x00000000, size: 0x00040000, sector_size: 0x1000, program_size: 8 }
+  - { name: SRAM_L, kind: ram, start: 0x1FFF8000, size: 0x00008000 }
+  - { name: SRAM_U, kind: ram, start: 0x20000000, size: 0x00007000 }
+
+instances:
+  ADC0: { class: adc, resolution_bits: 12, channel_pattern: "SE([0-9]|1[0-5])", internal_channels: [BANDGAP],
+          clock: { sources: [SOSC, SIRC, FIRC, SPLL], divider: [2], max_hz: 50000000,
+                   default: { select: FIRC, divider: 2 }, source: synthetic } }
+  FTM0: { class: timer, channels: 8, clock: { sources: [SOSC, SIRC, FIRC, SPLL], divider: [1],
+                                              default: { select: SOSC, divider: 1 }, source: synthetic } }
+  FTM1: { class: timer, channels: 8, clock: { sources: [SOSC, SIRC, FIRC, SPLL], divider: [1],
+                                              default: { select: SPLL, divider: 1 }, source: synthetic } }
+  # no gate of the OpenBSW clock driver, but a clock: tools/bswgen generates the PCC write (ARCH-18).
+  # max_hz is the limit of the asynchronous output: SPLLDIV1 (128 MHz in the profile) is not allowed here.
+  FTM6: { class: timer, channels: 8, clock: { sources: [SOSC, SIRC, FIRC, SPLL], divider: [1], max_hz: 100000000,
+                                              default: { select: SOSC, divider: 1 }, source: synthetic } }
+  # sources but no default: a project that uses FTM7 has to choose its clock (ARCH-18)
+  FTM7: { class: timer, channels: 8, clock: { sources: [SOSC, FIRC], divider: [1], source: synthetic } }
+  LPSPI0: { class: spi, clock: { sources: [SOSC, SIRC, FIRC, SPLL], divider: [2],
+                                 default: { select: FIRC, divider: 2 }, source: synthetic } }
+  FlexCAN0: { class: can, clock: { select: none, source: "CTRL1.CLKSRC, like every s32k1xx FlexCAN" } }
+  FlexCAN1: { class: can, clock: { select: none, source: "CTRL1.CLKSRC, like every s32k1xx FlexCAN" } }
+  LPUART0: { class: uart, clock: { sources: [SOSC, SIRC, FIRC, SPLL], divider: [2],
+                                   default: { select: SOSC, divider: 2 }, source: synthetic } }
+  # two outputs: a project that chooses a source for LPUART1 has to name the divider as well
+  LPUART1: { class: uart, clock: { sources: [SOSC, SIRC, FIRC, SPLL], divider: [1, 2],
+                                   default: { select: FIRC, divider: 2 }, source: synthetic } }
+  # LPI2C0 exists although the board does not use it: the clock driver writes PCC_LPI2C0 unconditionally
+  LPI2C0: { class: i2c, clock: { sources: [SOSC, SIRC, FIRC, SPLL], divider: [2],
+                                 default: { select: SOSC, divider: 2 }, source: synthetic } }
+  # bus clock instead of an asynchronous PCC output: no CLOCK_SOURCE macro, frequency from the bus domain
+  LPI2C1: { class: i2c, clock: { select: bus, source: synthetic } }
+  FlexIO: { class: flexio, clock: { sources: [SOSC, SIRC, FIRC, SPLL], divider: [2],
+                                    default: { select: SOSC, divider: 2 }, source: synthetic } }
+  QSPI: { class: qspi }                                 # no clock data at all
+
+pinmux:
+  LQFP64:
+    signals:
+      GPIO: { PTA2: 0, PTA3: 0, PTB2: 0, PTB3: 0, PTB4: 0, PTC8: 0, PTC9: 0, PTD16: 0, PTE4: 0, PTE5: 0, PTE8: 0 }
+      ADC0_SE0: { PTA0: 0 }
+      FlexCAN0_RX: { PTE4: 5 }
+      FlexCAN0_TX: { PTE5: 5 }
+      FlexCAN1_RX: { PTA12: 3 }
+      FlexCAN1_TX: { PTA13: 3 }
+      LPUART1_RX: { PTC8: 2 }
+      LPUART1_TX: { PTC9: 2 }
+      LPI2C1_SDA: { PTA2: 3 }
+      LPI2C1_SCL: { PTA3: 3 }
+      FTM6_CH0: { PTB2: 2 }
+      FTM6_CH1: { PTB3: 2 }
+      FTM7_CH0: { PTB4: 2 }
+
+clock:
+  internal: { FIRC: 48000000, SIRC: 8000000 }
+  oscillator: { min_hz: 4000000, max_hz: 40000000 }
+  # SYS-53: the S32K14xW column of the data sheet (max 141 kHz), unlike the S32K1xx derivatives of mcudb (139 kHz)
+  lpo: { nominal_hz: 128000, min_hz: 113000, max_hz: 141000 }
+  pll: { input_hz: [8000000, 16000000], vco_hz: [180000000, 320000000], input_divider: [1, 8], multiplier: [16, 47],
+         output_dividers: [2] }
+  max_hz: { core: 80000000, bus: 48000000, slow: 26670000 }
+  pcc:
+    LPIT: { sources: [SOSC, SIRC, FIRC, SPLL], divider: [2], default: { select: SIRC, divider: 2 },
+            source: synthetic }
+    LPTMR0: { sources: [SOSC, SIRC, FIRC, SPLL], divider: [2], default: { select: SOSC, divider: 2 },
+              source: synthetic }
+
+# BL-03: synthetische Chipkennung (Testdaten, keine Hardware)
+uid:
+  address: 0x40048054
+  size: 16
+  source: "Testdaten"

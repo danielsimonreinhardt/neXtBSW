@@ -1,0 +1,484 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Synthetic XML Component Description for CalSwc (tools/rtegen RTE-03 host test). Written by hand in the shape
+Embedded Coder R2024a (autosar.tlc) exports ParameterReceiver ports, checked against a probe model on 2026-09-17:
+PARAMETER-INTERFACE with PARAMETER-DATA-PROTOTYPEs, R-PORT-PROTOTYPE with PARAMETER-REQUIRE-COM-SPEC, arrays as
+IMPLEMENTATION-DATA-TYPE of category ARRAY (rt_Array_<type>_<n>), fixed point (fixdt) as
+APPLICATION-PRIMITIVE-DATA-TYPE with a LINEAR COMPU-METHOD and a DATA-TYPE-MAPPING-SET, and PARAMETER-ACCESS
+points in the runnable.
+-->
+<AUTOSAR xmlns="http://autosar.org/schema/r4.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://autosar.org/schema/r4.0 AUTOSAR_00051.xsd">
+    <AR-PACKAGES>
+        <AR-PACKAGE>
+            <SHORT-NAME>Components</SHORT-NAME>
+            <ELEMENTS>
+                <APPLICATION-SW-COMPONENT-TYPE UUID="3c1f0e52-0000-4000-8000-000000000001">
+                    <SHORT-NAME>CalSwc</SHORT-NAME>
+                    <PORTS>
+                        <R-PORT-PROTOTYPE UUID="3c1f0e52-0000-4000-8000-000000000002">
+                            <SHORT-NAME>CalPrm</SHORT-NAME>
+                            <REQUIRED-COM-SPECS>
+                                <PARAMETER-REQUIRE-COM-SPEC>
+                                    <INIT-VALUE>
+                                        <NUMERICAL-VALUE-SPECIFICATION>
+                                            <SHORT-LABEL>CalPrm_Gain</SHORT-LABEL>
+                                            <VALUE>99</VALUE>
+                                        </NUMERICAL-VALUE-SPECIFICATION>
+                                    </INIT-VALUE>
+                                    <PARAMETER-REF DEST="PARAMETER-DATA-PROTOTYPE">/Interfaces/CalPrm/Gain</PARAMETER-REF>
+                                </PARAMETER-REQUIRE-COM-SPEC>
+                            </REQUIRED-COM-SPECS>
+                            <REQUIRED-INTERFACE-TREF DEST="PARAMETER-INTERFACE">/Interfaces/CalPrm</REQUIRED-INTERFACE-TREF>
+                        </R-PORT-PROTOTYPE>
+                        <P-PORT-PROTOTYPE UUID="3c1f0e52-0000-4000-8000-000000000003">
+                            <SHORT-NAME>Out</SHORT-NAME>
+                            <PROVIDED-COM-SPECS>
+                                <NONQUEUED-SENDER-COM-SPEC>
+                                    <DATA-ELEMENT-REF DEST="VARIABLE-DATA-PROTOTYPE">/Interfaces/Out/Out</DATA-ELEMENT-REF>
+                                    <INIT-VALUE>
+                                        <NUMERICAL-VALUE-SPECIFICATION>
+                                            <VALUE>0</VALUE>
+                                        </NUMERICAL-VALUE-SPECIFICATION>
+                                    </INIT-VALUE>
+                                </NONQUEUED-SENDER-COM-SPEC>
+                            </PROVIDED-COM-SPECS>
+                            <PROVIDED-INTERFACE-TREF DEST="SENDER-RECEIVER-INTERFACE">/Interfaces/Out</PROVIDED-INTERFACE-TREF>
+                        </P-PORT-PROTOTYPE>
+                        <P-PORT-PROTOTYPE UUID="3c1f0e52-0000-4000-8000-000000000004">
+                            <SHORT-NAME>FOut</SHORT-NAME>
+                            <PROVIDED-COM-SPECS>
+                                <NONQUEUED-SENDER-COM-SPEC>
+                                    <DATA-ELEMENT-REF DEST="VARIABLE-DATA-PROTOTYPE">/Interfaces/FOut/FOut</DATA-ELEMENT-REF>
+                                    <INIT-VALUE>
+                                        <NUMERICAL-VALUE-SPECIFICATION>
+                                            <VALUE>0</VALUE>
+                                        </NUMERICAL-VALUE-SPECIFICATION>
+                                    </INIT-VALUE>
+                                </NONQUEUED-SENDER-COM-SPEC>
+                            </PROVIDED-COM-SPECS>
+                            <PROVIDED-INTERFACE-TREF DEST="SENDER-RECEIVER-INTERFACE">/Interfaces/FOut</PROVIDED-INTERFACE-TREF>
+                        </P-PORT-PROTOTYPE>
+                    </PORTS>
+                    <INTERNAL-BEHAVIORS>
+                        <SWC-INTERNAL-BEHAVIOR UUID="3c1f0e52-0000-4000-8000-000000000005">
+                            <SHORT-NAME>CalSwc_IB</SHORT-NAME>
+                            <EVENTS>
+                                <INIT-EVENT UUID="3c1f0e52-0000-4000-8000-000000000006">
+                                    <SHORT-NAME>Event_CalSwc_Init</SHORT-NAME>
+                                    <START-ON-EVENT-REF DEST="RUNNABLE-ENTITY">/Components/CalSwc/CalSwc_IB/CalSwc_Init</START-ON-EVENT-REF>
+                                </INIT-EVENT>
+                                <TIMING-EVENT UUID="3c1f0e52-0000-4000-8000-000000000007">
+                                    <SHORT-NAME>Event_Run10ms</SHORT-NAME>
+                                    <START-ON-EVENT-REF DEST="RUNNABLE-ENTITY">/Components/CalSwc/CalSwc_IB/Run10ms</START-ON-EVENT-REF>
+                                    <PERIOD>0.01</PERIOD>
+                                </TIMING-EVENT>
+                            </EVENTS>
+                            <RUNNABLES>
+                                <RUNNABLE-ENTITY UUID="3c1f0e52-0000-4000-8000-000000000008">
+                                    <SHORT-NAME>CalSwc_Init</SHORT-NAME>
+                                    <SYMBOL>CalSwc_Init</SYMBOL>
+                                </RUNNABLE-ENTITY>
+                                <RUNNABLE-ENTITY UUID="3c1f0e52-0000-4000-8000-000000000009">
+                                    <SHORT-NAME>Run10ms</SHORT-NAME>
+                                    <DATA-SEND-POINTS>
+                                        <VARIABLE-ACCESS UUID="3c1f0e52-0000-4000-8000-000000000010">
+                                            <SHORT-NAME>SDP_Out</SHORT-NAME>
+                                            <ACCESSED-VARIABLE>
+                                                <AUTOSAR-VARIABLE-IREF>
+                                                    <PORT-PROTOTYPE-REF DEST="P-PORT-PROTOTYPE">/Components/CalSwc/Out</PORT-PROTOTYPE-REF>
+                                                    <TARGET-DATA-PROTOTYPE-REF DEST="VARIABLE-DATA-PROTOTYPE">/Interfaces/Out/Out</TARGET-DATA-PROTOTYPE-REF>
+                                                </AUTOSAR-VARIABLE-IREF>
+                                            </ACCESSED-VARIABLE>
+                                        </VARIABLE-ACCESS>
+                                        <VARIABLE-ACCESS UUID="3c1f0e52-0000-4000-8000-000000000011">
+                                            <SHORT-NAME>SDP_FOut</SHORT-NAME>
+                                            <ACCESSED-VARIABLE>
+                                                <AUTOSAR-VARIABLE-IREF>
+                                                    <PORT-PROTOTYPE-REF DEST="P-PORT-PROTOTYPE">/Components/CalSwc/FOut</PORT-PROTOTYPE-REF>
+                                                    <TARGET-DATA-PROTOTYPE-REF DEST="VARIABLE-DATA-PROTOTYPE">/Interfaces/FOut/FOut</TARGET-DATA-PROTOTYPE-REF>
+                                                </AUTOSAR-VARIABLE-IREF>
+                                            </ACCESSED-VARIABLE>
+                                        </VARIABLE-ACCESS>
+                                    </DATA-SEND-POINTS>
+                                    <PARAMETER-ACCESSS>
+                                        <PARAMETER-ACCESS UUID="3c1f0e52-0000-4000-8000-000000000012">
+                                            <SHORT-NAME>CALPRM_CalPrm_Gain</SHORT-NAME>
+                                            <ACCESSED-PARAMETER>
+                                                <AUTOSAR-PARAMETER-IREF>
+                                                    <PORT-PROTOTYPE-REF DEST="R-PORT-PROTOTYPE">/Components/CalSwc/CalPrm</PORT-PROTOTYPE-REF>
+                                                    <TARGET-DATA-PROTOTYPE-REF DEST="PARAMETER-DATA-PROTOTYPE">/Interfaces/CalPrm/Gain</TARGET-DATA-PROTOTYPE-REF>
+                                                </AUTOSAR-PARAMETER-IREF>
+                                            </ACCESSED-PARAMETER>
+                                        </PARAMETER-ACCESS>
+                                        <PARAMETER-ACCESS UUID="3c1f0e52-0000-4000-8000-000000000013">
+                                            <SHORT-NAME>CALPRM_CalPrm_Table</SHORT-NAME>
+                                            <ACCESSED-PARAMETER>
+                                                <AUTOSAR-PARAMETER-IREF>
+                                                    <PORT-PROTOTYPE-REF DEST="R-PORT-PROTOTYPE">/Components/CalSwc/CalPrm</PORT-PROTOTYPE-REF>
+                                                    <TARGET-DATA-PROTOTYPE-REF DEST="PARAMETER-DATA-PROTOTYPE">/Interfaces/CalPrm/Table</TARGET-DATA-PROTOTYPE-REF>
+                                                </AUTOSAR-PARAMETER-IREF>
+                                            </ACCESSED-PARAMETER>
+                                        </PARAMETER-ACCESS>
+                                    </PARAMETER-ACCESSS>
+                                    <SYMBOL>Run10ms</SYMBOL>
+                                </RUNNABLE-ENTITY>
+                            </RUNNABLES>
+                            <SUPPORTS-MULTIPLE-INSTANTIATION>false</SUPPORTS-MULTIPLE-INSTANTIATION>
+                        </SWC-INTERNAL-BEHAVIOR>
+                    </INTERNAL-BEHAVIORS>
+                </APPLICATION-SW-COMPONENT-TYPE>
+            </ELEMENTS>
+        </AR-PACKAGE>
+        <AR-PACKAGE>
+            <SHORT-NAME>Interfaces</SHORT-NAME>
+            <ELEMENTS>
+                <PARAMETER-INTERFACE UUID="3c1f0e52-0000-4000-8000-000000000020">
+                    <SHORT-NAME>CalPrm</SHORT-NAME>
+                    <IS-SERVICE>false</IS-SERVICE>
+                    <PARAMETERS>
+                        <PARAMETER-DATA-PROTOTYPE UUID="3c1f0e52-0000-4000-8000-000000000021">
+                            <SHORT-NAME>Gain</SHORT-NAME>
+                            <CATEGORY>VALUE</CATEGORY>
+                            <SW-DATA-DEF-PROPS>
+                                <SW-DATA-DEF-PROPS-VARIANTS>
+                                    <SW-DATA-DEF-PROPS-CONDITIONAL>
+                                        <SW-CALIBRATION-ACCESS>READ-WRITE</SW-CALIBRATION-ACCESS>
+                                        <SW-IMPL-POLICY>STANDARD</SW-IMPL-POLICY>
+                                    </SW-DATA-DEF-PROPS-CONDITIONAL>
+                                </SW-DATA-DEF-PROPS-VARIANTS>
+                            </SW-DATA-DEF-PROPS>
+                            <TYPE-TREF DEST="IMPLEMENTATION-DATA-TYPE">/DataTypes/uint16</TYPE-TREF>
+                        </PARAMETER-DATA-PROTOTYPE>
+                        <PARAMETER-DATA-PROTOTYPE UUID="3c1f0e52-0000-4000-8000-000000000022">
+                            <SHORT-NAME>Table</SHORT-NAME>
+                            <CATEGORY>ARRAY</CATEGORY>
+                            <SW-DATA-DEF-PROPS>
+                                <SW-DATA-DEF-PROPS-VARIANTS>
+                                    <SW-DATA-DEF-PROPS-CONDITIONAL>
+                                        <SW-CALIBRATION-ACCESS>READ-WRITE</SW-CALIBRATION-ACCESS>
+                                        <SW-IMPL-POLICY>STANDARD</SW-IMPL-POLICY>
+                                    </SW-DATA-DEF-PROPS-CONDITIONAL>
+                                </SW-DATA-DEF-PROPS-VARIANTS>
+                            </SW-DATA-DEF-PROPS>
+                            <TYPE-TREF DEST="IMPLEMENTATION-DATA-TYPE">/DataTypes/rt_Array_uint16_4</TYPE-TREF>
+                        </PARAMETER-DATA-PROTOTYPE>
+                        <PARAMETER-DATA-PROTOTYPE UUID="3c1f0e52-0000-4000-8000-000000000023">
+                            <SHORT-NAME>Factor</SHORT-NAME>
+                            <CATEGORY>VALUE</CATEGORY>
+                            <SW-DATA-DEF-PROPS>
+                                <SW-DATA-DEF-PROPS-VARIANTS>
+                                    <SW-DATA-DEF-PROPS-CONDITIONAL>
+                                        <SW-CALIBRATION-ACCESS>READ-WRITE</SW-CALIBRATION-ACCESS>
+                                        <SW-IMPL-POLICY>STANDARD</SW-IMPL-POLICY>
+                                    </SW-DATA-DEF-PROPS-CONDITIONAL>
+                                </SW-DATA-DEF-PROPS-VARIANTS>
+                            </SW-DATA-DEF-PROPS>
+                            <TYPE-TREF DEST="APPLICATION-PRIMITIVE-DATA-TYPE">/DataTypes/ApplDataTypes/UFIX16_SP001</TYPE-TREF>
+                        </PARAMETER-DATA-PROTOTYPE>
+                        <PARAMETER-DATA-PROTOTYPE UUID="3c1f0e52-0000-4000-8000-000000000024">
+                            <SHORT-NAME>Temp</SHORT-NAME>
+                            <CATEGORY>VALUE</CATEGORY>
+                            <SW-DATA-DEF-PROPS>
+                                <SW-DATA-DEF-PROPS-VARIANTS>
+                                    <SW-DATA-DEF-PROPS-CONDITIONAL>
+                                        <SW-CALIBRATION-ACCESS>READ-WRITE</SW-CALIBRATION-ACCESS>
+                                        <SW-IMPL-POLICY>STANDARD</SW-IMPL-POLICY>
+                                    </SW-DATA-DEF-PROPS-CONDITIONAL>
+                                </SW-DATA-DEF-PROPS-VARIANTS>
+                            </SW-DATA-DEF-PROPS>
+                            <TYPE-TREF DEST="APPLICATION-PRIMITIVE-DATA-TYPE">/DataTypes/ApplDataTypes/SFIX16_S01_BN40</TYPE-TREF>
+                        </PARAMETER-DATA-PROTOTYPE>
+                        <PARAMETER-DATA-PROTOTYPE UUID="3c1f0e52-0000-4000-8000-000000000025">
+                            <SHORT-NAME>Alpha</SHORT-NAME>
+                            <CATEGORY>VALUE</CATEGORY>
+                            <SW-DATA-DEF-PROPS>
+                                <SW-DATA-DEF-PROPS-VARIANTS>
+                                    <SW-DATA-DEF-PROPS-CONDITIONAL>
+                                        <SW-CALIBRATION-ACCESS>READ-WRITE</SW-CALIBRATION-ACCESS>
+                                        <SW-IMPL-POLICY>STANDARD</SW-IMPL-POLICY>
+                                    </SW-DATA-DEF-PROPS-CONDITIONAL>
+                                </SW-DATA-DEF-PROPS-VARIANTS>
+                            </SW-DATA-DEF-PROPS>
+                            <TYPE-TREF DEST="IMPLEMENTATION-DATA-TYPE">/DataTypes/float32</TYPE-TREF>
+                        </PARAMETER-DATA-PROTOTYPE>
+                        <PARAMETER-DATA-PROTOTYPE UUID="3c1f0e52-0000-4000-8000-000000000026">
+                            <SHORT-NAME>Enable</SHORT-NAME>
+                            <CATEGORY>VALUE</CATEGORY>
+                            <SW-DATA-DEF-PROPS>
+                                <SW-DATA-DEF-PROPS-VARIANTS>
+                                    <SW-DATA-DEF-PROPS-CONDITIONAL>
+                                        <SW-CALIBRATION-ACCESS>READ-WRITE</SW-CALIBRATION-ACCESS>
+                                        <SW-IMPL-POLICY>STANDARD</SW-IMPL-POLICY>
+                                    </SW-DATA-DEF-PROPS-CONDITIONAL>
+                                </SW-DATA-DEF-PROPS-VARIANTS>
+                            </SW-DATA-DEF-PROPS>
+                            <TYPE-TREF DEST="IMPLEMENTATION-DATA-TYPE">/DataTypes/boolean</TYPE-TREF>
+                        </PARAMETER-DATA-PROTOTYPE>
+                    </PARAMETERS>
+                </PARAMETER-INTERFACE>
+                <SENDER-RECEIVER-INTERFACE UUID="3c1f0e52-0000-4000-8000-000000000030">
+                    <SHORT-NAME>Out</SHORT-NAME>
+                    <IS-SERVICE>false</IS-SERVICE>
+                    <DATA-ELEMENTS>
+                        <VARIABLE-DATA-PROTOTYPE UUID="3c1f0e52-0000-4000-8000-000000000031">
+                            <SHORT-NAME>Out</SHORT-NAME>
+                            <CATEGORY>VALUE</CATEGORY>
+                            <TYPE-TREF DEST="IMPLEMENTATION-DATA-TYPE">/DataTypes/uint32</TYPE-TREF>
+                        </VARIABLE-DATA-PROTOTYPE>
+                    </DATA-ELEMENTS>
+                </SENDER-RECEIVER-INTERFACE>
+                <SENDER-RECEIVER-INTERFACE UUID="3c1f0e52-0000-4000-8000-000000000032">
+                    <SHORT-NAME>FOut</SHORT-NAME>
+                    <IS-SERVICE>false</IS-SERVICE>
+                    <DATA-ELEMENTS>
+                        <VARIABLE-DATA-PROTOTYPE UUID="3c1f0e52-0000-4000-8000-000000000033">
+                            <SHORT-NAME>FOut</SHORT-NAME>
+                            <CATEGORY>VALUE</CATEGORY>
+                            <TYPE-TREF DEST="IMPLEMENTATION-DATA-TYPE">/DataTypes/float32</TYPE-TREF>
+                        </VARIABLE-DATA-PROTOTYPE>
+                    </DATA-ELEMENTS>
+                </SENDER-RECEIVER-INTERFACE>
+            </ELEMENTS>
+        </AR-PACKAGE>
+        <AR-PACKAGE>
+            <SHORT-NAME>DataTypes</SHORT-NAME>
+            <ELEMENTS>
+                <IMPLEMENTATION-DATA-TYPE UUID="3c1f0e52-0000-4000-8000-000000000040">
+                    <SHORT-NAME>uint16</SHORT-NAME>
+                    <CATEGORY>VALUE</CATEGORY>
+                    <SW-DATA-DEF-PROPS>
+                        <SW-DATA-DEF-PROPS-VARIANTS>
+                            <SW-DATA-DEF-PROPS-CONDITIONAL>
+                                <BASE-TYPE-REF DEST="SW-BASE-TYPE">/DataTypes/SwBaseTypes/uint16</BASE-TYPE-REF>
+                            </SW-DATA-DEF-PROPS-CONDITIONAL>
+                        </SW-DATA-DEF-PROPS-VARIANTS>
+                    </SW-DATA-DEF-PROPS>
+                </IMPLEMENTATION-DATA-TYPE>
+                <IMPLEMENTATION-DATA-TYPE UUID="3c1f0e52-0000-4000-8000-000000000041">
+                    <SHORT-NAME>uint32</SHORT-NAME>
+                    <CATEGORY>VALUE</CATEGORY>
+                    <SW-DATA-DEF-PROPS>
+                        <SW-DATA-DEF-PROPS-VARIANTS>
+                            <SW-DATA-DEF-PROPS-CONDITIONAL>
+                                <BASE-TYPE-REF DEST="SW-BASE-TYPE">/DataTypes/SwBaseTypes/uint32</BASE-TYPE-REF>
+                            </SW-DATA-DEF-PROPS-CONDITIONAL>
+                        </SW-DATA-DEF-PROPS-VARIANTS>
+                    </SW-DATA-DEF-PROPS>
+                </IMPLEMENTATION-DATA-TYPE>
+                <IMPLEMENTATION-DATA-TYPE UUID="3c1f0e52-0000-4000-8000-000000000042">
+                    <SHORT-NAME>float32</SHORT-NAME>
+                    <CATEGORY>VALUE</CATEGORY>
+                    <SW-DATA-DEF-PROPS>
+                        <SW-DATA-DEF-PROPS-VARIANTS>
+                            <SW-DATA-DEF-PROPS-CONDITIONAL>
+                                <BASE-TYPE-REF DEST="SW-BASE-TYPE">/DataTypes/SwBaseTypes/float32</BASE-TYPE-REF>
+                            </SW-DATA-DEF-PROPS-CONDITIONAL>
+                        </SW-DATA-DEF-PROPS-VARIANTS>
+                    </SW-DATA-DEF-PROPS>
+                </IMPLEMENTATION-DATA-TYPE>
+                <IMPLEMENTATION-DATA-TYPE UUID="3c1f0e52-0000-4000-8000-000000000043">
+                    <SHORT-NAME>boolean</SHORT-NAME>
+                    <CATEGORY>VALUE</CATEGORY>
+                    <SW-DATA-DEF-PROPS>
+                        <SW-DATA-DEF-PROPS-VARIANTS>
+                            <SW-DATA-DEF-PROPS-CONDITIONAL>
+                                <BASE-TYPE-REF DEST="SW-BASE-TYPE">/DataTypes/SwBaseTypes/boolean</BASE-TYPE-REF>
+                            </SW-DATA-DEF-PROPS-CONDITIONAL>
+                        </SW-DATA-DEF-PROPS-VARIANTS>
+                    </SW-DATA-DEF-PROPS>
+                </IMPLEMENTATION-DATA-TYPE>
+                <IMPLEMENTATION-DATA-TYPE UUID="3c1f0e52-0000-4000-8000-000000000044">
+                    <SHORT-NAME>UFIX16_SP001</SHORT-NAME>
+                    <CATEGORY>VALUE</CATEGORY>
+                    <SW-DATA-DEF-PROPS>
+                        <SW-DATA-DEF-PROPS-VARIANTS>
+                            <SW-DATA-DEF-PROPS-CONDITIONAL>
+                                <BASE-TYPE-REF DEST="SW-BASE-TYPE">/DataTypes/SwBaseTypes/uint16</BASE-TYPE-REF>
+                            </SW-DATA-DEF-PROPS-CONDITIONAL>
+                        </SW-DATA-DEF-PROPS-VARIANTS>
+                    </SW-DATA-DEF-PROPS>
+                </IMPLEMENTATION-DATA-TYPE>
+                <IMPLEMENTATION-DATA-TYPE UUID="3c1f0e52-0000-4000-8000-000000000045">
+                    <SHORT-NAME>SFIX16_S01_BN40</SHORT-NAME>
+                    <CATEGORY>VALUE</CATEGORY>
+                    <SW-DATA-DEF-PROPS>
+                        <SW-DATA-DEF-PROPS-VARIANTS>
+                            <SW-DATA-DEF-PROPS-CONDITIONAL>
+                                <BASE-TYPE-REF DEST="SW-BASE-TYPE">/DataTypes/SwBaseTypes/sint16</BASE-TYPE-REF>
+                            </SW-DATA-DEF-PROPS-CONDITIONAL>
+                        </SW-DATA-DEF-PROPS-VARIANTS>
+                    </SW-DATA-DEF-PROPS>
+                </IMPLEMENTATION-DATA-TYPE>
+                <IMPLEMENTATION-DATA-TYPE UUID="3c1f0e52-0000-4000-8000-000000000046">
+                    <SHORT-NAME>rt_Array_uint16_4</SHORT-NAME>
+                    <CATEGORY>ARRAY</CATEGORY>
+                    <SUB-ELEMENTS>
+                        <IMPLEMENTATION-DATA-TYPE-ELEMENT UUID="3c1f0e52-0000-4000-8000-000000000047">
+                            <SHORT-NAME>rt_Array_uint16_4</SHORT-NAME>
+                            <CATEGORY>TYPE_REFERENCE</CATEGORY>
+                            <ARRAY-SIZE>4</ARRAY-SIZE>
+                            <ARRAY-SIZE-SEMANTICS>FIXED-SIZE</ARRAY-SIZE-SEMANTICS>
+                            <SW-DATA-DEF-PROPS>
+                                <SW-DATA-DEF-PROPS-VARIANTS>
+                                    <SW-DATA-DEF-PROPS-CONDITIONAL>
+                                        <IMPLEMENTATION-DATA-TYPE-REF DEST="IMPLEMENTATION-DATA-TYPE">/DataTypes/uint16</IMPLEMENTATION-DATA-TYPE-REF>
+                                    </SW-DATA-DEF-PROPS-CONDITIONAL>
+                                </SW-DATA-DEF-PROPS-VARIANTS>
+                            </SW-DATA-DEF-PROPS>
+                        </IMPLEMENTATION-DATA-TYPE-ELEMENT>
+                    </SUB-ELEMENTS>
+                </IMPLEMENTATION-DATA-TYPE>
+            </ELEMENTS>
+            <AR-PACKAGES>
+                <AR-PACKAGE>
+                    <SHORT-NAME>ApplDataTypes</SHORT-NAME>
+                    <ELEMENTS>
+                        <APPLICATION-PRIMITIVE-DATA-TYPE UUID="3c1f0e52-0000-4000-8000-000000000050">
+                            <SHORT-NAME>UFIX16_SP001</SHORT-NAME>
+                            <CATEGORY>VALUE</CATEGORY>
+                            <SW-DATA-DEF-PROPS>
+                                <SW-DATA-DEF-PROPS-VARIANTS>
+                                    <SW-DATA-DEF-PROPS-CONDITIONAL>
+                                        <SW-CALIBRATION-ACCESS>READ-WRITE</SW-CALIBRATION-ACCESS>
+                                        <COMPU-METHOD-REF DEST="COMPU-METHOD">/DataTypes/CompuMethods/COMPU_UFIX16_SP001</COMPU-METHOD-REF>
+                                    </SW-DATA-DEF-PROPS-CONDITIONAL>
+                                </SW-DATA-DEF-PROPS-VARIANTS>
+                            </SW-DATA-DEF-PROPS>
+                        </APPLICATION-PRIMITIVE-DATA-TYPE>
+                        <APPLICATION-PRIMITIVE-DATA-TYPE UUID="3c1f0e52-0000-4000-8000-000000000051">
+                            <SHORT-NAME>SFIX16_S01_BN40</SHORT-NAME>
+                            <CATEGORY>VALUE</CATEGORY>
+                            <SW-DATA-DEF-PROPS>
+                                <SW-DATA-DEF-PROPS-VARIANTS>
+                                    <SW-DATA-DEF-PROPS-CONDITIONAL>
+                                        <SW-CALIBRATION-ACCESS>READ-WRITE</SW-CALIBRATION-ACCESS>
+                                        <COMPU-METHOD-REF DEST="COMPU-METHOD">/DataTypes/CompuMethods/COMPU_SFIX16_S01_BN40</COMPU-METHOD-REF>
+                                    </SW-DATA-DEF-PROPS-CONDITIONAL>
+                                </SW-DATA-DEF-PROPS-VARIANTS>
+                            </SW-DATA-DEF-PROPS>
+                        </APPLICATION-PRIMITIVE-DATA-TYPE>
+                    </ELEMENTS>
+                </AR-PACKAGE>
+                <AR-PACKAGE>
+                    <SHORT-NAME>CompuMethods</SHORT-NAME>
+                    <ELEMENTS>
+                        <COMPU-METHOD UUID="3c1f0e52-0000-4000-8000-000000000060">
+                            <SHORT-NAME>COMPU_UFIX16_SP001</SHORT-NAME>
+                            <CATEGORY>LINEAR</CATEGORY>
+                            <UNIT-REF DEST="UNIT">/DataTypes/Units/NoUnit</UNIT-REF>
+                            <COMPU-INTERNAL-TO-PHYS>
+                                <COMPU-SCALES>
+                                    <COMPU-SCALE>
+                                        <COMPU-RATIONAL-COEFFS>
+                                            <COMPU-NUMERATOR>
+                                                <V>0</V>
+                                                <V>1</V>
+                                            </COMPU-NUMERATOR>
+                                            <COMPU-DENOMINATOR>
+                                                <V>1000</V>
+                                            </COMPU-DENOMINATOR>
+                                        </COMPU-RATIONAL-COEFFS>
+                                    </COMPU-SCALE>
+                                </COMPU-SCALES>
+                            </COMPU-INTERNAL-TO-PHYS>
+                        </COMPU-METHOD>
+                        <COMPU-METHOD UUID="3c1f0e52-0000-4000-8000-000000000061">
+                            <SHORT-NAME>COMPU_SFIX16_S01_BN40</SHORT-NAME>
+                            <CATEGORY>LINEAR</CATEGORY>
+                            <UNIT-REF DEST="UNIT">/DataTypes/Units/degC</UNIT-REF>
+                            <COMPU-INTERNAL-TO-PHYS>
+                                <COMPU-SCALES>
+                                    <COMPU-SCALE>
+                                        <COMPU-RATIONAL-COEFFS>
+                                            <COMPU-NUMERATOR>
+                                                <V>-40</V>
+                                                <V>0.1</V>
+                                            </COMPU-NUMERATOR>
+                                            <COMPU-DENOMINATOR>
+                                                <V>1</V>
+                                            </COMPU-DENOMINATOR>
+                                        </COMPU-RATIONAL-COEFFS>
+                                    </COMPU-SCALE>
+                                </COMPU-SCALES>
+                            </COMPU-INTERNAL-TO-PHYS>
+                        </COMPU-METHOD>
+                    </ELEMENTS>
+                </AR-PACKAGE>
+                <AR-PACKAGE>
+                    <SHORT-NAME>DataTypeMappings</SHORT-NAME>
+                    <ELEMENTS>
+                        <DATA-TYPE-MAPPING-SET UUID="3c1f0e52-0000-4000-8000-000000000070">
+                            <SHORT-NAME>CalSwcDataTypeMappingsSet</SHORT-NAME>
+                            <DATA-TYPE-MAPS>
+                                <DATA-TYPE-MAP>
+                                    <APPLICATION-DATA-TYPE-REF DEST="APPLICATION-PRIMITIVE-DATA-TYPE">/DataTypes/ApplDataTypes/UFIX16_SP001</APPLICATION-DATA-TYPE-REF>
+                                    <IMPLEMENTATION-DATA-TYPE-REF DEST="IMPLEMENTATION-DATA-TYPE">/DataTypes/UFIX16_SP001</IMPLEMENTATION-DATA-TYPE-REF>
+                                </DATA-TYPE-MAP>
+                                <DATA-TYPE-MAP>
+                                    <APPLICATION-DATA-TYPE-REF DEST="APPLICATION-PRIMITIVE-DATA-TYPE">/DataTypes/ApplDataTypes/SFIX16_S01_BN40</APPLICATION-DATA-TYPE-REF>
+                                    <IMPLEMENTATION-DATA-TYPE-REF DEST="IMPLEMENTATION-DATA-TYPE">/DataTypes/SFIX16_S01_BN40</IMPLEMENTATION-DATA-TYPE-REF>
+                                </DATA-TYPE-MAP>
+                            </DATA-TYPE-MAPS>
+                        </DATA-TYPE-MAPPING-SET>
+                    </ELEMENTS>
+                </AR-PACKAGE>
+                <AR-PACKAGE>
+                    <SHORT-NAME>SwBaseTypes</SHORT-NAME>
+                    <ELEMENTS>
+                        <SW-BASE-TYPE UUID="3c1f0e52-0000-4000-8000-000000000080">
+                            <SHORT-NAME>uint16</SHORT-NAME>
+                            <CATEGORY>FIXED_LENGTH</CATEGORY>
+                            <BASE-TYPE-SIZE>16</BASE-TYPE-SIZE>
+                            <BASE-TYPE-ENCODING>NONE</BASE-TYPE-ENCODING>
+                            <NATIVE-DECLARATION>uint16</NATIVE-DECLARATION>
+                        </SW-BASE-TYPE>
+                        <SW-BASE-TYPE UUID="3c1f0e52-0000-4000-8000-000000000081">
+                            <SHORT-NAME>sint16</SHORT-NAME>
+                            <CATEGORY>FIXED_LENGTH</CATEGORY>
+                            <BASE-TYPE-SIZE>16</BASE-TYPE-SIZE>
+                            <BASE-TYPE-ENCODING>2C</BASE-TYPE-ENCODING>
+                            <NATIVE-DECLARATION>sint16</NATIVE-DECLARATION>
+                        </SW-BASE-TYPE>
+                        <SW-BASE-TYPE UUID="3c1f0e52-0000-4000-8000-000000000082">
+                            <SHORT-NAME>uint32</SHORT-NAME>
+                            <CATEGORY>FIXED_LENGTH</CATEGORY>
+                            <BASE-TYPE-SIZE>32</BASE-TYPE-SIZE>
+                            <BASE-TYPE-ENCODING>NONE</BASE-TYPE-ENCODING>
+                            <NATIVE-DECLARATION>uint32</NATIVE-DECLARATION>
+                        </SW-BASE-TYPE>
+                        <SW-BASE-TYPE UUID="3c1f0e52-0000-4000-8000-000000000083">
+                            <SHORT-NAME>float32</SHORT-NAME>
+                            <CATEGORY>FIXED_LENGTH</CATEGORY>
+                            <BASE-TYPE-SIZE>32</BASE-TYPE-SIZE>
+                            <BASE-TYPE-ENCODING>IEEE754</BASE-TYPE-ENCODING>
+                            <NATIVE-DECLARATION>float32</NATIVE-DECLARATION>
+                        </SW-BASE-TYPE>
+                        <SW-BASE-TYPE UUID="3c1f0e52-0000-4000-8000-000000000084">
+                            <SHORT-NAME>boolean</SHORT-NAME>
+                            <CATEGORY>FIXED_LENGTH</CATEGORY>
+                            <BASE-TYPE-SIZE>8</BASE-TYPE-SIZE>
+                            <BASE-TYPE-ENCODING>BOOLEAN</BASE-TYPE-ENCODING>
+                            <NATIVE-DECLARATION>boolean</NATIVE-DECLARATION>
+                        </SW-BASE-TYPE>
+                    </ELEMENTS>
+                </AR-PACKAGE>
+                <AR-PACKAGE>
+                    <SHORT-NAME>Units</SHORT-NAME>
+                    <ELEMENTS>
+                        <UNIT UUID="3c1f0e52-0000-4000-8000-000000000090">
+                            <SHORT-NAME>NoUnit</SHORT-NAME>
+                            <FACTOR-SI-TO-UNIT>1</FACTOR-SI-TO-UNIT>
+                            <OFFSET-SI-TO-UNIT>0</OFFSET-SI-TO-UNIT>
+                        </UNIT>
+                        <UNIT UUID="3c1f0e52-0000-4000-8000-000000000091">
+                            <SHORT-NAME>degC</SHORT-NAME>
+                            <DISPLAY-NAME>degC</DISPLAY-NAME>
+                            <FACTOR-SI-TO-UNIT>1</FACTOR-SI-TO-UNIT>
+                            <OFFSET-SI-TO-UNIT>-273.15</OFFSET-SI-TO-UNIT>
+                        </UNIT>
+                    </ELEMENTS>
+                </AR-PACKAGE>
+            </AR-PACKAGES>
+        </AR-PACKAGE>
+    </AR-PACKAGES>
+</AUTOSAR>

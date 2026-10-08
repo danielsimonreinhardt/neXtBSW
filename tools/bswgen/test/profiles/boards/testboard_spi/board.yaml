@@ -1,0 +1,52 @@
+# Synthetic s32k1xx board for the SPI pin test (ARCH-38): S32K144 LQFP64 with an 8 MHz crystal, no SBC and three
+# SPI buses on other instances, pins and chip selects than the eval board. Test data only, no hardware.
+#
+# - GD_SPI (LPSPI1): a gate driver with a driver module of this repository (gdTmc6200).
+# - MEM_SPI (LPSPI0, chip select 1): a second bus whose device has no driver in the project (no module for the part):
+#   its pins must be muxed all the same - the gap of the board test 2026-09-18 was a bus nobody muxed.
+# - SENS_SPI (LPSPI2): a bus the project does not use (use.spi): its pins must stay untouched.
+schema_version: 1
+
+board:
+  name: testboard_spi
+  mcu: S32K144
+  package: LQFP64
+  clock: { sosc_hz: 8000000 }
+
+devices:
+  - name: GD
+    part: TMC6200-TA
+    module: gdTmc6200
+    connect: { drv_en: GD_DRV_EN, fault: GD_FAULT }
+  - { name: MEM, part: SYNTH-EEPROM-25XX, note: "no driver module: only the bus is used" }
+  - { name: SENS, part: SYNTH-SENSOR, note: "bus not used by the project" }
+
+spi:     # [MUX] S32K144_LQFP64.pinmux.yaml: LPSPI1 PTD0..PTD3 MUX 3, LPSPI0 PTB2..PTB5 MUX 3, LPSPI2 MUX 3
+  - name: GD_SPI
+    instance: LPSPI1
+    sck:  { pin: PTD0 }
+    sin:  { pin: PTD1 }
+    sout: { pin: PTD2 }
+    pcs:  { pin: PTD3, index: 0 }
+    device: GD
+  - name: MEM_SPI
+    instance: LPSPI0
+    sck:  { pin: PTB2 }
+    sin:  { pin: PTB3 }
+    sout: { pin: PTB4 }
+    pcs:  { pin: PTB5, index: 1 }
+    device: MEM
+  - name: SENS_SPI
+    instance: LPSPI2
+    sck:  { pin: PTC15 }
+    sin:  { pin: PTC0 }
+    sout: { pin: PTC1 }
+    pcs:  { pin: PTC14, index: 0 }
+    device: SENS
+
+dio:
+  inputs:
+    - { name: GD_FAULT, pin: PTE8, active: high }
+  outputs:
+    - { name: GD_DRV_EN, pin: PTD16 }
+    - { name: LED, pin: PTD15 }

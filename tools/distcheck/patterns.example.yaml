@@ -1,0 +1,46 @@
+# Vorlage der PRIVATEN Musterliste fuer distcheck (Regel R3).
+#
+# Diese Datei ist nur eine Vorlage. Die echte Liste gehoert NICHT ins Repository: sie nennt die Nummern und Titel
+# der Unterlagen, die unter Geheimhaltung stehen - wer sie liest, weiss, welche Dokumente es gibt. Sie gehoert an
+# den Pfad aus `pattern_file` in tools/distcheck/distribution.yaml (Vorgabe doc/confidential/distcheck-patterns.yaml,
+# dieser Ordner steht in .gitignore).
+#
+#   python tools/distcheck patterns --out doc/confidential/distcheck-patterns.yaml
+#   (danach die Platzhalter durch die echten Dokumentnummern ersetzen)
+#
+# Fehlt die Datei, laeuft distcheck weiter, meldet aber ausdruecklich "UEBERSPRUNGEN: R3 ... unvollstaendig".
+# Die oeffentliche Grundliste (confidential, NDA, LA_OPT_NXP, ...) steht in distribution.yaml und laeuft immer.
+#
+# Felder je Muster: id (kurz, erscheint in der Meldung), regex (Python, ohne Gross-/Kleinschreibung),
+# text (Klartext fuer den Bericht), severity (error | warning), ignore_case (Vorgabe true).
+
+patterns:
+
+  # Dokumentnummern von Unterlagen mit Geheimhaltungsaufdruck - hier die echten Nummern eintragen.
+  - id: an_documents
+    regex: "\\ban6354\\d{2}\\b"
+    text: "Application Hint mit Geheimhaltungsaufdruck"
+
+  # Unterlagen, deren Weitergabe ungeklaert ist (AH1506/AH1507, nicht oeffentlich; PLAT-117, TOOL-240): der NAME allein
+  # ist erlaubt, INHALTE daraus nicht - Verweise mit Tabelle, Kapitel, Abschnitt oder Abbildung (Name, dahinter
+  # Tabelle, Kapitel, Abbildung oder Nummer; auch "Tabelle n der Unterlage"). Dasselbe Muster steht als app_hint_content in der
+  # oeffentlichen Grundliste (distribution.yaml); hier bei Bedarf um weitere Dokumente erweitern.
+  - id: app_hint_content
+    regex: '\bAH15(?:06|07)\b[\s,:;(]*(?:Rev\.?\s*\d+(?:\.\d+)*[\s,:;(]*)?(?:(?:tabelle|table|tab\.|kapitel|chapter|section|abschnitt|abbildung|abb\.|figure|fig\.|§)|\d+\.\d)|\b(?:tabelle|table|tab\.|kapitel|chapter|section|abschnitt|abbildung|abb\.|figure|fig\.|§)\s*[A-Za-z0-9.-]{1,10}\s+(?:of|in|from|aus|von|in der|in dem)\s+AH15(?:06|07)\b'
+    text: "Inhalt aus AH1506/AH1507 (nicht oeffentlich, nur der Name ist erlaubt)"
+
+  # Empfaengerkennungen, die Hersteller in PDFs einbetten (Wasserzeichen je Lizenznehmer).
+  - id: recipient_watermark
+    regex: "licensed to [A-Za-z0-9 .,-]+"
+    text: "Empfaengerkennung eines Herstellerdokuments"
+
+  # Beispielsoftware, deren Lizenz nicht geklaert ist (Registernamen daraus nicht uebernehmen).
+  - id: vendor_example_software
+    regex: "(example software|Beispielsoftware) .{0,40}(UJA11|MC337)"
+    text: "Bezug auf Hersteller-Beispielsoftware mit ungeklaerter Lizenz"
+
+  # Bauteile, deren Datenblatt nur unter Geheimhaltung vorliegt.
+  - id: nda_parts
+    regex: "\\bMC33771[BC]?\\b"
+    text: "Baustein, dessen Datenblatt unter Geheimhaltung steht"
+    severity: warning

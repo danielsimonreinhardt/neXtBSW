@@ -1,0 +1,22 @@
+# SPDX-License-Identifier: Apache-2.0
+# Project of the RTE-11 test: uses every entry of the synthetic board (board/board.yaml) and two internal converter
+# inputs whose names also start with a digit or are lower case. Connection targets in rte.yaml are written with
+# these names exactly; the C identifiers (SIG_12VBAT_CURRENT, VBAT_SENSE, ...) stay internal to the generators.
+schema_version: 1
+
+project:
+  name: rtegen_board_names
+  board: board
+  rte: rte.yaml
+  description: RTE-11 test profile
+
+clock:
+  system_hz: 48000000
+
+use:
+  adc: all
+  dio: all
+
+adc_internal:
+  - { name: 1V_BANDGAP, instance: ADC0, channel: BANDGAP }
+  - { name: supply_int, instance: ADC0, channel: INTERNAL0 }

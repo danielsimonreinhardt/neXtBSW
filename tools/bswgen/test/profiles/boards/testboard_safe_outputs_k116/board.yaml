@@ -1,0 +1,63 @@
+# Synthetic s32k1xx board for the safe outputs table in the linked image (PLAT-77): S32K116 LQFP48 (Cortex-M0+, so
+# the table is linked next to the ARMv6-M fault handler), 8 MHz crystal, no SBC, one gate driver with an active-low
+# enable, two PWM groups on both FTM instances of the derivative. Test data only, no hardware.
+#
+# - GD_C:  DRV_EN active low on PTC9 -> GPIO PSOR of port C, bit 9 (gated by PCC PORTC)
+# - HALF:  FTM1 pair on channels 0/1, listed first on the board but not used by the project -> not in the table
+#          (the ComplementaryPwm driver takes one group per project)
+# - DUAL:  FTM0 pairs on channels 2/3 and 6/7 (mask 0xCC, not contiguous)
+# - LED_K: a plain output without a module connection -> not in the table
+# Expected table: FTM0 SWOCTRL = 0xCC (gate PCC FTM0), PTC PSOR = 1 << 9 (gate PCC PORTC).
+schema_version: 1
+
+board:
+  name: testboard_safe_outputs_k116
+  mcu: S32K116
+  package: LQFP48
+  clock: { sosc_hz: 8000000 }
+
+devices:
+  - name: GD_C
+    part: TMC6200-TA
+    module: gdTmc6200
+    connect: { drv_en: GD_C_DRV_EN, fault: GD_C_FAULT }
+
+spi:     # [MUX] S32K116_LQFP48.pinmux.yaml: LPSPI0 PTB2..PTB5 MUX 3 (PCS1)
+  - name: GD_C_SPI
+    instance: LPSPI0
+    sck:  { pin: PTB2 }
+    sin:  { pin: PTB3 }
+    sout: { pin: PTB4 }
+    pcs:  { pin: PTB5, index: 1 }
+    device: GD_C
+
+pwm:     # [MUX] FTM1_CH0 PTC4, FTM1_CH1 PTA1, FTM0_CH2 PTC2, FTM0_CH3 PTC3, FTM0_CH6 PTE8, FTM0_CH7 PTE9 (MUX 2)
+  - name: HALF
+    instance: FTM1
+    mode: complementary
+    active: { high_side: high, low_side: high }
+    pairs:
+      - { name: HALF_A, high_side: HALF_A_HS, low_side: HALF_A_LS }
+    channels:
+      - { name: HALF_A_HS, channel: 0, pin: PTC4 }
+      - { name: HALF_A_LS, channel: 1, pin: PTA1 }
+  - name: DUAL
+    instance: FTM0
+    mode: complementary
+    active: { high_side: high, low_side: low }
+    gate_driver: GD_C
+    pairs:
+      - { name: DUAL_U, high_side: DUAL_U_HS, low_side: DUAL_U_LS }
+      - { name: DUAL_V, high_side: DUAL_V_HS, low_side: DUAL_V_LS }
+    channels:
+      - { name: DUAL_U_HS, channel: 2, pin: PTC2 }
+      - { name: DUAL_U_LS, channel: 3, pin: PTC3 }
+      - { name: DUAL_V_HS, channel: 6, pin: PTE8 }
+      - { name: DUAL_V_LS, channel: 7, pin: PTE9 }
+
+dio:
+  inputs:
+    - { name: GD_C_FAULT, pin: PTC8, active: high }
+  outputs:
+    - { name: GD_C_DRV_EN, pin: PTC9, active: low }
+    - { name: LED_K, pin: PTD15 }

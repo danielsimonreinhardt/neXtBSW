@@ -1,0 +1,260 @@
+# Derivat NXP S32K116 (Herstellerfakten, nur lesen). Schema: tools/nxconfig/model.py (Derivative).
+# Angelegt mit PLAT-11 (2026-09-16). Kurzbelege in den Einträgen:
+#   [RM]    S32K1xx Series Reference Manual Rev. 14, 09/2021 (öffentliches NXP-Dokument S32K1XXRM, frei abrufbar)
+#           – Kapitel/Tabellen je Eintrag
+#   [DS]    S32K1xx Data Sheet Rev. 13, 04/2020, Figure 3 "S32K1xx product series comparison"
+#   [SVD]   S32K116.svd (Version 1.6) aus Keil.S32K116_SDK_DFP 1.2.1, Herkunft und Lizenz:
+#           sources/keil_s32k116_dfp/README.md. Die Datei liegt auf Arbeitsplatz-Ebene, nicht im Repository;
+#           bis PLAT-32 Quelle des Derivat-Headers, seither nur optionale Gegenprobe.
+#   [RTD]   NXP-RTD-Header S32K116*.h aus Zephyr hal_nxp (BSD-3-Clause), Derivat-Header seit PLAT-32:
+#           platforms/s32k1xx/bsp/bspMcu/include/3rdparty/nxp/rtd/README.md
+#   [hal_nxp] Pin-Multiplexing-Quelle sources/hal_nxp/S32K116_*-pinctrl.h (Apache-2.0)
+# SRAM: einzige Ausführung (17 KB gesamt), SRAM_L ist der 1-KB-MTB-Bereich ([RM] Table 31-2, Fußnote 2).
+# ARCH-20 (2026-09-17): Belege aus den Unterlagen im Repository (doc/hardware/s32k1xx/), Seitenzahlen = PDF-Seiten:
+#   [RM13]  S32K1xx Series Reference Manual Rev. 13 (04/2020), S32K-RM.pdf, mit der angehängten Tabelle
+#           S32K116_IO_Signal_Description_Input_Multiplexing.xlsx
+#   [DS13]  S32K1xx Data Sheet Rev. 13 (04/2020), S32K-Datasheet.pdf (dieselbe Ausgabe wie [DS])
+#   [MAP]   S32K1xx_Memory_Map.xlsx, Dateianhang des [RM13] (doc/hardware/s32k1xx/S32K-RM.pdf, Anhang der PDF),
+#           Blatt "Overview Memory Map", Spalte S32K116: Flash-Ende, FlexNVM, FlexRAM, SRAM_L-Anfang, SRAM_U-Ende
+# ARCH-39 (2026-09-18): letzter Beleg aus Herstellerdateien ohne Weitergaberecht durch [MAP] ersetzt (PLAT-46 F8,
+# Belegregel doc/guide/new-derivative.md "The rule on sources"); kein Wert geändert.
+schema_version: 1
+
+derivative:
+  name: S32K116
+  family: s32k1xx
+  core: cortex-m0plus
+  nvic_priority_bits: 2                   # [RM] 8.2.1 (S. 123): "This device supports four priority levels",
+                                          # IPR-Felder 2 Bit. Die NXP-Header nennen widersprüchlich 4 (PLAT-10).
+  features: []                            # kein Code-Cache: [RM] 33.1 (S. 721) "Variants of S32K11x series do not
+                                          # have LMEM" (der SVD-Stand 1.6 führt LMEM trotzdem noch)
+  packages: [LQFP48, QFN32]               # [DS] Figure 3 (48-pin LQFP, 32-pin QFN)
+  pin_pattern: "PT[A-E]([0-9]|1[0-7])"    # Pins der Tabellen: PTA0..PTA13, PTB0..PTB13, PTC1..PTC16, PTD0..PTD16,
+                                          # PTE4..PTE9 ([hal_nxp])
+  sources:
+    - S32K1xx Series Reference Manual Rev. 14 (Speicher, Sektoren, Instanzen, NVIC-Prioritätsstufen, Takt)
+    - S32K1xx Data Sheet Rev. 13, Figure 3 (Gehäuse, Instanzen, Takt)
+    - S32K1xx_Memory_Map.xlsx, Anhang des Reference Manual Rev. 13 (Speicheradressen)
+    - mcudb/s32k1xx/sources/hal_nxp/S32K116_LQFP48-pinctrl.h, S32K116_QFN32-pinctrl.h (Pin-Multiplexing)
+    - S32K116.svd 1.6 (Adressen, Register, IRQ-Nummern des erzeugten Headers; Arbeitsplatz-Ebene)
+
+memory:
+  - { name: PFLASH, kind: code_flash, start: 0x00000000, size: 0x00020000, sector_size: 0x800, program_size: 8,
+      source: "[RM] Kapitel 36 (FTFC) Tabelle 'sizes of flash memory types' S. 785: 128 KB Program Flash, 1 Block;
+               36.2.1.1 Sektor 2 KB (<= 256 KB); program_size: FTFC-Befehl Program Phrase (0x07, 8 Byte) -
+               gleiche FTFC-IP wie S32K14x, [RM] 36.4.12.2 'Program Phrase' (PLAT-12, fuer den Bootloader);
+               [MAP] Flash-Ende 0001_FFFF" }
+  - { name: FLEXNVM, kind: data_flash, start: 0x10000000, size: 0x00008000, sector_size: 0x800,
+      source: "[RM] S. 785: FlexNVM 32 KB; 36.2.1.2 Sektor 2 KB; [MAP] FlexNVM 1000_0000-1000_7FFF" }
+  - { name: SRAM_L, kind: ram, start: 0x1FFFFC00, size: 0x00000400,
+      source: "[RM] Table 31-2: SRAM_L 1 KB (Fußnote 2: MTB-Bereich, ohne ECC); SRAM_L endet bei 0x1FFFFFFF (31.3.1); [MAP] SRAM_L-Anfang 1FFF_FC00" }
+  - { name: SRAM_U, kind: ram, start: 0x20000000, size: 0x00003800,
+      source: "[RM] Table 31-2: SRAM_U 14 KB ab 0x20000000 (31.3.1); [MAP] SRAM_U-Ende 2000_37FF" }
+  - { name: FLEXRAM, kind: eeprom_ram, start: 0x14000000, size: 0x00000800,
+      source: "[RM] S. 785: FlexRAM 2 KB; [MAP] FlexRAM 1400_0000-1400_07FF" }
+
+# NVM-07: Codes des Partitionierbefehls PGMPART (einmalig, irreversibel - nur Chip-Löschen macht ihn rückgängig).
+# `sizes` = EEPROM Data Set Size Code (FCCOB4, IFR EEESIZE), `partitions` = FlexNVM Partition Code (FCCOB5, IFR
+# DEPART). Belegt (TOOL-243, F8, nur oeffentliche Dokumente): DEPART [RM13] Table 36-5 (S. 786) zeilenweise
+# mit `pdftotext -raw` (Reihenfolge des Inhaltsstroms) gelesen - dort stehen Code, D-Flash und Backup je Zeile
+# beisammen; die verschobene Spaltenzuordnung (Befund NVM-02) entsteht nur bei der Layout-Extraktion. Gegengeprueft
+# mit AN11983 Rev. 2 Table 3 (gleiche Zeilen) und der Definition im RM ('FlexNVM memory not partitioned for
+# data flash is used to store EEPROM records': D-Flash + Backup = 32 KB in jeder Zeile). EEESIZE [RM13] Table 36-3
+# (S. 785) und AN11983 Table 2.
+eeprom_emulation:
+  sizes:                                 # code: FCCOB4[3:0], eeprom_bytes
+    - { code: 0x3, eeprom_bytes: 2048 }
+    - { code: 0xF, eeprom_bytes: 0 }
+  partitions:                            # code: FCCOB5[3:0] (DEPART), D-Flash / EEPROM-Backup
+    - { code: 0x0, data_flash_bytes: 0x08000, backup_bytes: 0x00000 }   # 0000b 32 KB / 0 KB
+    - { code: 0x3, data_flash_bytes: 0x00000, backup_bytes: 0x08000 }   # 0011b 0 KB / 32 KB
+    - { code: 0x8, data_flash_bytes: 0x00000, backup_bytes: 0x08000 }   # 1000b 0 KB / 32 KB
+    - { code: 0x9, data_flash_bytes: 0x02000, backup_bytes: 0x06000 }   # 1001b 8 KB / 24 KB
+    - { code: 0xB, data_flash_bytes: 0x08000, backup_bytes: 0x00000 }   # 1011b 32 KB / 0 KB
+  timing:
+    backups:
+      - { backup_bytes: 0x08000, write_max_us: 2000, partition_typ_ms: 71 }
+    first_write_factor: 2
+    source: "[DS13] Table 37 'Flash command timing specifications for S32K11x series' (S. 47-48): teewr32b max, tpgmpart typ, Fußnote 4 (erste Schreibzugriffe nach Reset bis 2x)"
+  # NVM-11: CSEc-Schluesselraum (PGMPART FCCOB1[1:0]), vom Ende der EEPROM-Emulation abgezogen; mit Schluesseln belegt
+  # der CSEc selbst 3 Plaetze (MASTER_ECU_KEY, BOOT_MAC_KEY, BOOT_MAC). Teile ohne CSEc (SIM SDID FEATURES Bit 7) nehmen
+  # nur Code 0 an. Schreibzyklen je Verhaeltnis EEPROM-Backup zu genutztem FlexRAM: [DS13] Table 38 (nnvmwree16/256);
+  # unter 16 nennt das Datenblatt keine Zahl.
+  keys:                                  # code: FCCOB1, slots, eeprom_bytes (vom EEPROM abgezogen)
+    - { code: 0x0, slots: 0, system_slots: 0, eeprom_bytes: 0 }
+    - { code: 0x1, slots: 5, system_slots: 3, eeprom_bytes: 128 }
+    - { code: 0x2, slots: 10, system_slots: 3, eeprom_bytes: 256 }
+    - { code: 0x3, slots: 20, system_slots: 3, eeprom_bytes: 512 }
+  endurance:
+    - { ratio: 16, writes: 100000 }
+    - { ratio: 256, writes: 1600000 }
+  source: "[RM13] 36.1.2.1.1 Table 36-3 EEESIZE (S. 785), 36.1.2.1.2 Table 36-5 DEPART (S. 786), 36.5.11.14 Table 36-62 (CSEc-Schluessel), Table 36-64/36-66 (S. 866-867); AN11983 Rev. 2 Table 2/3"
+
+# Instanzen: [RM] Instantiation-Tabellen je Kapitel (Table 47-1 FTM, 51-1 LPSPI, 52-1 LPI2C, 53-1 LPUART,
+# Kapitel 55 FlexCAN S. 1846, Table 43-1 ADC) und [DS] Figure 3; gegengeprüft mit den Pin-Tabellen [hal_nxp]
+# (nur FTM0/FTM1, LPSPI0, LPUART0/1, LPI2C0, FlexCAN0, ADC0 haben Signale) und mit [SVD].
+# ADC: 12 Bit, ADCH 0b00000..0b11111 ([RM] Table 43-2); extern nutzbar 13 Kanäle am LQFP48, 9 am QFN32
+# ([RM] Table 43-1), welche Kanalnummern das sind, steht in den Pin-Tabellen (gegengeprüft ARCH-20: [RM13]
+# S32K116_IO_Signal_Description_Input_Multiplexing.xlsx, Blatt PeripheralSummaries: ADC0_SE0/1/3-7/9-14 am LQFP48,
+# ADC0_SE0/1/3-7/10/11 am QFN32).
+# internal_channels (ARCH-20): ADCH-Codes aus [RM13] 44.4.2 SC1n[ADCH] (S. 1222-1223, Feld beim S32K116 5 Bit,
+# Table 43-2): INTERNAL0 10101b, BANDGAP 11011b, VREFSH 11101b, VREFS (= VREFSL) 11110b; Namen wie bspAdc
+# adc/adcPhysicalName.h (bswgen ADC_INTERNAL). [RM13] 43.1.2 Table 43-3 "Internal channel availability" (S. 1193):
+# belegt ist nur Kanal 0 des ADC0 (Versorgungsmessung, SIM_CHIPCTL[ADC_SUPPLY], [RM13] 11.1.1.1 S. 171), Kanal 1-3
+# sind "Reserved" - INTERNAL1..3 deshalb gestrichen (bisher mit verify aus dem S32K144 übernommen).
+#
+# PLAT-22/ARCH-18: `clock` je Instanz ist der Funktionstakt am PCC-Taktschalter PCCn.PCS. Das Derivat nennt nur
+# die **möglichen** Quellen (`sources`), den asynchronen Ausgang, an dem die Instanz hängt (`divider` = DIV1/DIV2),
+# die Obergrenze des Funktionstakts (`max_hz`, nur wo das RM eine Zahl nennt) und die **Vorgabe** (`default`), die
+# gilt, solange das Projekt nichts wählt; gewählt wird im Projekt (`peripheral_clocks.<Instanz>`).
+# Kurzbelege der Takteinträge:
+#   [RM27] S32K1xx Series Reference Manual Rev. 14 (09/2021, öffentliches NXP-Dokument S32K1XXRM,
+#          gleiche Tabelle in [RM13] Table 27-8 S. 564-567), Kapitel 27 "Clock Distribution", 27.6 Table 27-8 "Peripheral
+#          clock summary" (S. 568-571): Spalte "Clocks controlled by [PCS] of PCC" (mögliche Quellen und ihr
+#          Ausgang DIV1/DIV2) und Spalte "Comments and maximum frequencies". Die Tabelle gilt je Modul
+#          (FlexTimer, ADC, LPUART, ...), nicht je Instanz; sie ersetzt den ungegengelesenen [DIV]-Beleg aus
+#          PLAT-22 (Befund 2), deshalb steht an den Takteinträgen kein `verify` mehr.
+#   [PORT] external/openbsw/executables/referenceApp/platforms/s32k148evb/bspConfiguration/include/bsp/clock/
+#          boardClock.h, Zeilen 128-151: CLOCK_SOURCE_<Gate> des OpenBSW-Referenz-Ports, Beleg der
+#          **Vorgabe** (gleiche Familie, gleicher
+#          Treiber platforms/s32k1xx/bsp/bspClock/src/clockConfig.cpp)
+# Beim S32K11x sind die SPLLDIVx-Ausgänge reserviert ([RM27] Figure 27-1, Fußnote 3),
+# deshalb fehlt SPLL in jeder `sources`-Liste dieses Derivats.
+# **Abweichung vom Referenz-Port:** der Port wählt für FTM1 die SPLL, die es beim S32K11x nicht gibt (PLAT-11,
+# [RM13] 28.1 S. 579 "SPLL mode is not available in S32K11x"). Eingetragen ist deshalb FIRC: Reset-Takt ([RM13]
+# 27.4.1 S. 563), ohne Bauteil am Board immer vorhanden, FIRCDIV1_CLK mit Teiler 1 innerhalb der Grenze 48 MHz
+# ([RM13] Table 27-1 S. 558). Das ist eine neXtBSW-Vorgabe, keine Herstellerangabe; das RM belegt, dass sie zulässig ist.
+instances:
+  ADC0: { class: adc, resolution_bits: 12, channel_pattern: "SE([0-9]|1[0-5])",
+          internal_channels: [BANDGAP, INTERNAL0, VREFSH, VREFS],
+          clock: { sources: [SOSC, SIRC, FIRC], divider: [2],
+                   max_hz: 50000000,
+                   default: { select: FIRC, divider: 2 },
+                   source: "[RM27] ADC, PCS FIRCDIV2/SIRCDIV2/SOSCDIV2 (ohne SPLLDIVx, siehe oben),
+                     Fußnote 8 'maximum conversion clock frequency is 50 MHz'; Vorgabe [PORT]
+                     CLOCK_SOURCE_ADC0" } }
+  FTM0: { class: timer, channels: 8,      # [RM] Table 47-1: FTM0 8 Kanäle, 1 Fault-Eingang
+          clock: { sources: [SOSC, SIRC, FIRC], divider: [1],
+                   default: { select: SOSC, divider: 1 },
+                   source: "[RM27] FlexTimer, PCS FIRCDIV1/SIRCDIV1/SOSCDIV1 (ohne SPLLDIVx, siehe oben); Vorgabe [PORT]
+                     CLOCK_SOURCE_FTM0" } }
+  FTM1: { class: timer, channels: 8,      # [RM] Table 47-1: FTM1 8 Kanäle, 3 Fault-Eingänge, Quadratur-Dekoder
+          clock: { sources: [SOSC, SIRC, FIRC], divider: [1],
+                   default: { select: FIRC, divider: 1 },
+                   source: "[RM27] FlexTimer, PCS FIRCDIV1/SIRCDIV1/SOSCDIV1 (SPLLDIVx beim S32K11x
+                     reserviert); der Referenz-Port wählt für FTM1 die SPLL, die es hier nicht gibt ([RM13] 28.1
+                     S. 579) - Vorgabe deshalb der Reset-Takt FIRC ([RM13] 27.4.1 S. 563, FIRCDIV1 <= 48 MHz
+                     Table 27-1 S. 558), nicht aus [PORT] belegbar" } }
+  LPSPI0: { class: spi,                   # [RM] Table 51-1: nur LPSPI0 (Befund zu ARCH-09/PLAT-11, siehe README)
+            clock: { sources: [SOSC, SIRC, FIRC], divider: [2],
+                     default: { select: FIRC, divider: 2 },
+                     source: "[RM27] LPSPI, PCS FIRCDIV2/SIRCDIV2/SOSCDIV2 (ohne SPLLDIVx, siehe oben); Vorgabe [PORT]
+                       CLOCK_SOURCE_LPSPI0" } }
+  # message_buffers (ARCH-42): [RM13] Table 55-1 "FlexCAN instances and features" (S. 1787), Zeile
+  #   S32K116, Spalte "Number of Message Buffers (MB)": 32. Buffer n liegt bei 8-Byte-Nutzlast bei
+  #   Offset 0x80 + 0x10 n (Table 55-16, S. 1884); Zugriffe auf nicht vorhandene Buffer sind Zugriffsfehler (S. 1942).
+  #   Vektoren: [RM13] Anhang S32K1xx_DMA_Interrupt_mapping.xlsx, Blatt S32K11x_INT_MAP_ARM: CAN0 hat einen
+  #   Vektor für die Buffer 0-31.
+  FlexCAN0: { class: can, message_buffers: 32,    # [RM] Kapitel FlexCAN: FlexCAN0 mit 32 Message Buffers, CAN FD
+              clock: { select: none, source: "[RM] Kapitel FlexCAN, CTRL1.CLKSRC; kein PCC-Taktschalter" } }
+  LPUART0: { class: uart,                 # [RM] Table 53-1
+             clock: { sources: [SOSC, SIRC, FIRC], divider: [2],
+                      default: { select: SOSC, divider: 2 },
+                      source: "[RM27] LPUART, PCS FIRCDIV2/SIRCDIV2/SOSCDIV2 (ohne SPLLDIVx, siehe oben); Vorgabe [PORT]
+                        CLOCK_SOURCE_LPUART0" } }
+  LPUART1: { class: uart,
+             clock: { sources: [SOSC, SIRC, FIRC], divider: [2],
+                      default: { select: FIRC, divider: 2 },
+                      source: "[RM27] LPUART, PCS FIRCDIV2/SIRCDIV2/SOSCDIV2 (ohne SPLLDIVx, siehe oben); Vorgabe [PORT]
+                        CLOCK_SOURCE_LPUART1" } }
+  LPI2C0: { class: i2c,                   # [RM] Table 52-1
+            clock: { sources: [SOSC, SIRC, FIRC], divider: [2],
+                     default: { select: SOSC, divider: 2 },
+                     source: "[RM27] LPI2C, PCS FIRCDIV2/SIRCDIV2/SOSCDIV2 (ohne SPLLDIVx, siehe oben); Vorgabe [PORT]
+                       CLOCK_SOURCE_LPI2C0" } }
+  FlexIO: { class: flexio,                # [DS] Figure 3: 1x FlexIO
+            clock: { sources: [SOSC, SIRC, FIRC], divider: [2],
+                     default: { select: SOSC, divider: 2 },
+                     source: "[RM27] FlexIO, PCS FIRCDIV2/SIRCDIV2/SOSCDIV2 (ohne SPLLDIVx, siehe oben); Vorgabe [PORT]
+                       CLOCK_SOURCE_FLEXIO" } }
+
+# MPU (ARCH-16): NXP System MPU am Crossbar, nicht die ARM-Core-MPU ([RM] 15.1: "The Arm M4 and M0+ core version
+# in this family does not integrate the Arm Core MPU"). `regions` ist die Zahl der Regionendeskriptoren RGD[]; die
+# Codierung in MPU_CESR[NRGD] (0 = 8, 1 = 12, 2 = 16 Regionen, [RM] 15.4.2 S. 254) ist Registerwissen der Familie
+# und steht im Generator (tools/bswgen, MPU_NRGD_CODES), nicht hier.
+# Hinweis [RM] 15.1: beim S32K116/S32K118 ist RGD0_WORD2[M1PE] unbenutzt, und der S32K11x hat nur 2 Slave-Ports
+# (Flash-Controller, SRAM-Controller/MTB_RAM/MCM) statt 4 - die Regionenzahl ist trotzdem dieselbe wie beim S32K144.
+mpu:
+  regions: 8
+  source: "[RM] Table 15-4 'MPU configurations' (S. 246): S32K116 8 Regionendeskriptoren, 2 Slave-Ports,
+           CESR-Reset 0081_2001h -> NRGD = 0"
+
+# Pin-Multiplexing je Gehäuse (Signal -> Pin -> PORT_PCR.MUX), erzeugt mit mcudb/tools/pinmux_hal_nxp.py.
+pinmux:
+  LQFP48: { file: S32K116_LQFP48.pinmux.yaml }
+  QFN32: { file: S32K116_QFN32.pinmux.yaml }
+
+# Derivat-Header (PLAT-32, Entscheidung des Nutzers 2026-09-16): NXP-RTD-Header aus Zephyr hal_nxp (BSD-3-Clause),
+# unverändert eingecheckt unter platforms/s32k1xx/bsp/bspMcu/include/3rdparty/nxp/rtd/ (Herkunft, Commit, SHA-256:
+# README.md dort). 3rdparty/nxp/S32K116.h ist die daraus erzeugte Anpassungsschicht auf die Namen der OpenBSW-Treiber
+# (mcudb/tools/rtd_adapter.py, Regeln device_header_rules/s32k1xx_rtd.yaml). Der Header beschreibt genau dieses
+# Derivat, deshalb entfällt die #undef-Kette der S32K148-Lösung des S32K144. Bis PLAT-32 wurde er beim Konfigurieren
+# aus der SVD erzeugt (generated_by: svd2header, NX_SVD_DIR); die SVD bleibt nur als optionale Gegenprobe.
+device_header: { file: 3rdparty/nxp/S32K116.h, describes: S32K116,
+                 source: "NXP RTD S32K116*.h aus zephyrproject-rtos/hal_nxp @ bb740b2 (s32/drivers/s32k1/BaseNXP/header,
+                          BSD-3-Clause) mit Anpassungsschicht aus mcudb/tools/rtd_adapter.py" }
+
+# Takt (ARCH-06): Grenzen für das Taktmodell tools/nxconfig/clock.py (Familie s32k1xx). Belege:
+#   FIRC 48 MHz: [DS] Figure 1/2-2 "FIRC 48 MHz", [DS13] 6.2.3.1 Table 29 (S. 40), [RM] 27.4.1 (Reset-Takt ist FIRC)
+#   SIRC 8 MHz: [DS] "SIRC 8 MHz" (High Range), [DS13] 6.2.3.2 Table 31 (S. 41); kein SPLL beim S32K11x
+#     ([RM13] 28.1 S. 579 "SPLL mode is not available in S32K11x series of devices")
+#   Quarz 4..40 MHz: [DS] Figure 2-2 "SOSC 4-40 MHz" (S32K11x-Blockbild), [DS13] 6.2.2 Table 28 f_osc_hi (S. 39,
+#     gleiche Spalte S32K11x; External-Clock-Modus beim S32K11x bis 48 MHz, im Modell nicht abgebildet)
+#   RUN-Grenzen Kern/Bus 48 MHz, Flash (slow) 24 MHz: [RM] Kapitel 27, Tabelle "maximum frequencies", Spalte
+#     S32K11x RUN (S. 566; in [RM13] 27.4 S. 562)
+clock:
+  internal: { FIRC: 48000000, SIRC: 8000000 }
+  # SYS-53: LPO (Takt des WDOG und über LPO1K_CLK des LPTMR der Periodenprüfung). Spalte S32K1xx; ein S32K14xW-
+  # Derivat hätte max_hz 141000. nxconfig leitet daraus die Watchdog-Bedienung beim schnellsten LPO und die
+  # Promille-Grenzen der Periodenprüfung ab (bisher Konstanten in LptmrCycleTimer.h).
+  lpo: { nominal_hz: 128000, min_hz: 113000, max_hz: 139000,
+         source: "[DS13] 6.2.4 Table 33 'Low Power Oscillator (LPO) electrical specifications' (S. 41): F_LPO min
+           113 kHz, typ 128 kHz, max 139 kHz (S32K1xx; S32K14xW max 141 kHz)" }
+  oscillator: { min_hz: 4000000, max_hz: 40000000,
+                source: "[DS13] 6.2.2 Table 28 f_osc_hi 4-40 MHz (S. 39); [RM13] 28.1.2 SOSCCFG[RANGE] (S. 580)" }
+  max_hz: { core: 48000000, bus: 48000000, slow: 24000000 }      # RUN; HSRUN gibt es beim S32K11x nicht
+  # ARCH-22: Grenzen der asynchronen Ausgänge DIV1/DIV2, das Taktmodell wählt daraus die Teiler. Ohne SPLL keine
+  # SPLLDIVx und keine eigene Busgrenze für den SPLL-Systemtakt (system_source_max_hz entfällt).
+  output_max_hz:
+    max_hz: { FIRCDIV1: 48000000, FIRCDIV2: 48000000, SIRCDIV1: 8000000, SIRCDIV2: 8000000,
+              SOSCDIV1: 40000000, SOSCDIV2: 40000000 }
+    source: "[RM13] 27.3 Table 27-1 'Clock descriptions' (S. 557-558), RUN-Modus: FIRCDIV1/2_CLK 48 MHz,
+      SIRCDIV1/2_CLK 8 MHz, SOSCDIV1/2_CLK 40 MHz ('should be configured to ... or less'); SPLLDIVx_CLK nur
+      S32K14x (Fußnote 4, Figure 27-1 Fußnote 3)"
+  # PLAT-22: PCC-Gates ohne Instanz in `instances` (kein Generator konfiguriert LPIT/LPTMR bisher, der Taktreiber
+  # schaltet ihren Takt aber ein). Belege wie bei den Instanzen: [RM27] und [PORT].
+  pcc:
+    LPIT: { sources: [SOSC, SIRC, FIRC], divider: [2], default: { select: SIRC, divider: 2 },
+            source: "[RM27] LPIT, PCS FIRCDIV2/SIRCDIV2/SOSCDIV2 (ohne SPLLDIVx, siehe oben) (dazu LPO128K, im Modell nicht abgebildet);
+              Vorgabe [PORT] CLOCK_SOURCE_LPIT" }
+    LPTMR0: { sources: [SOSC, SIRC, FIRC], divider: [2], default: { select: SOSC, divider: 2 },
+              source: "[RM27] LPTMR, PCS FIRCDIV2/SIRCDIV2/SOSCDIV2 (ohne SPLLDIVx, siehe oben);
+                Vorgabe [PORT] CLOCK_SOURCE_LPTMR0" }
+
+# BL-03: eindeutige Chipkennung (128 Bit), aus der der Tester den Geraeteschluessel des Bootloaders ableitet (DID
+# 0xF18C). SIM_UIDH, SIM_UIDMH, SIM_UIDML, SIM_UIDL an 0x4004_8054..0x4004_8063, in Adressreihenfolge gelesen,
+# jedes Wort hoechstwertiges Byte zuerst (= UID127..UID0). Derselbe SIM-Block in der ganzen Familie.
+uid:
+  address: 0x40048054
+  size: 16
+  source: "platforms/s32k1xx/bsp/bspMcu/include/3rdparty/nxp/rtd/S32K116_SIM.h: IP_SIM_BASE 0x4004_8000, UIDH Offset 0x54, UIDMH 0x58, UIDML 0x5C, UIDL 0x60"
+
+# IO-51: Pin-Interrupts (Konzept doc/architecture/pin-interrupts.md Abschnitt 2, Derivat-Fakt). Wie S32K14x hat
+# jeder Pin eine eigene Flankenerkennung (PORT_PCRn.IRQC), aber alle Ports A-E enden in EINEM Vektor PORT: alle
+# Ereignis-Eingänge des Derivats teilen sich eine Priorität (gleicher Rang).
+pin_interrupts:
+  edges: [rising, falling, both]
+  vectors:
+    - { name: PORT, pins: "PT[A-E]([0-9]|1[0-7])" }
+  source: "[RM13] 12.5.1 PORT_PCRn[IRQC] (S. 213-214): Flanke steigend 1001b, fallend 1010b, beide 1011b je Pin, Flag PORT_ISFR; platforms/s32k1xx/bsp/bspMcu/include/3rdparty/nxp/rtd/S32K116_COMMON.h: PORT_IRQn 9 'PORTA
+    Interrupt,PORTB Interrupt,PORTC Interrupt,PORTD Interrupt,PORTE Interrupt'"

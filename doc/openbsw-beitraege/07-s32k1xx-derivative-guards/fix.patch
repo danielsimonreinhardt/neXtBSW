@@ -1,0 +1,134 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Your Name <you@example.com>
+Date: Thu, 17 Sep 2026 12:00:00 +0200
+Subject: [PATCH] Fix s32k1xx build for derivatives without SPLL, LMEM or NVIC
+
+The s32k1xx platform is written for the whole S32K1 family and already
+guards the SPLL code of clockConfig.cpp with PLL_AVAILABLE, but four
+places build only on a part with an SPLL, a code cache and an ARMv7-M
+core, so a derivative such as the S32K116 or S32K142 fails to compile:
+
+- pllOff() sits outside the PLL_AVAILABLE guard and calls
+  isSpllSysClk() and spllStop(), which only exist inside it. Switching
+  off a PLL that the derivative does not have is a no-op, so the body
+  is guarded, unlike systemClock2Pll() which keeps its panic.
+- isSoscValid() is only used by systemClock2Pll(). Without an SPLL it
+  becomes an unused static function, which -Werror=unused-function
+  turns into a build error, so it gets the same guard.
+- SYS_GetActive() forwards to NVIC_GetActive(), which needs the
+  NVIC_IABR registers. ARMv6-M has none, and CMSIS says so in
+  core_cm0plus.h ("NVIC_GetActive not available for Cortex-M0+").
+  Declaration and definition now share a __CORTEX_M guard.
+- cache.cpp writes LMEM->PCCCR unconditionally. Derivatives without the
+  local memory controller have no IP_LMEM_BASE in the device header;
+  there the cache functions become empty, which is what "no cache"
+  means for a caller.
+
+Nothing changes for the S32K148: with an SPLL, an LMEM and a Cortex-M4F
+all four guards select the code that was there before.
+
+Signed-off-by: Your Name <you@example.com>
+---
+ .../s32k1xx/bsp/bspClock/src/clockConfig.cpp      |  6 ++++++
+ platforms/s32k1xx/bsp/bspCore/src/cache/cache.cpp | 15 +++++++++++++++
+ .../bspInterruptsImpl/include/interrupt_manager.h |  5 +++++
+ .../bsp/bspInterruptsImpl/src/interrupt_manager.c |  2 ++
+ 4 files changed, 28 insertions(+)
+
+diff --git a/platforms/s32k1xx/bsp/bspClock/src/clockConfig.cpp b/platforms/s32k1xx/bsp/bspClock/src/clockConfig.cpp
+index fcb8bdfd..d6c90c34 100644
+--- a/platforms/s32k1xx/bsp/bspClock/src/clockConfig.cpp
++++ b/platforms/s32k1xx/bsp/bspClock/src/clockConfig.cpp
+@@ -336,7 +336,11 @@ void soscMon()
+ 
+ bool isSoscSysClk() { return (SCG->SOSCCSR & SCG_SOSCCSR_SOSCSEL_MASK) != 0; }
+ 
++#if PLL_AVAILABLE
++// Only systemClock2Pll() asks whether the crystal oscillator is already valid. Without an SPLL this
++// would be an unused static function, which -Werror=unused-function turns into a build error.
+ bool isSoscValid() { return (SCG->SOSCCSR & SCG_SOSCCSR_SOSCVLD_MASK) != 0; }
++#endif // PLL_AVAILABLE
+ 
+ void rccrConfig()
+ {
+@@ -436,6 +440,7 @@ void extOscOff()
+ 
+ void pllOff()
+ {
++#if PLL_AVAILABLE
+     if (!isSpllSysClk())
+     {
+         spllStop();
+@@ -444,6 +449,7 @@ void pllOff()
+     {
+         etl::infinite_loop(); // panic!
+     }
++#endif // PLL_AVAILABLE
+ }
+ 
+ void systemClock2Sirc()
+diff --git a/platforms/s32k1xx/bsp/bspCore/src/cache/cache.cpp b/platforms/s32k1xx/bsp/bspCore/src/cache/cache.cpp
+index b891aebd..188d8fe1 100644
+--- a/platforms/s32k1xx/bsp/bspCore/src/cache/cache.cpp
++++ b/platforms/s32k1xx/bsp/bspCore/src/cache/cache.cpp
+@@ -14,6 +14,11 @@
+ 
+ extern "C"
+ {
++// Not every S32K1 derivative has the local memory controller: the S32K11x and S32K142/144/146
++// (Cortex-M0+ and the smaller M4F parts) run without a code cache. The device header then does not
++// define IP_LMEM_BASE, and cache maintenance has nothing to do.
++#if defined(IP_LMEM_BASE)
++
+ void cacheEnable(void)
+ {
+     LMEM->PCCCR
+@@ -32,4 +37,14 @@ void cacheInvalidate(uint32_t const /* addr */, uint32_t const /* size */)
+         = LMEM_PCCCR_INVW0(1) | LMEM_PCCCR_INVW1(1) | LMEM_PCCCR_GO(1) | LMEM_PCCCR_ENCACHE(1);
+ }
+ 
++#else
++
++void cacheEnable(void) {}
++
++void cacheDisable(void) {}
++
++void cacheInvalidate(uint32_t const /* addr */, uint32_t const /* size */) {}
++
++#endif // defined(IP_LMEM_BASE)
++
+ } // extern "C"
+diff --git a/platforms/s32k1xx/bsp/bspInterruptsImpl/include/interrupt_manager.h b/platforms/s32k1xx/bsp/bspInterruptsImpl/include/interrupt_manager.h
+index 709713f7..a22c4cb4 100644
+--- a/platforms/s32k1xx/bsp/bspInterruptsImpl/include/interrupt_manager.h
++++ b/platforms/s32k1xx/bsp/bspInterruptsImpl/include/interrupt_manager.h
+@@ -35,7 +35,12 @@ void SYS_SetPendingIRQ(IRQn_Type irqNumber);
+ 
+ uint32_t SYS_GetPendingIRQ(IRQn_Type irqNumber);
+ 
++/* ARMv6-M (Cortex-M0+, e.g. S32K11x) has no NVIC_IABR registers, so CMSIS does not provide
++ * NVIC_GetActive for those cores ("NVIC_GetActive not available for Cortex-M0+" in
++ * core_cm0plus.h). The function is therefore only declared where it can be implemented. */
++#if defined(__CORTEX_M) && (__CORTEX_M >= 3U)
+ uint32_t SYS_GetActive(IRQn_Type irqNumber);
++#endif
+ 
+ #if defined(__cplusplus)
+ }
+diff --git a/platforms/s32k1xx/bsp/bspInterruptsImpl/src/interrupt_manager.c b/platforms/s32k1xx/bsp/bspInterruptsImpl/src/interrupt_manager.c
+index d162e1ce..1303bf04 100644
+--- a/platforms/s32k1xx/bsp/bspInterruptsImpl/src/interrupt_manager.c
++++ b/platforms/s32k1xx/bsp/bspInterruptsImpl/src/interrupt_manager.c
+@@ -29,7 +29,9 @@ void SYS_SetPendingIRQ(IRQn_Type irqNumber) { NVIC_SetPendingIRQ(irqNumber); }
+ 
+ uint32_t SYS_GetPendingIRQ(IRQn_Type irqNumber) { return NVIC_GetPendingIRQ(irqNumber); }
+ 
++#if defined(__CORTEX_M) && (__CORTEX_M >= 3U)
+ uint32_t SYS_GetActive(IRQn_Type irqNumber) { return NVIC_GetActive(irqNumber); }
++#endif
+ 
+ /*
+  * Illegal ISR
+-- 
+2.30.1.windows.1
+

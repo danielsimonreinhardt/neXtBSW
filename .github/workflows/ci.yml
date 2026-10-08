@@ -1,0 +1,92 @@
+# Duenne Huelle um die anbieterneutrale Pipeline tools/ci (TOOL-03). Hier steht nur, was GitHub-spezifisch ist:
+# Ausloeser, Runner, Checkout, Python-Interpreter, Caches, Job-Zusammenfassung und Artefakt-Upload. Welche Werkzeuge
+# in welcher Version, welche Tests und Target-Builds und was als uebersprungen gilt, entscheidet tools/ci
+# (versions.toml, pipeline.toml) zusammen mit tools/test/tests.yaml. Lokal dieselben zwei Befehle:
+#   python -m tools.ci setup --python-packages
+#   python -m tools.ci run --strict
+
+name: CI
+
+on:
+  # Entscheidung Nutzer 2026-09-17 (TOOL-22): CI bei Pull Requests auf dev/master und manuell, nicht bei jedem Push.
+  # Windows-Minuten zaehlen im privaten Repo doppelt (ein Lauf ca. 25-55 min); reine Planungs- und Changelog-Aenderungen
+  # loesen keinen Lauf aus. Neue Commits auf den PR-Branch brechen den laufenden Lauf ab (concurrency).
+  pull_request:
+    branches: [dev, master]
+    paths-ignore: [CHANGELOG.md, doc/changelog.d/**, doc/TODO.md, doc/todo.yaml, doc/architecture/**]
+  workflow_dispatch:
+    inputs:
+      runner:
+        description: Runner (ubuntu-latest ist lokal nicht nachgewiesen)
+        type: choice
+        options: [windows-latest, ubuntu-latest]
+        default: windows-latest
+      slow:
+        description: Mutationslaeufe mitnehmen (ca. 11 min mehr)
+        type: boolean
+        default: false
+
+# ein neuer Commit auf denselben PR-Branch (github.ref = refs/pull/<n>/merge) bzw. ein neuer manueller Lauf auf
+# demselben Branch bricht den laufenden Lauf ab, statt Minuten doppelt zu verbrauchen
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  pipeline:
+    name: Host-Tests und Target-Builds
+    runs-on: ${{ inputs.runner || 'windows-latest' }}
+    timeout-minutes: 120
+    defaults:
+      run:
+        shell: bash
+    env:
+      PYTHONUTF8: "1"
+    steps:
+      - name: Checkout (mit external/openbsw)
+        uses: actions/checkout@v7
+        with:
+          submodules: true
+
+      - name: Python aus tools/ci/.python-version
+        uses: actions/setup-python@v7
+        with:
+          python-version-file: tools/ci/.python-version
+          cache: pip
+          cache-dependency-path: |
+            tools/requirements.txt
+            tools/requirements-studio.txt
+            tools/ci/constraints.txt
+
+      - name: Werkzeug-Cache (ARM-GCC, CMake, Ninja aus tools/ci/versions.toml)
+        uses: actions/cache@v6
+        with:
+          path: ${{ runner.temp }}/nx-ci-cache
+          key: nx-ci-tools-${{ runner.os }}-${{ hashFiles('tools/ci/versions.toml') }}
+
+      - name: Werkzeuge und Python-Pakete bereitstellen
+        env:
+          NX_CI_CACHE: ${{ runner.temp }}/nx-ci-cache
+        run: python -m tools.ci setup --python-packages
+
+      - name: Pipeline
+        env:
+          NX_CI_CACHE: ${{ runner.temp }}/nx-ci-cache
+          NX_CI_SLOW: ${{ inputs.slow && '--slow' || '' }}
+        run: python -m tools.ci run --strict --out ci-out $NX_CI_SLOW
+
+      - name: Zusammenfassung
+        if: always()
+        run: python -m tools.ci summary ci-out >> "$GITHUB_STEP_SUMMARY" || true
+
+      - name: Ergebnisse hochladen
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: nextbsw-ci-${{ runner.os }}-${{ github.run_number }}
+          path: ci-out
+          retention-days: 14
+          if-no-files-found: warn

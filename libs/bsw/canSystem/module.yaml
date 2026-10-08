@@ -1,0 +1,17 @@
+# Module manifest (doc/architecture/README.md, section 5). Read by tools/bswgen (modules.py).
+module: canSystem
+kind: service
+description: CAN buses of the ECU; hardware independent parts - transmit gate (CanPhyGate, follows the readiness reports of the phy providers through CanPhyReadiness, COM-23) and bus state with bus off counters (CanBusMonitor, COM-12), console commands in the console context with a short call into the CAN task (ContextCall, COM-24), receive log lines that fit one logger entry (CanFrameLog, COM-25), behaviour after bus off with log series, doubling pause and dropping pending frames (CanBusOffRecovery, COM-35; project values per bus can.<bus>.bus_off, COM-37)
+# Evidence (CHANGELOG.md): "Board-Test COM-12 und COM-03 (2026-09-16)" (bus state, bus-off not forced),
+# "Board-Nachweise ohne Nutzer: COM-24 bestanden (2026-09-18)"; CAN1 on FlexCAN2: COM-26 checklist still open.
+verification: hardware
+verification_note: >-
+  Transmit gate, bus state up to error passive and the console commands with their short call into the CAN task
+  are confirmed on the eval board on CAN0; bus-off and a second bus are covered by host tests only.
+requires:
+  can_phy: 1                       # per used CAN bus, served by the module of its transceiver (NX_CAN_<bus>_PHY_MODULE_*)
+provides:
+  - can_system
+lifecycle: { level: 2, task: can }
+cmake_target: canSystem
+console: can

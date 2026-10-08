@@ -1,0 +1,32 @@
+# Synthetic project for the PCC clock tests (PLAT-22) on testboard_s32k1_gates: 8 MHz crystal, 64 MHz core from
+# the PLL, 32 MHz bus (so the bus clock of LPI2C1 differs from every asynchronous output). Used are the CAN bus,
+# the console, the I2C bus on LPI2C1 and the PWM group on FTM6; the input capture on FTM7 (the instance without a
+# functional clock) stays unused here and is switched on by the error test. Test data only.
+schema_version: 1
+
+project:
+  name: testproject_s32k1_gates
+  board: ../../boards/testboard_s32k1_gates
+
+clock:
+  system_hz: 64000000
+
+use:
+  can: all
+  uart: all
+  i2c: all
+  dio: all
+
+can:
+  VEH: { bitrate: 500000 }
+
+# ARCH-33: every used CAN bus needs an interrupt rank (nxconfig rejects the project otherwise).
+interrupts:
+  ranks:
+    - { source: can, name: VEH, rank: 3 }
+
+uart:
+  CONSOLE: { baudrate: 115200 }
+
+pwm:
+  FAN: { frequency_hz: 20000, deadtime_ns: 1000, deadtime_margin_ns: 100 }

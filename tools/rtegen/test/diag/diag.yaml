@@ -1,0 +1,35 @@
+# Diagnostic description of the COM-28 RTE tests (test/diag/rte.yaml): identifiers and a routine whose values
+# come from and go to ports of the synthetic components of test/multitask. Not the eval board.
+schema_version: 1
+
+data_identifiers:
+  - identifier: 0x0300
+    name: MotorSpeed
+    data:
+      - name: speed          # port uint32, element uint16: the RTE clamps
+        type: uint16
+        source: {port: MotorSwc.Speed.Speed}
+  - identifier: 0x0301
+    name: MotorSetpoint
+    write: true
+    data:
+      - name: setpoint
+        type: uint16
+        source: {port: AppSwc.Setpoint.Setpoint}
+
+routines:
+  - identifier: 0x0500
+    name: SpinUp
+    start:
+      call: {runnable: MotorSwc.Run1ms}
+      request:
+        - name: enable       # into a boolean port: the text table limits it to 0 and 1
+          type: uint8
+          values:
+            - {value: 0, text: disabled}
+            - {value: 1, text: enabled}
+    results:
+      call: {runnable: AppSwc.Run10ms}
+      response:
+        - name: speed        # port uint32, parameter int32: the RTE clamps
+          type: int32

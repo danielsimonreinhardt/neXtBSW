@@ -1,0 +1,31 @@
+# Module manifest (doc/architecture/README.md, section 5). Read by tools/bswgen (modules.py).
+#
+# NOTE FOR THE MERGE (BL-15): this manifest, and in fact the module directory itself, changes the generated
+# catalogue doc/reference/modules.md and the count in doc/reference/README.md. doc/reference is outside the
+# paths of BL-15, so it is NOT regenerated here and `tools/test -k docgen` is red until it is. One command,
+# in the merge commit:
+#   .venv/Scripts/python tools/docgen
+# Parking the manifest as module.yaml.pending does not avoid this - docgen counts parked manifests too.
+#
+# One field is a proposal rather than a fact: `lifecycle`. The link has no lifecycle requirement of its own in
+# the bootloader (there is no RTOS there); the value below is what an application-side use would need, and
+# ARCH-48 should confirm it when it puts the link into the schema.
+module: mcuLink
+kind: service
+description: >-
+  Inter-MCU link protocol for a point-to-point SPI connection between two MCUs of one ECU: frame format, CRC,
+  acknowledgement, retry, flow control and a session counter. Carries whole UDS messages up to the
+  bootloader's buffer length between a master and a slave (doc/architecture/multi-mcu-flash.md, BL-15).
+# Not a device driver for a part: the boundary of treiber-granularitaet.md runs at the protocol, and this is
+# one protocol with parameters in the units of its function (frame bytes, milliseconds, retries as a count),
+# not one variant per companion MCU. The SPI master and SPI slave below it are L1/HAL per family
+# (bootloader/platforms/<family> for the bootloader, platforms/<family>/bsp for the application).
+verification: mock
+verification_note: >-
+  Host tests only: both sides against a simulated SPI bus with bit errors, lost frames, a slow slave and a
+  restart mid-message, and the throughput of a 256 KB image counted rather than estimated (BL-15). Nothing has
+  run on hardware; the family SPI slave driver is BL-16 and the board proof is BL-18.
+provides:
+  - mcu_link                        # the role a board's devices[] entry claims (multi-mcu-flash.md section 7.3)
+lifecycle: { level: 1, task: bsp }  # proposal, see the note above
+cmake_target: mcuLink

@@ -1,0 +1,82 @@
+# Module manifest (doc/architecture/README.md, section 5). Checked by tools/nxconfig (checks.py), rendered by
+# tools/bswgen as integration/captureConfiguration.h (the parameter values) and, as register values derived from
+# them, as bsp/capture/inputCaptureConfiguration.h.
+#
+# `capture` has no board device: it measures period and duty cycle of the input_capture entries of the board that
+# the project uses (use.input_capture). Its parameters are therefore module parameters of the project
+# (project.yaml modules.capture, project_parameters: true), not values of an instance. Which pin carries the
+# signal is a board fact (board.yaml input_capture), the expected signal and the supervision belong to the
+# project (IO-03).
+#
+# The manifest lies next to the driver of the family (bsp/capture/InputCapture.h) because the module is the
+# input capture of the s32k1xx family; a second family brings its own driver for the same parameters
+# (the parameter names and the derived values are family neutral, only the register encoding is not).
+module: capture
+kind: mcu_driver
+description: Period and duty cycle measurement of a PWM input (FTM dual edge capture), values and quality for the RTE
+# Evidence (CHANGELOG.md): "Board-Test IO-03 (2026-09-16) - nur negativ möglich" and "Board-Test IO-04
+# (2026-09-16)": on the eval board only the time-out without a signal (QLF_ERROR_TIMEOUT) is seen; the positive
+# measurement needs a bridge PTB12 -> PTE10 or an external pilot source and has not been done. So mock.
+verification: mock
+verification_note: >-
+  On the eval board only the time-out without an input signal is confirmed; period, duty cycle and the range
+  checks are covered by generator and host tests only.
+project_parameters: true
+parameters:
+  min_frequency_hz:
+    type: int
+    min: 1
+    max: 10000000
+    default: 50
+    unit: Hz
+    description: >-
+      lowest frequency the measurement has to cover. The counter prescaler of the timer follows from it: one
+      period of this frequency has to fit into half the counter range, so that a measurement never becomes
+      ambiguous. A lower value means a longer measurable period and a coarser resolution; a measured period
+      outside the range is reported as a quality error, never as a value. How low it can be depends on the
+      counter clock (largest prescaler 128 times the 16-bit counter); the generator says so if it is too low.
+  timeout_ms:
+    type: int
+    min: 1
+    max: 60000
+    default: 200
+    unit: ms
+    description: >-
+      time without a completed measurement after which the quality becomes QLF_ERROR_TIMEOUT (missing signal,
+      constant level, frequency below the range). It has to cover two periods of min_frequency_hz plus one
+      update cycle, otherwise a healthy slow signal would be reported as missing.
+  update_period_ms:
+    type: int
+    min: 1
+    max: 10000
+    default: 10
+    unit: ms
+    description: >-
+      cycle in which the application calls InputCapture::update() (the period of the RTE task that reads the
+      capture values). The counter of the timer must not wrap twice between two calls, otherwise a slow signal
+      could be measured as a fast one; the generator checks this against the derived prescaler and refuses the
+      combination instead of measuring wrongly.
+constraints:
+  - timeout_ms > update_period_ms
+provides:
+  - input_capture
+# RTE-18: values the application reads through the RTE, targets capture.<Channel>.<value> for the board
+# input_capture entries the project uses (tools/rtegen reads them from here). access input_capture: one
+# InputCapture::update() per cycle serves every channel, so all capture values are read in one task.
+rte:
+  prefix: capture
+  instances: input_capture
+  access: input_capture
+  instance: Channel
+  noun: input_capture channel
+  which: use.input_capture
+  values:
+    freq_mhz:      { types: [uint32], field: frequency_mhz, unit: "milli-Hertz (Hz * 1000)" }
+    period_us:     { types: [uint32], unit: microseconds }
+    duty_permille: { types: [uint16, uint32], unit: "0.1 %" }
+    qlf:
+      types: [uint8, uint16, uint32]
+      field: quality
+      unit: QLF_* of Rte_Qlf.h
+      qualifier: true
+      without: a measured value from a held one (missing signal, value out of range)

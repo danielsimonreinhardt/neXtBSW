@@ -1,0 +1,33 @@
+# Schwellen der Testabdeckung fuer den eigenen Code dieses Workspace (Vorlage aus tools/ci, TOOL-217, Luecke N19).
+#
+#   python -m tools.ci template coverage --out <workspace>     schreibt diese Datei nach ci/coverage.yaml
+#
+# Format wie <baum>/tools/test/coverage.yaml. Gemessen wird mit <baum>/tools/test/coverage.py --workspace ueber die
+# `zig`-Eintraege von ci/tests.yaml: Anweisungen (`lines`) und Zweige (`branches`) in Prozent. Gezaehlt werden nur
+# Dateien dieses Workspace - nie der gepinnte Baum, auch nicht als Submodul im Workspace; dessen Abdeckung weist die
+# Release-CI des Baums nach. Ein Modul ist ein Ordner mit module.yaml unter search.modules von nextbsw.yaml, sonst
+# der Ordner vor dem ersten src/include/test.
+#
+# Eingeschaltet wird die Messung in ci/pipeline.toml ([coverage] enabled); `enforce` dort (oder hier) macht ein
+# Modul unter seiner Schwelle zum roten Ergebnis. Jede eigene Schwelle nennt ihren Grund.
+
+version: 1
+
+defaults:
+  lines: 80
+  branches: 50
+
+# Noch berichten, nicht erzwingen; ci/pipeline.toml [coverage] enforce schaltet um.
+enforce: false
+
+# Nicht mitgezaehlt: Testcode (per Definition ausgefuehrt) und erzeugter Code (gehoert dem Generator).
+exclude:
+  - "**/test/**"
+  - "**/generated/**"
+
+modules: {}
+#  swc/MeinRegler:
+#    lines: 95
+#    branches: 70
+#    reason: >
+#      Sicherheitsrelevant im eigenen Sicherheitskonzept: Begrenzung des Stellwerts.

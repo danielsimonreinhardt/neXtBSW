@@ -1,0 +1,71 @@
+# Module manifest (doc/architecture/README.md, section 5). Read by tools/bswgen (modules.py).
+module: sbcUja113x
+kind: device_driver
+description: NXP UJA113x system basis chip (supplies, watchdog, integrated CAN transceiver), complex device driver
+# Evidence (CHANGELOG.md): "Hardware-Test SBC-Treiber (2026-09-14)", IO-10 am Board (2026-09-18, under-voltage),
+# SYS-12/SYS-09 (2026-09-18, Sleep and CAN wake-up); SYS-13 notes WD triggers 0 - the SBC watchdog is off (VER-06).
+# IO-68 (INTN1 instead of polling, Standby with V1 on): host tests only, board proof open - to be added to
+# verification_note with the board proof.
+verification: hardware
+verification_note: >-
+  Start-up, register configuration over SPI, the CAN transceiver, battery under-voltage monitoring and Sleep with
+  CAN wake-up are confirmed on the eval board (UJA1131); the SBC watchdog is not active there, and over-voltage and
+  the other UJA113x parts are covered by host tests only.
+parts:
+  - UJA1131*
+  - UJA1132*
+  - UJA1135*
+  - UJA1136*
+requires:
+  spi_device: 1                     # ISpiDevice (libs/bsp/bspSpi)
+# IO-68: INTN1, the interrupt output of the SBC to the MCU (data sheet 7.12: open drain, active low, pull-up to V1;
+# low while any enabled interrupt is pending, INTN2 only for a high-priority subset: OTWI, V1UI, BMUI, BMOI, OVSDI,
+# SMPSSI - not used). Optional: a board that leaves it unwired keeps the driver polling 0x60 every service cycle.
+# Wired (board.yaml devices[].connect intn1: <dio input>, active: low), the port samples the input every cycle and
+# reads 0x60 only when INTN1 is low, plus a fallback read every 100 ms that checks the line. A project pin event on
+# the same input (pin_events.<input>, edge activate) adds the pin interrupt: the wake-up source of the MCU from a stop
+# mode while the SBC is in Standby (PLAT-108, SYS-156).
+connect:
+  intn1: { kind: digital_input, optional: true, description: "INTN1, interrupt output of the SBC (open drain, active low, all enabled interrupts; data sheet 7.12)" }
+provides:
+  - can_phy                         # Uja113xCanPhy: readiness of the integrated transceiver
+  - power_supply                    # V1/V2, Sleep, wake-up
+  - watchdog_trigger                # SBC watchdog
+  - early_init                      # optional hook before the MCU watchdog fast test (RCC compensation)
+# IO-33: pins of the part whose wiring is a board fact (board.yaml devices[].pins). Data sheet UJA113X_SER Rev. 2:
+# 8 HVIO on the variants without partial networking, HVIO1..HVIO4 on UJA113xFD/4, none on UJA113xFD/0
+# (section 7.10, "Bank 1 is not available in the UJA113xFD/4"; pin 33..29 "not connected in UJA113xFD/x").
+# An HVIO wired as wake_input is configured as wake-up input (IOnCC = 011, sampled permanently, bank threshold
+# absolute 2.4..4.1 V); it is armed as wake-up source only for Sleep, and only if the project selects it
+# (modules.ecuState.wakeup_local LOCAL<local_wakeup>). A pin wired as none, or not described, is not configured.
+# EN: only `none` so far - the EN output stays low (ENC = 00); driving a load from EN needs a project value for the
+# EN mode first (IO-33).
+pins:
+  HVIO1: { uses: [none, wake_input], local_wakeup: 0, parts: ["UJA113?HW/5V0*", "UJA113?HW/3V3*", "UJA113?HW/FD/*/4*"], description: high-voltage input/output 1 (bank 0) }
+  HVIO2: { uses: [none, wake_input], local_wakeup: 1, parts: ["UJA113?HW/5V0*", "UJA113?HW/3V3*", "UJA113?HW/FD/*/4*"], description: high-voltage input/output 2 (bank 0) }
+  HVIO3: { uses: [none, wake_input], local_wakeup: 2, parts: ["UJA113?HW/5V0*", "UJA113?HW/3V3*", "UJA113?HW/FD/*/4*"], description: high-voltage input/output 3 (bank 0) }
+  HVIO4: { uses: [none, wake_input], local_wakeup: 3, parts: ["UJA113?HW/5V0*", "UJA113?HW/3V3*", "UJA113?HW/FD/*/4*"], description: high-voltage input/output 4 (bank 0) }
+  HVIO5: { uses: [none, wake_input], local_wakeup: 4, parts: ["UJA113?HW/5V0*", "UJA113?HW/3V3*"], description: high-voltage input/output 5 (bank 1) }
+  HVIO6: { uses: [none, wake_input], local_wakeup: 5, parts: ["UJA113?HW/5V0*", "UJA113?HW/3V3*"], description: high-voltage input/output 6 (bank 1) }
+  HVIO7: { uses: [none, wake_input], local_wakeup: 6, parts: ["UJA113?HW/5V0*", "UJA113?HW/3V3*"], description: high-voltage input/output 7 (bank 1) }
+  HVIO8: { uses: [none, wake_input], local_wakeup: 7, parts: ["UJA113?HW/5V0*", "UJA113?HW/3V3*"], description: high-voltage input/output 8 (bank 1) }
+  EN:    { uses: [none], description: "EN output for critical hardware (data sheet 7.4); only none: it stays low (ENC = 00)" }
+# IO-33: battery monitor and its switch-off response, project values per instance (project.yaml modules.<device>).
+# Voltages in mV at the monitored pin (20 V full scale); the driver rounds them to the SBC grid on the safe side
+# (undervoltage up, overvoltage down, 78.4 mV per step; release windows down, 313.7 mV per step) and tools/nxconfig
+# shows the values the SBC really uses. The defaults are the values the port used before IO-33 (monitor on pin BAT,
+# 9.0 V / 18.0 V, 500 mV windows, nothing switched off) - the usual operating window of a 12 V board net.
+parameters:
+  battery_source:             { type: str, pattern: "bat|batsense", default: bat, description: "pin the under-/overvoltage events are taken from (BMSC): bat = BAT behind the reverse polarity diode, batsense = BATSENSE in front of it" }
+  undervoltage_mv:            { type: int, min: 0, max: 20000, default: 9000, unit: mV, description: undervoltage event below this voltage (BMUTC; 0 = never) }
+  overvoltage_mv:             { type: int, min: 0, max: 20000, default: 18000, unit: mV, description: overvoltage event above this voltage (BMOTC; 20000 = never) }
+  undervoltage_hysteresis_mv: { type: int, min: 0, max: 4710, default: 500, unit: mV, description: "release window of the undervoltage event: it ends this much above the threshold (BMHUC, 0..15 x 313.7 mV)" }
+  overvoltage_hysteresis_mv:  { type: int, min: 0, max: 4710, default: 500, unit: mV, description: "release window of the overvoltage event: it ends this much below the threshold (BMHOC, 0..15 x 313.7 mV)" }
+  can_shutdown:               { type: str, pattern: "none|undervoltage|overvoltage|both", default: none, description: "CAN transceiver off during these battery events (CSC); none: CAN stays on, the application decides" }
+  v2_shutdown:                { type: str, pattern: "none|undervoltage|overvoltage|both", default: none, description: "V2/VEXT off during these battery events (V2SC); check what V2 supplies on the board first" }
+  shutdown_delay_ms:          { type: int, min: 0, max: 10000, default: 0, unit: ms, description: "0: the SBC switches CAN/V2 off by itself within one conversion of its monitor (6 us, tc(ADC)); > 0: the driver switches off only after the event has lasted this long without a break (checked every call of Uja113x::cyclic, 10 ms on the S32K1 port) and on again when it has ended - rides through short dips such as the inrush current of a load (IO-13)" }
+constraints:
+  - undervoltage_mv < overvoltage_mv
+lifecycle: { level: 1, task: bsp }
+cmake_target: sbcUja113x
+console: sbc

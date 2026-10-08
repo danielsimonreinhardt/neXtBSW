@@ -1,0 +1,39 @@
+# ECU description of the SYS-32 test profile (age supervision, gap G3 of doc/safety/concept.md): two hand-written C
+# components on the build test project buildtest_s32k148_min (no SBC), BSW task profile test/multitask/tasks.yaml.
+# Not the eval board. Component paths are relative to this file (RTE-22).
+#
+#   dev (10 ms, key 35): CellPkgSwc.Run20ms - writes Cells_mV and Current_mA only when the "device" answered,
+#                        Runs in every run; deadline of the age: 20 ms = 2 cycles of dev
+#   app (10 ms, key 25): CellAppSwc.Run10ms - reads the cells and both age qualifiers (copy at the task boundary)
+#
+# Used by: tools/rtegen/test_rtegen_age.py (generator checks, messages, DTC sampling, host test).
+
+schema_version: 2
+
+tasks:
+  - name: app
+    period_ms: 10
+    priority: 25
+    stack_bytes: 1024
+    runnables: [CellAppSwc.Run10ms]
+  - name: dev
+    period_ms: 10
+    priority: 35
+    stack_bytes: 1024
+    runnables: [CellPkgSwc.Run20ms]
+
+components:
+  - name: CellPkgSwc
+    path: CellPkgSwc
+  - name: CellAppSwc
+    path: CellAppSwc
+
+connections:
+  CellPkgSwc.Current_mA.Current_mA: rte
+  CellPkgSwc.Runs.Runs: rte
+  CellAppSwc.Cells_mV.Cells_mV: CellPkgSwc.Cells_mV.Cells_mV
+  CellAppSwc.CellsAge.CellsAge: age.qlf.CellPkgSwc.Cells_mV.Cells_mV
+  CellAppSwc.CurrentAge.CurrentAge: age.qlf.CellPkgSwc.Current_mA.Current_mA
+  CellAppSwc.SeenCell0_mV.SeenCell0_mV: rte
+  CellAppSwc.SeenCellsAge.SeenCellsAge: rte
+  CellAppSwc.SeenCurrentAge.SeenCurrentAge: rte

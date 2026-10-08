@@ -1,0 +1,43 @@
+# ECU description of the NVM-03 tests: the fault memory samples ports of the synthetic components of test/multitask
+# (two tasks), with the build-test project buildtest_s32k148_min (no SBC) and the BSW task profile
+# test/multitask/tasks.yaml - not the eval board. Only the connections matter, not what the components compute; the
+# SIL test writes the buffers itself.
+#
+#   MotorSwc.Speed (uint32, provided)       -> diag.yaml event of SpeedTooHigh (limit), snapshot MotorSpeed
+#   AppSwc.SlowCount (uint32, provided)     -> dem.event.CountStatus: the same link as diag.yaml event.port (status)
+#   AppSwc.Led (boolean, provided)          -> dem.cycle.Drive: runs the operation cycle Drive (autostart: false)
+#   MotorSwc.Enable (boolean, required)     <- AppSwc.Led: enable condition MotorEnabled
+
+schema_version: 2
+
+tasks:
+  - name: motor
+    period_ms: 1
+    priority: 35
+    stack_bytes: 1024
+    runnables: [MotorSwc.Run1ms]
+  - name: app
+    period_ms: 10
+    priority: 25
+    stack_bytes: 2048
+    runnables:
+      - MotorSwc.RunDiag10ms
+      - AppSwc.Run10ms
+      - { runnable: AppSwc.Run50ms, offset_ms: 20 }
+
+components:
+  - name: MotorSwc
+    path: ../multitask/MotorSwc
+  - name: AppSwc
+    path: ../multitask/AppSwc
+
+connections:
+  MotorSwc.Setpoint.Setpoint: AppSwc.Setpoint.Setpoint
+  MotorSwc.Enable.Enable: AppSwc.Led.Led
+  MotorSwc.Speed.Speed: rte
+  MotorSwc.Wide.Wide: rte
+  AppSwc.Speed.Speed: MotorSwc.Speed.Speed
+  AppSwc.Wide.Wide: MotorSwc.Wide.Wide
+  AppSwc.Setpoint.Setpoint: rte
+  AppSwc.Led.Led: [dio.out.LED1, dem.cycle.Drive]
+  AppSwc.SlowCount.SlowCount: [rte, dem.event.CountStatus]

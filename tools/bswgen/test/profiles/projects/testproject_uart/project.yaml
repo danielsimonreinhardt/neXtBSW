@@ -1,0 +1,23 @@
+# Synthetic project for the UART tests (ARCH-15) on testboard_uart: two UARTs with different baud rates and
+# different interrupt ranks, console on the first used one (CONSOLE on LPUART1). Test data only, no hardware.
+schema_version: 1
+
+project:
+  name: testproject_uart
+  board: ../../boards/testboard_uart
+
+clock:
+  system_hz: 80000000
+
+use:
+  uart: all
+
+uart:
+  CONSOLE: { baudrate: 115200 }
+  AUX: { baudrate: 9600 }
+
+interrupts:
+  max_syscall_level: 5
+  ranks:
+    - { source: uart, name: CONSOLE, rank: 4, note: "console receive interrupt (IO-17)" }
+    - { source: uart, name: AUX, rank: 6, note: "second UART, one step below the console" }

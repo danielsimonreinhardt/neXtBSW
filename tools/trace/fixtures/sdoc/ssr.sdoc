@@ -1,0 +1,68 @@
+[DOCUMENT]
+TITLE: Synthetic software safety requirements (tools/trace fixture)
+OPTIONS:
+  VIEW_STYLE: Table
+
+[GRAMMAR]
+IMPORT_FROM_FILE: @nextbsw
+
+[SSR]
+UID: SSR-001
+TITLE: Watchdog serviced
+STATEMENT: The watchdog shall be serviced by the safety task only.
+FINDINGS: F1
+STAGE: 1
+ASIL: B
+STATUS: implemented
+VERIFICATION: test
+REVIEW_STATUS: inspected
+CODE: >>>
+ecu/wd.cpp :: Watchdog::service
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: ASG-02
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: AoU-01
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: SM-01
+  ROLE: Specifies
+
+[SSR]
+UID: SSR-002
+TITLE: Configuration checked
+STATEMENT: The watchdog configuration shall be checked.
+FINDINGS: F9, G1, T1, N1
+STAGE: 1
+ASIL: B
+STATUS: partial
+VERIFICATION: review
+REVIEW_STATUS: rework
+CODE: >>>
+ecu/wd.cpp :: check
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: BSR-SAFE-001
+- TYPE: Parent
+  VALUE: ASG-01
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: SM-02
+  ROLE: Specifies
+
+[SSR]
+UID: SSR-003
+TITLE: Withdrawn requirement
+STATEMENT: A requirement that was dropped keeps its ID and is not checked any more.
+STAGE: 1
+ASIL: B
+STATUS: withdrawn
+VERIFICATION: review
+REVIEW_STATUS: proposed
+RELATIONS:
+- TYPE: Parent
+  VALUE: ASG-01
+  ROLE: DerivedFrom

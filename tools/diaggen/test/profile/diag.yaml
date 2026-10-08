@@ -1,0 +1,142 @@
+# Test profile of tools/diaggen (COM-28), not the eval board: other session timing, two security levels with
+# other seed/key lengths, identifiers with mixed sources, byte orders, signed and float values, a text table and
+# range checks on writes, a restartable routine without stop step and one without security.
+#
+# Used by tools/diaggen/test_diaggen.py and, with the diagnostic addresses of projects/buildtest_s32k148_min, by
+# ecu/uds/test/host/test_app_uds_host.py (AppUdsProfileTest). The ports are values of the host stand-in of the
+# RTE (DiagRteStub.cpp); tools/rtegen/test/diag checks the same kind of description against real components.
+schema_version: 1
+
+sessions:
+  - name: Base
+    id: 0x01
+    p2_ms: 40
+    p2_star_ms: 2000
+  - name: Service
+    id: 0x03
+    p2_ms: 40
+    p2_star_ms: 2000
+
+security:
+  - name: Workshop
+    method: hmac-sha256    # the default, named once (COM-30)
+    level: 0x03
+    seed_bytes: 2
+    key_bytes: 3
+    attempts: 2
+    delay_ms: 1000
+    sessions: [Service]
+  - name: Factory          # sessions left out: every session but the default one
+    level: 0x11
+    seed_bytes: 4
+    key_bytes: 4
+    attempts: 1
+    delay_ms: 500
+
+data_identifiers:
+  - identifier: 0x0200
+    name: MotorState
+    data:
+      - name: revision
+        type: uint16
+        byte_order: little
+        source: {constant: 0x1234}
+      - name: current
+        type: int16
+        byte_order: little
+        unit: mA
+        source: {port: TestSwc.Current.Current}
+      - name: temperature
+        type: float32
+        unit: degC
+        source: {port: TestSwc.Temperature.Temperature}
+      - name: session
+        type: uint8
+        source: {bsw: uds.session}
+
+  - identifier: 0x0201
+    name: Setpoint
+    write: true
+    write_sessions: [Service]
+    write_security: Workshop
+    read_security: Factory
+    data:
+      - name: setpoint
+        type: int16
+        min: -500
+        max: 500
+        source: {port: TestSwc.Setpoint.Setpoint}
+      - name: mode
+        type: uint8
+        source: {port: TestSwc.Mode.Mode}
+        values:
+          - {value: 0, text: disabled}
+          - {value: 1, text: enabled}
+          - {value: 3, text: boost}
+
+  - identifier: 0xF1F0
+    name: SupplierCode
+    data:
+      - name: code
+        type: ascii
+        length_bytes: 4
+        source: {constant: NX}
+
+  - identifier: 0x0202
+    name: ServiceOnly
+    read_sessions: [Service]
+    data:
+      - name: value
+        type: uint8
+        source: {constant: 7}
+
+  # COM-30: the chip UID the tester derives the device key of both levels (method hmac-sha256) from
+  - identifier: 0xF18C
+    name: EcuSerialNumber
+    data:
+      - name: uid
+        type: bytes
+        length_bytes: 16
+        source: {bsw: chip.uid}
+
+  # COM-33: texts of the stack have a fixed width on the wire (filled up with NUL), here other widths than the
+  # eval board's 32 and a text that is not the last element - a tester splits a response with several
+  # identifiers by these lengths alone (nxconfig.diagdesc.split_read_response)
+  - identifier: 0xF180
+    name: BootSoftwareIdentification
+    data:
+      - {name: numberOfModules, type: uint8, source: {constant: 1}}
+      - {name: bootSoftwareIdentification, type: ascii, length_bytes: 24, source: {bsw: bootloader.version}}
+
+  - identifier: 0x0203
+    name: BuildInfo
+    data:
+      - {name: application, type: ascii, length_bytes: 20, source: {bsw: application.version}}
+      - {name: session, type: uint8, source: {bsw: uds.session}}
+
+routines:
+  - identifier: 0x0400
+    name: Calibrate
+    sessions: [Service]
+    security: Workshop
+    start:
+      call: {runnable: TestSwc.Run10ms}
+      request:
+        - name: target
+          type: uint16
+          byte_order: little
+          min: 10
+          max: 1000
+      response:
+        - name: status
+          type: int8
+    results:
+      call: {runnable: TestSwc.Run10ms}
+      response:
+        - name: offset
+          type: int32
+
+  - identifier: 0x0401
+    name: Flush
+    start:
+      call: {runnable: TestSwc.Run10ms}

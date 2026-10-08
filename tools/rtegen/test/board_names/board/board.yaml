@@ -1,0 +1,31 @@
+# SPDX-License-Identifier: Apache-2.0
+# Synthetic board profile of the RTE-11 test (tools/rtegen/test_rtegen.py RteBoardNamesTest): board names as a
+# board designer writes them - leading digits (12VBAT_CURRENT, 3V3_EN) and lower case (vbat_sense, button_a,
+# led_status). No real hardware: S32K116 LQFP48, pins from mcudb/s32k1xx/S32K116_LQFP48.pinmux.yaml.
+schema_version: 1
+
+board:
+  name: rtegen_board_names
+  mcu: S32K116
+  package: LQFP48
+  description: RTE-11 test profile (board names with leading digits and lower case)
+  supply_v: 5.0
+  clock:
+    sosc_hz: 8000000
+  debug:
+    interface: SWD
+    probe: none
+  adc_reference_mv: 5000
+
+adc:
+  - { name: 12VBAT_CURRENT, instance: ADC0, channel: SE3, pin: PTA7, scale: { factor: 1, offset_mv: 0 } }
+  - { name: vbat_sense, instance: ADC0, channel: SE9, pin: PTC1,
+      scale: { divider: { r_top: 10000, r_bottom: 3900 }, offset_mv: 0 } }
+  - { name: 5V_SPARE, instance: ADC0, channel: SE12, pin: PTC14, scale: { factor: 1, offset_mv: 0 }, fitted: false }
+
+dio:
+  inputs:
+    - { name: button_a, pin: PTD3, active: low, pull: up }
+  outputs:
+    - { name: 3V3_EN, pin: PTD16, active: high }
+    - { name: led_status, pin: PTD15, active: low }

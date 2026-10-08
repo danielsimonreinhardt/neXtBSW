@@ -1,0 +1,58 @@
+# Synthetic derivative for tests: deliberately not S32K1 (other family, pin and instance names like STM32).
+schema_version: 1
+
+derivative:
+  name: TESTMCU64
+  family: testfam
+  core: cortex-m33
+  fpu: sp                         # the core table has sp and none for cortex-m33: must be given
+  packages: [QFP64, QFP48]
+  pin_pattern: "P[A-H]([0-9]|1[0-5])"
+  sources: [synthetic]
+
+memory:
+  - { name: FLASH, kind: code_flash, start: 0x08000000, size: 0x00040000, sector_size: 0x2000, program_size: 8 }
+  - { name: RAM, kind: ram, start: 0x20000000, size: 0x00010000 }
+
+instances:
+  ADC1: { class: adc, resolution_bits: 12, channel_pattern: "IN([0-9]|1[0-8])", internal_channels: [VREFINT, TEMP] }
+  TIM1: { class: timer, channels: 4 }
+  TIM2: { class: timer, channels: 4 }
+  SPI1: { class: spi }
+  FDCAN1: { class: can }
+  FDCAN2: { class: can }
+  USART2: { class: uart }
+  USART3: { class: uart }
+  I2C1: { class: i2c }
+
+# QFP64: complete inline table (numbers and, for FDCAN2_RX, named selectors as an input multiplexer would need).
+# QFP48: no data (warning, functions unchecked).
+pinmux:
+  QFP64:
+    signals:
+      GPIO: { PA0: 0, PA1: 0, PA2: 0, PA3: 0, PA4: 0, PA5: 0, PA6: 0, PA7: 0, PA8: 0, PA9: 0, PA10: 0, PA11: 0,
+              PA12: 0, PA13: 0, PA14: 0, PA15: 0, PB0: 0, PB1: 0, PB2: 0, PB3: 0, PB4: 0, PB5: 0, PB6: 0, PB7: 0,
+              PB12: 0, PB13: 0, PC13: 0, PC14: 0, PC15: 0 }
+      ADC1_IN1: { PA0: 0 }
+      ADC1_IN2: { PA1: 0 }
+      SPI1_SCK: { PA5: 5 }
+      SPI1_SIN: { PA6: 5 }
+      SPI1_SOUT: { PA7: 5 }
+      SPI1_PCS0: { PA4: 5 }
+      FDCAN1_RX: { PA11: 9 }
+      FDCAN1_TX: { PA12: 9 }
+      FDCAN2_RX: { PB12: { mscr: 28, imcr: 3, imcr_value: 2 } }
+      FDCAN2_TX: { PB13: 9 }
+      USART2_RX: { PA3: 7, PB7: 7 }
+      USART2_TX: { PA2: 7, PB6: 7 }
+      TIM1_CH0: { PA8: 6, PA10: 6 }
+      TIM1_CH1: { PA9: 6 }
+      TIM1_CH3: { PA10: 6 }
+      TIM2_CH0: { PA15: 1 }
+      TIM2_CH1: { PB3: 1 }
+
+# BL-03: synthetische Chipkennung (Testdaten, keine Hardware)
+uid:
+  address: 0x1FFF0000
+  size: 12
+  source: "Testdaten"

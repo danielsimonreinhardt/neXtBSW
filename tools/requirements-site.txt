@@ -1,0 +1,39 @@
+# Documentation website (DOC-71): MkDocs Material over doc/ with search, DE/EN switch, Mermaid, one version per release.
+# Only for building the site; nothing of it is imported by the generators, the checks or the firmware, and none of it
+# goes into the export (the site is built FROM the export, see tools/docgen/site.py).
+#   pip install -r tools/requirements-site.txt
+# Kept apart from tools/requirements.txt (build and test packages stay unchanged, R1 freeze) and from
+# tools/requirements-docs.txt (StrictDoc, own venv with tools/ci/constraints-docs.txt). Every package is pinned
+# exactly; all of them were new to the workstation .venv on 2026-10-04 (pip --dry-run: no up- or downgrade).
+# Licences checked 2026-10-04 from the package metadata (all permissive, no copyleft):
+
+# --- direct ---
+mkdocs==1.6.1                       # BSD-2-Clause
+mkdocs-material==9.7.7              # MIT
+mkdocs-static-i18n==1.3.1           # MIT  - i18n scaffold DE/EN (suffix structure, page.en.md)
+mike==2.2.0                         # BSD-3-Clause - one documentation version per release (.github/workflows/docs.yml, DOC-87)
+pymdown-extensions==12.1            # MIT  - superfences with the Mermaid custom fence
+
+# --- pulled in by the packages above ---
+Markdown==3.11                      # BSD-3-Clause
+babel==2.18.0                       # BSD-3-Clause
+backrefs==8.0                       # MIT
+certifi==2026.7.22                  # MPL-2.0 (CA bundle, unmodified; only used by requests)
+charset-normalizer==3.5.2           # MIT
+click==8.5.0                        # BSD-3-Clause
+ghp-import==2.1.0                   # Apache-2.0
+idna==3.20                          # BSD-3-Clause
+mergedeep==1.3.4                    # MIT
+mkdocs-get-deps==0.2.2              # MIT
+mkdocs-material-extensions==1.3.1   # MIT
+paginate==0.5.7                     # MIT
+pathspec==1.1.1                     # MPL-2.0 (unmodified; used by mkdocs for exclude_docs)
+platformdirs==4.12.3                # MIT
+pyparsing==3.3.3                    # MIT
+python-dateutil==2.9.0.post0        # Apache-2.0 OR BSD-3-Clause
+pyyaml_env_tag==1.1                 # MIT
+requests==2.34.2                    # Apache-2.0
+six==1.17.0                         # MIT
+urllib3==2.8.0                      # MIT
+verspec==0.1.0                      # BSD-2-Clause OR Apache-2.0
+watchdog==6.0.0                     # Apache-2.0

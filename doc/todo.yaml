@@ -1,0 +1,496 @@
+# Oeffentliche Fassung der Aufgabenliste (erzeugt von tools/distcheck).
+# Interne Felder (owner, touches, shared, needs, verify, done_when) und Aufgaben, die private Pfade
+# beruehren oder nicht weitergebbare Unterlagen nennen, sind entfernt.
+# 919 interne Aufgaben entfernt.
+
+areas:
+  ARCH: Architektur neXtBSW (board- und herstellerneutral)
+  VER: Offene Verifikation am Board
+  COM: Kommunikation
+  IO: Ein-/Ausgänge und Treiber
+  SYS: System, Betriebsmodi, Safety
+  NVM: Speicher und Diagnose
+  RTE: RTE und Simulink-Integration
+  TOOL: Messen, Kalibrieren, Tools
+  BL: Bootloader
+  PLAT: Plattform und Pflege
+  DOC: Dokumentation für Anwender und Beitragende
+tasks:
+- id: ARCH-29
+  prio: P3
+  status: open
+  title: Peripherietakte gegen BUS_CLK pruefen (RM Table 27-8 "governed by BUS_CLK", ADC-Fussnote 8)
+  depends:
+  - ARCH-22
+- id: BL-27
+  prio: P3
+  status: open
+  title: Nach dem letzten Loeschschritt wartet der Bootloader auf den Abstand fuer ein weiteres Response Pending, bevor er
+    antwortet
+  depends:
+  - BL-25
+- id: IO-09
+  prio: P3
+  status: review
+  title: FlexIO-I2C (PTE4/PTE5)
+- id: IO-39
+  prio: P3
+  status: open
+  title: LPIT0_Ch1_IRQHandler aus DebugHaltGuardSystem.h in eine .cpp-Datei
+  depends:
+  - IO-32
+- id: SYS-46
+  prio: P2
+  status: open
+  title: Meldungen nach dem Rueckweg aus dem Safe State angleichen - highSideSwitch-Texte, gd status zeigt die Sperre, CHECK_REGISTER_ERROR
+    beim Verlassen nicht als ERROR
+  depends:
+  - SYS-35
+- id: PLAT-91
+  prio: P2
+  status: in_progress
+  title: MISRA 15.5 (ein Ausgang je Funktion) fuer die Sicherheitsunits wieder einschalten oder die Abschaltung begruenden
+  depends:
+  - SYS-58
+- id: TOOL-58
+  prio: P3
+  status: open
+  title: Funktions- und Aufrufabdeckung auf Integrationsebene messen und berichten
+  depends:
+  - SYS-58
+- id: PLAT-92
+  prio: P3
+  status: open
+  title: MISRA-Abweichung 8.7 fuer Runnable-Funktionen handgeschriebener C-SWCs eintragen
+  depends:
+  - RTE-20
+- id: SYS-03
+  prio: P2
+  status: in_progress
+  title: Programmflusskontrolle für den SBC-Watchdog
+  depends:
+  - VER-06
+  - ARCH-05
+- id: SYS-04
+  prio: P2
+  status: open
+  title: SBC-Produktionsmodus (SDMC = 0) vorbereiten
+  depends:
+  - SYS-03
+  - ARCH-08
+- id: NVM-06
+  prio: P3
+  status: open
+  title: Abbild-Speicher im OTA-Master - Ablage mehrerer ECU-Abbilder mit Manifest, stromausfallsicher, mit Pruefung
+  depends:
+  - ARCH-49
+- id: RTE-21
+  prio: P3
+  status: open
+  title: Weitere ARXML-Leser auf rtegen.load_component umstellen (C-Komponenten in elfcheck, schedana, nxconfig-Doku) - Nachlauf
+    RTE-20
+  depends:
+  - RTE-20
+- id: TOOL-84
+  prio: P3
+  status: open
+  title: Hauptzweig eines Kunden-Repos heisst nicht zwingend master
+  depends:
+  - TOOL-65
+- id: ARCH-60
+  prio: P2
+  status: open
+  title: device_header.describes auch im Workspace und im Baum suchen (Suchreihenfolge aus ARCH-56)
+  depends:
+  - ARCH-56
+  - ARCH-57
+- id: DOC-24
+  prio: P3
+  status: open
+  title: Referenzseiten fuer nextbsw.yaml und die Formatversionen der Konfigurationsdateien
+  depends:
+  - ARCH-56
+  - TOOL-66
+- id: SYS-83
+  prio: P2
+  status: open
+  title: Kernfehler-Pfade nachziehen - ETL_ASSERT ohne sichere Reihenfolge, Taskname in der Safety-Zeile gekuerzt
+  depends:
+  - SYS-80
+- id: SYS-104
+  prio: P3
+  status: open
+  title: Nachlauf SYS-103 - Ursache im Reset-Schleifen-Zaehler auf dem Watchdog-Pfad, veraltete Kommentare otherReset, ecu
+    status RESET-Bit
+  depends:
+  - SYS-103
+- id: IO-49
+  prio: P3
+  status: open
+  title: TMC6200 Uebertemperatur-Vorwarnung drv_otpw schaltet nicht ab - am Board nachweisen (B-IO44-6)
+  depends:
+  - IO-44
+- id: SYS-81
+  prio: P3
+  status: open
+  title: Timer-Task von FreeRTOS abschalten, wenn kein Software-Timer benutzt wird (R3 aus SYS-78)
+  depends:
+  - SYS-80
+- id: TOOL-77
+  prio: P3
+  status: open
+  title: nxconfig migrate findet ECU-Beschreibungen, die nicht rte.yaml heissen
+  depends:
+  - RTE-22
+- id: TOOL-102
+  prio: P3
+  status: open
+  title: Testlaeufer - requires gegen tools pruefen, und 'hoechstens ein MATLAB' als Regel statt Nebenwirkung
+  depends:
+  - TOOL-97
+- id: TOOL-104
+  prio: P3
+  status: open
+  title: Treffen die -k-Auswahlen geteilter Testdateien zusammen jede Testklasse?
+  depends:
+  - TOOL-100
+- id: TOOL-116
+  prio: P3
+  status: open
+  title: Testlauf gibt MATLAB nicht das eigene Python mit - MATLAB-Tests ausserhalb eines Baums mit .venv rot
+- id: TOOL-119
+  prio: P3
+  status: open
+  title: Regel fuer den C-Bezeichner eines Busses steht dreimal im Code - auf nxconfig.can.c_name zusammenlegen
+- id: PLAT-115
+  prio: P2
+  status: review
+  title: OpenBSW-Beitrag vorbereiten - DoCAN-Sperre als Template-Parameter, RTOS-Aufrufe (async::execute, CAN-Senden, Logger)
+    aus der Sperre heraus (SYS-189 S189-3)
+  depends:
+  - SYS-189
+- id: TOOL-163
+  prio: P3
+  status: open
+  title: cal check - nach refuse klar sagen, dass 'now' die benutzten Abbild-Vorgaben prueft, nicht das abgelehnte Segment
+  depends:
+  - SYS-90
+- id: TOOL-164
+  prio: P3
+  status: open
+  title: calseg merge --set <param>=<wert> - Wert im Segment aendern und neu versiegeln (Testhilfe fuer unplausible Segmente)
+  depends:
+  - SYS-89
+- id: SYS-114
+  prio: P3
+  status: open
+  title: 'Weckquellen: RESET des SBC-Wegs weglassen, wenn die MCU die Startursache kennt'
+- id: DOC-87
+  prio: P1
+  status: review
+  title: Workflow .github/workflows/docs.yml (Name Docs, nur workflow_dispatch, Branch main) baut die Website im Exportprofil
+    und veroeffentlicht nach gh-pages, eine Dokuversion je Release (mike, Version aus VERSION, Alias latest); im open-Profil
+    exportiert
+  depends:
+  - DOC-71
+- id: TOOL-229
+  prio: P2
+  status: open
+  title: tools/ci/release.py erzeugt die Release Notes aus der kuratierten Datei doc/release-notes/v<version>.md statt aus
+    CHANGELOG-Zeilen (beim ersten Release heute die ganze deutsche, private CHANGELOG-Datei)
+  depends:
+  - DOC-61
+- id: TOOL-230
+  prio: P2
+  status: open
+  title: tools/test --since waehlt Repository-weite Pruefungen (fmtcheck, logcheck und aehnliche Scanner ueber alle Quellen)
+    bei jeder Quellaenderung aus - heute covers nur der eigene Testcode, deshalb kam %lu aus SYS-173 (028e599c) erst im Preflight
+    auf
+- id: TOOL-246
+  prio: P2
+  status: open
+  title: Fuenf Target-Tests pruefen im Export nichts (target-pinevent, target-sbc-intn-pinevent, target-hwthreshold, target-active-short,
+    target-hwshutoff leiten das private Demo-Projekt ab) - auf testproject_full bzw. buildtest_s32k148_min umstellen
+  depends:
+  - TOOL-245
+- id: TOOL-248
+  prio: P2
+  status: open
+  title: Pre-flight PF-1 - ein Host-Test (vermutlich ecu/uds/test/host/test_app_uds_host.py) schreibt build/host/app_uds_host*.dll
+    und AppUdsHost.lib in den Baum trotz --build-root ausserhalb
+- id: PLAT-118
+  prio: P1
+  status: in_progress
+  title: Release-Repo neXtBSW vor dem Oeffentlichschalten aus einem bereinigten Export neu befuellen (rc1-Export 0f850f2a
+    enthaelt AH1506-Stellen) - Historie verwerfen, Tag neu setzen
+  depends:
+  - PLAT-117
+  - TOOL-240
+- id: SYS-144
+  prio: P2
+  status: review
+  title: TMC6200-Treiber meldet Abschaltfehler als DEVICE_FAULT an den Safe Supervisor (Voraussetzung fuer C4, SYS-140 R3)
+  depends:
+  - SYS-140
+  - SYS-28
+- id: TOOL-209
+  prio: P2
+  status: review
+  title: 'tools.ci preflight: schneller Vorlauf vor der Release-CI (T-VP3, Muster aus v0.2.0)'
+  depends:
+  - SYS-67
+- id: TOOL-210
+  prio: P3
+  status: open
+  title: Werkzeugarchive (Compiler, cppcheck, clang-tidy) ins Release-Archiv (T-VP4)
+  depends:
+  - SYS-67
+- id: SYS-168
+  prio: P2
+  status: open
+  title: Host-Tests der Safety-Units zusaetzlich mit -funsigned-char (T-VP5, Host/Target-Differenz HT-3)
+  depends:
+  - SYS-67
+- id: SYS-183
+  prio: P2
+  status: open
+  title: Unit-Design der uebrigen Sicherheitsunits beschreiben (unit-design.md Vorschlag U1, Sicherheitsplan N11, P6-12)
+  depends:
+  - SYS-182
+- id: SYS-184
+  prio: P2
+  status: review
+  title: libs/bsw/fastLoop - Budget-, Overrun- und Lebendzaehlung der schnellen Schleife, Reaktion nach F6, Konsole fastloop,
+    Host-Test mit simulierter Triggerkette
+  depends:
+  - ARCH-65
+- id: TOOL-212
+  prio: P3
+  status: open
+  title: GitHub-Workflow haengt beim Tag-Push den CI-Bericht als Release-Asset an (T-VP7)
+  depends:
+  - SYS-67
+- id: TOOL-222
+  prio: P2
+  status: review
+  title: elfcheck - kein Interrupt oberhalb der RTOS-Grenze erreicht rte, Rte_, dem und nvm (Aufrufgraph ab den Vektoren mit
+    ihrer NVIC-Stufe)
+  depends:
+  - SYS-189
+- id: IO-70
+  prio: P3
+  status: open
+  title: General Purpose Memory des SBC nutzen (Reset-/Fehlerursache, Reset-Schleifen-Zaehler ueber V1 aus)
+- id: IO-73
+  prio: P3
+  status: open
+  title: 'SMPS-Ausgangsspannung des SBC: Wert gegen die Board-Beschreibung pruefen und melden (Einstellen nur bewusst)'
+- id: IO-74
+  prio: P3
+  status: open
+  title: 'Board-Test: RCM_SSRS ist write-1-to-clear (Annahme von sbc failstart)'
+- id: IO-78
+  prio: P2
+  status: review
+  title: Software-ADC (AnalogInput, OpenBSW adc) mit dem Kalibrierteiler kalibrieren (aus IO-75)
+  depends:
+  - IO-75
+- id: TOOL-82
+  prio: P3
+  status: open
+  title: tools/ci liest CMakePresets.json ohne BOM - PowerShell schreibt eins
+  depends:
+  - TOOL-67
+- id: TOOL-19
+  prio: P3
+  status: open
+  title: FreeMASTER ueber UART (nach XCP)
+  depends:
+  - TOOL-01
+- id: TOOL-44
+  prio: P3
+  status: open
+  title: Abdeckung auch fuer die Python-getriebenen C/C++-Host-Tests messen (ecustate, safe-memory, Mutationslaeufe)
+  depends:
+  - TOOL-40
+- id: BL-09
+  prio: P2
+  status: open
+  title: Bootloader-HAL rm4x (DCAN-Polling, F021 aus RAM, Ausnahme-Weiterleitung, Reset-Grund)
+  depends:
+  - PLAT-44
+  - BL-08
+  - PLAT-36
+  - PLAT-38
+- id: BL-17
+  prio: P3
+  status: open
+  title: Flash-Master - Master leitet Flash-Auftraege an seine Slaves ueber SPI weiter (Einstieg, Download, Pruefung, Wiederanlauf)
+  depends:
+  - BL-15
+  - ARCH-48
+- id: BL-19
+  prio: P3
+  status: open
+  title: OTA-Kampagne im OTA-Master - Paket pruefen, ECUs nacheinander per UDS-Client flashen, Wiederholung, Ergebnisbericht
+  depends:
+  - COM-27
+  - NVM-06
+  - ARCH-50
+- id: PLAT-89
+  prio: P3
+  status: open
+  title: Mutationslauf fuer jedes Safety-Modul mit Konsistenztest - Vorschlag K aus PLAT-75
+  depends:
+  - PLAT-75
+- id: PLAT-84
+  prio: P3
+  status: open
+  title: Validierungssuite der statischen Analyse (Snippet je aktivierter Regel)
+  depends:
+  - PLAT-75
+- id: PLAT-33
+  prio: P2
+  status: open
+  title: Bau-Profil LAUNCHXL2-RM46 (RM46L852, Cortex-R4F) ohne Hardware
+  depends:
+  - PLAT-36
+  - PLAT-37
+  - PLAT-38
+  - BL-09
+- id: PLAT-34
+  prio: P3
+  status: open
+  title: Inbetriebnahme LAUNCHXL2-RM46 am Board (Startup, RTI, VIM, GIO, SCI, DCAN, F021, Bootloader)
+  depends:
+  - PLAT-33
+  - PLAT-40
+  - PLAT-41
+  - PLAT-42
+  - PLAT-43
+- id: PLAT-39
+  prio: P3
+  status: open
+  title: Flash-Ziele fuer XDS110 (Ergaenzung PLAT-18)
+  depends:
+  - PLAT-18
+- id: PLAT-40
+  prio: P3
+  status: open
+  title: RM46 am Board - Start, RTI-Tick, VIM, GIO-LED, SCI-Konsole
+  depends:
+  - PLAT-37
+- id: PLAT-41
+  prio: P3
+  status: open
+  title: RM46 am Board - DCAN und UDS
+  depends:
+  - PLAT-38
+  - PLAT-40
+- id: PLAT-42
+  prio: P3
+  status: open
+  title: RM46 am Board - Bootloader, F021, Update ueber CAN
+  depends:
+  - BL-09
+  - PLAT-39
+  - PLAT-41
+- id: PLAT-43
+  prio: P3
+  status: open
+  title: RM46 am Board - MPU, Watchdog (DWD/DWWD), ESM
+  depends:
+  - PLAT-40
+- id: COM-16
+  prio: P3
+  status: open
+  title: CAN-FD-Bit-Timing in nxconfig (CBT/FDCBT-Grenzen, gleicher Prescaler)
+  depends:
+  - COM-15
+- id: COM-17
+  prio: P3
+  status: open
+  title: CAN-FD-Konstanten im Generator mit static_assert gegen canFdBitTiming.h
+  depends:
+  - COM-16
+- id: COM-20
+  prio: P3
+  status: open
+  title: canflash und ISO-TP ueber CAN FD
+  depends:
+  - COM-18
+- id: PLAT-55
+  prio: P3
+  status: open
+  title: Startup-Vorlagen s32k1xx an einem Ort
+  depends:
+  - PLAT-54
+- id: PLAT-57
+  prio: P3
+  status: open
+  title: S32K116-Unterstuetzung OpenBSW anbieten
+  depends:
+  - PLAT-53
+  - PLAT-12
+- id: PLAT-61
+  prio: P3
+  status: open
+  title: Beitragspakete mit ARM-clang und Bazel nachpruefen, BUILD.bazel fuer die neuen Tests
+  depends:
+  - PLAT-53
+- id: DOC-20
+  prio: P3
+  status: open
+  title: Anleitung "eigenen Geraetetreiber beisteuern" (Beitraege von aussen ohne Kenntnis des Familien-Ports)
+  depends:
+  - ARCH-52
+  - RTE-18
+- id: DOC-30
+  prio: P3
+  status: open
+  title: Komplexitaetsgrenze per clang-tidy und goto-Pruefung per clang-tidy statt Code-Scan (DOC-22 P1 und P3, Befund DE3)
+  depends:
+  - DOC-22
+- id: DOC-31
+  prio: P3
+  status: open
+  title: Formatpruefung clang-format und Namenspruefung readability-identifier-naming fuer den eigenen Code (DOC-22 P4, Befund
+    DE4)
+  depends:
+  - DOC-22
+- id: SYS-112
+  prio: P3
+  status: open
+  title: tools/trace matrix uebernimmt die Statuszeile von requirements.yaml in traceability.md (SYS-94)
+  depends:
+  - SYS-94
+- id: SYS-106
+  prio: P2
+  status: open
+  title: Host-Test fuer den echten MCU-Watchdog-Treiber von OpenBSW gegen ein WDOG-Registermodell (SYS-62 Befund Q-3, QR-03)
+  depends:
+  - SYS-62
+- id: SYS-107
+  prio: P3
+  status: open
+  title: Einstufung AnalogInput.h/AnalogInputScale.h in coexistence.md pruefen (SYS-62 Befund Q-5)
+  depends:
+  - SYS-62
+- id: SYS-108
+  prio: P3
+  status: open
+  title: Host-Tests unter Linux mit 64-Bit-long und Abdeckungsbericht ohne .venv (SYS-62 Befund Q-6)
+  depends: []
+- id: SYS-109
+  prio: P2
+  status: open
+  title: safeMonitor-Nachweis im Testlauf - Skript safemonitor_upstream.py, Hash-Pruefung, static_assert, Upstream-Hinweis
+    QA-1 (SYS-62 P-5..P-7)
+  depends:
+  - SYS-62
+- id: COM-41
+  prio: P3
+  status: open
+  title: stm32gen erzeugt canBusOffConfiguration.h (COM-37)
+  depends:
+  - COM-37

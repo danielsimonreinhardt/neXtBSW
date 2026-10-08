@@ -1,0 +1,29 @@
+# ECU description of the RTE-18 test profile (tools/rtegen/test_rtegen_device_values.py): DemoSwc on a copy of the
+# build test project S32K148 whose board has two synthetic temperature probes (module tempProbe, manifest in
+# test/device_values/modules). Two tasks: the probe values of Run10ms are read in app10, those of Run100ms in app100.
+
+schema_version: 2
+
+tasks:
+  - name: app10
+    period_ms: 10
+    priority: 25
+    stack_bytes: 2048
+    runnables: [DemoSwc.Run10ms]
+  - name: app100
+    period_ms: 100
+    priority: 35
+    stack_bytes: 1024
+    runnables: [DemoSwc.Run100ms]
+
+components:
+  - name: DemoSwc
+    path: ../../../../swc/DemoSwc
+
+connections:
+  DemoSwc.Button1.Button1: tprobe.PROBE_A.alarm
+  DemoSwc.PcCommandQlf.PcCommandQlf: tprobe.PROBE_A.qlf
+  DemoSwc.MotorNtc_mV.MotorNtc_mV: tprobe.PROBE_B.resistance_ohm
+  DemoSwc.Led1.Led1: dio.out.LED1
+  DemoSwc.Led2.Led2: dio.out.LED2
+  DemoSwc.MotorNtcFiltered_mV.MotorNtcFiltered_mV: rte

@@ -1,0 +1,52 @@
+# SPDX-License-Identifier: Apache-2.0
+#
+# Borrowed vocabulary, not conformance (doc/architecture/autosar.md section 0): which neXtBSW parameter has a
+# counterpart in the AUTOSAR ECUC parameter definitions. Names only - no AUTOSAR text. Rendered for readers in
+# doc/architecture/autosar-ecuc-map.md, read by tools/autosar_xcheck/xcheck.py.
+#
+# Per entry:
+#   nxconfig   model class and field of tools/nxconfig/model.py; our limits are read from there (one place)
+#   yaml       YAML path as the user sees it
+#   module / container / parameter   the AUTOSAR counterpart
+#   scale      factor from our unit to the AUTOSAR unit (ms -> s: 0.001); default 1
+#   ours       [min, max] in AUTOSAR units where the model carries no limit of its own (null = unbounded)
+#   known      an accepted difference with its reason; reported as KNOWN instead of OUTSIDE/UNBOUNDED
+#   note       free remark for the page
+entries:
+  - {nxconfig: DiagSession.id, yaml: "diag.yaml sessions[].id", module: Dcm, container: DcmDspSessionRow, parameter: DcmDspSessionLevel}
+  - {nxconfig: DiagSession.p2_ms, yaml: "diag.yaml sessions[].p2_ms", module: Dcm, container: DcmDspSessionRow, parameter: DcmDspSessionP2ServerMax, scale: 0.001,
+     note: "ours has no upper bound; the wire format allows more than the standard module"}
+  - {nxconfig: DiagSession.p2_star_ms, yaml: "diag.yaml sessions[].p2_star_ms", module: Dcm, container: DcmDspSessionRow, parameter: DcmDspSessionP2StarServerMax, scale: 0.001,
+     note: "ours has no upper bound"}
+  - {nxconfig: DiagSecurityLevel.level, yaml: "diag.yaml security[].level", module: Dcm, container: DcmDspSecurityRow, parameter: DcmDspSecurityLevel, ours: [1, 63],
+     note: "ours is the odd requestSeed sub-function 0x01..0x7D, the AUTOSAR level is (sub-function + 1) / 2"}
+  - {nxconfig: DiagSecurityLevel.attempts, yaml: "diag.yaml security[].attempts", module: Dcm, container: DcmDspSecurityRow, parameter: DcmDspSecurityNumAttDelay}
+  - {nxconfig: DiagSecurityLevel.delay_ms, yaml: "diag.yaml security[].delay_ms", module: Dcm, container: DcmDspSecurityRow, parameter: DcmDspSecurityDelayTime, scale: 0.001}
+  - {nxconfig: DiagSecurityLevel.seed_bytes, yaml: "diag.yaml security[].seed_bytes", module: Dcm, container: DcmDspSecurityRow, parameter: DcmDspSecuritySeedSize}
+  - {nxconfig: DiagSecurityLevel.key_bytes, yaml: "diag.yaml security[].key_bytes", module: Dcm, container: DcmDspSecurityRow, parameter: DcmDspSecurityKeySize}
+  - {nxconfig: DtcCounterDebounce.failed_threshold, yaml: "diag.yaml dtcs[].debounce.counter.failed_threshold", module: Dem, container: DemDebounceCounterBasedClass, parameter: DemDebounceCounterFailedThreshold,
+     note: "ours is narrower on purpose: an 8-bit counter"}
+  - {nxconfig: DtcCounterDebounce.passed_threshold, yaml: "diag.yaml dtcs[].debounce.counter.passed_threshold", module: Dem, container: DemDebounceCounterBasedClass, parameter: DemDebounceCounterPassedThreshold}
+  - {nxconfig: DtcCounterDebounce.increment, yaml: "diag.yaml dtcs[].debounce.counter.increment", module: Dem, container: DemDebounceCounterBasedClass, parameter: DemDebounceCounterIncrementStepSize}
+  - {nxconfig: DtcCounterDebounce.decrement, yaml: "diag.yaml dtcs[].debounce.counter.decrement", module: Dem, container: DemDebounceCounterBasedClass, parameter: DemDebounceCounterDecrementStepSize}
+  - {nxconfig: DtcCounterDebounce.jump_up, yaml: "diag.yaml dtcs[].debounce.counter.jump_up", module: Dem, container: DemDebounceCounterBasedClass, parameter: DemDebounceCounterJumpUpValue}
+  - {nxconfig: DtcCounterDebounce.jump_down, yaml: "diag.yaml dtcs[].debounce.counter.jump_down", module: Dem, container: DemDebounceCounterBasedClass, parameter: DemDebounceCounterJumpDownValue}
+  - {nxconfig: DtcTimeDebounce.failed_ms, yaml: "diag.yaml dtcs[].debounce.time.failed_ms", module: Dem, container: DemDebounceTimeBasedClass, parameter: DemDebounceTimeFailedThreshold, scale: 0.001}
+  - {nxconfig: DtcTimeDebounce.passed_ms, yaml: "diag.yaml dtcs[].debounce.time.passed_ms", module: Dem, container: DemDebounceTimeBasedClass, parameter: DemDebounceTimePassedThreshold, scale: 0.001}
+  - {nxconfig: DtcAging.threshold_cycles, yaml: "diag.yaml dtcs[].aging.threshold_cycles", module: Dem, container: DemDTCAttributes, parameter: DemAgingCycleCounterThreshold}
+  - {nxconfig: Dtc.priority, yaml: "diag.yaml dtcs[].priority", module: Dem, container: DemDTCAttributes, parameter: DemDTCPriority}
+  - {nxconfig: Dtc.confirmation_threshold, yaml: "diag.yaml dtcs[].confirmation_threshold", module: Dem, container: DemEventParameter, parameter: DemEventConfirmationThreshold}
+  - {nxconfig: Dtc.number, yaml: "diag.yaml dtcs[].number", module: Dem, container: DemDTC, parameter: DemDtcValue,
+     known: "the number range is checked in tools/nxconfig/diagdesc.py against the ISO DTC table, the schema stays wide"}
+  - {nxconfig: DiagFaultMemory.max_entries, yaml: "diag.yaml fault_memory.max_entries", module: Dem, container: DemPrimaryMemory, parameter: DemMaxNumberEventEntryPrimary}
+  - {nxconfig: DiagFaultMemory.snapshot_records_max, yaml: "diag.yaml fault_memory.snapshot_records_max", module: Dem, container: DemDTCAttributes, parameter: DemMaxNumberFreezeFrameRecords}
+  - {nxconfig: CanUse.bitrate, yaml: "project.yaml can.<Bus>.bitrate", module: Can, container: CanControllerBaudrateConfig, parameter: CanControllerBaudRate, scale: 0.001,
+     note: "AUTOSAR in kbit/s, nominal rate; the limit of a real controller is in the derivative data"}
+  - {nxconfig: CanUse.sjw_tq, yaml: "project.yaml can.<Bus>.sjw_tq", module: Can, container: CanControllerBaudrateConfig, parameter: CanControllerSyncJumpWidth}
+  - {nxconfig: CanUse.prop_seg_tq, yaml: "project.yaml can.<Bus>.prop_seg_tq", module: Can, container: CanControllerBaudrateConfig, parameter: CanControllerPropSeg}
+  - {nxconfig: CanBusOff.first_pause_ms, yaml: "project.yaml can.<Bus>.bus_off.first_pause_ms", module: CanSM, container: CanSMManagerNetwork, parameter: CanSMBorTimeL1, scale: 0.001,
+     note: "different strategy (growing pause versus two levels with a counter), same time span"}
+  - {nxconfig: CanBusOff.max_pause_ms, yaml: "project.yaml can.<Bus>.bus_off.max_pause_ms", module: CanSM, container: CanSMManagerNetwork, parameter: CanSMBorTimeL2, scale: 0.001}
+  - {nxconfig: CanBusOff.discard_after, yaml: "project.yaml can.<Bus>.bus_off.discard_after", module: CanSM, container: CanSMManagerNetwork, parameter: CanSMBorCounterL1ToL2}
+  - {nxconfig: NvmBlockUse.length, yaml: "project.yaml nvm.blocks.<Block>.length", module: NvM, container: NvMBlockDescriptor, parameter: NvMNvBlockLength, ours: [1, 32767],
+     note: "ours counts elements; the block size is limited to 0x7FFF bytes (tools/nxconfig/nvm.py MAX_BLOCK_BYTES)"}

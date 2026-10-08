@@ -1,0 +1,125 @@
+# Test profile of the services 19 and 14 (NVM-04), not the eval board: five DTCs with both kinds of debouncing,
+# confirmation after one and after two operation cycles, two snapshot records of one DTC, extended data records of
+# counters only and with a stored identifier. The DTC numbers, identifiers and record numbers are those of the
+# message examples of ISO 14229-1 (2026) 11.2.5 and 11.3.5, so the host test rebuilds them as its own test vectors
+# (ecu/uds/test/host/test_app_uds_dtc.py); the values are ours.
+#
+# Every event is reported by the test itself (event.bsw, app_dem_report of the host build): the host build has no
+# components whose ports could be sampled. The identifiers read ports of the host stand-in of the RTE
+# (DiagRteStub.cpp), which the test sets before a DTC is stored.
+schema_version: 1
+
+sessions:
+  - name: Default
+    id: 0x01
+    p2_ms: 50
+    p2_star_ms: 5000
+  - name: Extended
+    id: 0x03
+    p2_ms: 50
+    p2_star_ms: 5000
+
+operation_cycles:
+  - name: Ignition
+    kind: ignition
+    autostart: true
+
+data_identifiers:
+  # the environment of the 11.3.5.6 example: coolant temperature, throttle position, engine speed, manifold pressure
+  - identifier: 0x4711
+    name: EnvironmentAtFailure
+    data:
+      - {name: coolantTemperature, type: uint8, source: {port: TestSwc.Coolant.Coolant}}
+      - {name: throttlePosition, type: uint8, source: {port: TestSwc.Throttle.Throttle}}
+      - {name: engineSpeed, type: uint16, source: {port: TestSwc.Speed.Speed}}
+      - {name: manifoldPressure, type: uint8, source: {port: TestSwc.Manifold.Manifold}}
+  - identifier: 0x4712
+    name: SupplyVoltage
+    data:
+      - {name: supply, type: uint16, unit: mV, source: {port: TestSwc.Supply.Supply}}
+  - identifier: 0xF186
+    name: ActiveDiagnosticSession
+    data:
+      - {name: activeSession, type: uint8, source: {bsw: uds.session}}
+
+fault_memory:
+  max_entries: 4
+  overflow: replace_oldest
+  snapshot_records_max: 2
+  extended_records_max: 3
+  cycle_ms: 10
+  write_interval_ms: 0
+
+# The order of the table is the order of the lists of 19 02/0A: 0A9B17 before 080511 as in 11.3.5.3.
+dtcs:
+  - number: 0x0A9B17
+    name: BatteryTemperatureHigh
+    severity: maintenance_only
+    operation_cycle: Ignition
+    confirmation_threshold: 2
+    priority: 3
+    event: {bsw: test.battery}
+    debounce: {time: {failed_ms: 50, passed_ms: 50}}
+    aging: {threshold_cycles: 3}
+    extended_data:
+      - record_number: 0x02
+        data:
+          - {name: agingCounter, counter: aging_counter}
+
+  - number: 0x080511
+    name: ClutchPositionShortToGround
+    severity: check_at_next_halt
+    operation_cycle: Ignition
+    confirmation_threshold: 2
+    priority: 2
+    event: {bsw: test.clutch}
+    debounce: {counter: {failed_threshold: 10, passed_threshold: -10}}
+    snapshots:
+      - {record_number: 0x01, dids: [SupplyVoltage]}
+    extended_data:
+      - record_number: 0x01
+        data:
+          - {name: occurrenceCounter, counter: occurrence_counter}
+
+  - number: 0x25221F
+    name: AcRequestIntermittent
+    operation_cycle: Ignition
+    confirmation_threshold: 2
+    priority: 3
+    event: {bsw: test.ac}
+    debounce: {counter: {failed_threshold: 5, passed_threshold: -5}}
+
+  # two snapshot records (11.3.5.5/11.3.5.6) and three extended data records (11.3.5.8 and one with an identifier)
+  - number: 0x123456
+    name: EngineSpeedImplausible
+    severity: check_immediately
+    operation_cycle: Ignition
+    confirmation_threshold: 2
+    priority: 1
+    event: {bsw: test.speed}
+    debounce: {counter: {failed_threshold: 127, passed_threshold: -128, increment: 11}}
+    snapshots:
+      - {record_number: 0x02, dids: [EnvironmentAtFailure]}
+      - {record_number: 0x01, dids: [SupplyVoltage, ActiveDiagnosticSession]}
+    extended_data:
+      - record_number: 0x10
+        data:
+          - {name: faultDetectionCounter, counter: fault_detection_counter}
+      - record_number: 0x05
+        data:
+          - {name: cyclesSinceFirstFailed, counter: operation_cycles_since_first_failed}
+      - record_number: 0x20
+        data:
+          - {name: occurrenceCounter, counter: occurrence_counter}
+          - {name: supplyAtFailure, did: SupplyVoltage}
+
+  - number: 0x789ABC
+    name: SupplyOutOfRange
+    severity: check_at_next_halt
+    operation_cycle: Ignition
+    confirmation_threshold: 1
+    priority: 2
+    event: {bsw: test.supply}
+    debounce: {counter: {failed_threshold: 3, passed_threshold: -3}}
+    snapshots:
+      - {record_number: 0x01, dids: [SupplyVoltage]}

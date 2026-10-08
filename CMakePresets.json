@@ -1,0 +1,56 @@
+{
+    "version": 6,
+    "cmakeMinimumRequired": {
+        "major": 3,
+        "minor": 28,
+        "patch": 3
+    },
+    "include": [
+        "cmake/NxPresets.json"
+    ],
+    "configurePresets": [
+        {
+            "name": "buildtest-s32k148-min",
+            "inherits": "nx-arm-gcc",
+            "displayName": "Projekt buildtest_s32k148_min (Bau-Test S32K148, ARCH-09, keine Hardware)",
+            "cacheVariables": {
+                "NX_PROJECT": "${sourceDir}/projects/buildtest_s32k148_min/project.yaml"
+            }
+        },
+        {
+            "name": "buildtest-s32k148-ethernet",
+            "inherits": "buildtest-s32k148-min",
+            "displayName": "Bau-Test Ethernet/lwIP auf buildtest_s32k148_min (PLAT-56, keine Hardware)",
+            "description": "Haelt den Weg zu Ethernet offen (ARCH-30 F7): NX_ETHERNET schaltet PLATFORM_SUPPORT_ETHERNET ein, lwIP-Stack, lwipSocket, cpp2ethernet, cpp2someip und doip werden in app.ecu gelinkt. MAC/PHY-Treiber (bspEthernet, bspTja1101) und ein EthernetSystem sind nicht eingebunden. Der Standard bleibt ohne Ethernet.",
+            "cacheVariables": {
+                "NX_ETHERNET": "ON"
+            }
+        },
+        {
+            "name": "buildtest-s32k148-threadx",
+            "inherits": "buildtest-s32k148-min",
+            "displayName": "Bau-Test ThreadX auf buildtest_s32k148_min (PLAT-71, keine Hardware)",
+            "description": "Haelt den Weg zu ThreadX offen (ARCH-30 F7): BUILD_TARGET_RTOS=THREADX bindet den ThreadX-Kern, den Cortex-M4-Port der OpenBSW-Plattform s32k1xx und die unveraenderten ThreadX-Teile der OpenBSW-Referenzanwendung (tx_user.h, tx_initialize_low_level.S, tx_execution_initialize.c, osHooks) ein. Nicht am Board geprueft. Der Standard bleibt FreeRTOS.",
+            "cacheVariables": {
+                "BUILD_TARGET_RTOS": "THREADX"
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "buildtest-s32k148-min",
+            "configurePreset": "buildtest-s32k148-min",
+            "configuration": "RelWithDebInfo"
+        },
+        {
+            "name": "buildtest-s32k148-ethernet",
+            "configurePreset": "buildtest-s32k148-ethernet",
+            "configuration": "RelWithDebInfo"
+        },
+        {
+            "name": "buildtest-s32k148-threadx",
+            "configurePreset": "buildtest-s32k148-threadx",
+            "configuration": "RelWithDebInfo"
+        }
+    ]
+}

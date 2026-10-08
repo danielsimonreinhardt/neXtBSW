@@ -1,0 +1,38 @@
+# Module manifest (doc/architecture/README.md, section 5) of a module of the port (section 3, rule 2): tools/nxconfig
+# reads platforms/<family>/port/**/module.yaml (config.port_module_dirs), like safeSystem next to it.
+#
+# safeMemory is the memory part of the safety package of the S32K1 family: MPU gate of the safety RAM (SM-10/11),
+# ECC supervision of RAM and flash (SM-15/16) and the ROM check (SM-14, CRC unit of the MCU over the application
+# image, reference written by the post-link step tools/romCheckImage.py). It has no board device; its one project
+# decision is the re-check period of the ROM check (SYS-44), a module parameter of the project (project.yaml
+# modules.safeMemory, project_parameters: true), generated into integration/safeMemoryConfiguration.h.
+module: safeMemory
+kind: service
+description: Safety RAM gate (MPU), ECC supervision and ROM check (CRC of the application image) of the S32K1 family
+# Evidence (CHANGELOG.md): ROM check "Board 2026-09-21 Teil 8" (SYS-38: valid image passes, an image with one
+# changed character is held in the safe state); MPU gate and ECC supervision SYS-37/SYS-41 (host tests, board runs
+# without false alarms).
+verification: hardware
+verification_note: >-
+  The first ROM-check pass (valid image passes, changed image held in the safe state) is confirmed on the eval
+  board; the re-check period, the CRC-unit self-test and the suspension during flash writes are host tests only.
+project_parameters: true
+parameters:
+  rom_check_period_ms:
+    type: int
+    min: 0
+    max: 86400000
+    default: 60000
+    unit: ms
+    description: >-
+      re-check period of the ROM check (SM-14) from the start of one pass to the start of the next; 0 = once per
+      start only. One pass (known-answer test of the CRC unit, then the CRC over the whole application image) runs
+      in the idle context at the lowest priority without a lock, so the period costs only idle time (about 3 to
+      6 ms per pass for an image of about 190 KB, computed). The period bounds the latent interval of a flash
+      corruption for ECUs that stay powered for long (AoU-25). It is also the deadline for flash writes: when a
+      due pass could not run for longer than one period because the program or data flash was being written, the
+      check reports ROM_CHECK_FAILURE (safe state S1 held) - a period other than 0 therefore has to be longer
+      than the longest flash write of the ECU (an EEPROM record of the FlexNVM emulation waits at most about a
+      second for its backup sector). The maximum is one day.
+lifecycle: { level: 2, task: idle }
+cmake_target: safeMemory

@@ -1,0 +1,16 @@
+# SPDX-License-Identifier: Apache-2.0
+# Test component of the RTE-23 profile tools/rtegen/test/disabled: stays enabled, but one of its two runnables is
+# switched off in the ECU description (tasks[].runnables[].enabled: false). RunMain10ms runs and counts Main,
+# RunAux10ms never runs; Aux is written only by it, so its reader gets the value of disabled_values.
+version: 1
+name: AuxSrcSwc
+description: Source with one disabled runnable (RTE-23 test)
+implementation: c
+runnables:
+  - name: RunMain10ms
+    period_ms: 10
+  - name: RunAux10ms
+    period_ms: 10
+ports:
+  - { name: Main, direction: out, type: uint16, runnables: [RunMain10ms] }
+  - { name: Aux, direction: out, type: uint16, runnables: [RunAux10ms] }

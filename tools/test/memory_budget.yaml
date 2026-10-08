@@ -1,0 +1,43 @@
+# Memory budget per build profile (PLAT-29), read by tools/test/test_memory_report.py.
+#
+# The BUDGET of a profile is not written here: it is the size of the linker regions of its application image, which
+# come from derivative + project (memory.application, bootloader area, hot RAM, no-init area, tools/nxconfig/memory.py).
+# This table adds what must stay FREE per region. A region over its size turns the test red in every profile (the
+# linker refuses such an image as well); `min_free` makes the test red earlier, before the next change tips it.
+# Names are the linker regions of platforms/s32k1xx/port/main/linkerscript/application.dld.in:
+#   Isr, FlashConfigField, ApplicationStartUpCode, Application   (flash)
+#   RAMFunctions, HotData, MainRAM, NoInit                         (RAM)
+#
+# preset:   configure preset of CMakePresets.json that builds the profile
+# build:    sub-directory of the build root of tools/test ({build}/<build>), shared with the target-* entries
+# min_free: bytes that must stay free per region, a region not named has no reserve beyond "fits"
+#
+# Raising a reserve or the headroom is a decision with a reason: say it next to the entry.
+profiles:
+  - preset: evalboard-s32k144-demo
+    build: demo
+    min_free:
+      Application: 4096         # eval board: 486 KB flash, the demo image is the reference of the other profiles
+      NoInit: 64                # records of the modules in .noinit.* come on top of the dump (PLAT-29)
+
+  - preset: evalboard-s32k144-charge
+    build: charge
+    min_free:
+      Application: 4096
+      NoInit: 64
+
+  - preset: buildtest-s32k148-min
+    build: bt148
+    min_free:
+      Application: 4096
+      NoInit: 64
+
+  # Smallest profile (Cortex-M0+, 14 KB SRAM_U): RAM is the scarce resource. The
+  # reserve keeps the stack/heap region and the hot data from running full unnoticed (PLAT-26/27 got it to fit).
+  - preset: s32k116evb-minimal
+    build: s32k116
+    min_free:
+      Application: 4096
+      HotData: 128
+      MainRAM: 128
+      NoInit: 64

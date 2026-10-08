@@ -1,0 +1,310 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Your Name <you@example.com>
+Date: Thu, 17 Sep 2026 12:00:00 +0200
+Subject: [PATCH] Fix bus off detection and error counters in FlexCANDevice
+
+`getBusOffState()`, `getRxErrorCounter()` and `getTxErrorCounter()` used
+the setter macros of the device header to read status fields. The macros
+shift their argument into the field instead of extracting it
+(`FLEXCAN_ESR1_FLTCONF(x)` is `((x << 4) & 0x30)`), so the code
+evaluated the wrong bits:
+
+- `getBusOffState()` looked at ESR1 bits 1..0 (ERRINT and bit 0, which
+  the device header leaves undefined) instead
+  of the fault confinement field in bits 4..5. ERRINT is set by any
+  error frame, so the first error frame put the driver into BUS_OFF, and
+  since `fBusOff` is sticky it stayed there until the device was
+  restarted or a frame was received. A controller that really went bus
+  off (ESR1[FLTCONF] = 1x, no interrupt flag set) was not detected at
+  all. On a running bus we measured ESR1 = 0x00240082 (ERRINT and IDLE
+  set, FLTCONF = 0, TEC/REC 30/0) and the driver reported BUS_OFF.
+- `getRxErrorCounter()` returned `(ECR << 8) & 0xFF00` truncated to
+  uint8_t, which is always 0.
+- `getTxErrorCounter()` worked by accident, because TXERRCNT starts at
+  bit 0, but read the whole register instead of the field.
+
+All three now extract the field with mask and shift.
+
+The new host test `FlexCANDeviceTest` covers the four fault confinement
+states and the error counters. `bspFlexCan` is not part of the unit test
+build, so the test brings a test-only `mcu/mcu.h` with the FlexCAN
+register layout and provides host memory at the base address of
+FlexCAN_0, which `FlexCANDevice` uses to derive its instance index.
+
+Signed-off-by: Your Name <you@example.com>
+---
+ CMakeLists.txt                                     |   1 +
+ .../bsp/bspFlexCan/include/can/FlexCANDevice.h     |  16 ++-
+ .../s32k1xx/bsp/bspFlexCan/test/CMakeLists.txt     |  20 +++
+ .../s32k1xx/bsp/bspFlexCan/test/include/mcu/mcu.h  |  19 +++
+ .../bspFlexCan/test/src/can/FlexCANDeviceTest.cpp  | 159 +++++++++++++++++++++
+ 5 files changed, 212 insertions(+), 3 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 1dc44b64..c69a5d3e 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -216,6 +216,7 @@ if (BUILD_EXECUTABLE STREQUAL "unitTest")
+ 
+         add_subdirectory(platforms/s32k1xx/bsp/bspCore/test)
+         add_subdirectory(platforms/s32k1xx/bsp/bspEepromDriver/test)
++        add_subdirectory(platforms/s32k1xx/bsp/bspFlexCan/test)
+         add_subdirectory(platforms/s32k1xx/bsp/bspIo/test)
+         add_subdirectory(platforms/s32k1xx/bsp/canflex2Transceiver/test)
+         add_subdirectory(platforms/s32k1xx/bsp/bspUart/test)
+diff --git a/platforms/s32k1xx/bsp/bspFlexCan/include/can/FlexCANDevice.h b/platforms/s32k1xx/bsp/bspFlexCan/include/can/FlexCANDevice.h
+index d760ad92..f646cfdb 100644
+--- a/platforms/s32k1xx/bsp/bspFlexCan/include/can/FlexCANDevice.h
++++ b/platforms/s32k1xx/bsp/bspFlexCan/include/can/FlexCANDevice.h
+@@ -179,12 +179,20 @@ public:
+     /**
+      * \return the number of Transmit errors
+      */
+-    uint8_t getTxErrorCounter() { return FLEXCAN_ECR_TXERRCNT(fpDevice->ECR); }
++    uint8_t getTxErrorCounter()
++    {
++        return static_cast<uint8_t>(
++            (fpDevice->ECR & FLEXCAN_ECR_TXERRCNT_MASK) >> FLEXCAN_ECR_TXERRCNT_SHIFT);
++    }
+ 
+     /**
+      * \return the number of Receive errors
+      */
+-    uint8_t getRxErrorCounter() { return FLEXCAN_ECR_RXERRCNT(fpDevice->ECR); }
++    uint8_t getRxErrorCounter()
++    {
++        return static_cast<uint8_t>(
++            (fpDevice->ECR & FLEXCAN_ECR_RXERRCNT_MASK) >> FLEXCAN_ECR_RXERRCNT_SHIFT);
++    }
+ 
+     /**
+      * \return the off status of the bus
+@@ -196,7 +204,9 @@ public:
+         // FLTCONF: 00 error active
+         //          01 error passive
+         //          1X bus off
+-        if ((FLEXCAN_ESR1_FLTCONF(fpDevice->ESR1) > 1) || fBusOff)
++        uint32_t const faultConfinement
++            = (fpDevice->ESR1 & FLEXCAN_ESR1_FLTCONF_MASK) >> FLEXCAN_ESR1_FLTCONF_SHIFT;
++        if ((faultConfinement > 1U) || fBusOff)
+         {
+             fBusOff = true;
+             return BUS_OFF;
+diff --git a/platforms/s32k1xx/bsp/bspFlexCan/test/CMakeLists.txt b/platforms/s32k1xx/bsp/bspFlexCan/test/CMakeLists.txt
+new file mode 100644
+index 00000000..9be5ad67
+--- /dev/null
++++ b/platforms/s32k1xx/bsp/bspFlexCan/test/CMakeLists.txt
+@@ -0,0 +1,20 @@
++add_executable(FlexCANDeviceTest src/can/FlexCANDeviceTest.cpp
++                                 ../src/can/FlexCANDevice.cpp)
++
++target_include_directories(
++    FlexCANDeviceTest
++    PRIVATE include ../include
++            ${PROJECT_SOURCE_DIR}/platforms/s32k1xx/bsp/bspMcu/include)
++
++target_link_libraries(
++    FlexCANDeviceTest
++    PRIVATE bsp
++            bspIo
++            bspInterruptsMock
++            bspMock
++            cpp2can
++            etl
++            gmock
++            gtest_main)
++
++gtest_discover_tests(FlexCANDeviceTest PROPERTIES LABELS "FlexCANDeviceTest")
+diff --git a/platforms/s32k1xx/bsp/bspFlexCan/test/include/mcu/mcu.h b/platforms/s32k1xx/bsp/bspFlexCan/test/include/mcu/mcu.h
+new file mode 100644
+index 00000000..272b982c
+--- /dev/null
++++ b/platforms/s32k1xx/bsp/bspFlexCan/test/include/mcu/mcu.h
+@@ -0,0 +1,19 @@
++/********************************************************************************
++ * Copyright (c) 2026 Your Name
++ *
++ * This program and the accompanying materials are made available under the
++ * terms of the Apache License Version 2.0 which is available at
++ * https://www.apache.org/licenses/LICENSE-2.0
++ *
++ * SPDX-License-Identifier: Apache-2.0
++ ********************************************************************************/
++
++// Test-only mcu.h: the FlexCAN driver needs the FlexCAN register layout and the volatile typedefs
++// of the device header, but not the Cortex-M core header, which cannot be compiled for the host.
++#pragma once
++
++#include "3rdparty/nxp/S32K148_FLEXCAN.h"
++
++typedef uint8_t volatile vuint8_t;
++typedef uint16_t volatile vuint16_t;
++typedef uint32_t volatile vuint32_t;
+diff --git a/platforms/s32k1xx/bsp/bspFlexCan/test/src/can/FlexCANDeviceTest.cpp b/platforms/s32k1xx/bsp/bspFlexCan/test/src/can/FlexCANDeviceTest.cpp
+new file mode 100644
+index 00000000..aa974c12
+--- /dev/null
++++ b/platforms/s32k1xx/bsp/bspFlexCan/test/src/can/FlexCANDeviceTest.cpp
+@@ -0,0 +1,159 @@
++/********************************************************************************
++ * Copyright (c) 2026 Your Name
++ *
++ * This program and the accompanying materials are made available under the
++ * terms of the Apache License Version 2.0 which is available at
++ * https://www.apache.org/licenses/LICENSE-2.0
++ *
++ * SPDX-License-Identifier: Apache-2.0
++ ********************************************************************************/
++
++// The system headers come first: the device header defines __I, which the intrinsics headers
++// pulled in by windows.h use as a parameter name.
++#if defined(_WIN32)
++#include <windows.h>
++#else
++#include <sys/mman.h>
++#endif
++
++#include "can/FlexCANDevice.h"
++
++#include <gtest/gtest.h>
++
++#include <cstring>
++
++namespace
++{
++using ::bios::CanPhyDummy;
++using ::bios::FlexCANDevice;
++
++// FlexCANDevice takes the peripheral base address from its configuration and derives the instance
++// index from it, so the test provides host memory at the base address of FlexCAN_0.
++uint32_t const FLEXCAN_0_BASE = 0x40024000U;
++
++// Stub instead of a mock: the tests below only read status registers, no expectations needed.
++class PowerStateControllerStub : public ::bios::IEcuPowerStateController
++{
++public:
++    void startPreSleep() override {}
++
++    uint32_t powerDown(uint8_t /*mode*/, tCheckWakeupDelegate /*delegate*/) override { return 0U; }
++
++    uint32_t powerDown(uint8_t /*mode*/) override { return 0U; }
++
++    void fullPowerUp() override {}
++
++    void setWakeupSourceMonitoring(
++        uint32_t /*source*/, bool /*active*/, bool /*fallingEdge*/) override
++    {}
++
++    void clearWakeupSourceMonitoring(uint32_t /*source*/) override {}
++
++    bool setWakeupDelegate(tCheckWakeupDelegate& /*delegate*/) override { return true; }
++
++    uint32_t getWakeupSource() override { return 0U; }
++};
++
++bool reserveRegisterBlock()
++{
++    static bool reserved = false;
++    if (reserved)
++    {
++        return true;
++    }
++#if defined(_WIN32)
++    void* const p = VirtualAlloc(
++        reinterpret_cast<void*>(static_cast<uintptr_t>(FLEXCAN_0_BASE) & ~0xFFFFU),
++        0x10000,
++        MEM_RESERVE | MEM_COMMIT,
++        PAGE_READWRITE);
++    reserved = (p != nullptr);
++#else
++    void* const p = mmap(
++        reinterpret_cast<void*>(static_cast<uintptr_t>(FLEXCAN_0_BASE) & ~0xFFFU),
++        0x2000,
++        PROT_READ | PROT_WRITE,
++        MAP_PRIVATE | MAP_ANONYMOUS | MAP_FIXED_NOREPLACE,
++        -1,
++        0);
++    reserved = (p != MAP_FAILED);
++#endif
++    return reserved;
++}
++
++class FlexCANDeviceTest : public ::testing::Test
++{
++protected:
++    void SetUp() override
++    {
++        if (!reserveRegisterBlock())
++        {
++            GTEST_SKIP() << "cannot map host memory at the FlexCAN base address";
++        }
++        memset(&registers(), 0, sizeof(FLEXCAN_Type));
++        fpDevice = new FlexCANDevice(fConfig, CanPhyDummy::getInstance(), fPowerManager);
++    }
++
++    void TearDown() override { delete fpDevice; }
++
++    static FLEXCAN_Type& registers()
++    {
++        return *reinterpret_cast<FLEXCAN_Type*>(static_cast<uintptr_t>(FLEXCAN_0_BASE));
++    }
++
++    FlexCANDevice::Config fConfig{FLEXCAN_0_BASE, 500000U, 0U, 0U, 0U, 8U, 0U, 8U, 0U, 0U};
++    PowerStateControllerStub fPowerManager;
++    FlexCANDevice* fpDevice = nullptr;
++};
++
++// Values measured on an S32K1xx board while the bus was healthy: ERRINT (bit 1) and IDLE (bit 7)
++// are set, the fault confinement field in bits 4..5 is 0 (error active).
++uint32_t const ESR1_ERROR_ACTIVE_AFTER_ERROR_FRAME = 0x00240082U;
++
++TEST_F(FlexCANDeviceTest, BusIsOnWhileFaultConfinementIsErrorActive)
++{
++    registers().ESR1 = ESR1_ERROR_ACTIVE_AFTER_ERROR_FRAME;
++    EXPECT_EQ(FlexCANDevice::BUS_ON, fpDevice->getBusOffState());
++
++    registers().ESR1 = 0U;
++    EXPECT_EQ(FlexCANDevice::BUS_ON, fpDevice->getBusOffState());
++}
++
++TEST_F(FlexCANDeviceTest, BusIsOnWhileFaultConfinementIsErrorPassive)
++{
++    registers().ESR1 = FLEXCAN_ESR1_FLTCONF(1U);
++    EXPECT_EQ(FlexCANDevice::BUS_ON, fpDevice->getBusOffState());
++}
++
++TEST_F(FlexCANDeviceTest, BusIsOffWhileFaultConfinementIsBusOff)
++{
++    registers().ESR1 = FLEXCAN_ESR1_FLTCONF(2U);
++    EXPECT_EQ(FlexCANDevice::BUS_OFF, fpDevice->getBusOffState());
++}
++
++TEST_F(FlexCANDeviceTest, BusOffStateIsStickyUntilTheDeviceIsRestarted)
++{
++    registers().ESR1 = FLEXCAN_ESR1_FLTCONF(3U);
++    EXPECT_EQ(FlexCANDevice::BUS_OFF, fpDevice->getBusOffState());
++
++    registers().ESR1 = 0U;
++    EXPECT_EQ(FlexCANDevice::BUS_OFF, fpDevice->getBusOffState());
++}
++
++TEST_F(FlexCANDeviceTest, ErrorCountersAreReadAsFields)
++{
++    // ECR: TXERRCNT in bits 0..7, RXERRCNT in bits 8..15
++    registers().ECR = FLEXCAN_ECR_TXERRCNT(30U) | FLEXCAN_ECR_RXERRCNT(0U);
++    EXPECT_EQ(30U, fpDevice->getTxErrorCounter());
++    EXPECT_EQ(0U, fpDevice->getRxErrorCounter());
++
++    registers().ECR = FLEXCAN_ECR_TXERRCNT(128U) | FLEXCAN_ECR_RXERRCNT(96U);
++    EXPECT_EQ(128U, fpDevice->getTxErrorCounter());
++    EXPECT_EQ(96U, fpDevice->getRxErrorCounter());
++
++    registers().ECR = 0xFFFFFFFFU;
++    EXPECT_EQ(255U, fpDevice->getTxErrorCounter());
++    EXPECT_EQ(255U, fpDevice->getRxErrorCounter());
++}
++
++} // anonymous namespace
+-- 
+2.51.0

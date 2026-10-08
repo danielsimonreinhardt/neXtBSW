@@ -1,0 +1,136 @@
+# Projekt: minimale ECU-Software auf dem Bau-Test-Board S32K148 (ARCH-09).
+# Zweck ist allein der Dauertest der Board-Neutralitaet: konfigurieren, pruefen, bauen. Es gibt keine Hardware dazu,
+# das Abbild wird nicht geflasht. Genutzt wird nur, was noetig ist, um Anwendung und Bootloader zu linken:
+# beide CAN-Busse, die Konsole, ein Analogeingang, ein Taster, drei LEDs, DemoSwc ueber die RTE.
+#
+# Beide CAN-Busse werden von der Anwendung wirklich genutzt, nicht nur konfiguriert: Bootloader und UDS auf CAN0,
+# XCP auf CAN1 (siehe unten). Genau das deckt den fruehen Befund ARCH-09-B1 ab: CanSystem und rtegen kannten
+# lange nur busid::CAN_0, der zweite Bus fiel ohne Fehler und ohne Warnung unter den Tisch. ARCH-07 machte
+# CanSystem und rtegen generisch je Bus; ARCH-61 zog zuletzt main.cpp nach (Rang und Freigabe der
+# Nachrichtenpuffer-Interrupts fuer jeden Bus aus der generierten Liste statt nur fuer CAN0) und entfernte den
+# seit PLAT-12 toten canConfiguration.h/Can0Config.
+#
+# Schema: tools/nxconfig/model.py (Project), Zustaendigkeiten: doc/architecture/README.md Abschnitt 4.
+# Pruefen: .venv/Scripts/python tools/nxconfig check projects/buildtest_s32k148_min/project.yaml
+# Bauen:   cmake --preset buildtest-s32k148-min && cmake --build --preset buildtest-s32k148-min
+schema_version: 1
+
+project:
+  name: buildtest_s32k148_min
+  board: ../../boards/buildtest_s32k148
+  rte: rte.yaml
+  description: Bau-Test S32K148 (Board-Neutralitaet, ARCH-09) - nicht fuer Hardware
+
+# Gleicher Systemtakt wie am Eval Board, aber aus einem anderen Quarz (Prueffrage 2): 8 MHz (Board) / PREDIV 1
+# * MULT 40 = VCO 320 MHz, SPLL 160 MHz, DIVCORE 2 -> 80 MHz Kern, 40 MHz Bus. Quelle, PLL, Teiler und
+# Peripherietakte berechnet das Taktmodell (tools/nxconfig/clock.py) aus board.clock.sosc_hz und den Grenzen des
+# Derivats (mcudb/s32k1xx/S32K148.yaml clock).
+clock:
+  system_hz: 80000000
+
+# Speicheraufteilung (ARCH-08) fuer das groessere Derivat: PFLASH 1,5 MB (0x0..0x17FFFF, Sektor 4 KB),
+# Bootloader 0x0..0x7FFF wie am Eval Board, Anwendung 0x8000..0x17EFFF, Gueltigkeitsrecord im letzten Sektor
+# 0x17F000. RAM: SRAM_L 0x1FFE0000 (128 KB) + SRAM_U 0x20000000 (124 KB) = 252 KB zusammenhaengend,
+# No-Init am Ende (0x2001EC00..0x2001EFFF, Boot-Request 0x2001EFF0). Der Bootloader bekommt nur die ersten
+# 32 KB von SRAM_L, damit die Aufteilung dem am Eval Board geprueften Bootloader entspricht.
+# memory.calibration (SYS-89/SYS-96, FIX-CALTESTS): the checked-in project itself has no safety relevant parameter
+# (DemoSwc has no swc.yaml), so this segment is not required by SYS-96. It is here anyway because tools/calgen's
+# BuildTest (tools/calgen/test_calgen.py) and ecu/calibration/test/target_build.py (profiles calib-dev/calib-prod)
+# derive a copy of this project with the RTE-26 test profile tools/rtegen/test/calib (three asil_b parameters,
+# tools/rtegen/test/calib/rte.yaml) swapped in for rte instead - that derived project needs its own calibration
+# segment (on_invalid: refuse is required as soon as one parameter is safety relevant). The project has no
+# project.diag, so SYS-101 (DTC for event.bsw calibration.segment) does not apply here.
+memory:
+  flash: PFLASH
+  bootloader: { size: 0x8000, ram: SRAM_L, ram_size: 0x8000, stack_size: 0x1000 }
+  application: { ram: [SRAM_L, SRAM_U], noinit_size: 0x400 }
+  calibration: { region: PFLASH, size: 0x1000, on_invalid: refuse, profile: development }
+
+# Bootloader auf CAN0. Der Transceiver ist passiv (kein SBC, kein Baustein-Hook) - nichts einzuschalten,
+# bootloader.init bleibt leer (Prueffrage 1).
+bootloader:
+  can: CAN0
+
+# Diagnose-Adressen (COM-11) - hier bewusst **andere** als am Eval Board (Prueffrage 4): Anfrage 0x6F0,
+# funktional 0x6DF, Antwort 0x6F8, anderes Fuellbyte, Flusskontrolle mit Blockgroesse 8 und STmin 1 ms,
+# andere Transportadressen. Damit zeigt der zweite Target-Build, dass Bootloader, App-UDS-Stack und canflash die
+# Werte aus dem Projekt nehmen und nichts mehr in bl_config.h steht.
+# Geprueft von tools/nxconfig/diag.py; Generat <build>/generated/board/bootloader/bl_diag.h.
+# Eigene, kuerzere Kennung als der Vorgabewert nextbsw-bl (PLAT-08): Bootloader, Updater (UPD_VERSION_PREFIX
+# kommt seit PLAT-08 aus bl_diag.h) und App-UDS-Stack muessen sie aus dem Projekt nehmen.
+diagnostics:
+  request_id: 0x6F0
+  functional_id: 0x6DF
+  response_id: 0x6F8
+  tester_address: 0xF3
+  ecu_address: 0x31
+  isotp: { padding: 0xAA, block_size: 8, stmin_ms: 1, n_cr_ms: 500, n_bs_ms: 750 }
+  bootloader:
+    version_prefix: NX148-BL
+
+# XCP auf dem **zweiten** Bus mit **29-Bit-IDs** (TOOL-28, Entscheidung Nutzer 2026-09-18). Nur Bau-Test: der
+# Target-Build deckt damit dauerhaft den Pfad ab, den das Eval Board nicht nutzt - XCP nicht auf dem Diagnose-Bus
+# (UDS bleibt auf CAN0), Extended-IDs im Generat xcpCanConfiguration.h und im Empfangsfilter von CAN1 (Puffer
+# 14/15), static_assert in ecu/xcp und A2L mit 29-Bit-IDs. Bit 31 gesetzt = 29-Bit-ID (Kodierung wie DBC/::can::CanId).
+# Wahl der IDs:
+#   - J1939-Form "proprietary B" (PGN 0xFF10/0xFF11, Priorität 6): 0x18FF10F3 = Quelladresse 0xF3 (Tester, wie
+#     diagnostics.tester_address), 0x18FF1131 = Quelladresse 0x31 (ECU, wie diagnostics.ecu_address).
+#   - bewusst **nicht** 0x18DA..../0x18DB.... (ISO 15765-2 Normal Fixed Addressing): dort liegen Diagnose-
+#     Anfragen anderer Werkzeuge, XCP soll sich nicht mit einer späteren 29-Bit-Diagnose überschneiden.
+#   - beide > 0x7FF: ginge das Extended-Kennzeichen irgendwo verloren, passte keine gültige 11-Bit-ID mehr und der
+#     static_assert bzw. die rtegen-Prüfung schlüge an, statt dass still eine Standard-ID entsteht.
+#   - keine Kollision: CAN1 trägt weder Diagnose (Adressen oben gelten für CAN0) noch eine DBC (rte.yaml ohne
+#     can-Abschnitt); nxconfig check prüft das.
+xcp:
+  bus: CAN1
+  master_id: 0x98FF10F3             # Master -> ECU (Kommandos), 29 Bit
+  slave_id: 0x98FF1131              # ECU -> Master (Antworten), 29 Bit
+
+# Bitrate je genutztem Bus. FlexCAN zaehlt den Oszillatortakt (SOSCDIV2 = 8 MHz): 8 MHz / (1 x 16 tq) = 500 kbit/s.
+# Vorteiler und Segmente berechnet das Taktmodell; ohne sjw_tq/prop_seg_tq nimmt es SJW maximal und
+# Phase 1 = Phase 2 (anderes Timing als am Eval Board - genau das soll geprueft werden). Zwei verschiedene
+# Bitraten, damit im Generat zwei unterschiedliche Timings entstehen (CTRL1 0x009A0007 bzw. 0x01610007).
+can:
+  CAN0: { bitrate: 500000, sample_point_percent: 81.25 }
+  CAN1: { bitrate: 250000 }                 # Prueffrage 4: andere Bitrate, anderer Abtastpunkt (Standard 87,5 %)
+
+uart:
+  UART: { baudrate: 115200 }
+
+# Interrupt-Prioritäten als Rang (PLAT-21, platforms/common/interruptPriority). Werte wie im Demo-Projekt:
+# CAN Rang 3 (NVIC-Ebene 8 wie die OpenBSW-Referenz), UART-RX eine Stufe darunter. Ohne diesen Abschnitt bricht
+# der Board-Port ab (`#error` in main.cpp, static_assert auf max_syscall_level) und bswgen lehnt die genutzten
+# CAN-Busse ab (ARCH-07, tools/nxconfig/can.py) - je genutzter Bus braucht einen Rang.
+interrupts:
+  max_syscall_level: 5          # = configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY des FreeRTOS-Ports
+  ranks:
+    - { source: can,  name: CAN0, rank: 3, note: "FlexCAN0 Message Buffer 0-15 und 16-31" }
+    - { source: can,  name: CAN1, rank: 3, note: "FlexCAN2 Message Buffer, zweiter Bus (ARCH-07)" }
+    - { source: uart, name: UART, rank: 4, note: "LPUART1 RX/TX der Konsole, unter CAN (IO-17, ARCH-15)" }
+
+use:
+  can: all
+  uart: all
+  adc: all
+  dio: all
+
+# Kein pwm-Abschnitt: Das Board hat keine Motorbruecke, also nutzt das Projekt keine PWM-Gruppe (ARCH-17).
+# Bis ARCH-17 stand hier eine erfundene Gruppe MOT1 auf FTM0, weil der Board-Port ohne PWM-Gruppe nicht baute
+# (Befund ARCH-09-B4: `#error` im Generat ftmPwmConfiguration.h, 18 Compile-Fehler). Seit ARCH-17 meldet das
+# Generat NX_PWM_GROUP_COUNT 0, und der Board-Port haelt das ComplementaryPwm-Element nur bei mindestens einer
+# Gruppe - damit ist dieses Projekt der Nachweis, dass ein Board ohne Endstufe linkt.
+# Eine PWM-Gruppe waehlt das Projekt ueber einen Abschnitt `pwm:` (Gruppenname aus board.yaml), nicht ueber use:.
+
+# Referenzpruefung des ADC (SafeSystem::checkAdcReference) und Konsole "adc all"
+adc_internal:
+  - { name: BANDGAP,      instance: ADC0, channel: BANDGAP }
+  - { name: ADCINTERNAL0, instance: ADC0, channel: INTERNAL0 }
+
+# Safety-Demo von OpenBSW (safeIo) wie am Eval Board, hier mit den LEDs des Boards.
+# SYS-87: Anzeige ist LED3 (PTE23, blaue LED der RGB-LED) - die einzige LED, die die Anwendung nicht schreibt
+# (rte.yaml: DemoSwc.Led1 -> LED1, DemoSwc.Led2 -> LED2). Eine Anzeige, die die Anwendung schreibt, schwebt im
+# Safe State und bekommt beim Verlassen deren letzten Pegel zurueck (AoU-30, doc/safety/concept.md).
+safety:
+  safe_state_output: LED3                 # wird im Safe State deaktiviert (hochohmig)
+  locked_pin: LED2                        # Pin-Konfiguration wird per PCR-Lock gesperrt
+  test_pin: PTD31                         # unbeschaltet ([OB] SAFETY_TEST), wird zyklisch auf Eingang geprueft

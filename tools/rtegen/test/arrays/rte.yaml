@@ -1,0 +1,43 @@
+# ECU description of the RTE-25 test profile: array ports between two hand-written C components, on the build test
+# project buildtest_s32k148_min (no SBC, two CAN buses) - not the eval board. Component paths are relative to this
+# file (RTE-22).
+#
+#   CellSrcSwc   writes CellVoltages, uint16 with the symbolic dimension pack.number_cells (swc.yaml), resolved
+#                without MATLAB from CellSrcSwc_init.m (= 6)
+#   CellSinkSwc  reads CellVoltages (dimension 6 as a number) in another task, writes the maximum, the index of the
+#                maximum and an echo of the array it read
+#
+#   fast (10 ms): CellSrcSwc.Run10ms      slow (20 ms): CellSinkSwc.Run20ms
+#
+# Expected hand-over: the array crosses the task boundary as a whole (copy at the task boundary, memcpy); the RTE
+# signal table lists it element by element, a2lgen makes one MEASUREMENT with MATRIX_DIM 6 of it.
+# Used by: tools/rtegen/test_rtegen_c_swc.py (CArrayTest, host test test/arrays/rte_arrays_host_test.cpp) and
+# tools/a2lgen/test_a2lgen.py (MATRIX_DIM).
+
+schema_version: 2
+
+tasks:
+  - name: fast
+    period_ms: 10
+    priority: 35
+    stack_bytes: 1024
+    runnables: [CellSrcSwc.Run10ms]
+  - name: slow
+    period_ms: 20
+    priority: 25
+    stack_bytes: 1024
+    runnables: [CellSinkSwc.Run20ms]
+
+components:
+  - name: CellSrcSwc
+    path: CellSrcSwc
+  - name: CellSinkSwc
+    path: CellSinkSwc
+
+connections:
+  CellSrcSwc.BaseVoltage_mV.BaseVoltage_mV: rte.init
+  CellSrcSwc.CellVoltages.CellVoltages: rte
+  CellSinkSwc.CellVoltages.CellVoltages: CellSrcSwc.CellVoltages.CellVoltages
+  CellSinkSwc.MaxCell_mV.MaxCell_mV: rte
+  CellSinkSwc.MaxCellIndex.MaxCellIndex: rte
+  CellSinkSwc.CellEcho.CellEcho: rte

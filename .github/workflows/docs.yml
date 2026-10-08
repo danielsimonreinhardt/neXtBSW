@@ -1,0 +1,94 @@
+# Dokumentations-Website (DOC-87): baut die Website im exportierten Baum (strict) und veroeffentlicht sie mit mike auf dem
+# Zweig gh-pages - eine Dokuversion je Release (Version aus der Datei VERSION), Alias latest.
+# Der Lauf gehoert ins Release-Repository (Zweig main, dort liegt der Export); im Entwicklungsbaum bricht er ab, weil die
+# Website nur aus dem Export entsteht (tools/docgen/website.md). Ausloeser nur von Hand, wie bei CI (Entscheidung
+# Nutzer 2026-09-17). GitHub Pages schaltet der Nutzer erst nach F15/F16 frei (Einstellung Pages: Zweig gh-pages).
+# Lokal dasselbe: pip install -r tools/requirements-site.txt && python -m tools.docgen.site build --out site
+
+name: Docs
+
+on:
+  workflow_dispatch:
+
+# ein Lauf zur Zeit: zwei Veroeffentlichungen duerfen nicht gleichzeitig auf gh-pages schreiben
+concurrency:
+  group: docs-pages
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Website bauen (strict)
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PYTHONUTF8: "1"
+    steps:
+      - name: Checkout (mit external/openbsw)
+        uses: actions/checkout@v7
+        with:
+          submodules: true
+          persist-credentials: false
+
+      - name: Nur aus dem Export
+        run: |
+          if [ -f doc/TODO.md ]; then
+            echo "::error::Entwicklungsbaum erkannt (doc/TODO.md). Die Website wird nur im Release-Repository veroeffentlicht."
+            exit 1
+          fi
+
+      - name: Python aus tools/ci/.python-version
+        uses: actions/setup-python@v7
+        with:
+          python-version-file: tools/ci/.python-version
+          cache: pip
+          cache-dependency-path: tools/requirements-site.txt
+
+      - name: Pakete der Website
+        run: pip install -r tools/requirements-site.txt
+
+      - name: Website bauen (strict, Profil open)
+        run: python -m tools.docgen.site build --out site
+
+  publish:
+    name: Mit mike nach gh-pages
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    # einziger Job mit Schreibrecht: mike schreibt ausschliesslich den Zweig gh-pages
+    permissions:
+      contents: write
+    env:
+      PYTHONUTF8: "1"
+    steps:
+      - name: Checkout (mit external/openbsw und gh-pages)
+        uses: actions/checkout@v7
+        with:
+          submodules: true
+          fetch-depth: 0
+
+      - name: Python aus tools/ci/.python-version
+        uses: actions/setup-python@v7
+        with:
+          python-version-file: tools/ci/.python-version
+          cache: pip
+          cache-dependency-path: tools/requirements-site.txt
+
+      - name: Pakete der Website
+        run: pip install -r tools/requirements-site.txt
+
+      - name: Autor fuer den gh-pages-Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Veroeffentlichen (Version aus VERSION, Alias latest)
+        run: |
+          version="$(tr -d '[:space:]' < VERSION)"
+          test -n "$version"
+          mike deploy --push --update-aliases "$version" latest
+          mike set-default --push latest

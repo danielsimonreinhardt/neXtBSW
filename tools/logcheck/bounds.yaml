@@ -1,0 +1,419 @@
+# SPDX-License-Identifier: Apache-2.0
+# Upper bounds of "%s" arguments and format macros of the logger calls (SYS-16), read by tools/logcheck.
+#
+# A logger call puts its format string and every "%s" argument as a copy into ONE entry of 128 bytes; a string
+# without a known upper bound can cut the line to "<?>" (IO-25, COM-25). String literals and conditional
+# expressions of literals are measured by the tool itself. Everything else needs an entry here - with a proof the
+# tool checks on every run, so a bound cannot silently go stale:
+#
+#   function   file + pattern (regex of the definition): every return of the function is a string literal (or one
+#              of allowed_returns, e.g. an element of a local table of literals), and no literal in its body is
+#              longer than max
+#   functions  pattern only: the same for every definition in the repository (tests and external/ excluded),
+#              e.g. all overrides of an interface method
+#   assigned   file + variable: every assignment "variable = ...;" is a string literal of at most max characters
+#   contains   file + text (string or list): the file contains the text (whitespace ignored, comments removed
+#              unless raw: true) - used for the static_asserts that bound names from the configuration
+#   confined   pattern + files: no other source uses the pattern (the object is not created anywhere else yet);
+#              the first new user has to bound the string there and extend the rule
+#
+# strings:  expr = argument expression as written in the call (whitespace ignored), files = calls it applies to
+# macros:   name = macro inside a format string ("UDS on " NX_UDS_BUS_NAME ...), counted with max characters
+# exempt:   format = format expression of calls the tool cannot evaluate, with the proof of their own check
+
+strings:
+  # ------------------------------------------------------------------ names from the configuration
+  - expr: _names.label
+    files: [libs/bsw/highSideSwitch/src/highSideSwitch/HighSideSwitchSystem.cpp]
+    max: 16
+    evidence: >
+      Label of a high-side switch instance (generated NX_DEVICE_<device>_LABEL). HighSideSwitchNames::LABEL_MAX_CHARS
+      is the contract of the library. ARCH-66: the system is created only by the binding trait of the module (generated
+      integration, integration/moduleBinding.h), which checks every instance with static_assert(hasValidLabel()) on
+      exactly the names it hands the system.
+    proof:
+      - {kind: contains, file: libs/bsw/highSideSwitch/include/highSideSwitch/HighSideSwitchNames.h,
+         text: "static constexpr size_t LABEL_MAX_CHARS = 16U;"}
+      - kind: contains
+        file: libs/bsw/highSideSwitch/include/highSideSwitch/HighSideSwitchBinding.h
+        text:
+          - "static_assert( hasValidLabel(Instance<I>::NAMES),"
+          - "return storage.create(context, parts, Instance<I>::CONFIG, Instance<I>::NAMES);"
+      - kind: confined
+        pattern: '\bHighSideSwitchNames\b'
+        files:
+          - libs/bsw/highSideSwitch/include/highSideSwitch/HighSideSwitchNames.h
+          - libs/bsw/highSideSwitch/include/highSideSwitch/HighSideSwitchSystem.h
+          - libs/bsw/highSideSwitch/include/highSideSwitch/HighSideSwitchIntegration.h
+          - libs/bsw/highSideSwitch/include/highSideSwitch/HighSideSwitchBinding.h
+          - libs/bsw/highSideSwitch/src/highSideSwitch/HighSideSwitchSystem.cpp
+
+  - expr: _names.label
+    files: [platforms/s32k1xx/port/main/src/systems/GateDriverSystem.cpp]
+    max: 16
+    evidence: >
+      Label of a TMC6200 instance = its instance name (#device); Integration.cpp asserts every instance against
+      GATE_DRIVER_LABEL_MAX_CHARS.
+    proof:
+      - kind: contains
+        file: platforms/s32k1xx/port/main/src/integration/Integration.cpp
+        text:
+          - "constexpr size_t GATE_DRIVER_LABEL_MAX_CHARS = 16U;"
+          - "= {NX_DEVICE_##device##_PARAM_CONSOLE, #device, \"TMC6200 gate driver \" #device};"
+          - "static_assert(sizeof(#device) - 1U <= GATE_DRIVER_LABEL_MAX_CHARS,"
+      - kind: confined
+        pattern: '\bGateDriverNames\b'
+        files:
+          - platforms/s32k1xx/port/main/include/systems/GateDriverSystem.h
+          - platforms/s32k1xx/port/main/src/systems/GateDriverSystem.cpp
+          - platforms/s32k1xx/port/main/src/integration/Integration.cpp
+
+  - expr: INTN1_INPUT_NAME
+    files: [platforms/s32k1xx/port/main/src/systems/SbcSystem.cpp]
+    max: 32
+    evidence: >
+      IO-68: name of the board input wired to INTN1 of the SBC (generated NX_DEVICE_<sbc>_IO_INTN1, stringified), or
+      "" without the connection. SbcSystem.cpp asserts its length against INTN1_INPUT_NAME_MAX_CHARS at compile time.
+    proof:
+      - kind: contains
+        file: platforms/s32k1xx/port/main/src/systems/SbcSystem.cpp
+        text:
+          - "constexpr size_t INTN1_INPUT_NAME_MAX_CHARS = 32U;"
+          - "nameLength(INTN1_INPUT_NAME) <= INTN1_INPUT_NAME_MAX_CHARS,"
+
+  - expr: _names.label
+    files: [platforms/s32k1xx/port/main/src/systems/CellMonitorSystem.cpp]
+    max: 16
+    evidence: >
+      Label of an MC33771C instance. No integration creates a CellMonitorSystem yet (IO-06 not active); the lines
+      are sized for 16 characters. The first integration has to assert its labels like GATE_DRIVER_DATA does.
+    proof:
+      - kind: confined
+        pattern: '\bCellMonitorNames\b'
+        files:
+          - platforms/s32k1xx/port/main/include/systems/CellMonitorSystem.h
+          - platforms/s32k1xx/port/main/src/systems/CellMonitorSystem.cpp
+
+  - expr: _name
+    files: [platforms/s32k1xx/port/main/src/systems/CanSystem.cpp]
+    max: 16
+    evidence: >
+      Name of a CAN channel = bus name of the project (#bus of NX_CAN_BUSES); CanSystem.cpp asserts every bus name
+      against CanFrameLog::BUS_NAME_CHARS (16), the same limit as the can log lines (COM-25).
+    proof:
+      - {kind: contains, file: libs/bsw/canSystem/include/can/CanFrameLog.h,
+         text: "static constexpr size_t BUS_NAME_CHARS = 16U;"}
+      - kind: contains
+        file: platforms/s32k1xx/port/main/src/systems/CanSystem.cpp
+        text:
+          - ": _name(name)"
+          - ", _bus##bus( #bus, deviceName,"
+          - "static_assert(textLength(#bus) <= ::can::CanFrameLog::BUS_NAME_CHARS, \"CAN bus name \" #bus \" longer"
+          - "NX_CAN_BUSES(NX_CAN_CHECK_NAMES)"
+
+  - expr: bus
+    files: [platforms/s32k1xx/port/main/src/systems/CanSystem.cpp]
+    max: 16
+    evidence: enableCanIrq() gets #bus of NX_CAN_MB_VECTORS, asserted in the same macro.
+    proof:
+      - kind: contains
+        file: platforms/s32k1xx/port/main/src/systems/CanSystem.cpp
+        text:
+          - "static_assert(textLength(#bus) <= ::can::CanFrameLog::BUS_NAME_CHARS, \"CAN bus name \" #bus \" too long\");
+             enableCanIrq(#bus,"
+
+  - expr: _device
+    files: [platforms/s32k1xx/port/main/src/systems/CanSystem.cpp]
+    max: 16
+    evidence: Controller name of a bus (deviceName of NX_CAN_BUSES, e.g. "FlexCAN0"), asserted in CanSystem.cpp.
+    proof:
+      - kind: contains
+        file: platforms/s32k1xx/port/main/src/systems/CanSystem.cpp
+        text:
+          - ": _name(name) , _device(device)"
+          - "constexpr size_t CAN_DEVICE_NAME_MAX_CHARS = 16U;"
+          - "static_assert(textLength(deviceName) <= CAN_DEVICE_NAME_MAX_CHARS,"
+
+  - expr: ::common::busid::BusIdTraits::getName(itr->getBusId())
+    files: [ecu/uds/src/transport/routing/DiagTransportRouter.cpp]
+    max: 16
+    evidence: >
+      Bus id names: literals in BusIdTraits::getName, SELFDIAG and ETH_0 by BUS_ID_NAME, the CAN buses by #BUS of
+      NX_BUSID_CAN_BUSES - asserted against CanFrameLog::BUS_NAME_CHARS in CanSystem.cpp.
+    proof:
+      - {kind: function, file: ecu/configuration/common/src/busid/BusId.cpp, pattern: 'BusIdTraits::getName\('}
+      - kind: contains
+        file: ecu/configuration/common/src/busid/BusId.cpp
+        text: ["BUS_ID_NAME(SELFDIAG);", "NX_BUSID_CAN_BUSES(BUS_ID_CAN_NAME)", "BUS_ID_NAME(ETH_0);"]
+      - kind: contains
+        file: platforms/s32k1xx/port/main/src/systems/CanSystem.cpp
+        text: "NX_BUSID_CAN_BUSES(NX_BUSID_CHECK_NAME)"
+
+  - expr: test.name
+    files: [ecu/application/src/systems/RteSystem.cpp]
+    max: 16
+    evidence: >
+      SYS-143: name of the PWM group of a start test (rte::SafeStateTest::name, a string literal written by
+      tools/rtegen into rte::SAFE_STATE_TESTS); the generated header asserts every name at compile time against
+      the 16 characters the log lines are sized for (RteSystem.cpp SafeStateLog).
+    proof:
+      - {kind: contains, file: tools/rtegen/templates/RteConfig.h.j2,
+         text: 'static_assert(sizeof("{{ group.name }}") - 1U <= SAFE_STATE_GROUP_NAME_MAX_CHARS,'}
+      - {kind: contains, file: tools/rtegen/templates/RteConfig.h.j2,
+         text: "constexpr size_t SAFE_STATE_GROUP_NAME_MAX_CHARS = 16U;"}
+
+  - expr: static_cast<char const*>(static_cast<void const*>(bootId.data()))
+    files: [ecu/uds/src/systems/DiagSystem.cpp]
+    max: 32
+    evidence: >
+      Version string of the bootloader found in flash: findVersionWithPrefix() stops after
+      BOOTLOADER_VERSION_MAX_LENGTH (32) characters and returns only a NUL terminated string.
+    proof:
+      - {kind: contains, file: ecu/uds/include/uds/app/BootloaderIdentification.h,
+         text: "static constexpr uint8_t BOOTLOADER_VERSION_MAX_LENGTH = 32U;"}
+      - {kind: contains, file: ecu/uds/src/uds/app/BootloaderIdentification.cpp,
+         text: ["&& ((end - pos) < BOOTLOADER_VERSION_MAX_LENGTH))", "(area[end] == 0U)"]}
+      - {kind: contains, file: ecu/uds/src/uds/app/DiagStack.cpp,
+         text: "_values.bootSoftwareId = findBootloaderVersion(bootloaderArea);"}
+
+  # ------------------------------------------------------------------ interface methods returning a name
+  - expr: _controller.getPowerSupply().getName()
+    files: [ecu/application/src/systems/EcuStateSystem.cpp]
+    max: 16
+    evidence: >
+      IPowerSupply::getName (libs/bsw/ecuState): documented as a short literal of at most 16 characters; every
+      getName() override and out-of-class getName() definition of the repository returns a literal.
+    proof:
+      - {kind: functions, pattern: '\bgetName\(\)\s*const\s*override\b'}
+      - {kind: functions, pattern: '\b\w+::getName\(\)\s*const\b'}
+  - expr: flush->getName()
+    files: [ecu/application/src/systems/EcuStateSystem.cpp]
+    max: 16
+    evidence: IOutputFlush::getName, same rule as the power supply.
+    proof:
+      - {kind: functions, pattern: '\bgetName\(\)\s*const\s*override\b'}
+      - {kind: functions, pattern: '\b\w+::getName\(\)\s*const\b'}
+  - expr: reason
+    files: [ecu/application/src/systems/EcuStateSystem.cpp]
+    max: 24
+    evidence: >
+      IShutdownStep::getFailureReason() or "-": every definition returns a literal or CanShutdownStep::_reason,
+      which is only ever assigned literals.
+    proof:
+      - {kind: functions, pattern: '\bgetFailureReason\(\)\s*const\b', allowed_returns: [_reason]}
+      - {kind: assigned, file: platforms/s32k1xx/port/main/src/integration/CanShutdownStep.cpp, variable: _reason}
+      - {kind: assigned, file: platforms/s32k1xx/port/main/src/integration/CanShutdownStep.h, variable: _reason}
+
+  # ------------------------------------------------------------------ name functions of enums and states
+  - expr: ::ecustate::shutdownStepName(step)
+    max: 3
+    evidence: switch of literals
+    proof: {kind: function, file: libs/bsw/ecuState/src/ecuState/EcuStateMachine.cpp,
+            pattern: 'char const\* shutdownStepName\('}
+  - expr: ::ecustate::stepStateName(now)
+    max: 11
+    evidence: switch of literals
+    proof: {kind: function, file: libs/bsw/ecuState/src/ecuState/EcuStateMachine.cpp,
+            pattern: 'char const\* stepStateName\('}
+  - expr: ::ecustate::stateName(_reportedState)
+    max: 8
+    evidence: switch of literals
+    proof: {kind: function, file: libs/bsw/ecuState/src/ecuState/EcuStateMachine.cpp,
+            pattern: 'char const\* stateName\(State const'}
+  - expr: ::ecustate::stateName(state)
+    max: 8
+    evidence: switch of literals
+    proof: {kind: function, file: libs/bsw/ecuState/src/ecuState/EcuStateMachine.cpp,
+            pattern: 'char const\* stateName\(State const'}
+  - expr: ::ecustate::EcuStateController::powerDownResultName(_controller.getPowerDownResult())
+    max: 15
+    evidence: switch of literals
+    proof: {kind: function, file: libs/bsw/ecuState/src/ecuState/EcuStateController.cpp,
+            pattern: 'EcuStateController::powerDownResultName\('}
+  - expr: ::ecustate::EcuStateMachine::restartReasonName(machine.getRestartReason())
+    max: 23
+    evidence: switch of literals
+    proof: {kind: function, file: libs/bsw/ecuState/src/ecuState/EcuStateMachine.cpp,
+            pattern: 'EcuStateMachine::restartReasonName\('}
+  - expr: HighSideSwitch::faultName(sw.getLastFault())
+    max: 24
+    evidence: switch of literals
+    proof: {kind: function, file: libs/bsw/highSideSwitch/src/highSideSwitch/HighSideSwitch.cpp,
+            pattern: 'HighSideSwitch::faultName\('}
+  - expr: HighSideSwitch::stateName(state)
+    max: 25
+    evidence: switch of literals
+    proof: {kind: function, file: libs/bsw/highSideSwitch/src/highSideSwitch/HighSideSwitch.cpp,
+            pattern: 'HighSideSwitch::stateName\('}
+  - expr: errorName(initResult)
+    max: 21
+    evidence: switch of literals
+    proof: {kind: function, file: platforms/s32k1xx/port/main/src/systems/CanSystem.cpp,
+            pattern: 'char const\* errorName\('}
+  - expr: errorName(openResult)
+    max: 21
+    evidence: switch of literals
+    proof: {kind: function, file: platforms/s32k1xx/port/main/src/systems/CanSystem.cpp,
+            pattern: 'char const\* errorName\('}
+  - expr: ::bcc::Mc33771c::statusName(status)
+    max: 18
+    evidence: switch of literals
+    proof: {kind: function, file: libs/bsw/bccMc33771/src/bcc/Mc33771c.cpp, pattern: 'Mc33771c::statusName\('}
+  - expr: ::bcc::Mc33771c::stateName(_driver.getState())
+    max: 13
+    evidence: switch of literals
+    proof: {kind: function, file: libs/bsw/bccMc33771/src/bcc/Mc33771c.cpp, pattern: 'Mc33771c::stateName\('}
+  - expr: ::bcc::Mc33771c::stateName(_reportedState)
+    max: 13
+    evidence: switch of literals
+    proof: {kind: function, file: libs/bsw/bccMc33771/src/bcc/Mc33771c.cpp, pattern: 'Mc33771c::stateName\('}
+  - expr: ::bcc::Mc33771c::stateName(state)
+    max: 13
+    evidence: switch of literals
+    proof: {kind: function, file: libs/bsw/bccMc33771/src/bcc/Mc33771c.cpp, pattern: 'Mc33771c::stateName\('}
+  - expr: ::bcc::Mc33771c::faultName(added)
+    max: 27
+    evidence: name of the first fault bit, literals
+    proof: {kind: function, file: libs/bsw/bccMc33771/src/bcc/Mc33771c.cpp, pattern: 'Mc33771c::faultName\(',
+            allowed_returns: ['names[bit]']}
+  - expr: ::gd::Tmc6200::statusName(status)
+    max: 20
+    evidence: switch of literals
+    proof: {kind: function, file: libs/bsw/gdTmc6200/src/gd/Tmc6200.cpp, pattern: 'Tmc6200::statusName\('}
+  - expr: ::gd::Tmc6200::stateName(_reportedState)
+    max: 13
+    evidence: switch of literals
+    proof: {kind: function, file: libs/bsw/gdTmc6200/src/gd/Tmc6200.cpp, pattern: 'Tmc6200::stateName\('}
+  - expr: ::gd::Tmc6200::stateName(state)
+    max: 13
+    evidence: switch of literals
+    proof: {kind: function, file: libs/bsw/gdTmc6200/src/gd/Tmc6200.cpp, pattern: 'Tmc6200::stateName\('}
+  - expr: ::gd::Tmc6200::faultName(faults)
+    max: 24
+    evidence: name of the first fault bit, literals
+    proof: {kind: function, file: libs/bsw/gdTmc6200/src/gd/Tmc6200.cpp, pattern: 'Tmc6200::faultName\(',
+            allowed_returns: ['names[bit]']}
+  - expr: ::gd::Tmc6200::faultName(added)
+    max: 24
+    evidence: name of the first fault bit, literals
+    proof: {kind: function, file: libs/bsw/gdTmc6200/src/gd/Tmc6200.cpp, pattern: 'Tmc6200::faultName\(',
+            allowed_returns: ['names[bit]']}
+  - expr: ::sbc::resetCounterCompensationName(c.result)
+    max: 18
+    evidence: switch of literals
+    proof: {kind: function, file: libs/bsw/sbcUja113x/src/sbc/Uja113x.cpp,
+            pattern: 'char const\* resetCounterCompensationName\('}
+  - expr: ::sbc::Uja113x::resetSourceName(rss)
+    max: 37
+    evidence: local table of literals
+    proof: {kind: function, file: libs/bsw/sbcUja113x/src/sbc/Uja113x.cpp, pattern: 'Uja113x::resetSourceName\(',
+            allowed_returns: ['names[rss]']}
+  - expr: statusName(status)
+    files: [platforms/s32k1xx/port/main/src/systems/SbcSystem.cpp]
+    max: 18
+    evidence: switch of literals
+    proof: {kind: function, file: platforms/s32k1xx/port/main/src/systems/SbcSystem.cpp,
+            pattern: 'char const\* statusName\('}
+  - expr: modeName(s.modeBefore)
+    max: 7
+    evidence: switch of literals
+    proof: {kind: function, file: platforms/s32k1xx/port/main/include/systems/SbcConsole.h,
+            pattern: 'inline char const\* modeName\('}
+
+  - expr: ::xcp::EPK
+    files: [ecu/xcp/src/systems/XcpSystem.cpp]
+    max: 96
+    evidence: >
+      RTE-26: EPK of the build (ecu/xcp/src/systems/XcpEpk.cpp), text of tools/a2lgen/epk.py cut to MAX_LENGTH;
+      XcpEpk.cpp asserts the length at compile time.
+    proof:
+      - {kind: contains, file: tools/a2lgen/epk.py, text: "MAX_LENGTH = 96"}
+      - {kind: contains, file: ecu/xcp/src/systems/XcpEpk.cpp,
+         text: "static_assert(sizeof(NX_XCP_EPK) - 1U <= 96U,"}
+
+  - expr: statusText(status)
+    files: [ecu/calibration/src/calibration/Calibration.cpp]
+    max: 16
+    evidence: >
+      SYS-89: result of the start-up check of the calibration segment, calibration::statusText() returns only
+      literals (longest "header CRC wrong", "values CRC wrong").
+    proof:
+      - {kind: function, file: ecu/calibration/src/calibration/CalibrationSegment.cpp,
+         pattern: 'char const\* statusText\('}
+  - expr: actionText(action)
+    files: [ecu/calibration/src/calibration/Calibration.cpp]
+    max: 21
+    evidence: >
+      SYS-89: reaction to the calibration segment, calibration::actionText() returns only literals (longest
+      "functions not started").
+    proof:
+      - {kind: function, file: ecu/calibration/src/calibration/CalibrationSegment.cpp,
+         pattern: 'char const\* actionText\('}
+  - expr: onInvalidText(ON_INVALID)
+    files: [ecu/calibration/src/calibration/Calibration.cpp]
+    max: 8
+    evidence: >
+      SYS-90: memory.calibration.on_invalid of the project, calibration::onInvalidText() returns only literals
+      (longest "defaults").
+    proof:
+      - {kind: function, file: ecu/calibration/src/calibration/CalibrationSegment.cpp,
+         pattern: 'char const\* onInvalidText\('}
+  - expr: ruleText(finding.rule)
+    files: [ecu/calibration/src/calibration/PlausibilityMonitor.cpp]
+    max: 14
+    evidence: >
+      SYS-90: violated rule of the plausibility check, calibration::plausibility::ruleText() returns only literals
+      (longest "outside limits").
+    proof:
+      - {kind: function, file: ecu/calibration/src/calibration/Plausibility.cpp,
+         pattern: 'char const\* ruleText\('}
+  - expr: sourceText(source)
+    files: [ecu/calibration/src/calibration/PlausibilityMonitor.cpp]
+    max: 7
+    evidence: >
+      SYS-90: where the start-up plausibility check read the values, calibration::plausibility::sourceText() returns
+      only literals ("segment", "image").
+    proof:
+      - {kind: function, file: ecu/calibration/src/calibration/PlausibilityMonitor.cpp,
+         pattern: 'char const\* sourceText\('}
+
+macros:
+  - name: NX_UDS_BUS_NAME
+    max: 16
+    evidence: >
+      Written by tools/rtegen as the name of the CAN bus of ecu/uds; DiagSystem.cpp asserts it against
+      CanFrameLog::BUS_NAME_CHARS in every family (ARCH-43), tools/nxconfig reports a longer bus name in the
+      project before the build.
+    proof:
+      - {kind: contains, file: libs/bsw/canSystem/include/can/CanFrameLog.h,
+         text: "static constexpr size_t BUS_NAME_CHARS = 16U;"}
+      - {kind: contains, file: ecu/uds/src/systems/DiagSystem.cpp,
+         text: "static_assert(sizeof(NX_UDS_BUS_NAME) - 1U <= ::can::CanFrameLog::BUS_NAME_CHARS,"}
+  - name: NX_XCP_BUS_NAME
+    max: 16
+    evidence: Written by tools/rtegen as the name of the XCP bus; XcpSystem.cpp asserts it like NX_UDS_BUS_NAME.
+    proof:
+      - {kind: contains, file: libs/bsw/canSystem/include/can/CanFrameLog.h,
+         text: "static constexpr size_t BUS_NAME_CHARS = 16U;"}
+      - {kind: contains, file: ecu/xcp/src/systems/XcpSystem.cpp,
+         text: "static_assert(sizeof(NX_XCP_BUS_NAME) - 1U <= ::can::CanFrameLog::BUS_NAME_CHARS,"}
+
+exempt:
+  - format: ::can::CanFrameLog::FORMAT
+    files: [platforms/s32k1xx/port/main/src/systems/CanSystem.cpp]
+    evidence: >
+      can log lines (COM-25): "%s" with a line of at most LINE_CAPACITY - 1 characters, checked at compile time
+      against MaxEntrySize of the real logger type and in the host test can-frame-log.
+    proof:
+      - {kind: contains, file: platforms/s32k1xx/port/main/src/systems/CanSystem.cpp,
+         text: "static_assert( ::can::CanFrameLog::entryBytes(LoggerLimits::LENGTH_BYTES, LoggerLimits::TIMESTAMP_BYTES)
+                <= LoggerLimits::MAX_ENTRY_BYTES,"}
+  - format: message
+    files: [ecu/application/src/logger/logger.cpp]
+    evidence: >
+      lwIP callbacks log_lwipInfo/log_lwipError: the format comes from lwIP (third party, only with
+      PLATFORM_SUPPORT_ETHERNET); no own code calls them.
+    proof:
+      - kind: confined
+        pattern: '\blog_lwip(Info|Error)\b'
+        files: [ecu/application/src/logger/logger.cpp]

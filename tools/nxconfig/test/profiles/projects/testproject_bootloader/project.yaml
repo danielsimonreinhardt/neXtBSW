@@ -1,0 +1,42 @@
+# Synthetic project for the memory partitioning and bootloader host tests (ARCH-08) on testboard (TESTMCU64, family
+# testfam): code flash at 0x08000000 with 8-KB sectors, one RAM region shared by bootloader and application, no SBC,
+# bootloader on the second CAN bus with a passive transceiver. Test data only.
+schema_version: 1
+
+project:
+  name: testproject_bootloader
+  board: ../../boards/testboard
+
+clock:
+  system_hz: 48000000
+
+use:
+  can: [VEH, DIAG]
+  dio: all
+
+can:
+  VEH: { bitrate: 500000 }
+  DIAG: { bitrate: 250000 }
+
+# bootloader 0x08000000..0x08003FFF (2 sectors), application 0x08004000..0x0803DFFF, record 0x0803E000,
+# bootloader RAM 0x20000000 (8 KB), application RAM up to 0x2000FFFF, no-init 0x2000FE00, boot request 0x2000FFF0
+memory:
+  flash: FLASH
+  bootloader: { size: 0x4000, ram: RAM, ram_size: 0x2000, stack_size: 0x800 }
+  application: { ram: [RAM], noinit_size: 0x200 }
+
+bootloader:
+  can: DIAG
+
+# Diagnostic addresses (COM-11) of the bootloader host tests: **other** ids than the eval board (not 0x7E0/0x7E8),
+# another filler byte and another identification prefix. The family testfam reserves no flash at the start, so the
+# application searches from the first byte of the bootloader area (0x08000000).
+diagnostics:
+  request_id: 0x611
+  functional_id: 0x6DF
+  response_id: 0x622
+  tester_address: 0xF5
+  ecu_address: 0x4B
+  isotp: { padding: 0x39, block_size: 0, stmin_ms: 0, n_cr_ms: 700, n_bs_ms: 800 }
+  bootloader:
+    version_prefix: nextbsw-bl

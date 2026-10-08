@@ -1,0 +1,40 @@
+# Synthetic project for the module tests (ARCH-12): both high-side switches with other thresholds and consoles than
+# any real board. LAMP_SW uses the module default of cycle_ms (10 ms). Current levels in mA load current (IO-21),
+# converted by the sense characteristics of testboard_switches. The values are test data, not device data;
+# libs/bsw/highSideSwitch/test/host/HighSideSwitchIntegrationHostTest.cpp expects exactly these.
+schema_version: 1
+
+project:
+  name: testproject_switches
+  board: ../../boards/testboard_switches
+
+clock:
+  system_hz: 48000000
+
+use:
+  adc: all
+  dio: all
+
+modules:
+  LAMP_SW:
+    overcurrent_ma: 1500
+    overcurrent_debounce_ms: 40
+    fault_ma: 3000
+    fault_debounce_ms: 30
+    switch_on_blanking_ms: 50
+    open_load_ma: 10
+    off_max_ma: 300
+    off_debounce_ms: 100
+    console: lamp
+  PUMP_SW:
+    cycle_ms: 5
+    overcurrent_ma: 2500
+    overcurrent_debounce_ms: 15
+    fault_ma: 3200
+    fault_debounce_ms: 10
+    switch_on_blanking_ms: 0
+    open_load_ma: 0
+    off_max_ma: 800
+    off_debounce_ms: 25
+    console: pump_2
+    verify: true

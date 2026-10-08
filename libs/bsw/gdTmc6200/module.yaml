@@ -1,0 +1,91 @@
+# Module manifest (doc/architecture/README.md, section 5). Checked by tools/nxconfig (checks.py), rendered by
+# tools/bswgen (modules.py) as integration/gdTmc6200Configuration.h.
+# IO-25: active (was module.yaml.pending since IO-05). Integration: platforms/<family>/port/main/src/integration/
+# Integration.cpp (SPI adapter on bsp::spi::ISpiDevice::transferLong, DRV_EN/FAULT, RTE reading gd.<device>.*).
+module: gdTmc6200
+kind: device_driver
+description: Trinamic/ADI TMC6200 three phase MOSFET gate driver in SPI mode, complex device driver (IO-05)
+# Evidence (CHANGELOG.md): IO-25 Board-Nachweis (2026-09-18, register access, reset detection, DRV_EN off),
+# IO-15 (2026-09-18, bridge switched with DRV_EN, no motor), IO-29 (2026-09-18, start-up without VS).
+# IO-67 (NO_SUPPLY instead of a latched COMMUNICATION when VS comes after the start): host tests only, board proof
+# open - to be added to verification_note with the board proof (doc/reference/modules.md is generated from it).
+verification: hardware
+verification_note: >-
+  SPI register access, the one rewrite after a device reset, enable and disable over DRV_EN and the start-up
+  failure without VS are confirmed on the eval board (TMC6200-TA, bridge without motor); short and overtemperature
+  reactions are covered by host tests only.
+# Board parts this driver serves (fnmatch patterns on board.yaml devices[].part).
+# Checked against doc/hardware/tmc6200/TMC6200_datasheet_rev1.08.pdf (IO-05): register map, SPI datagram and
+# DRV_EN/FAULT behaviour of the TMC6200-TA (TQFP48-EP) match gd::Tmc6200. Every board device with this part on an SPI
+# bus the project uses is integrated; DRV_EN is never switched on by the driver itself (doc/gdTmc6200.md).
+parts:
+  - TMC6200-TA*
+requires:
+  spi_device: 1                     # 40-bit datagrams (gd::ITmc6200Spi on bsp::spi::ISpiDevice::transferLong, IO-25)
+# Wiring of each instance besides SPI: board.yaml devices[].connect
+connect:
+  # safe_off (IO-32): the fault handlers drive DRV_EN inactive first, before dump and UART (bridge off, datasheet p.8)
+  drv_en: { kind: digital_output, safe_off: true, description: "DRV_EN, positive active driver enable (datasheet p.8 pin 27)" }
+  fault:  { kind: digital_input,  description: "FAULT, high upon driver error (datasheet p.8 pin 26)" }
+# Parameters of each instance: project.yaml modules.<device>. Function decisions only, in units of the function.
+# -1 / 0 as marked = the device keeps its reset value (no SPI write). Break-before-make time and gate current stay
+# at the device reset value (no parameter yet).
+# Short detection (IO-35, SHORT_CONF, datasheet p.24-25, p.32-33, p.38): the detector levels, the spike filter and
+# the detection delay are settings of this device, so they are decisions of the project (architecture section 4:
+# the board states what is fitted - R_DS(on) of the switches in pwm[].power_stage - the project what it chooses),
+# not facts of the board (board pwm[].power_stage.short_circuit stays empty for this device). Units:
+# - The levels are given as the drain-source voltage of the conducting switch at which the detection trips, not as a
+#   current. Exception of treiber-granularitaet.md section 5, justified: the device compares a voltage (S2VS also
+#   includes the drop of an optional bottom shunt), and the current it corresponds to changes with R_DS(on) by a
+#   factor of about two between 25 degC and a hot junction, plus +-30 % stray of the MOSFETs (p.33). A current
+#   parameter would pretend a precision the detector does not have. nxconfig derives the current range from the
+#   R_DS(on) of the board (power_stage marks, powerstage.py) and shows it in `nxconfig check`, so "trips at 120 A"
+#   stays reviewable against the load and changes visibly with the switch.
+# - The driver converts to register codes (gd::shortLevelForMv, shortFilterForNs, shortDelayForNs): a level is the
+#   highest one whose typical voltage does not exceed the value (trips at or below). Only level 6 = 625 mV and
+#   level 15 = 1560 mV are given (p.38), the levels between and below are a linear interpolation (verify). A value
+#   below the most sensitive level (S2G level 2 = 209 mV, S2VS level 1 = 106 mV) or a filter/delay time the device
+#   does not have stops the build (static_assert of the family integration).
+parameters:
+  cycle_ms:                  { type: int, min: 1,  max: 100, default: 10, unit: ms, description: "supervision period (GSTAT, IOIN, FAULT)" }
+  overtemperature_shutdown_c: { type: int, min: 0, max: 150, default: 0, unit: degC, description: "bridge shutdown temperature 120, 136, 143 or 150; 0 = device reset value (150)" }
+  short_retries:             { type: int, min: -1, max: 3,   default: -1, description: "retries after a short detection before the half bridge stays off; -1 = device reset value (3)" }
+  short_all_bridges_off:     { type: int, min: -1, max: 1,   default: -1, description: "1 = a short switches off all half bridges, 0 = only the affected one; -1 = device reset value (1)" }
+  fault_output_each_short:   { type: int, min: -1, max: 1,   default: -1, description: "1 = FAULT shows each protective action, 0 = only a permanent shutdown; -1 = device reset value (0)" }
+  short_to_ground_mv:        { type: int, min: 0, max: 1560, default: 0, unit: mV, power_stage: vds_threshold_high_side_mv, description: "high-side short detection (S2G_LEVEL): trips at a drain-source voltage of the conducting high-side switch at or below this value, typical, 209 to 1560 mV (at VS above 52 V much lower, p.38); 0 = device reset value (OTP level 6 or 12)" }
+  short_to_supply_mv:        { type: int, min: 0, max: 1560, default: 0, unit: mV, power_stage: vds_threshold_low_side_mv, description: "low-side short detection (S2VS_LEVEL): trips at a drain-source voltage of the conducting low-side switch plus an optional bottom shunt at or below this value, typical, 106 to 1560 mV; 0 = device reset value (OTP level 6 or 12)" }
+  short_filter_ns:           { type: int, min: 0, max: 3000, values: [0, 100, 1000, 2000, 3000], default: 0, unit: ns, description: "spike filter of the short detection (SHORTFILTER): 100, 1000, 2000 or 3000 ns; 0 = device reset value (1000 ns)" }
+  short_delay_ns:            { type: int, min: 0, max: 1500, values: [0, 750, 1500], default: 0, unit: ns, power_stage: blanking_ns, description: "short detection delay after a switch turns on (shortdelay), must cover the switching time of the bridge: 750 or 1500 ns; 0 = device reset value (750 ns)" }
+  console:                   { type: str, pattern: "^[a-z][a-z0-9_]{0,15}$", default: gd, description: console command group of the instance }
+provides:
+  - gate_driver
+# IO-45: three half bridges (UH/UL, VH/VL, WH/WL, datasheet p.8), gd::PhaseDuty u/v/w. The PWM group bound to an
+# instance (board pwm[].gate_driver) needs three pairs: then the family port attaches the phase duty source of the
+# enable rule (all three phases in one state), and the instance's drv_en joins the safe-output group of that PWM group
+# (SYS-117). nxconfig warns for an instance without a group or with another number of pairs.
+phases: 3
+# RTE-18: values the application reads through the RTE, targets gd.<Device>.<value> (tools/rtegen reads them from
+# here). Inputs only: the RTE has no target that switches a gate driver on (DRV_EN stays a request of the
+# application code through the driver, IO-15). access gate_driver: the family port integration defines one reader
+# per device (Integration.cpp, readGateDriver_<device>) with the health code the RTE turns into the qualifier, and
+# on top of it the safe supervisor's verdict on the bus of the device (SYS-29).
+rte:
+  prefix: gd
+  access: gate_driver
+  instance: Device
+  noun: gate driver
+  which: board devices with module gdTmc6200 on a used SPI bus
+  input_note: the gate driver status is an input; the RTE does not switch a gate driver
+  value_note: there is no value that switches a gate driver on
+  values:
+    faults:  { types: [uint16, uint32], unit: "gd::fault bits, latched until the driver's clearFaults()" }
+    enabled: { types: [boolean], unit: DRV_EN switched on by the driver }
+    qlf:
+      types: [uint8, uint16, uint32]
+      field: quality
+      unit: QLF_* of Rte_Qlf.h
+      qualifier: true
+      without: a gate driver without faults from one that does not answer (SPI error, wrong device, not started)
+lifecycle: { level: 1, task: bsp }
+cmake_target: gdTmc6200
+console: instance                   # command group per instance (default "gd")

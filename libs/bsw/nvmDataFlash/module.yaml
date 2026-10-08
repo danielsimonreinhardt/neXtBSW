@@ -1,0 +1,20 @@
+# Module manifest (doc/architecture/README.md, section 5). The data flash areas take no project parameters through
+# this manifest: the areas (name, size, purpose, optional offset) are project.yaml nvm.data_flash, checked against the
+# partition and laid out by tools/nxconfig/nvm.py; tools/bswgen generates the table (nvm/nvmDataFlash.h,
+# NX_DFLASH_AREAS). The flash itself is the family's dataflash::IDataFlash (s32k1xx: flexnvm/FlexNvmDataFlash.h).
+module: nvmDataFlash
+kind: service
+description: Data flash areas - family-neutral contract dataflash::IDataFlash (read like memory, erase a sector and program a unit without waiting) and dataflash::AreaService (named areas of the project, erase and write jobs one command per step, blank check, read-back, write hooks for the ROM check); for calibration data changed in the device
+# Evidence (CHANGELOG.md): NVM-12 (2026-10-01), host tests libs/bsw/nvmDataFlash/test/test_nvm_data_flash.py (own
+# profile, deliberate faults) and platforms/s32k1xx/bsp/bspFlexNvm/test/test_flexnvm.py (register model); NVM-23 links
+# it into the s32k1xx family port (platforms/s32k1xx/port/main systems/DataFlashSystem.h, run-down gate, console
+# "dflash" in test builds) - host test platforms/s32k1xx/port/main/src/systems/test/test_data_flash_system.py; NVM-25
+# block lock shared with the EEPROM stores (read in chunks, hold for a read in place, DirectRead), NVM-26 admission
+# of new jobs (refused from STANDBY on) - host tests with deliberate faults; not yet on the board.
+verification: mock
+verification_note: >-
+  Layout check, erase and write jobs, blank check, read-back, busy block, errors, time-outs and an interrupted erase
+  are covered by host tests with deliberate faults; the s32k1xx driver against a model of the flash module, the
+  run-down lock of the family port against a simulated data flash. The board check (write, power cycle, read back)
+  with the console command dflash of a test build is open.
+cmake_target: nvmDataFlash

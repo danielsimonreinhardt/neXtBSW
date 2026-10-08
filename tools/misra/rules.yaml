@@ -1,0 +1,212 @@
+# Regelwerk der statischen Analyse (PLAT-74). Entscheidung safety-analyse (Nutzer 2026-09-21): freie Werkzeuge -
+# cppcheck mit MISRA-Addon und clang-tidy; ein kommerzielles Werkzeug erst mit einem konkreten Serienprojekt.
+#
+# MISRA-Regeltexte sind urheberrechtlich geschuetzt: hier stehen nur Regelnummern und EIGENE Kurzbeschreibungen.
+# Die Kategorie (mandatory/required/advisory) ist die der Norm; `check` = Pruefung eines Werkzeugs ohne
+# MISRA-Nummer, `tool` = Meldung ueber die Analyse selbst.
+#
+# Neueinstufungsplan (MISRA Compliance:2020, "guideline re-categorization plan", PLAT-76): `revised_category` bei
+# einer Regel setzt ihre Einstufung fuer dieses Projekt - nur strenger (advisory -> required -> mandatory) oder, nur
+# bei advisory, `disapplied` (nicht angewendet). Pflicht dazu: `reason` (eigene Worte, kein Regeltext), `date` und
+# `approved_by` (Entscheidung des Nutzers; leer = offen, der Lauf warnt). Befunde einer disapplied-Regel sind weder
+# neu noch Teil der Baseline, der Bericht zaehlt sie getrennt. `python -m tools.misra check` prueft die Einstufung
+# und meldet Fehler mit YAML-Pfad (rules.<regel>.revised_category).
+#
+# Was wird wie geprueft:
+#   C-Code    MISRA C:2012 (Addon des Werkzeugs, Stand Amendment 2/3 soweit dort umgesetzt) + cppcheck-Kernpruefungen
+#   C++-Code  cppcheck-Kernpruefungen + clang-tidy (Auswahl unten) + die wenigen C:2012-Regeln, die das Addon auch
+#             auf C++ anwendet (es ist ein C-Pruefer). MISRA C++:2023 prueft kein freies Werkzeug - offen bis zu einem
+#             kommerziellen Werkzeug (doc/safety/static-analysis.md).
+version: 1
+
+scope:
+  # Zusaetzlich zu external/ (Submodul) und allem ausserhalb des Repositoriums (Build-Verzeichnis: erzeugter Board-
+  # und RTE-Code). OpenBSW-Kopien kommen aus tools/openbswsync/copies.yaml - keine zweite Liste hier.
+  exclude:
+    - "swc/*/generated/**"          # Simulink-Generat (Embedded Coder), eingecheckt
+    - "projects/*/swc/*/generated/**"
+    - "**/test/**"                  # Host-Tests und ihre Stubs sind nicht Teil des Produkts
+    - "**/tests/**"
+    - "platforms/*/3rdparty/**"     # FreeRTOS-Ports u. a. Fremdcode (Sicherheitskonzept 8.2), nicht eigener Code
+  # Mitgelesen, aber nicht bewertet: erzeugter Code im Build-Verzeichnis (RTE, Board) und das Simulink-Generat.
+  # Ohne sie haelt cppcheck z. B. die E2E-Bibliothek fuer unbenutzt (Rule 8.7), weil nur die RTE sie aufruft.
+  context: [outside, excluded]
+  # SYS-62 (doc/safety/component-qualification.md, Abschnitt 3): eine GEAENDERTE OpenBSW-Kopie in einem ASIL-B-Modul
+  # von doc/safety/coexistence.md (Klassen B-SM, B-SEP, B-DEP) ist Eigenentwicklung nach Teil 6 - ihre Befunde
+  # sperren wie die des eigenen Codes (Baseline, Abweichungen). Identische Kopien bleiben getrennt (Weg 8-12),
+  # Kopien in QM-C-Modulen ebenso. Die Liste folgt der Modultabelle von coexistence.md; tools/misra/
+  # test_gating_copies.py prueft, dass sie genau die geaenderten Kopien der ASIL-B-Module (53 seit 2026-09-30) trifft.
+  gating_copies:
+    - "ecu/safety/safeSupervisor/**"                       # M-SUP
+    - "ecu/safety/safeWatchdog/**"                         # M-WDG
+    - "ecu/application/src/systems/SafetySystem.cpp"       # M-LCY
+    - "ecu/application/include/systems/SafetySystem.h"     # M-LCY (geaendert seit SYS-74, copies.yaml)
+    - "ecu/application/src/app/**"                         # S-OSB (Tasks, Stacks)
+    - "ecu/asyncCoreConfiguration/**"                      # S-OSB
+    - "platforms/s32k1xx/port/safety/safe*/**"             # M-LCY, M-MEM, M-SIO, M-SYS (safety/CMakeLists.txt ist QM)
+    - "platforms/s32k1xx/port/main/src/main.cpp"           # M-INT
+    - "ecu/application/src/main.cpp"                       # S-INT (ETL-Assert-Handler, SYS-98)
+    - "platforms/s32k1xx/port/main/src/systems/CanSystem.cpp"      # M-CAN (CX-7)
+    - "platforms/s32k1xx/port/main/include/systems/CanSystem.h"    # M-CAN
+    - "platforms/s32k1xx/port/main/src/bsp/**"             # S-INT
+    - "platforms/s32k1xx/port/main/src/os/**"              # S-INT
+    - "platforms/s32k1xx/port/main/linkerscript/**"        # S-INT
+    - "platforms/s32k1xx/port/main/src/osHooks/**"         # S-OSB
+    - "platforms/s32k1xx/port/main/src/lifecycle/**"       # D-CLK
+    - "platforms/s32k1xx/port/main/include/lifecycle/**"   # D-CLK
+    - "platforms/s32k1xx/port/freeRtosCoreConfiguration/**"          # S-RTOS
+    - "platforms/s32k1xx/port/bspConfiguration/src/bsp/adc/**"       # D-ADC
+    - "platforms/s32k1xx/port/bspConfiguration/src/bsp/SystemTimer/**"  # D-TIM
+    - "platforms/s32k1xx/bsp/bspClock/**"                  # D-CLK
+  # Bei mehreren Eintraegen je Datei (Multi-Config-Generator) gilt der Eintrag dieser Konfiguration
+  prefer_config: RelWithDebInfo
+  # Hier wird nach eigenen Quellen gesucht, die der Target-Build nicht uebersetzt (Luecke im Bericht)
+  source_roots: [bootloader, ecu, libs, platforms]
+
+cppcheck:
+  args:
+    - --enable=warning,style,performance,portability
+    - --platform=arm32-wchar_t4       # arm-none-eabi: int/long/Zeiger 32 Bit, wchar_t 4 Byte
+    - --addon=misra
+    - --suppress=missingIncludeSystem  # Systemkoepfe (newlib/libstdc++) werden bewusst nicht gelesen
+    - --suppress=unmatchedSuppression
+    - --suppress=checkersReport
+    - "--suppress=*:*external*"
+    - --max-configs=1
+
+clang_tidy:
+  target: arm-none-eabi
+  timeout_s: 900
+  exclude_header_filter: '.*[/\\](external|generated)[/\\].*'
+  extra_args: [-Wno-unknown-warning-option, -Wno-unused-command-line-argument]
+  options:
+    # eine positive Konstante als Schiebeweite oder Maske ist kein vorzeichenbehafteter Operand im Sinne der Pruefung
+    hicpp-signed-bitwise.IgnorePositiveIntegerLiterals: true
+  checks:
+    - bugprone-*
+    - -bugprone-easily-swappable-parameters   # Stil, keine Fehlerklasse
+    - -bugprone-reserved-identifier            # Namen der CMSIS/Register-Koepfe, eigene Regel unten nicht noetig
+    - -bugprone-throwing-static-initialization # alles C++ mit -fno-exceptions uebersetzt: es wird nie geworfen
+    - cert-*
+    - -cert-dcl37-c
+    - -cert-dcl51-cpp
+    - -cert-err58-cpp                           # wie bugprone-throwing-static-initialization
+    - clang-analyzer-core.*
+    - clang-analyzer-cplusplus.*
+    - clang-analyzer-deadcode.*
+    - clang-analyzer-security.ArrayBound
+    - cppcoreguidelines-init-variables
+    - cppcoreguidelines-pro-type-cstyle-cast
+    - cppcoreguidelines-pro-type-member-init
+    - cppcoreguidelines-slicing
+    - cppcoreguidelines-virtual-class-destructor
+    - hicpp-multiway-paths-covered
+    - hicpp-signed-bitwise
+    - misc-redundant-expression
+    - misc-misplaced-const
+    - misc-unconventional-assign-operator
+    - misc-definitions-in-headers
+    - readability-braces-around-statements
+    - readability-implicit-bool-conversion
+    - readability-misleading-indentation
+
+# Werkzeughinweise: gezaehlt und berichtet, nicht sperrend
+notices:
+  - normalCheckLevelMaxBranches      # cppcheck begrenzt die Zweiganalyse (Laufzeit), kein Befund im Code
+# MISRA-C-Addon auf einer C++-Einheit: es liest C++ als C (Template- und Basisklassenlisten als Komma-Operator
+# 12.3, using-Deklarationen als typedef 5.6/2.3, C++-Typen als unbekannt misra-config). Gezaehlt, nicht sperrend -
+# ausser den Regeln unter keep_cpp, deren Aussage in C++ gleich bleibt. In C-Einheiten sperrt alles.
+notices_cpp:
+  - misra-config
+  - misra-c2012-*
+keep_cpp:
+  - misra-c2012-17.2                 # Rekursion - in C++ genauso ein Befund
+
+# Eigene Kurzbeschreibungen (keine Regeltexte) der Regeln und Pruefungen, die in der Bestandsaufnahme vorkommen.
+# Neue Regel im Bericht ohne Eintrag: Kurzbeschreibung hier ergaenzen (eigene Worte).
+rules:
+  # --- MISRA C:2012 (Addon von cppcheck)
+  misra-c2012-2.2:   {category: required, summary: "kein toter Code (Ausdruck ohne Wirkung)"}
+  misra-c2012-2.3:   {category: advisory, summary: "keine unbenutzten Typdeklarationen"}
+  misra-c2012-2.4:   {category: advisory, summary: "keine unbenutzten struct/union/enum-Namen"}
+  misra-c2012-2.5:   {category: advisory, summary: "keine unbenutzten Makros"}
+  misra-c2012-5.6:   {category: required, summary: "typedef-Name eindeutig"}
+  misra-c2012-8.4:   {category: required, summary: "zu jeder externen Definition eine sichtbare Deklaration"}
+  misra-c2012-8.5:   {category: required, summary: "externe Deklaration genau einmal, in einer Kopfdatei"}
+  misra-c2012-8.6:   {category: required, summary: "genau eine Definition je extern sichtbarem Namen"}
+  misra-c2012-8.7:   {category: advisory, summary: "nur in einer Uebersetzungseinheit benutzt -> nicht extern"}
+  misra-c2012-8.9:   {category: advisory, summary: "nur in einer Funktion benutzt -> dort definieren"}
+  misra-c2012-8.11:  {category: advisory, summary: "externes Feld mit ausdruecklicher Groesse deklarieren"}
+  misra-c2012-9.3:   {category: required, summary: "Feld nicht nur teilweise initialisieren"}
+  misra-c2012-10.4:  {category: required, summary: "Operanden einer Rechenoperation aus derselben Typkategorie"}
+  misra-c2012-10.7:  {category: required, summary: "zusammengesetzter Ausdruck nicht implizit verbreitern"}
+  misra-c2012-10.8:  {category: required, summary: "zusammengesetzter Ausdruck nicht in breiteren/anderen Typ casten"}
+  misra-c2012-11.4:  {category: advisory, summary: "keine Umwandlung zwischen Objektzeiger und Ganzzahl"}
+  misra-c2012-11.6:  {category: required, summary: "keine Umwandlung zwischen void-Zeiger/Funktionszeiger und Zahl"}
+  misra-c2012-12.3:  {category: advisory, summary: "kein Komma-Operator"}
+  misra-c2012-14.2:  {category: required, summary: "for-Schleife in der vorgesehenen einfachen Form"}
+  misra-c2012-15.4:  {category: advisory, summary: "hoechstens ein break/goto zum Verlassen einer Schleife"}
+  misra-c2012-15.5:
+    category: advisory
+    summary: "ein einziger Ausgang am Ende der Funktion"
+    revised_category: disapplied
+    reason: >-
+      Im eigenen Code (Bootloader, E2E-Bibliothek, Treiber) ist die fruehe Rueckkehr nach einer Fehler- oder
+      Parameterpruefung das uebliche Muster: jede Pruefung endet sofort, der Gutfall bleibt ungeschachtelt am Ende.
+      Eine erzwungene einzige Rueckkehr braeuchte Statusvariablen und tief geschachtelte Bedingungen und machte den
+      Code schwerer lesbar und pruefbar, ohne ihn sicherer zu machen. Was die Regel absichern will - kein
+      uebersprungenes Aufraeumen, nachvollziehbarer Kontrollfluss - decken die uebrigen Kontrollfluss-Regeln
+      (15.x, 16.x, 17.x), die clang-tidy-Pruefungen und der Review ab; ob vor einer fruehen Rueckkehr etwas
+      zurueckzusetzen ist (Sperre, Zwischenzustand), prueft der Review der jeweiligen Funktion.
+    date: 2026-09-21
+    approved_by: "Nutzer 2026-09-21 (Entscheidungsboard plat74-abweichungen)"
+    task: PLAT-76
+  misra-c2012-15.7:  {category: required, summary: "if ... else if endet mit else"}
+  misra-c2012-17.2:  {category: required, summary: "keine (auch indirekte) Rekursion"}
+  misra-c2012-17.3:  {category: mandatory, summary: "keine Funktion ohne sichtbare Deklaration aufrufen"}
+  misra-c2012-17.8:  {category: advisory, summary: "Funktionsparameter nicht veraendern"}
+  misra-c2012-20.1:  {category: advisory, summary: "#include nur am Dateianfang"}
+  misra-c2012-20.5:  {category: advisory, summary: "kein #undef"}
+  misra-c2012-20.7:  {category: required, summary: "Makroparameter in der Expansion klammern"}
+  misra-c2012-21.1:  {category: required, summary: "keine reservierten Namen definieren oder entfernen"}
+  misra-c2012-21.15: {category: required, summary: "memcpy/memmove/memcmp nur mit gleichartigen Zeigern"}
+  misra-c2012-21.16: {category: required, summary: "memcmp nur ueber Ganzzahl-, bool- und enum-Daten"}
+  misra-config:      {category: tool, summary: "Addon kennt einen Typ/eine Konstante nicht - Pruefung dort unvollstaendig"}
+  # --- cppcheck-Kernpruefungen
+  constParameterPointer:    {category: check, summary: "Zeigerparameter koennte auf const zeigen"}
+  constParameterReference:  {category: check, summary: "Referenzparameter koennte const sein"}
+  constVariablePointer:     {category: check, summary: "Zeigervariable koennte auf const zeigen"}
+  constVariableReference:   {category: check, summary: "Referenzvariable koennte const sein"}
+  cstyleCast:               {category: check, summary: "C-Cast in C++"}
+  duplicateCondition:       {category: check, summary: "zwei aufeinanderfolgende if mit gleicher Bedingung"}
+  duplicateExpression:      {category: check, summary: "gleicher Ausdruck auf beiden Seiten eines Operators"}
+  knownConditionTrueFalse:  {category: check, summary: "Bedingung ist immer wahr oder immer falsch"}
+  badBitmaskCheck:          {category: check, summary: "Bitoperation mit einem Operanden 0 ist wirkungslos"}
+  normalCheckLevelMaxBranches: {category: tool, summary: "Zweiganalyse aus Laufzeitgruenden begrenzt"}
+  returnByReference:        {category: check, summary: "Member als Kopie statt als const-Referenz zurueckgegeben"}
+  shadowFunction:           {category: check, summary: "lokale Variable verdeckt eine Funktion"}
+  unreachableCode:          {category: check, summary: "Anweisung nach einer Funktion ohne Rueckkehr wird nie erreicht"}
+  unsignedLessThanZero:     {category: check, summary: "vorzeichenloser Wert gegen < 0 geprueft"}
+  useStlAlgorithm:          {category: check, summary: "Schleife durch Standardalgorithmus ersetzbar"}
+  # --- clang-tidy
+  bugprone-branch-clone:                     {category: check, summary: "Zweige mit gleichem Rumpf"}
+  bugprone-casting-through-void:             {category: check, summary: "Typumwandlung ueber void* statt ausdruecklich"}
+  bugprone-invalid-enum-default-initialization: {category: check, summary: "enum mit 0 initialisiert, obwohl 0 kein Wert ist"}
+  bugprone-narrowing-conversions:            {category: check, summary: "einengende implizite Umwandlung"}
+  bugprone-return-const-ref-from-parameter:  {category: check, summary: "const-Referenzparameter als Referenz zurueckgegeben (haengt bei einem Temporaerobjekt)"}
+  bugprone-signed-char-misuse:               {category: check, summary: "vorzeichenbehaftetes char in int erweitert"}
+  bugprone-too-small-loop-variable:          {category: check, summary: "Schleifenvariable schmaler als die Grenze"}
+  cert-dcl50-cpp:                            {category: check, summary: "C-artige variadische Funktion in C++"}
+  cert-dcl54-cpp:                            {category: check, summary: "operator delete ohne passendes operator new im selben Bereich"}
+  cert-str34-c:                              {category: check, summary: "wie bugprone-signed-char-misuse (CERT-Name)"}
+  clang-analyzer-core.CallAndMessage:        {category: check, summary: "Aufruf mit moeglichem Nullzeiger oder uninitialisiertem Argument"}
+  clang-analyzer-core.FixedAddressDereference: {category: check, summary: "Zugriff ueber eine feste Adresse"}
+  clang-analyzer-security.ArrayBound:        {category: check, summary: "moeglicher Zugriff hinter das Feldende"}
+  cppcoreguidelines-init-variables:          {category: check, summary: "lokale Variable ohne Anfangswert"}
+  cppcoreguidelines-pro-type-cstyle-cast:    {category: check, summary: "C-Cast zwischen nicht verwandten Typen"}
+  cppcoreguidelines-pro-type-member-init:    {category: check, summary: "Konstruktor initialisiert nicht alle Member"}
+  cppcoreguidelines-virtual-class-destructor: {category: check, summary: "Klasse mit virtuellen Funktionen ohne virtuellen/geschuetzten Destruktor"}
+  hicpp-signed-bitwise:                      {category: check, summary: "Bitoperation mit vorzeichenbehaftetem Operanden (auch nach Promotion)"}
+  misc-definitions-in-headers:               {category: check, summary: "Funktionsdefinition in Kopfdatei (ODR)"}
+  misc-redundant-expression:                 {category: check, summary: "Ausdruck ueberfluessig (gleiche Operanden oder Teilbedingung ohne Wirkung)"}
+  readability-implicit-bool-conversion:      {category: check, summary: "implizite Umwandlung von/nach bool"}

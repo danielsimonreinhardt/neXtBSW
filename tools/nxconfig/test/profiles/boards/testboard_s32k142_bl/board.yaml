@@ -1,0 +1,27 @@
+# Synthetic s32k1xx board for the bootloader generator tests (ARCH-08): other derivative (S32K142 LQFP64, 256 KB flash
+# with 2-KB sectors, 16 KB SRAM_L, 12 KB SRAM_U), 16 MHz crystal, no SBC, two CAN buses with passive transceivers, the
+# second one with RX and TX on different ports. Test data only.
+schema_version: 1
+
+board:
+  name: testboard_s32k142_bl
+  mcu: S32K142
+  package: LQFP64
+  clock: { sosc_hz: 16000000 }
+
+devices:
+  - { name: PHY_VEH, part: TJA1051 }
+  - { name: PHY_DIAG, part: SN65HVD1050D }
+
+can:
+  - { name: VEH, instance: FlexCAN0, rx: { pin: PTE4 }, tx: { pin: PTE5 }, phy: PHY_VEH }
+  - { name: DIAG, instance: FlexCAN1, rx: { pin: PTA12 }, tx: { pin: PTC7 }, phy: PHY_DIAG }
+
+uart:
+  - { name: CONSOLE, instance: LPUART1, rx: { pin: PTC8 }, tx: { pin: PTC9 } }
+
+dio:
+  inputs:
+    - { name: KEY, pin: PTE8, active: low }       # bswgen inputConfiguration.h needs at least one input
+  outputs:
+    - { name: LED, pin: PTD16 }

@@ -1,0 +1,513 @@
+# Abweichungsliste der statischen Analyse (PLAT-74) - maschinenlesbar, geprueft von `python -m tools.misra check`.
+#
+# Ein Eintrag ist eine begruendete, dauerhafte Abweichung (MISRA Compliance:2020 "deviation record") oder ein
+# nachgewiesener Fehlalarm des Werkzeugs (kind: false-positive). Er ist KEIN Ort fuer echte Fehler: die stehen mit
+# `defect:` in baseline.yaml und gehoeren in eine Aufgabe.
+#
+# Felder:
+#   id           DEV-nnn, wird nie wiederverwendet
+#   kind         deviation | false-positive
+#   rule         Regel-Kennung(en) des Werkzeugs (Muster mit * erlaubt)
+#   files        Dateien/Muster (** ueber Verzeichnisse)
+#   pattern      regulaerer Ausdruck auf die Quellzeile des Befunds - und/oder
+#   symbol       Bezeichner, der in der Quellzeile oder der Meldung vorkommen muss
+#                (Ort nie nur ueber eine Zeilennummer, nie nur ueber eine Datei)
+#   limit        hoechstens so viele Treffer - weitere derselben Art sind neue Befunde
+#   reason       Begruendung (eigene Worte, keine Regeltexte)
+#   raised_by    Wer hat sie aufgestellt,  date: Wann
+#   approved_by  Freigabe (leer = offen; der Lauf warnt, bricht aber nicht)
+#   task         Aufgabe
+version: 1
+deviations:
+  - id: DEV-001
+    kind: deviation
+    rule: misra-c2012-20.7
+    files: [libs/bsw/autosarBase/include/Compiler.h]
+    pattern: '^#define (FUNC|FUNC_P2CONST|FUNC_P2VAR|P2VAR|P2CONST|CONSTP2VAR|CONSTP2CONST|P2FUNC|CONSTP2FUNC|CONST|VAR)\('
+    limit: 11
+    reason: >-
+      AUTOSAR Compiler Abstraction: die Makros setzen einen Typ zusammen (FUNC(rettype, memclass) -> rettype).
+      Ein Typname kann nicht geklammert werden; die Form ist durch die AUTOSAR-Spezifikation vorgegeben und wird
+      von generiertem Code (RTE, Simulink) so erwartet.
+    raised_by: PLAT-74 (Agent)
+    date: 2026-09-21
+    approved_by: "Nutzer 2026-09-21 (Entscheidungsboard plat74-abweichungen)"
+    task: PLAT-74
+
+  - id: DEV-002
+    kind: deviation
+    rule: [misra-c2012-11.4, clang-analyzer-core.FixedAddressDereference, cstyleCast,
+           cppcoreguidelines-pro-type-cstyle-cast]
+    files: ["bootloader/platforms/**", "bootloader/updater/platforms/**", "platforms/*/port/**", "platforms/*/bsp/**",
+            "platforms/*/hardFaultHandler/**"]
+    pattern: '\b(?:[A-Z][A-Za-z0-9_]*|can)\s*->|\b[A-Z][A-Z0-9_]*_Type\s*[&*]|\bIP_|\bBL_SBC_SPI\b|\bNX_SAFE_OUTPUT_REG\(|_INSTANCES\('
+    reason: >-
+      Zugriff auf Peripherie-Register ueber die Registerbloecke des Herstellerkopfs (IP_FTFC->FSTAT, SysTick->VAL,
+      LPIT0->MCR) bzw. die daraus erzeugten Adressmakros. Die Registerbloecke liegen an festen Adressen; der Cast
+      steckt im Makro des Herstellers (CMSIS/NXP) und ist die einzige Art, memory-mapped Register in C/C++ zu
+      erreichen. Nur in Plattform-, Bootloader-Plattform- und Fault-Handler-Code - wiederverwendbare Treiber
+      (libs/) greifen ueber Schnittstellen zu.
+    raised_by: PLAT-74 (Agent)
+    date: 2026-09-21
+    approved_by: "Nutzer 2026-09-21 (Entscheidungsboard plat74-abweichungen)"
+    task: PLAT-74
+
+  - id: DEV-003
+    kind: deviation
+    rule: [misra-c2012-11.4, clang-analyzer-core.FixedAddressDereference, cstyleCast,
+           cppcoreguidelines-pro-type-cstyle-cast]
+    files: [bootloader/platforms/s32k1xx/hal_s32k1xx.c, bootloader/updater/platforms/s32k1xx/upd_flash_s32k1xx.c,
+            bootloader/include/bl_interface.h, bootloader/src/core/seedkey.c,
+            platforms/s32k1xx/port/main/src/sbc/SbcEarlyStart.cpp]
+    pattern: '\(uint(8|32)_t(\s+const)?\s*\*\)\s*\(?(address|appStart|BL_BOOT_REQUEST_ADDR)|\bflag\[0\]|\bBL_UID_WORD\(|\bFAIL_START_RECORD\['
+    limit: 14
+    reason: >-
+      Feste Speicherstellen des Speicherlayouts: Flash lesen ueber seine Adresse (hal_flash_ptr/upd_flash_ptr,
+      Vergleich nach dem Schreiben), Vektortabelle der Anwendung vor dem Sprung, Boot-Anforderung und
+      Fehlstart-Zaehler an der vom Generator festgelegten RAM-Adresse (noinit), eindeutige Kennung aus dem
+      Flash-IFR. Die Adressen kommen aus einer Quelle (bl_memory.h, ARCH-08) und sind im Linker reserviert.
+    raised_by: PLAT-74 (Agent)
+    date: 2026-09-21
+    approved_by: "Nutzer 2026-09-21 (Entscheidungsboard plat74-abweichungen)"
+    task: PLAT-74
+
+  - id: DEV-004
+    kind: deviation
+    rule: misra-c2012-11.6
+    files: [bootloader/platforms/s32k1xx/hal_s32k1xx.c]
+    pattern: '\(\(void \(\*\)\(void\)\)entry\)\(\)'
+    limit: 1
+    reason: >-
+      Der Bootloader springt in die Anwendung: die Einsprungadresse steht als Zahl in deren Vektortabelle und muss
+      in einen Funktionszeiger gewandelt werden. Vorher geprueft: Gueltigkeitssatz und CRC des Abbilds (SM-51).
+    raised_by: PLAT-74 (Agent)
+    date: 2026-09-21
+    approved_by: "Nutzer 2026-09-21 (Entscheidungsboard plat74-abweichungen)"
+    task: PLAT-74
+
+  - id: DEV-005
+    kind: deviation
+    rule: misra-c2012-8.7
+    files: ["libs/bsw/e2e/src/e2e/E2E_P*.c"]
+    pattern: '^(E2E_\w+\s+)?E2E_P\d+\w+\('
+    reason: >-
+      Oeffentliche Schnittstelle der E2E-Bibliothek (AUTOSAR E2E P01/P02/P11). Welche Profile ein Projekt benutzt,
+      entscheidet dessen rte.yaml; im Demo-Projekt ruft die erzeugte RTE nur einen Teil auf. Die Funktionen muessen
+      extern bleiben, damit jedes Projekt sie nutzen kann.
+    raised_by: PLAT-74 (Agent)
+    date: 2026-09-21
+    approved_by: "Nutzer 2026-09-21 (Entscheidungsboard plat74-abweichungen)"
+    task: PLAT-74
+
+  - id: DEV-006
+    kind: deviation
+    rule: misra-c2012-8.7
+    files: [platforms/common/newlib/nx_newlib_syscalls.c, bootloader/platforms/s32k1xx/hal_s32k1xx.c]
+    pattern: '__attribute__\(\(weak\)\)|^void (SysTick_Handler|Fault_Handler|bl_system_init)\('
+    reason: >-
+      Aufgerufen von ausserhalb des analysierten C-Codes: newlib (Bibliothek, Syscall-Stubs mit weak), die
+      Vektortabelle (SysTick_Handler, Fault_Handler) und der Startup-Code in Assembler (bl_system_init). Die Namen
+      sind durch newlib bzw. die Vektortabelle vorgegeben und muessen extern sein.
+    raised_by: PLAT-74 (Agent)
+    date: 2026-09-21
+    approved_by: "Nutzer 2026-09-21 (Entscheidungsboard plat74-abweichungen)"
+    task: PLAT-74
+
+  - id: DEV-007
+    kind: false-positive
+    rule: [duplicateExpression, unsignedLessThanZero]
+    files: [bootloader/platforms/s32k1xx/hal_s32k1xx.c]
+    symbol: ticks
+    limit: 2
+    reason: >-
+      cppcheck 2.17 behandelt `ticks - start` als 0, obwohl `ticks` volatile ist und im SysTick-Interrupt
+      weiterzaehlt (`static uint32_t volatile ticks`). Die Zeitschranke der Warteschleife wirkt.
+    raised_by: PLAT-74 (Agent)
+    date: 2026-09-21
+    approved_by: "Nutzer 2026-09-21 (Entscheidungsboard plat74-abweichungen)"
+    task: PLAT-74
+
+  - id: DEV-008
+    kind: deviation
+    rule: unsignedLessThanZero
+    files: [bootloader/src/core/bl_sectors.h]
+    symbol: BL_FLASH_START
+    limit: 1
+    reason: >-
+      Plausibilitaetspruefung des erzeugten Speicherlayouts (Anwendung nicht vor dem Flash-Anfang). Auf S32K1 beginnt
+      der Flash bei 0, dort ist der Vergleich immer falsch; auf anderen Derivaten/Familien (S32K3, STM32) nicht.
+      Die Pruefung bleibt, weil der Bootloader familienneutral ist.
+    raised_by: PLAT-74 (Agent)
+    date: 2026-09-21
+    approved_by: "Nutzer 2026-09-21 (Entscheidungsboard plat74-abweichungen)"
+    task: PLAT-74
+
+  - id: DEV-009
+    kind: false-positive
+    rule: [bugprone-signed-char-misuse, cert-str34-c]
+    files: [ecu/application/src/systems/RteConsole.h]
+    pattern: 'static_cast<int8_t const\*>'
+    limit: 2
+    reason: >-
+      Kein Zeichen, sondern ein RTE-Signal vom Typ sint8: die Vorzeichenerweiterung nach int32 ist gewollt, damit
+      die Konsole negative Werte richtig zeigt.
+    raised_by: PLAT-74 (Agent)
+    date: 2026-09-21
+    approved_by: "Nutzer 2026-09-21 (Entscheidungsboard plat74-abweichungen)"
+    task: PLAT-74
+
+  - id: DEV-010
+    kind: deviation
+    rule: misra-c2012-2.3
+    files: ["bootloader/**"]
+    pattern: '^typedef char \w+_check'
+    reason: >-
+      Pruefung zur Uebersetzungszeit in C99 (der Bootloader wird mit -std=gnu99 gebaut, _Static_assert erst ab C11):
+      ein Feld mit negativer Groesse bricht den Build, wenn Layout oder Laenge nicht passen. Der Typ wird absichtlich
+      nie benutzt.
+    raised_by: PLAT-74 (Agent)
+    date: 2026-09-21
+    approved_by: "Nutzer 2026-09-21 (Entscheidungsboard plat74-abweichungen)"
+    task: PLAT-74
+
+  - id: DEV-011
+    kind: deviation
+    rule: misra-c2012-20.1
+    files: [bootloader/src/core/app_image.c, bootloader/updater/src/core/bl_update.c]
+    pattern: '^#include "\w+\.inc"'
+    limit: 2
+    reason: >-
+      Familienspezifischer Teil (Abbildpruefung je Familie) wird an genau einer Stelle eingebunden, nachdem die
+      familienneutralen Hilfsfunktionen definiert sind, die er benutzt. So bleibt der Kern familienneutral
+      (Plattformregel, Architektur Abschnitt 6).
+    raised_by: PLAT-74 (Agent)
+    date: 2026-09-21
+    approved_by: "Nutzer 2026-09-21 (Entscheidungsboard plat74-abweichungen)"
+    task: PLAT-74
+
+  - id: DEV-012
+    kind: deviation
+    rule: [misra-c2012-20.5, misra-c2012-21.1]
+    files: [platforms/s32k1xx/bsp/bspMcu/include/mcu/mcu.h]
+    pattern: '__MPU_PRESENT|INCLUDE_CORE_CM4_IN_MCU_H'
+    limit: 3
+    reason: >-
+      S32K1 hat eine eigene MPU (NXP SYSMPU), nicht die der CMSIS. __MPU_PRESENT wird um das Einbinden des
+      CMSIS-Kernkopfs herum zurueckgenommen und danach wiederhergestellt, damit core_cm4.h die CMSIS-MPU nicht
+      definiert. Der Name ist durch CMSIS vorgegeben.
+    raised_by: PLAT-74 (Agent)
+    date: 2026-09-21
+    approved_by: "Nutzer 2026-09-21 (Entscheidungsboard plat74-abweichungen)"
+    task: PLAT-74
+
+  - id: DEV-013
+    kind: false-positive
+    rule: knownConditionTrueFalse
+    files: [libs/bsp/bspAdcAccess/include/adc/AdcAccess.h]
+    symbol: contended
+    limit: 3
+    reason: >-
+      Vorlage mit Sperr-Strategie als Parameter: im Demo-Projekt ist die Strategie eine, die nie konkurriert, deshalb
+      sieht cppcheck `contended` immer falsch. Mit einer anderen Strategie (mehrere Tasks auf einem ADC) ist der
+      Zweig wirksam; der Code ist generisch.
+    raised_by: PLAT-74 (Agent)
+    date: 2026-09-21
+    approved_by: "Nutzer 2026-09-21 (Entscheidungsboard plat74-abweichungen)"
+    task: PLAT-74
+
+  - id: DEV-014
+    kind: false-positive
+    rule: misra-c2012-8.6
+    files: [bootloader/platforms/s32k1xx/main.c, bootloader/updater/platforms/s32k1xx/upd_main.c]
+    pattern: '^int main\(void\)'
+    limit: 2
+    reason: >-
+      Bootloader und Bootloader-Updater sind zwei getrennte Programme mit je einem main(); die Analyse liest die
+      Compile-Datenbank des ganzen Builds als ein Programm.
+    raised_by: PLAT-74 (Agent)
+    date: 2026-09-21
+    approved_by: "Nutzer 2026-09-21 (Entscheidungsboard plat74-abweichungen)"
+    task: PLAT-74
+
+  - id: DEV-015
+    kind: false-positive
+    rule: misra-c2012-2.5
+    files: [bootloader/devices/sbcUja113x/sbc_uja113x.c]
+    pattern: '^#define WATCHDOG_(CONTROL|MASK|PERIOD_MS|TRIGGER_MS)\b'
+    limit: 4
+    reason: >-
+      Die vier Makros des SBC-Watchdogs (BL-28) stehen mit ihren Benutzern im selben Zweig
+      `#if defined(BL_SBC_WATCHDOG_SERVE)`; im Demo-Projekt ist der Zweig aus (bootloader.sbc_watchdog nicht serve).
+      Das Addon liest die #define-Zeilen aller Zweige, die Benutzung aber nur im aktiven - im aktiven Zweig gibt es
+      weder Definition noch Benutzung. Mit BL_SBC_WATCHDOG_SERVE sind alle vier benutzt (watchdog_setup,
+      bl_device_service).
+    raised_by: SYS-105 (Agent)
+    date: 2026-09-30
+    approved_by: "Nutzer 2026-09-30 (Freigabe-Artefakt SYS-105, Entscheidungsboard review-sys105)"
+    task: SYS-105
+
+  - id: DEV-016
+    kind: deviation
+    rule: misra-c2012-8.7
+    files: [bootloader/updater/platforms/s32k1xx/upd_micros.c]
+    pattern: '^uint32_t upd_micros_restarts\(void\)'
+    limit: 1
+    reason: >-
+      Beobachtungsschnittstelle der Zeitmessung des Updaters (PLAT-86): wie oft ein Debugger den Zyklenzaehler
+      abgeschaltet hat. Gelesen vom Host-Test (bootloader/updater/test/host/upd_micros_host.c) und fuer eine
+      Diagnose im Debugger; im Updater selbst ruft sie niemand. Sie bleibt extern, weil die Tests sie ueber
+      upd_micros.h erreichen muessen - die Analyse sieht die Host-Tests nicht (scope.exclude **/test/**).
+    raised_by: SYS-105 (Agent)
+    date: 2026-09-30
+    approved_by: "Nutzer 2026-09-30 (Freigabe-Artefakt SYS-105, Entscheidungsboard review-sys105)"
+    task: SYS-105
+
+  - id: DEV-017
+    kind: false-positive
+    rule: knownConditionTrueFalse
+    files: [ecu/application/src/systems/RteSystem.cpp, platforms/s32k1xx/port/main/src/integration/Integration.cpp]
+    pattern: '^if \((memory|nvm) != nullptr\)$'
+    limit: 2
+    reason: >-
+      Der Wert kommt aus einer Funktion, deren schwacher Vorgabewert (__attribute__((weak)), liefert nullptr) in
+      derselben Uebersetzungseinheit steht: platform::nvmEeprom() in RteSystem.cpp, integration::nvmShutdownStep()
+      in Integration.cpp. cppcheck kennt weak nicht und haelt den Vergleich fuer immer falsch. Beim Binden gewinnt
+      die starke Definition (StaticBsp.cpp bzw. RteSystem.cpp mit NvM-Bloecken) und liefert einen Zeiger; ohne sie
+      (Port ohne Speicher, Projekt ohne NvM) bleibt es nullptr. Beide Zweige sind wirksam.
+    raised_by: SYS-105 (Agent)
+    date: 2026-09-30
+    approved_by: "Nutzer 2026-09-30 (Freigabe-Artefakt SYS-105, Entscheidungsboard review-sys105)"
+    task: SYS-105
+
+  - id: DEV-018
+    kind: deviation
+    rule: clang-analyzer-core.FixedAddressDereference
+    files: [platforms/s32k1xx/bsp/bspPinIrq/src/pinIrq/PinIrqDispatcher.cpp,
+            platforms/s32k1xx/port/main/src/integration/Integration.cpp]
+    pattern: 'PORT_REGS\[p\]->|LPUART_Type const& uart'
+    limit: 2
+    reason: >-
+      Wie DEV-002 (Peripherie-Register ueber die Registerbloecke des Herstellerkopfs), nur ueber eine Tabelle bzw.
+      eine Referenz erreicht, die das Muster von DEV-002 nicht erfasst: PORT_REGS[p]-> (Tabelle der PORT-Bloecke fuer
+      den Pin-Interrupt) und die Konsole-UART als LPUART_Type const& (Tabelle der benutzten UARTs aus der erzeugten
+      Konfiguration, SYS-59). Die Tabellen enthalten nur die Basisadressen des Herstellerkopfs.
+    raised_by: SYS-105 (Agent)
+    date: 2026-09-30
+    approved_by: "Nutzer 2026-09-30 (Freigabe-Artefakt SYS-105, Entscheidungsboard review-sys105)"
+    task: SYS-105
+
+  - id: DEV-019
+    kind: deviation
+    rule: clang-analyzer-core.FixedAddressDereference
+    files: [ecu/uds/src/systems/DiagSystem.cpp]
+    pattern: 'reinterpret_cast<uint32_t const volatile\*>\(BL_UID_ADDR '
+    limit: 1
+    reason: >-
+      Wie DEV-003 (feste Speicherstelle des Layouts): die Anwendung liest die eindeutige Kennung des Chips an
+      BL_UID_ADDR (erzeugtes bl_security.h, Derivat-Ebene), dieselbe Stelle wie der Bootloader (BL_UID_WORD in
+      seedkey.c), fuer DID 0xF18C und den Geraeteschluessel (COM-30). Nur lesend, Adresse und Laenge aus einer Quelle.
+    raised_by: SYS-105 (Agent)
+    date: 2026-09-30
+    approved_by: "Nutzer 2026-09-30 (Freigabe-Artefakt SYS-105, Entscheidungsboard review-sys105)"
+    task: SYS-105
+
+  - id: DEV-020
+    kind: false-positive
+    rule: [bugprone-signed-char-misuse, cert-str34-c]
+    files: [libs/bsw/dem/include/dem/Dem.h]
+    pattern: 'counter = c\.(failedThreshold|passedThreshold|jumpUp|jumpDown);'
+    limit: 8
+    reason: >-
+      Wie DEV-009: kein Zeichen, sondern Zahlenwerte vom Typ int8_t - Schwellen und Sprungwerte der Zaehler-
+      Entprellung (CounterDebounce, passedThreshold -128..-1, failedThreshold 1..127). Die Vorzeichenerweiterung
+      nach int32 ist gewollt: der Zaehler laeuft von der negativen zur positiven Schwelle. Ein expliziter
+      static_cast<int32_t> aendert die Meldung nicht (am 2026-09-30 mit clang-tidy 22.1.8 geprueft).
+    raised_by: SYS-105 (Agent)
+    date: 2026-09-30
+    approved_by: "Nutzer 2026-09-30 (Freigabe-Artefakt SYS-105, Entscheidungsboard review-sys105)"
+    task: SYS-105
+
+  - id: DEV-021
+    kind: false-positive
+    rule: knownConditionTrueFalse
+    files: [platforms/s32k1xx/port/safety/safeMemory/src/safeMemory/MemoryProtection.cpp]
+    pattern: '^for \(uint8_t i = numOfMemoryProtectionConfigurationRamRegions \+ 1; i < MAX_MPU_REGIONS; \+\+i\)$'
+    limit: 1
+    reason: >-
+      Abhaengig vom Derivat: die Schleife prueft, dass die vom Port nicht belegten Regionendeskriptoren ungueltig
+      sind (RGD[numOfMemoryProtectionConfigurationRamRegions + 1 .. SMPU_ENTRYS - 1]). Seit SYS-97 belegt der Port
+      Deskriptor 0 und sieben RAM-Regionen; auf dem S32K144 (8 Deskriptoren, mcudb mpu.regions) bleibt damit keiner
+      frei und cppcheck haelt die Bedingung fuer immer falsch. Auf dem S32K148 (16 Deskriptoren) prueft dieselbe
+      Schleife RGD[8..15] (ARCH-16). Der Code ist generisch ueber NX_MPU_REGIONS; ein Umbau nur fuer das Werkzeug
+      aenderte die Pruefung auf den groesseren Derivaten.
+    raised_by: SYS-142 (Agent)
+    date: 2026-09-30
+    approved_by: "Nutzer 2026-09-30 (Safety-Review Welle 30.09. abends, Punkt M1, PDF Safety-Reviews/2026-09-30)"
+    task: SYS-142
+
+  - id: DEV-022
+    kind: deviation
+    rule: clang-analyzer-core.FixedAddressDereference
+    files: [platforms/s32k1xx/port/main/include/pmc/LowVoltageDetectReset.h]
+    pattern: '^lvdsc1 = LVDSC1_START_VALUE;$'
+    limit: 1
+    reason: >-
+      Wie DEV-018 (Peripherie-Register ueber den Registerblock des Herstellerkopfs, nur ueber eine Referenz
+      erreicht): enableLowVoltageDetectReset() schreibt PMC_LVDSC1, auf dem Target mit IP_PMC->LVDSC1 aufgerufen
+      (boardInit, SYS-125), im Host-Test mit einem Registermodell. Die Vorlage nimmt das Register als Referenz,
+      damit der Host-Test sie ohne Herstellerkopf ausfuehrt; der Analysator sieht die feste Adresse erst in der
+      Vorlage. Einziger Schreibzugriff, ganzer Wert, keine Adressrechnung.
+    raised_by: REL-020 (Agent)
+    date: 2026-10-01
+    approved_by: "Nutzer 2026-10-01 (Freigabe im Chat fuer die Release-CI v0.2.0, alle drei wie empfohlen)"
+    task: REL-020
+
+  - id: DEV-023
+    kind: deviation
+    rule: unreachableCode
+    files: [platforms/s32k1xx/port/main/src/cxxRuntime/NoHeapOperatorDelete.cpp]
+    pattern: '^etl::infinite_loop\(\);$'
+    limit: 1
+    reason: >-
+      Gewollte Rueckfallebene hinter softwareSystemReset() ([[noreturn]]) in heapReleaseFailed() (DOC-28): kommt
+      die Reaktion des sicheren Supervisors wider Erwarten zurueck und der Reset wirkt nicht, haelt die Schleife
+      den Kern an, statt in den Aufrufer von operator delete zurueckzukehren. Im Target-Build laesst der Compiler
+      sie wegen noreturn ohnehin weg; im Host-Test (Fall "fallback", test_no_heap_operator_delete.py) ist sie der
+      Beobachtungspunkt, weil der Stub von softwareSystemReset() zurueckkehrt, und eine Mutante ohne Reset davor
+      muss auffallen. Dasselbe Muster steht sechsmal in isr_sys.cpp (Baseline).
+    raised_by: REL-020 (Agent)
+    date: 2026-10-01
+    approved_by: "Nutzer 2026-10-01 (Freigabe im Chat fuer die Release-CI v0.2.0, alle drei wie empfohlen)"
+    task: REL-020
+
+  - id: DEV-024
+    kind: deviation
+    rule: cert-dcl54-cpp
+    files: [platforms/s32k1xx/port/main/src/cxxRuntime/NoHeapOperatorDelete.cpp]
+    pattern: '^__attribute__\(\(noinline\)\) void operator delete\(void\* const pointer\) noexcept$'
+    limit: 1
+    reason: >-
+      Kein Heap (NXCPP-05): das eigene operator delete (DOC-28) gibt es nur, weil jeder virtuelle Destruktor einen
+      loeschenden Destruktor mit Aufruf von operator delete erzeugt; es kehrt nie zurueck (Reaktion S1 + S2). Ein
+      passendes operator new wird absichtlich nicht definiert: ein new-Ausdruck oder eine allozierende
+      Bibliotheksfunktion soll das malloc der Bibliothek ins Abbild ziehen, damit tools/elfcheck (heap-symbol)
+      den Bau rot macht - ein eigenes operator new verschoebe diese Erkennung vom Bau in die Laufzeit. Die Regel
+      schuetzt vor einem Paar aus fremdem new und eigenem delete; ohne Allokation gibt es kein solches Paar.
+    raised_by: REL-020 (Agent)
+    date: 2026-10-01
+    approved_by: "Nutzer 2026-10-01 (Freigabe im Chat fuer die Release-CI v0.2.0, alle drei wie empfohlen)"
+    task: REL-020
+
+  - id: DEV-025
+    kind: deviation
+    rule: misra-c2012-2.3
+    files: [bootloader/platforms/s32k1xx/hal_s32k1xx.c]
+    pattern: '^typedef char bl_can_buffers_fit_every_instance\['
+    limit: 1
+    reason: >-
+      Wie DEV-010: Pruefung zur Uebersetzungszeit in C99 (Bootloader mit -std=gnu99, ohne _Static_assert). Das Feld mit
+      negativer Groesse bricht den Build, wenn die vom HAL benutzten Nachrichtenpuffer (CAN_TX_MB + 1) nicht in die
+      kleinste FlexCAN-Instanz der Familie (16 Puffer) passen (BL-39). Der Typ wird absichtlich nie benutzt; nur sein
+      Name passt nicht zum Muster von DEV-010 (*_check).
+    raised_by: REL-R1 (Agent)
+    date: 2026-10-05
+    approved_by: "Nutzer (Safety Responsible) 2026-10-05, Entscheidungsboard-Item rc1-statik-abweichungen-1005: alle 7 Abweichungen freigeben, Baseline aktualisieren"
+    task: REL-R1
+
+  - id: DEV-026
+    kind: deviation
+    rule: badBitmaskCheck
+    files: [libs/bsw/dem/include/dem/SafetyResetReport.h]
+    pattern: '^CAUSE_EVENT \| 0x00U,'
+    limit: 1
+    reason: >-
+      Tabelle der Ursachencodes (SYS-113): jede Zeile ist CAUSE_EVENT | Nummer des SafeSupervisor::Event, wie
+      SafeSupervisor.cpp den Code bildet (CAUSE_EVENT | to_underlying(event)). Die Zeile fuer Event 0
+      (SAFETY_MANAGER_SEQUENCE_DEVIATION) schreibt die 0 aus, damit alle Zeilen dieselbe Form haben und sich gegen die
+      Aufzaehlung pruefen lassen. Der Wert ist richtig (0x100), die Oder-Verknuepfung mit 0 ist gewollt.
+    raised_by: REL-R1 (Agent)
+    date: 2026-10-05
+    approved_by: "Nutzer (Safety Responsible) 2026-10-05, Entscheidungsboard-Item rc1-statik-abweichungen-1005: alle 7 Abweichungen freigeben, Baseline aktualisieren"
+    task: REL-R1
+
+  - id: DEV-027
+    kind: deviation
+    rule: misra-c2012-17.2
+    files: [platforms/s32k1xx/port/main/src/systems/SbcSystem.cpp]
+    pattern: '\bsameName\(a \+ 1, b \+ 1\)|\bnameLength\(s \+ 1\)'
+    limit: 2
+    reason: >-
+      Rekursion nur zur Uebersetzungszeit (IO-68): sameName() und nameLength() sind constexpr und werden nur in
+      konstanten Ausdruecken ausgewertet (constexpr INTN1_PIN_EVENT = intn1PinEvent() und ein static_assert auf die
+      Laenge des Eingangsnamens). Zur Laufzeit wird keine der beiden aufgerufen; es entsteht kein Objektcode und
+      kein Stapelbedarf. Die Tiefe ist durch Zeichenkettenkonstanten der Konfiguration begrenzt (<= 32 Zeichen).
+    raised_by: REL-R1 (Agent)
+    date: 2026-10-05
+    approved_by: "Nutzer (Safety Responsible) 2026-10-05, Entscheidungsboard-Item rc1-statik-abweichungen-1005: alle 7 Abweichungen freigeben, Baseline aktualisieren"
+    task: REL-R1
+
+  - id: DEV-028
+    kind: false-positive
+    rule: knownConditionTrueFalse
+    files: [platforms/s32k1xx/port/main/src/systems/SbcSystem.cpp]
+    pattern: '^wakeArmed \? "armed" : "not armed"\);$'
+    limit: 1
+    reason: >-
+      Abhaengig von der Konfiguration: isMcuWakeLineArmed() liefert nur mit einem Pin-Ereignis am INTN1-Eingang
+      (project.yaml pin_events, NX_PIN_EVENT_COUNT > 0) einen Wert der Pin-Statistik. Im Demo-Projekt gibt es keine
+      pin_events, die Funktion liefert dort immer false. Ausserdem setzt ein Lambda den Wert im Task des SBC
+      (inSbcTask/runInOwnerContext), und cppcheck verfolgt das nicht. Es ist nur der Text der Konsole "sbc status".
+    raised_by: REL-R1 (Agent)
+    date: 2026-10-05
+    approved_by: "Nutzer (Safety Responsible) 2026-10-05, Entscheidungsboard-Item rc1-statik-abweichungen-1005: alle 7 Abweichungen freigeben, Baseline aktualisieren"
+    task: REL-R1
+
+  - id: DEV-029
+    kind: false-positive
+    rule: knownConditionTrueFalse
+    files: [platforms/s32k1xx/port/safety/safeLifecycle/src/safeLifecycle/SafetyManager.cpp]
+    pattern: '^if \(safeOffReports != nullptr\)$'
+    limit: 1
+    reason: >-
+      Wie DEV-017: safety::safeOffReportBox() hat in derselben Uebersetzungseinheit einen schwachen Vorgabewert
+      (__attribute__((weak)), liefert nullptr). cppcheck kennt weak nicht. Beim Binden gewinnt die starke Definition
+      in platforms/s32k1xx/port/main/src/integration/Integration.cpp (Postfach der Halteschaltung, SYS-194) und liefert
+      einen Zeiger; ohne sie (Port ohne safe_off-Halt) bleibt es nullptr. Beide Zweige sind wirksam;
+      test_safety_context.py prueft am Abbild genau eine starke Definition.
+    raised_by: REL-R1 (Agent)
+    date: 2026-10-05
+    approved_by: "Nutzer (Safety Responsible) 2026-10-05, Entscheidungsboard-Item rc1-statik-abweichungen-1005: alle 7 Abweichungen freigeben, Baseline aktualisieren"
+    task: REL-R1
+
+  - id: DEV-030
+    kind: false-positive
+    rule: clang-analyzer-security.ArrayBound
+    files: [platforms/s32k1xx/port/safety/safeMemory/src/safeMemory/MemoryProtection.cpp]
+    pattern: 'memoryProtectionConfigurationRam\[region\]\.word[23]\.R\b'
+    limit: 2
+    reason: >-
+      checkLockProtection() und checkValidity() sind private static und werden nur aus areRegionsConfiguredCorrectly()
+      in der Schleife i < numOfMemoryProtectionConfigurationRamRegions aufgerufen. Das ist genau die Groesse des Feldes
+      (7); Deskriptor region + 1 liegt in 1..7, und static_assert sichert (7 + 1) <= SMPU_ENTRYS. Der Analysator
+      beginnt den Pfad in der Funktion selbst, ohne Aufrufer, und nimmt fuer region jeden uint8_t-Wert an. Derselbe
+      Befund stand vor SYS-171 in der Baseline; SYS-171 hat nur den Text der Zeile geaendert (alle WORD2-Felder statt
+      mask_available_regions).
+    raised_by: REL-R1 (Agent)
+    date: 2026-10-05
+    approved_by: "Nutzer (Safety Responsible) 2026-10-05, Entscheidungsboard-Item rc1-statik-abweichungen-1005: alle 7 Abweichungen freigeben, Baseline aktualisieren"
+    task: REL-R1
+
+  - id: DEV-031
+    kind: false-positive
+    rule: knownConditionTrueFalse
+    files: [platforms/s32k1xx/port/safety/safeSupervisionCheck/src/safeSupervisionCheck/LpitDeadmanProgress.cpp]
+    pattern: '^if \(now != first\)$'
+    limit: 1
+    reason: >-
+      Wie DEV-007: LPIT0->TMR[n].CVAL ist im Herstellerkopf __I (volatile const) und zaehlt in der Hardware weiter.
+      cppcheck 2.17 setzt zwei Lesevorgaenge desselben volatile-Registers gleich und haelt now != first fuer immer
+      falsch. Auf dem Target liest jede Schleifenrunde das Register neu; MOVING wird erkannt (SYS-95, DFA-2).
+    raised_by: REL-R1 (Agent)
+    date: 2026-10-05
+    approved_by: "Nutzer (Safety Responsible) 2026-10-05, Entscheidungsboard-Item rc1-statik-abweichungen-1005: alle 7 Abweichungen freigeben, Baseline aktualisieren"
+    task: REL-R1

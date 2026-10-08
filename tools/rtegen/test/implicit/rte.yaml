@@ -1,0 +1,42 @@
+# ECU description of the RTE-09 host test: implicit access (Rte_IRead/Rte_IWrite/Rte_IWriteRef) with a copy per
+# runnable, next to explicit access as the counter-check. Component paths are relative to this file (RTE-22).
+# BSW task profile: tools/rtegen/test/multitask/tasks.yaml (comm 20, io 40, guard 90).
+#
+#   fast (1 ms, key 35, preempts slow): ProducerSwc.Run1ms writes Count, Samples (array) and Pair (record)
+#        implicitly; ConsumerSwc.RunFast1ms reads CountImp implicitly and CountExp explicitly
+#   slow (10 ms, key 25): ConsumerSwc.RunImp10ms reads CountImp, Samples and Pair implicitly and writes Seen
+#        implicitly; ConsumerSwc.RunExp10ms reads CountExp explicitly
+#
+# Expected plan: Count goes fast -> slow. CountImp and CountExp are read by runnables of both tasks, so their
+# explicit access is the atomic hand-over under the lock; the implicit copies of CountImp are loaded under one lock
+# per runnable start. Samples and Pair are read in slow only: task copy, the implicit copy is loaded without a lock.
+
+schema_version: 2
+
+tasks:
+  - name: fast
+    period_ms: 1
+    priority: 35
+    stack_bytes: 1024
+    runnables: [ProducerSwc.Run1ms, ConsumerSwc.RunFast1ms]
+  - name: slow
+    period_ms: 10
+    priority: 25
+    stack_bytes: 2048
+    runnables: [ConsumerSwc.RunImp10ms, ConsumerSwc.RunExp10ms]
+
+components:
+  - name: ProducerSwc
+    path: ProducerSwc
+  - name: ConsumerSwc
+    path: ConsumerSwc
+
+connections:
+  ProducerSwc.Count.Count: rte
+  ProducerSwc.Samples.Samples: rte
+  ProducerSwc.Pair.Pair: rte
+  ConsumerSwc.CountImp.Count: ProducerSwc.Count.Count
+  ConsumerSwc.CountExp.Count: ProducerSwc.Count.Count
+  ConsumerSwc.Samples.Samples: ProducerSwc.Samples.Samples
+  ConsumerSwc.Pair.Pair: ProducerSwc.Pair.Pair
+  ConsumerSwc.Seen.Seen: rte

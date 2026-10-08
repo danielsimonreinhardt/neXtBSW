@@ -1,0 +1,40 @@
+# ECU description of the RTE-05 host test: BSW service ports (bsw.power.*, bsw.reset.*, bsw.time.*) read by a
+# synthetic component in two application tasks. Used with the build-test project buildtest_s32k148_min (other
+# derivative, two CAN buses, no SBC) and the BSW task profile test/multitask/tasks.yaml, not with the eval board.
+# Component paths are relative to this file (RTE-22).
+#
+#   motor (1 ms, key 35):  ServiceSwc.Run1ms  - bsw.time.us, bsw.reset.reason
+#   app  (10 ms, key 25):  ServiceSwc.Run10ms - every value of the three services
+
+schema_version: 2
+
+tasks:
+  - name: motor
+    period_ms: 1
+    priority: 35
+    stack_bytes: 1024
+    runnables: [ServiceSwc.Run1ms]
+  - name: app
+    period_ms: 10
+    priority: 25
+    stack_bytes: 2048
+    runnables: [ServiceSwc.Run10ms]
+
+components:
+  - name: ServiceSwc
+    path: ServiceSwc
+
+connections:
+  ServiceSwc.PowerState.PowerState: bsw.power.state
+  ServiceSwc.PowerOk.PowerOk: bsw.power.ok
+  ServiceSwc.SupplyMv.SupplyMv: bsw.power.supply_mv
+  ServiceSwc.PowerQlf.PowerQlf: bsw.power.qlf
+  ServiceSwc.ResetReason.ResetReason: bsw.reset.reason
+  ServiceSwc.ResetWatchdog.ResetWatchdog: bsw.reset.watchdog
+  ServiceSwc.ResetPowerOn.ResetPowerOn: bsw.reset.power_on
+  ServiceSwc.ResetQlf.ResetQlf: bsw.reset.qlf
+  ServiceSwc.TimeMs.TimeMs: bsw.time.ms
+  ServiceSwc.TimeUs.TimeUs: bsw.time.us
+  ServiceSwc.FastUs.FastUs: bsw.time.us
+  ServiceSwc.FastReason.FastReason: bsw.reset.reason
+  ServiceSwc.Count.Count: rte

@@ -1,0 +1,661 @@
+/* Linker file for GNU C Compiler - family template of an application behind the CAN bootloader (s32k1xx).
+   Every address comes from the generated memory layout; the template itself names no board and no derivative.
+   Any number of application RAM regions (BL-05): memory.application.ram of the project may be one region
+   (e.g. only SRAM_U), the usual two (SRAM_L + SRAM_U) or more contiguous blocks (e.g. S32K3 SRAM_0..2). */
+
+/* Hard fault dump size (platforms/s32k1xx/hardFaultHandler, PLAT-20) */
+#include "hardFaultHandler/hardFaultDumpLayout.h"
+/* Memory layout generated from derivative + project memory (tools/bswgen/blgen.py, ARCH-08), same source as the
+   bootloader: application flash, RAM regions, no-init size, boot request address */
+#include "memory/memoryLayout.h"
+
+/* End of the application RAM: the regions are contiguous in address order (checked by tools/nxconfig/memory.py),
+   so only the first start and the last end are needed. The C preprocessor cannot index the generated macros
+   NX_MEMORY_APP_RAM<n>_*, hence the chain; more regions than this need one more branch.
+   Proposal of BL-05 for blgen: emit NX_MEMORY_APP_RAM_START/_END next to the single regions. */
+#if NX_MEMORY_APP_RAM_COUNT == 1
+#define NX_APP_RAM_END (NX_MEMORY_APP_RAM0_START + NX_MEMORY_APP_RAM0_SIZE)
+#elif NX_MEMORY_APP_RAM_COUNT == 2
+#define NX_APP_RAM_END (NX_MEMORY_APP_RAM1_START + NX_MEMORY_APP_RAM1_SIZE)
+#elif NX_MEMORY_APP_RAM_COUNT == 3
+#define NX_APP_RAM_END (NX_MEMORY_APP_RAM2_START + NX_MEMORY_APP_RAM2_SIZE)
+#elif NX_MEMORY_APP_RAM_COUNT == 4
+#define NX_APP_RAM_END (NX_MEMORY_APP_RAM3_START + NX_MEMORY_APP_RAM3_SIZE)
+#else
+#error "application RAM regions: this linker template covers 1..4 (project memory.application.ram)"
+#endif
+
+#define NX_APP_RAM_START NX_MEMORY_APP_RAM0_START
+
+/* RAM functions (flash commands run from RAM) and hot data sit at the start of the RAM, in the first region:
+   on s32k1xx that is SRAM_L, which the core reaches without the crossbar detour. Everything else (general data,
+   heap, stack) follows in the remaining regions, the no-init area ends at the end of the last one.
+   With a single region there is no second region to separate them, so the hot part gets a fixed share.
+   PLAT-12: both sizes are project values now (memory.application.ramfunctions_size / hot_ram_size, generated as
+   NX_MEMORY_APP_RAMFUNCTIONS_SIZE / NX_MEMORY_APP_HOT_RAM_SIZE). A derivative with 14 KB SRAM (S32K116) cannot
+   spend 8 KB of it on RAM functions and hot data; without the values the defaults below apply unchanged. */
+#ifdef NX_MEMORY_APP_RAMFUNCTIONS_SIZE
+#define NX_RAMFUNCTIONS_SIZE NX_MEMORY_APP_RAMFUNCTIONS_SIZE
+#else
+#define NX_RAMFUNCTIONS_SIZE 0x1000
+#endif
+#ifndef NX_HOT_RAM_SIZE
+#ifdef NX_MEMORY_APP_HOT_RAM_SIZE
+#define NX_HOT_RAM_SIZE NX_MEMORY_APP_HOT_RAM_SIZE
+#else
+#define NX_HOT_RAM_SIZE (NX_RAMFUNCTIONS_SIZE + 0x1000)
+#endif
+#endif
+/* The hot part ends at the end of the first RAM region, unless the project asked for a share of it (or there is
+   only one region, where there is no second region to separate them). */
+#if NX_MEMORY_APP_RAM_COUNT == 1 || defined(NX_MEMORY_APP_HOT_RAM_SIZE)
+#define NX_HOT_RAM_END (NX_APP_RAM_START + NX_HOT_RAM_SIZE)
+#else
+#define NX_HOT_RAM_END (NX_MEMORY_APP_RAM0_START + NX_MEMORY_APP_RAM0_SIZE)
+#endif
+
+/* Every area must fit; all values are known here, so this is a message and not a linker script with negative
+   region lengths (the linker computes region lengths unsigned and would link a wrong layout) */
+#if NX_HOT_RAM_END <= (NX_APP_RAM_START + NX_RAMFUNCTIONS_SIZE)
+#error "application RAM: no room for hot data behind the RAM functions (memory.application.ram)"
+#endif
+#if (NX_HOT_RAM_END + NX_MEMORY_APP_NOINIT_SIZE) >= NX_APP_RAM_END
+#error "application RAM: no room for data, heap and stack between hot data and the no-init area (memory.application)"
+#endif
+
+/* NVM-15: the application puts nothing into the flash configuration field (startUp.S, .FlashConfig stays empty);
+   that is only safe behind the bootloader, which owns sector 0 and the field at 0x400. An application at the start
+   of the code flash would leave FSEC erased (0xFF = secured) and, on a CSEc-partitioned part, unrecoverable. */
+#if NX_MEMORY_APP_FLASH_START == 0
+#error "application at the start of the code flash: sector 0 and its flash configuration field belong to the bootloader"
+#endif
+
+/* SYS-89: calibration segment (memory.calibration, stage K3 of doc/architecture/kalibrierung.md). tools/nxconfig places
+   it behind the first sector of the application: that sector keeps vector table, flash configuration field and
+   start-up code where the bootloader expects them, the application code follows the segment. Header (32 bytes,
+   written after the link by tools/calseg) and the values of all calibration parameters: the storage of the RTE
+   (.data.Rte_Prm_* / .bss.Rte_Prm_* of Rte.c, one input section per object through -fdata-sections), sorted by name.
+   Development profile: the parameters live in a RAM working page at the start of the general data, which the
+   start-up fills with the defaults of the build; the flash segment holds a copy (reference page) and the
+   application copies it over the working page when it is valid (ecu/calibration). Production profile: the
+   parameters live in the flash segment itself, without a RAM copy. Both profiles give the segment the same
+   content, only the addresses of the parameters differ. */
+#ifdef NX_MEMORY_CAL_START
+#if !NX_MEMORY_CAL_IN_APP_FLASH
+#error "calibration segment outside the application flash: the bootloader cannot write it before BL-31"
+#endif
+#if NX_MEMORY_CAL_START < (NX_MEMORY_APP_FLASH_START + 0x430)
+#error "calibration segment overlaps the vector table, the flash configuration field or the start-up code"
+#endif
+#if (NX_MEMORY_CAL_START + NX_MEMORY_CAL_SIZE) >= NX_MEMORY_APP_FLASH_END
+#error "calibration segment leaves no application flash (memory.calibration.size)"
+#endif
+#define NX_APP_CODE_START (NX_MEMORY_CAL_START + NX_MEMORY_CAL_SIZE)
+#else
+#define NX_APP_CODE_START (NX_MEMORY_APP_FLASH_START + 0x430)
+#endif
+
+/* Entry Point */
+ENTRY(Reset_Handler)
+
+/* SYS-97: interrupt stack (MSP) and the guard below it.
+   Size: the worst case tools/stackuse proves for the image (start-up on the MSP plus every interrupt level nested,
+   profile per image in tools/stackuse/profiles) plus a reserve - demo image 2026-09-30: 928 B start-up (lower bound)
+   + 1852 B nested = 2780 B, so 4 KB. It was 1 KB, which the nested bound alone exceeded (finding STK-1 of
+   doc/safety/sw-architecture.md). A project that needs another value sets memory.application.isr_stack_size
+   (SYS-132): tools/bswgen/blgen.py writes it to NX_MEMORY_APP_ISR_STACK_SIZE of the generated memoryLayout.h; the
+   template default covers the demo image. tools/stackuse reads the size back from the image (__StackTop -
+   __StackLimit), so its check always runs against the value the project linked.
+   Guard: a region of NX_ISR_STACK_GUARD_SIZE bytes directly below the stack, which the core may read but not write
+   (MPU descriptor of platforms/s32k1xx/port/safety/safeMemory, MemoryProtection::init). The first write of an
+   overflowing push or exception entry lands in it and ends in the hard fault reaction (outputs off, reset) instead of
+   overwriting heap and .bss (finding STK-2). Size: the largest frame on the MSP plus the larger of that frame and an
+   exception frame, so that no frame reserved without a write lets the next write jump over the guard
+   (tools/stackuse checks it against __StackGuardEnd - __StackGuardStart of the image; project value
+   memory.application.isr_stack_guard_size -> NX_MEMORY_APP_ISR_STACK_GUARD_SIZE). While the start-up on the MSP is only a lower
+   bound, the largest frame of the whole image counts - demo image: 432 B, so 864 B needed, 1 KB. SYSMPU granularity
+   32 bytes. */
+#ifdef NX_MEMORY_APP_ISR_STACK_SIZE
+#define NX_ISR_STACK_SIZE NX_MEMORY_APP_ISR_STACK_SIZE
+#else
+#define NX_ISR_STACK_SIZE 0x1000
+#endif
+#ifdef NX_MEMORY_APP_ISR_STACK_GUARD_SIZE
+#define NX_ISR_STACK_GUARD_SIZE NX_MEMORY_APP_ISR_STACK_GUARD_SIZE
+#else
+#define NX_ISR_STACK_GUARD_SIZE 0x400
+#endif
+#if (NX_ISR_STACK_GUARD_SIZE % 32) != 0 || NX_ISR_STACK_GUARD_SIZE < 32
+#error "interrupt stack guard: a multiple of the MPU granularity of 32 bytes (NX_ISR_STACK_GUARD_SIZE)"
+#endif
+#if (NX_ISR_STACK_SIZE % 8) != 0
+#error "interrupt stack: a multiple of 8 bytes (AAPCS stack alignment, NX_ISR_STACK_SIZE)"
+#endif
+
+/* Heap and Stack Configuration */
+HEAP_SIZE  = DEFINED(__heap_size__)  ? __heap_size__  : 0x00000200;
+STACK_SIZE = DEFINED(__stack_size__) ? __stack_size__ : NX_ISR_STACK_SIZE;
+STACK_GUARD_SIZE = NX_ISR_STACK_GUARD_SIZE;
+
+/* Memory Boundaries (END inclusive) */
+FLASH_START  = NX_MEMORY_APP_FLASH_START;      /* behind the bootloader */
+FLASH_END    = NX_MEMORY_APP_FLASH_END - 1;    /* the validity record of the bootloader follows */
+RAM_START    = NX_APP_RAM_START;                /* first application RAM region */
+RAM_END      = NX_APP_RAM_END - 1;              /* end of the last application RAM region */
+HOT_RAM_END  = NX_HOT_RAM_END - 1;              /* end of the hot part (first region, or its share of it) */
+
+/* Memory Regions */
+MEMORY
+{
+  /* Flash Memory */
+  Isr                    (RX) : ORIGIN = FLASH_START,              LENGTH = 0x00000400
+  FlashConfigField       (RX) : ORIGIN = FLASH_START + 0x00000400, LENGTH = 0x00000010
+  ApplicationStartUpCode (RX) : ORIGIN = FLASH_START + 0x410,      LENGTH = 0x20
+#ifdef NX_MEMORY_CAL_START
+  Calibration            (R)  : ORIGIN = NX_MEMORY_CAL_START,      LENGTH = NX_MEMORY_CAL_SIZE
+  Application            (RX) : ORIGIN = NX_APP_CODE_START,        LENGTH = FLASH_END + 1 - NX_APP_CODE_START
+#else
+  Application            (RX) : ORIGIN = FLASH_START + 0x430,      LENGTH = FLASH_END + 1 - FLASH_START - 0x430
+#endif
+
+  /* Hot RAM (first region, s32k1xx: SRAM_L) - RAM functions and hot data */
+  RAMFunctions           (RW) : ORIGIN = RAM_START,               LENGTH = NX_RAMFUNCTIONS_SIZE
+  HotData                (RW) : ORIGIN = RAM_START + NX_RAMFUNCTIONS_SIZE, LENGTH = HOT_RAM_END + 1 - RAM_START - NX_RAMFUNCTIONS_SIZE
+
+  /* Remaining RAM (s32k1xx: SRAM_U) - Stack, heap, BSS, and large buffers */
+  MainRAM                (RW) : ORIGIN = HOT_RAM_END + 1,         LENGTH = RAM_END + 1 - (HOT_RAM_END + 1) - NX_MEMORY_APP_NOINIT_SIZE
+  NoInit                 (RW) : ORIGIN = RAM_END + 1 - NX_MEMORY_APP_NOINIT_SIZE,  LENGTH = NX_MEMORY_APP_NOINIT_SIZE
+}
+
+/* Output Sections */
+SECTIONS
+{
+  /* Interrupt Vector Table */
+  .interrupts :
+  {
+    __VECTOR_TABLE = .;
+    . = ALIGN(4);
+    KEEP(*(.isr_vector))
+  } > Isr
+
+#if defined(NX_MEMORY_CAL_START) && NX_MEMORY_CAL_PRODUCTION
+  /* SYS-89, production profile: the parameters in the flash segment, read from there (no RAM copy). Before every
+     data section, so that no other statement takes their input sections. Alignment gaps between the parameters
+     are 0 as in the initialised data of the RAM, so both profiles give the segment the same bytes. */
+  .nx_cal :
+  {
+    __nx_cal_segment = .;
+    LONG(0xFFFFFFFF) LONG(0xFFFFFFFF) LONG(0xFFFFFFFF) LONG(0xFFFFFFFF)   /* header: tools/calseg seal */
+    LONG(0xFFFFFFFF) LONG(0xFFFFFFFF) LONG(0xFFFFFFFF) LONG(0xFFFFFFFF)
+    __nx_cal_values = .;
+    KEEP(*(SORT_BY_NAME(.data.Rte_Prm_*)))
+    KEEP(*(SORT_BY_NAME(.bss.Rte_Prm_*)))
+    . = ALIGN(4);
+    __nx_cal_values_end = .;
+  } > Calibration = 0x00000000
+#endif
+
+  /* First section with glue code, frame handlers, and critical functions */
+  .first :
+  {
+    __ROM_CRC_START = .;
+    *(.glue_7)
+    *(.glue_7t)
+    *(.eh_frame)
+    KEEP (*(.init))
+    KEEP (*(.fini))
+
+    /* Constructors */
+    . = ALIGN(0x4);
+    KEEP (*ecrti.o(.ctors))
+    KEEP (*crtbegin.o(.ctors))
+    KEEP (*(EXCLUDE_FILE (*crtend.o *ecrtn.o) .ctors))
+    KEEP (*(SORT(.ctors.*)))
+    KEEP (*crtend.o(.ctors))
+    KEEP (*ecrtn.o(.ctors))
+
+    /* Destructors */
+    . = ALIGN(0x4);
+    KEEP (*ecrti.o(.dtors))
+    KEEP (*crtbegin.o(.dtors))
+    KEEP (*(EXCLUDE_FILE (*crtend.o *ecrtn.o) .dtors))
+    KEEP (*(SORT(.dtors.*)))
+    KEEP (*crtend.o(.dtors))
+    KEEP (*ecrtn.o(.dtors))
+
+    /* Read-only data and critical system functions */
+    *(.rodata)
+    *(.text.__assert_func)
+    *(.text.__exec_ctors)
+    *(.text.SystemInit)
+    *(.text.__aeabi_atexit)
+    *(.text.__cxa_pure_virtual)
+    *(.text._ZSt9terminatev)
+    *(.text.__cxa_atexit)
+    *(.text.__libc_init_array)
+    *(.text._raise_r)
+    *(.text._getpid_r)
+    *(.text.abort*)
+    *(.text.memcpy)
+    *(.text.memset)
+    *(.text.raise)
+    . = ALIGN(32);
+  } > Application = 0xffffffff
+
+  /* Flash Configuration Field (FCF) */
+  .FlashConfigField :
+  {
+    . = ALIGN(4);
+    KEEP(*(.FlashConfig))
+    . = ALIGN(4);
+  } > FlashConfigField
+
+  /* Application Startup Code */
+  .__startUpSection :
+  {
+    KEEP(*(.__startUpSection))
+  } > ApplicationStartUpCode
+
+  /* Program Code and Read-Only Data */
+  .text :
+  {
+    *(.text._kill_r)
+    *(.text._getpid)
+    *(.text._kill)
+    *(.text._exit)
+    . = ALIGN(4);
+    *(.text)
+    *(.text*)
+    *(.rodata)
+    *(.rodata*)
+    . = ALIGN(4);
+  } > Application = 0xffffffff
+
+  /* ARM Exception Tables */
+  .ARM.extab :
+  {
+    *(.ARM.extab* .gnu.linkonce.armextab.*)
+  } > Application = 0xffffffff
+
+  .ARM :
+  {
+    __exidx_start = .;
+    *(.ARM.exidx*)
+    __exidx_end = .;
+  } > Application = 0xffffffff
+
+  /* C++ Constructors */
+  .ctors :
+  {
+    __CTOR_LIST__ = .;
+    KEEP (*crtbegin.o(.ctors))
+    KEEP (*crtbegin?.o(.ctors))
+    KEEP (*(EXCLUDE_FILE(*crtend?.o *crtend.o) .ctors))
+    KEEP (*(SORT(.ctors.*)))
+    KEEP (*(.ctors))
+    __CTOR_END__ = .;
+  } > Application = 0xffffffff
+
+  /* C++ Destructors */
+  .dtors :
+  {
+    __DTOR_LIST__ = .;
+    KEEP (*crtbegin.o(.dtors))
+    KEEP (*crtbegin?.o(.dtors))
+    KEEP (*(EXCLUDE_FILE(*crtend?.o *crtend.o) .dtors))
+    KEEP (*(SORT(.dtors.*)))
+    KEEP (*(.dtors))
+    __DTOR_END__ = .;
+  } > Application = 0xffffffff
+
+  /* Pre-initialization Array */
+  .preinit_array :
+  {
+    PROVIDE_HIDDEN (__preinit_array_start = .);
+    KEEP (*(.preinit_array*))
+    PROVIDE_HIDDEN (__preinit_array_end = .);
+  } > Application = 0xffffffff
+
+  /* Initialization Array */
+  .init_array :
+  {
+    PROVIDE_HIDDEN (__init_array_start = .);
+    KEEP (*(SORT(.init_array.*)))
+    KEEP (*(.init_array*))
+    PROVIDE_HIDDEN (__init_array_end = .);
+  } > Application = 0xffffffff
+
+  /* Finalization Array */
+  .fini_array :
+  {
+    PROVIDE_HIDDEN (__fini_array_start = .);
+    KEEP (*(SORT(.fini_array.*)))
+    KEEP (*(.fini_array*))
+    PROVIDE_HIDDEN (__fini_array_end = .);
+    . = ALIGN(4);
+    __ROM_CRC_END = .;
+  } > Application = 0xffffffff
+
+  /* End of Code Section */
+  __etext = .;
+  __DATA_ROM = .;
+
+  /* MPU Protected Data Section (Hot Data in SRAM_L) */
+  .mpu_data :
+  {
+    . = ALIGN(32);
+    __MPU_DATA_START = .;
+    KEEP("*libsafe*:*"(.data))
+    KEEP("*libsafe*:*"(.data*))
+    . = ALIGN(32);
+    __MPU_DATA_END = .;
+  } > HotData
+
+  /* MPU Protected Read-Only Data Section (Hot Data in SRAM_L) */
+  .mpu_rodata :
+  {
+    . = ALIGN(32);
+    __MPU_RODATA_START = .;
+    KEEP("*libsafe*:*"(.rodata))
+    KEEP("*libsafe*:*"(.rodata*))
+    . = ALIGN(32);
+    __MPU_RODATA_END = .;
+  } > HotData
+
+  /* MPU Protected BSS Section (SRAM_L - Hot/Safety Critical) */
+  .mpu_bss :
+  {
+    . = ALIGN(32);
+    __MPU_BSS_START = .;
+    "*libsafe*:*"(.bss)
+    "*libsafe*:*"(.bss*)
+    . = ALIGN(32);
+    __MPU_BSS_END = .;
+  } > HotData
+
+  /* Hot Communication Components Data (SRAM_L) */
+  .hot_data : AT(__DATA_ROM)
+  {
+    . = ALIGN(4);
+    __DATA_RAM = .;
+    __data_start__ = .;
+#define HOTFILE(file) file(.data .data*)
+#include "hot-files.inc"
+#undef HOTFILE
+    /* Explicit hot data section */
+    *(.hot_data)
+    *(.hot_data*)
+    KEEP(*(.jcr*))
+    . = ALIGN(4);
+    __data_end__ = .;
+  } > HotData
+
+  /* Compute start of executable code in ROM, necessary to be executed from RAM */
+  __DATA_ROM_RX = __DATA_ROM + (__data_end__ - __data_start__);
+
+  /* RAM Executable Code Section (SRAM_L) */
+  .launchFromRAM : AT(__DATA_ROM_RX)
+  {
+    . = ALIGN(4);
+    __LAUNCH_FROM_RAM_START = .;
+    KEEP(*(.launchFromRAM))
+    KEEP(*(.launchFromRAM*))
+    . = ALIGN(4);
+    __LAUNCH_FROM_RAM_END = .;
+  } > RAMFunctions = 0xffffffff
+
+  /* Hot Communication Components BSS (SRAM_L) */
+  .hot_bss (NOLOAD) :
+  {
+    . = ALIGN(4);
+    __HOT_BSS_START = .;
+#define HOTFILE(file) file(.bss .bss* COMMON)
+#include "hot-files.inc"
+#undef HOTFILE
+    /* Explicit hot bss section */
+    *(.hot_bss)
+    *(.hot_bss*)
+    . = ALIGN(4);
+    __HOT_BSS_END = .;
+  } > HotData
+
+  /* Data Size Calculations */
+  ___data_size    = __data_end__ - __data_start__;
+  ___data_rx_size = __LAUNCH_FROM_RAM_END - __LAUNCH_FROM_RAM_START;
+
+  __DATA_ROM_START = __DATA_ROM;
+  __DATA_ROM_END   = __DATA_ROM + ___data_size + ___data_rx_size;
+  __USED_FLASH_END = __DATA_ROM_END;
+
+  /* Compute start of general data in ROM */
+  __DATA_ROM_GENERAL = __DATA_ROM_END;
+
+  /* General Initialized Data Section (SRAM_U) */
+  .data_general : AT(__DATA_ROM_GENERAL)
+  {
+    . = ALIGN(4);
+    __data_general_start__ = .;
+#if defined(NX_MEMORY_CAL_START) && !NX_MEMORY_CAL_PRODUCTION
+    /* SYS-89, development profile: RAM working page of the calibration parameters, initialised with the defaults of
+       the build like all general data; its flash copy is the calibration segment (.nx_cal below) */
+    . = ALIGN(8);
+    __nx_cal_ram_start = .;
+    KEEP(*(SORT_BY_NAME(.data.Rte_Prm_*)))
+    KEEP(*(SORT_BY_NAME(.bss.Rte_Prm_*)))
+    . = ALIGN(4);
+    __nx_cal_ram_end = .;
+#endif
+    *(EXCLUDE_FILE(
+#define HOTFILE(file) file
+#include "hot-files.inc"
+#undef HOTFILE
+    ) .data)
+    *(EXCLUDE_FILE(
+#define HOTFILE(file) file
+#include "hot-files.inc"
+#undef HOTFILE
+    ) .data*)
+    . = ALIGN(4);
+    __data_general_end__ = .;
+  } > MainRAM
+
+  /* Update flash usage to include general data */
+  ___data_general_size = __data_general_end__ - __data_general_start__;
+  __DATA_ROM_GENERAL_END = __DATA_ROM_GENERAL + ___data_general_size;
+  __USED_FLASH_END_TOTAL = __DATA_ROM_GENERAL_END;
+
+  /* Uninitialized Data Section - BSS (SRAM_U) */
+  .bss :
+  {
+    . = ALIGN(4);
+    __START_BSS = .;
+    __bss_start__ = .;
+    *(EXCLUDE_FILE(
+#define HOTFILE(file) file
+#include "hot-files.inc"
+#undef HOTFILE
+    ) .bss)
+    *(EXCLUDE_FILE(
+#define HOTFILE(file) file
+#include "hot-files.inc"
+#undef HOTFILE
+    ) .bss*)
+    *(EXCLUDE_FILE(
+#define HOTFILE(file) file
+#include "hot-files.inc"
+#undef HOTFILE
+    ) COMMON)
+    . = ALIGN(4);
+    __bss_end__ = .;
+    __END_BSS = .;
+  } > MainRAM
+
+  /* ROM check areas (SM-14, safeMemory RomCheck): every byte of the image except the list itself and (SYS-91) the
+     calibration segment, which is checked against its own reference. SYS-38: the
+     flash configuration field, the startup section and the initialized general data were not covered before;
+     platforms/s32k1xx/port/safety/safeMemory/tools/romCheckImage.py refuses an image with flash content outside
+     these areas. */
+  __CRC_IVT_START      = ADDR(.interrupts);
+  __CRC_IVT_END        = ADDR(.interrupts) + SIZEOF(.interrupts);
+  __CRC_FCF_START      = ADDR(.FlashConfigField);
+  __CRC_FCF_END        = ADDR(.FlashConfigField) + SIZEOF(.FlashConfigField);
+  __CRC_STARTUP_START  = ADDR(.__startUpSection);
+  __CRC_STARTUP_END    = ADDR(.__startUpSection) + SIZEOF(.__startUpSection);
+  __CRC_APP_START      = __ROM_CRC_START;
+  __CRC_APP_END        = __ROM_CRC_END;
+  __CRC_DATA_ROM_START = __DATA_ROM_START;
+  __CRC_DATA_ROM_END   = __DATA_ROM_GENERAL_END;
+#ifdef NX_MEMORY_CAL_START
+  /* SYS-91: the calibration segment is NOT in this list. Its content may come from a dataset flashed or generated
+     without a build (tools/calseg hex --dataset), so the reference of the build cannot cover it: board 2026-09-28,
+     one flipped header bit held the ECU in the safe state (ROM_CHECK_FAILURE) before the start-up check of
+     ecu/calibration could apply on_invalid. The segment has its own reference, the CRCs of its CALV header: checked
+     at start-up by ecu/calibration and in every pass of the ROM check through the owner's check
+     (RomCheck::setOwnAreaCheck). romCheckImage.py and tools/elfcheck accept image content outside the list only in
+     this area (the whole region of memory.calibration). */
+  __rom_check_own_area_start = NX_MEMORY_CAL_START;
+  __rom_check_own_area_end   = NX_MEMORY_CAL_START + NX_MEMORY_CAL_SIZE;
+#endif
+
+  /* ROM check list and reference CRC, directly behind the last flash content (SYS-38; before at the end of the
+     application flash, where it would stretch the CAN download over the whole area). The number of areas and the
+     list length are checked by RomCheck (RomCheckList.h); the result is written after the link by
+     romCheckImage.py, which also produces the hex (cmake/NxRomCheck.cmake). */
+  .checksum ALIGN(__USED_FLASH_END_TOTAL, 4) :
+  {
+    __checksum_list_start = .;
+    LONG(5)
+    LONG(__CRC_IVT_START)
+    LONG(__CRC_IVT_END)
+    LONG(__CRC_FCF_START)
+    LONG(__CRC_FCF_END)
+    LONG(__CRC_STARTUP_START)
+    LONG(__CRC_STARTUP_END)
+    LONG(__CRC_APP_START)
+    LONG(__CRC_APP_END)
+    LONG(__CRC_DATA_ROM_START)
+    LONG(__CRC_DATA_ROM_END)
+    __checksum_list_end = .;
+    __checksum_result = .;
+    LONG(0x12345678)    /* placeholder until romCheckImage.py writes the CRC */
+    __checksum_end = .;
+  } > Application
+
+  /* Heap Section (SRAM_U) */
+  .heap :
+  {
+    . = ALIGN(8);
+    __end__ = .;
+    _end = .;
+    PROVIDE(end = .);
+    __HeapBase = .;
+    . += HEAP_SIZE;
+    __HeapLimit = .;
+  } > MainRAM
+
+  /* SYS-97: guard below the interrupt stack, aligned to the MPU granularity so that its descriptor covers exactly
+     this area; the stack starts at its end */
+  .stack_guard :
+  {
+    . = ALIGN(32);
+    __StackGuardStart = .;
+    . += STACK_GUARD_SIZE;
+    __StackGuardEnd = .;
+  } > MainRAM
+
+  /* Stack Section (SRAM_U) */
+  .stack :
+  {
+    . = ALIGN(8);
+    . += STACK_SIZE;
+    __StackTop = .;
+  } > MainRAM
+
+  /* No-Init RAM Section: not cleared by startUp.S. Top words: boot request and failed-start record (see below) */
+  .noinit (NOLOAD) :
+  {
+    __DATA_RAM_END = .;  /* RAM initialization is done until __DATA_RAM_END */
+    __NOINIT_DATA = .;
+    /* Hard fault dump written by customHardFaultHandler, reported after reset (PLAT-20) */
+    . = ALIGN(4);
+    __hard_fault_dump_start = .;
+    . += HARD_FAULT_DUMP_SIZE;
+    __hard_fault_dump_end = .;
+    *(.noinit .noinit.*)
+    . = ALIGN(4);
+  } > NoInit
+
+  /* RAM bounds for the stack pointer check of the hard fault handler (the application RAM regions are
+     contiguous in address order, checked by tools/nxconfig/memory.py) */
+  __hard_fault_ram_start = RAM_START;
+  __hard_fault_ram_end   = RAM_END + 1;
+
+  /* Stack Limit and Pointer */
+  __StackLimit = __StackTop - STACK_SIZE;
+  PROVIDE(__stack = __StackTop);
+
+#if defined(NX_MEMORY_CAL_START) && !NX_MEMORY_CAL_PRODUCTION
+  /* SYS-89, development profile: the calibration segment in flash, header and a copy of the working page (the
+     reference page); tools/calseg seal writes both after the link */
+  .nx_cal :
+  {
+    __nx_cal_segment = .;
+    LONG(0xFFFFFFFF) LONG(0xFFFFFFFF) LONG(0xFFFFFFFF) LONG(0xFFFFFFFF)   /* header: tools/calseg seal */
+    LONG(0xFFFFFFFF) LONG(0xFFFFFFFF) LONG(0xFFFFFFFF) LONG(0xFFFFFFFF)
+    __nx_cal_values = .;
+    . += (__nx_cal_ram_end - __nx_cal_ram_start);
+    __nx_cal_values_end = .;
+  } > Calibration = 0x00000000
+#endif
+
+  /* ARM Attributes */
+  .ARM.attributes 0 : { *(.ARM.attributes) }
+}
+
+/* Informational Symbols for Flash Memory Usage */
+__FLASH_START         = FLASH_START;
+__FLASH_END           = FLASH_END;
+ASSERT(__checksum_end <= FLASH_END + 1, "application flash: no room for the ROM check list behind the image");
+__USED_FLASH_SIZE     = __USED_FLASH_END_TOTAL - __FLASH_START;
+__FREE_FLASH_SIZE     = __FLASH_END - __USED_FLASH_END_TOTAL;
+__FLASH_OVERFLOW_SIZE = __USED_FLASH_END_TOTAL - __FLASH_END;
+
+#ifdef NX_MEMORY_CAL_START
+/* SYS-89: the segment must hold header and values, the header size is the contract with ecu/calibration */
+ASSERT(__nx_cal_values - __nx_cal_segment == NX_MEMORY_CAL_HEADER_SIZE, "calibration segment: header size");
+ASSERT(__nx_cal_values_end <= NX_MEMORY_CAL_START + NX_MEMORY_CAL_SIZE,
+       "calibration segment: the calibration parameters do not fit (memory.calibration.size)");
+#endif
+
+/* Safety Assertions */
+ASSERT(__MPU_DATA_START == __MPU_DATA_END, "safety code must not have preinitialized data");
+ASSERT(__MPU_RODATA_START == __MPU_RODATA_END, "safety code must not have preinitialized rodata");
+
+/* Application RAM: the regions must leave room for every area (BL-05, 1..n regions) */
+ASSERT(LENGTH(HotData) > 0, "application RAM: no room for hot data behind the RAM functions (first region)");
+ASSERT(LENGTH(MainRAM) > 0, "application RAM: no room for data, heap and stack behind hot data and no-init area");
+ASSERT(ORIGIN(NoInit) >= ORIGIN(MainRAM) + LENGTH(MainRAM), "application RAM: no-init area overlaps MainRAM");
+ASSERT(ORIGIN(RAMFunctions) == RAM_START && ORIGIN(NoInit) + LENGTH(NoInit) == RAM_END + 1,
+       "application RAM: the areas do not cover the configured RAM");
+
+/* SYS-97: the guard lies directly below the interrupt stack, both on the MPU granularity */
+ASSERT(__StackGuardEnd == __StackLimit, "interrupt stack guard: not directly below the stack");
+ASSERT(__StackGuardEnd - __StackGuardStart == STACK_GUARD_SIZE, "interrupt stack guard: wrong size");
+ASSERT((__StackGuardStart % 32) == 0 && (__StackGuardEnd % 32) == 0,
+       "interrupt stack guard: not on the 32-byte MPU granularity");
+
+/* Hard fault dump (PLAT-20): size from the dump layout, in the no-init RAM, above the RAM cleared at start-up */
+ASSERT(__hard_fault_dump_end - __hard_fault_dump_start == HARD_FAULT_DUMP_SIZE, "hard fault dump: wrong size");
+ASSERT(__hard_fault_dump_start >= RAM_START && __hard_fault_dump_end <= RAM_END + 1,
+       "hard fault dump: outside the application RAM");
+ASSERT(__hard_fault_dump_start >= __DATA_RAM_END, "hard fault dump: cleared by the RAM initialization");
+ASSERT(__hard_fault_dump_start >= ORIGIN(NoInit) && __hard_fault_dump_end <= ORIGIN(NoInit) + LENGTH(NoInit),
+       "hard fault dump: outside the NoInit region");
+ASSERT(__hard_fault_ram_start <= __hard_fault_dump_start && __hard_fault_dump_end <= __hard_fault_ram_end,
+       "hard fault dump: outside the RAM bounds of the handler");
+/* Boot request word pair of the bootloader (generated memory/memoryLayout.h, bootloader/bl_memory.h) and the
+   failed-start record 8 bytes below it (src/sbc/SbcEarlyStart.cpp) share the top of NoInit */
+ASSERT(NX_MEMORY_BOOT_REQUEST_ADDR - 8 >= ADDR(.noinit) + SIZEOF(.noinit)
+       && NX_MEMORY_BOOT_REQUEST_ADDR + 8 <= RAM_END + 1,
+       "no-init RAM: .noinit overlaps the boot request or failed-start record");
+ASSERT(NX_MEMORY_BOOT_REQUEST_ADDR - 8 >= ORIGIN(NoInit), "no-init RAM: boot request outside the NoInit region");

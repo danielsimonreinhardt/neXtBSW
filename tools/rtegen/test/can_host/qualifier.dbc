@@ -1,0 +1,62 @@
+VERSION "rtegen qualifier test (COM-03)"
+
+
+NS_ :
+	CM_
+	BA_DEF_
+	BA_
+	BA_DEF_DEF_
+
+BS_:
+
+BU_: EVB PC
+
+
+BO_ 256 RxP01: 8 PC
+ SG_ Value : 0|8@1+ (1,0) [0|255] "" EVB
+ SG_ Crc : 8|8@1+ (1,0) [0|255] "" EVB
+ SG_ Counter : 16|4@1+ (1,0) [0|15] "" EVB
+
+BO_ 257 RxP02: 8 PC
+ SG_ Crc : 0|8@1+ (1,0) [0|255] "" EVB
+ SG_ Counter : 8|4@1+ (1,0) [0|15] "" EVB
+ SG_ Value : 16|16@1+ (1,0) [0|65535] "" EVB
+
+BO_ 258 RxP11: 8 PC
+ SG_ Crc : 0|8@1+ (1,0) [0|255] "" EVB
+ SG_ Counter : 8|4@1+ (1,0) [0|15] "" EVB
+ SG_ IdNibble : 12|4@1+ (1,0) [0|15] "" EVB
+ SG_ Value : 16|8@1+ (1,0) [0|255] "" EVB
+
+BO_ 259 RxPlain: 8 PC
+ SG_ Flag : 0|1@1+ (1,0) [0|1] "" EVB
+ SG_ Value : 8|8@1+ (1,0) [0|255] "" EVB
+
+BO_ 512 TxP02: 8 EVB
+ SG_ Crc : 0|8@1+ (1,0) [0|255] "" PC
+ SG_ Counter : 8|4@1+ (1,0) [0|15] "" PC
+ SG_ Flag : 16|1@1+ (1,0) [0|1] "" PC
+ SG_ Value : 24|8@1+ (1,0) [0|255] "" PC
+
+
+CM_ "Test matrix for the signal qualifier of tools/rtegen (COM-03): one received message per E2E profile, one
+without E2E, one sent message with E2E protection. Not a board matrix, only used by the host test.";
+BA_DEF_ BO_  "GenMsgCycleTime" INT 0 65535;
+BA_DEF_ BO_  "GenMsgTimeoutTime" INT 0 65535;
+BA_DEF_ SG_  "GenSigStartValue" FLOAT -2147483648 4294967295;
+BA_DEF_DEF_  "GenMsgCycleTime" 0;
+BA_DEF_DEF_  "GenMsgTimeoutTime" 0;
+BA_DEF_DEF_  "GenSigStartValue" 0;
+BA_ "GenMsgCycleTime" BO_ 256 20;
+BA_ "GenMsgCycleTime" BO_ 257 20;
+BA_ "GenMsgCycleTime" BO_ 258 20;
+BA_ "GenMsgCycleTime" BO_ 259 20;
+BA_ "GenMsgCycleTime" BO_ 512 20;
+BA_ "GenMsgTimeoutTime" BO_ 256 100;
+BA_ "GenMsgTimeoutTime" BO_ 257 100;
+BA_ "GenMsgTimeoutTime" BO_ 258 100;
+BA_ "GenMsgTimeoutTime" BO_ 259 100;
+BA_ "GenSigStartValue" SG_ 256 Value 200;
+BA_ "GenSigStartValue" SG_ 257 Value 4000;
+BA_ "GenSigStartValue" SG_ 258 Value 100;
+BA_ "GenSigStartValue" SG_ 259 Value 9;

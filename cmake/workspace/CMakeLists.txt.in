@@ -1,0 +1,22 @@
+# <workspace>/CMakeLists.txt - root file of a neXtBSW workspace (customer repository).
+#
+# Written once when the workspace is created (wizard "New project", TOOL-59) and not edited afterwards: it holds no
+# build logic of its own. Everything is built by the root CMakeLists.txt of the **pinned neXtBSW tree**
+# (doc/architecture/customer-project.md section 5.2, gap N4); this file only says where that tree is.
+#
+# Placeholder of the template: @NX_TREE@ = nextbsw.path of nextbsw.yaml, the tree relative to this file
+# (submodule: usually "nextbsw").
+cmake_minimum_required(VERSION 3.28 FATAL_ERROR)
+
+set(NX_ROOT "${CMAKE_CURRENT_LIST_DIR}/@NX_TREE@")
+
+if (FALSE)
+    # CMake requires a literal project() command in the **top-level** list file and otherwise injects
+    # project(Project) before the first line - which would enable the languages with the host compiler, before
+    # tools/nxconfig has chosen derivative, core and toolchain file. The real call is in
+    # ${NX_ROOT}/CMakeLists.txt, which the include below runs in this very directory scope; this block is never
+    # executed and exists so that CMake sees the command.
+    project("neXtBSW")
+endif ()
+
+include("${NX_ROOT}/CMakeLists.txt")

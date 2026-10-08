@@ -1,0 +1,12 @@
+# Module manifest (doc/architecture/README.md, section 5), minimal (DOC-14): a library is a catalogue entry only -
+# tools/nxconfig and tools/bswgen assign no board device, take no project values and generate nothing for it.
+module: consoleContext
+kind: library
+description: Console commands in the console context with a short call into the task that owns the state (ContextCall), and a console input line that shares the terminal with the log output
+# Evidence (CHANGELOG.md): "Board-Termin 2026-09-18 abends" - SYS-13 bestanden (sbc, ecu, rte, can, gd commands in
+# the console context); SYS-15 (input line) is merged with its board check still open.
+verification: hardware
+verification_note: >-
+  Console commands running in the console context with a short call into the owning task are confirmed on the eval
+  board; the interleaved input line is covered by host tests only.
+cmake_target: consoleContext

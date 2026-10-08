@@ -1,0 +1,24 @@
+# Synthetic project for the averaging of ADC channels over one PWM period (IO-31) on testboard_adc_sampling:
+# 64 MHz system clock from an 8 MHz crystal, the half bridge at 15 kHz: 64 MHz / 15 kHz is no whole number, the FTM
+# realizes 4267 ticks = 14998.8 Hz, and the averaging window follows the realized period (66671.9 ns), not the
+# nominal one (66666.7 ns): 8 samples every 8334 ns, not 8333 ns. Test data only, no hardware.
+#
+# The averaging itself (adc_sampling.<channel>) needs the schema extension platforms/s32k1xx/doc-proposal-IO-31.diff;
+# tools/bswgen/test_bswgen.py (BswGenAdcSamplingTest) hands the entries to the generator directly until then.
+# With the extension the section reads:
+#   adc_sampling:
+#     DC_LINK_I: { kind: pwm_period_average, pwm_group: BRIDGE, samples: 8 }
+schema_version: 1
+
+project:
+  name: testproject_adc_sampling
+  board: ../../boards/testboard_adc_sampling
+
+clock:
+  system_hz: 64000000
+
+use:
+  adc: all
+
+pwm:
+  BRIDGE: { frequency_hz: 15000, deadtime_ns: 1000, deadtime_margin_ns: 100 }

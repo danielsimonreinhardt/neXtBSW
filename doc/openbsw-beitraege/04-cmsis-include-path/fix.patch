@@ -1,0 +1,61 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Your Name <you@example.com>
+Date: Thu, 17 Sep 2026 12:00:00 +0200
+Subject: [PATCH] Fix CMSIS include path of bspMcu for subproject builds
+
+`bspMcu` of the s32k1xx and stm32 platforms added the CMSIS headers via
+`CMAKE_SOURCE_DIR`, which is the source directory of the top level
+project. As soon as OpenBSW is used as a subproject (submodule with an
+outer CMakeLists.txt, FetchContent, add_subdirectory), the include
+directories point into the outer project and `mcu/mcu.h` fails on
+`core_cm4.h`, so every consumer has to override the include directories
+of the target from outside.
+
+The path is now derived from the location of the CMake file, so it stays
+inside this repository no matter who the top level project is. Nothing
+changes when OpenBSW is the top level project.
+
+Signed-off-by: Your Name <you@example.com>
+---
+ platforms/s32k1xx/bsp/bspMcu/CMakeLists.txt | 8 ++++++--
+ platforms/stm32/bsp/bspMcu/CMakeLists.txt   | 8 ++++++--
+ 2 files changed, 12 insertions(+), 4 deletions(-)
+
+diff --git a/platforms/s32k1xx/bsp/bspMcu/CMakeLists.txt b/platforms/s32k1xx/bsp/bspMcu/CMakeLists.txt
+index fcfa8f84..128c0d31 100644
+--- a/platforms/s32k1xx/bsp/bspMcu/CMakeLists.txt
++++ b/platforms/s32k1xx/bsp/bspMcu/CMakeLists.txt
+@@ -1,5 +1,9 @@
+ add_library(bspMcu src/reset/softwareSystemReset.cpp)
+ 
++# CMSIS headers of this repository, derived from the location of this file. CMAKE_SOURCE_DIR points
++# to the top level project, which is not this repository when OpenBSW is added as a subproject.
++cmake_path(SET OPENBSW_CMSIS_DIR NORMALIZE
++           "${CMAKE_CURRENT_LIST_DIR}/../../../../libs/3rdparty/cmsis")
++
+ target_include_directories(
+-    bspMcu PUBLIC include ${CMAKE_SOURCE_DIR}/libs/3rdparty/cmsis
+-                  ${CMAKE_SOURCE_DIR}/libs/3rdparty/cmsis/m-profile)
++    bspMcu PUBLIC include ${OPENBSW_CMSIS_DIR} ${OPENBSW_CMSIS_DIR}/m-profile)
+diff --git a/platforms/stm32/bsp/bspMcu/CMakeLists.txt b/platforms/stm32/bsp/bspMcu/CMakeLists.txt
+index ea90fa11..959e05f1 100644
+--- a/platforms/stm32/bsp/bspMcu/CMakeLists.txt
++++ b/platforms/stm32/bsp/bspMcu/CMakeLists.txt
+@@ -1,9 +1,13 @@
+ enable_language(ASM)
+ add_library(bspMcu src/reset/softwareSystemReset.cpp ${STM32_STARTUP_ASM})
+ 
++# CMSIS headers of this repository, derived from the location of this file. CMAKE_SOURCE_DIR points
++# to the top level project, which is not this repository when OpenBSW is added as a subproject.
++cmake_path(SET OPENBSW_CMSIS_DIR NORMALIZE
++           "${CMAKE_CURRENT_LIST_DIR}/../../../../libs/3rdparty/cmsis")
++
+ target_include_directories(
+-    bspMcu PUBLIC include ${CMAKE_SOURCE_DIR}/libs/3rdparty/cmsis
+-                  ${CMAKE_SOURCE_DIR}/libs/3rdparty/cmsis/m-profile)
++    bspMcu PUBLIC include ${OPENBSW_CMSIS_DIR} ${OPENBSW_CMSIS_DIR}/m-profile)
+ 
+ if (STM32_FAMILY STREQUAL "F4")
+     target_include_directories(bspMcu PUBLIC include/3rdparty/st/stm32f4)
+-- 
+2.51.0

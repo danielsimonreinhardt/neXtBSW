@@ -1,0 +1,721 @@
+# Standard diagnostic description of neXtBSW (TOOL-131): what every ECU built on neXtBSW answers and stores in its
+# fault memory before the project adds a job of its own. The new-project wizard (tools/nxconfig/newproject.py,
+# neXtBSW Studio "Neues Projekt") writes it as projects/<project>/diag.yaml; the project owns the copy from then on.
+# Scope decided by the user on 2026-09-29 (decision board q-tool131-standarddiagnose):
+#   A  everything the flash sequence of a tester needs from the application before it switches to the bootloader
+#   B  status of the basic software that does not depend on the board
+#   C  DTCs the basic software raises itself, with numbers from the fixed neXtBSW range below
+#
+# Template rules (read by tools/nxconfig/newproject.py standard_diag(); the file as it stands is the full variant
+# and a valid description on its own):
+#   `# [if <feature>]` ... `# [end <feature>]` encloses lines that stay only when the project has the feature;
+#   the marker lines themselves are removed. Features:
+#     supply       the project uses a board device whose module provides the role power_supply (module.yaml
+#                  `provides`, e.g. a UJA113x SBC): only then bsw.power.* carries a measured supply voltage - the
+#                  supply voltage in 0x0120 and the DTCs SupplyUndervoltage/SupplyOvervoltage (IO-59)
+#     calibration  the project has a calibration segment (project.yaml memory.calibration, SYS-89)
+#   `# [each can_bus]` ... `# [end can_bus]` encloses lines written once per used CAN bus of the project, in the order
+#   of the bus ids (board order of the used buses, the index of the bus in NX_CAN_BUSES); none without a CAN bus. The
+#   lines stand here for the example bus CAN0 with index 0: every `CAN0` becomes the board name of the bus and
+#   `bsw_instance: 0` its index (COM-46).
+#   Everything above the line `# ---- end of template notes ----` is replaced by the header of the project.
+# Protocol values only - nothing of a board, a derivative or a family. Schema: tools/nxconfig/model.py
+# (DiagDescription), checks: tools/nxconfig/diagdesc.py and calibration.py.
+#
+# neXtBSW DTC range (decision 2026-09-29, configurable since TOOL-178): ISO 14229-1 Annex D.1 leaves the 3-byte
+# DTC numbers outside the legislated and group ranges to the vehicle manufacturer and names no separate supplier
+# range; neXtBSW therefore reserves one block for itself, by default 0x160000..0x16FFFF (a manufacturer controlled
+# "internal control module" code, shown as P16xx-yy in the SAE J2012 display). The block is the project value
+# `bsw_dtc_range` below: a customer who reserves another block moves `base` and every BSW DTC follows, because the
+# BSW DTCs carry no `number` - it is derived as base + offset of the numbering plan (high byte of the offset: the
+# source, low byte: sub-type or instance, `bsw_instance` of the DTC):
+#   +0x00xx  group identifier of the whole block (dtc_groups NeXtBSW, bsw: true), never a DTC
+#   +0x01xx  RTE runtime supervision            +0x0100 RteDeadline (rte.deadline, SYS-05)
+#   +0x02xx  calibration segment                +0x0200 CalibrationSegmentInvalid (calibration.segment, SYS-89)
+#                                               +0x0201 CalibrationPlausibility (calibration.plausibility, SYS-90)
+#   +0x03xx  CAN bus-off                        +0x03nn CanBusOff<BUS> (can.busoff.<BUS>, COM-46), nn = index of the bus
+#   +0x04xx  supply voltage                     +0x0400 SupplyUndervoltage (bsw.power.undervoltage, IO-59)
+#                                               +0x0401 SupplyOvervoltage (bsw.power.overvoltage, IO-59)
+#   +0x05xx  safe state / safety reset          +0x05nn, nn = cause; +0x05FF reset loop limited (safety.reset_loop)
+#                                               +0x05FE hardware shut-off path (safety.hw_shutoff, SYS-136)
+#                                               safety reset of the start before (SYS-113): nn = bsw_instance = the
+#                                               number of the event of the safe supervisor, and
+#                                               +0x05FD SafetyResetMcuWatchdog (safety.mcu_watchdog)
+#                                               +0x05FC SafetyResetFaultException (safety.fault_exception)
+#                                               +0x05FB SafetyResetOther (safety.reset_other, any other cause)
+#                                               +0x05FA foreign safe_off level taken back (safety.safe_off_take_back,
+#                                               SYS-196; not in this template: only a project with a safe_off output)
+#   +0x06xx  NvM block lost, defaults loaded    +0x06nn, nn = NvM block index (NVM-16/NVM-19)
+#   +0x07xx  NvM copy not repairable            +0x07nn, nn = NvM block index (NVM-16/NVM-19)
+#   +0x08xx  NvM copy repaired                  +0x08nn, nn = NvM block index (NVM-16/NVM-19)
+#   +0x09xx  NvM QM block, one place defective  +0x09nn, nn = NvM block index (NVM-30)
+#   +0x0Axx..+0xFFxx reserved for further neXtBSW sources
+# A project gives its own DTCs numbers outside the block (nxconfig warns otherwise). The plan with the event names
+# stands in tools/nxconfig/bswdtc.py (PLAN), a host test compares both.
+#
+# NvM block DTCs (NVM-16, +0x06xx/+0x07xx/+0x08xx/+0x09xx above): not part of this static template, because a project's
+# nvm.blocks (project.yaml, NVM-18) vary in number and name and are usually added after the project is created, not
+# at the wizard. libs/bsw/nvm already raises the events (BlockEvent) and ecu/application/src/systems/nvm/NvmEvents.h
+# already turns them into reports of nvm::reportToFaultMemory() for whatever DTC names "nvm.<event>.<Block>" - what
+# is missing for a newly defined block is only the `dtcs[]` entry itself. Add it with
+# `tools/nxconfig/bswdtc.nvm_dtc_yaml(block, index, asil)` (index: position of the block among the project's NvM
+# blocks in the order tools/rtegen lays them out, i.e. bsw_instance) and paste the returned text into the project's
+# diag.yaml before `dtc_groups`; for an ASIL block (two-copy mechanism, NVM-18) it also adds the two ASIL-only DTCs.
+# One report per start matures the DTC at once, like the calibration segment above (confirmation_threshold: 1).
+#
+# Services the UDS stack of the application (ecu/uds DiagStack) serves without a description here:
+#   10 01 / 10 03  the two sessions below; 10 02 is answered by the application and served by the bootloader
+#                  (programming session, BL-21: the tester switches with 10 02 and flashes there)
+#   3E 00          TesterPresent, keeps the extended session open
+#   11 01          ECUReset HardReset (also the way back from the bootloader)
+#   28             CommunicationControl: application messages off before flashing (COM-29). During development the
+#                  extended session suffices; from the product build on (SYS-74) security access is mandatory
+#                  (decision 2026-09-29, COM-43: a product build refuses a description without a security level
+#                  of the extended session - the level Application below)
+#   85             ControlDTCSetting off/on before flashing: while off the fault memory takes no event, the session
+#                  end and every start switch it on again; same access rule as 28 (COM-43)
+#   27             the security level below; 22/2E/31 the identifiers below; 19/14 the fault memory below
+# The routines FF00/FF01/F1A0 and the programming fingerprint belong to the bootloader and do not stand here.
+# ---- end of template notes ----
+schema_version: 1
+
+# --------------------------------------------------------------------------------- sessions (service 10)
+# The programming session 0x02 belongs to the bootloader and is therefore not listed.
+sessions:
+  - name: Default
+    id: 0x01
+    label: Default session
+    description: Always active; the application answers reading identifiers and the fault memory.
+    p2_ms: 50
+    p2_star_ms: 5000
+  - name: Extended
+    id: 0x03
+    label: Extended diagnostic session
+    description: Writing, routines, CommunicationControl and security access are reachable here.
+    p2_ms: 50
+    p2_star_ms: 5000
+
+# ---------------------------------------------------------------------------- security levels (service 27)
+# Application only; the security access of the bootloader is a project value (project.yaml
+# diagnostics.bootloader.security, BL-03). Method hmac-sha256 with the device key of the bootloader (COM-30),
+# unlock with `canflash unlock` (UID from 0xF18C).
+security:
+  - name: Application
+    level: 0x01
+    label: Application unlock
+    description: Unlocks writing identifiers and routines of the application.
+    method: hmac-sha256
+    seed_bytes: 4
+    key_bytes: 4
+    attempts: 3
+    delay_ms: 10000
+    sessions: [Extended]
+
+# ------------------------------------------------------------------- operation cycles (ISO 14229-1, D.2.1)
+operation_cycles:
+  - name: PowerCycle
+    kind: power
+    label: Power cycle
+    description: Starts when the ECU is supplied and ends with its shutdown.
+    autostart: true
+
+# --------------------------------------------------------------------------------- enable conditions
+enable_conditions:
+  - name: EcuRunning
+    label: ECU in run state
+    description: The fault memory is only updated in the state RUN of the ECU state machine.
+    bsw: ecu.state
+    initial: false
+
+# ------------------------------------------------------------------------------- identifiers (22 / 2E)
+data_identifiers:
+  # Annex C.1: F180..F182 start with the number of described modules (BL-22); every text fills its length_bytes
+  # (NUL behind the text, COM-33) so a tester can split an answer with several identifiers.
+  - identifier: 0xF180
+    name: BootSoftwareIdentification
+    label: Boot software identification
+    description: Version text of the bootloader, read from its flash.
+    group: identification
+    read: true
+    read_sessions: [Default, Extended]
+    data:
+      - name: numberOfModules
+        label: Number of modules
+        type: uint8
+        source: {constant: 1}
+      - name: bootSoftwareIdentification
+        label: Boot software version string
+        type: ascii
+        length_bytes: 32
+        source: {bsw: bootloader.version}
+
+  - identifier: 0xF181
+    name: ApplicationSoftwareIdentification
+    label: Application software identification
+    description: Version text of the application.
+    group: identification
+    read: true
+    read_sessions: [Default, Extended]
+    data:
+      - name: numberOfModules
+        label: Number of modules
+        type: uint8
+        source: {constant: 1}
+      - name: applicationSoftwareIdentification
+        label: Application software version string
+        type: ascii
+        length_bytes: 32
+        source: {bsw: application.version}
+
+  - identifier: 0xF186
+    name: ActiveDiagnosticSession
+    label: Active diagnostic session
+    description: Session the ECU is in (01 default, 03 extended).
+    group: identification
+    read: true
+    read_sessions: [Default, Extended]
+    data:
+      - name: activeSession
+        label: Active session
+        type: uint8
+        source: {bsw: uds.session}
+        values:
+          - {value: 0x01, text: Default}
+          - {value: 0x03, text: Extended}
+
+  - identifier: 0xF18C
+    name: EcuSerialNumber
+    label: ECU serial number (chip UID)
+    description: Unique identifier of the chip; the tester derives the device key for 27 from it (COM-30).
+    group: identification
+    read: true
+    read_sessions: [Default, Extended]
+    data:
+      - {name: chipUid, label: Chip UID, type: bytes, length_bytes: 16, source: {bsw: chip.uid}}
+
+  # COM-44: identification of the application. F191 carries the text the bootloader answers under the same
+  # identifier (BL_HARDWARE_ID "<board>/<derivative>", derived from the board of the project, BL-10); F195 names the
+  # basic software and the commit of the build. The compatibility record of the bootloader's 0xF1A0 (BL-02) is a
+  # value of the stack as well (compatibility.*, field by field the same 22 bytes); it stands here as soon as
+  # tools/nxconfig lets an application describe 0xF1A0 in exactly that format (today BOOTLOADER_DIDS refuses it).
+  - identifier: 0xF191
+    name: EcuHardwareNumber
+    label: ECU hardware number
+    description: Board and derivative the software was built for ("<board>/<derivative>"), as the bootloader answers it.
+    group: identification
+    read: true
+    read_sessions: [Default, Extended]
+    data:
+      - {name: hardwareNumber, label: Hardware number, type: ascii, length_bytes: 32, source: {bsw: hardware.number}}
+
+  - identifier: 0xF195
+    name: SystemSupplierSoftwareVersion
+    label: neXtBSW version and build
+    description: Version of the neXtBSW tree (VERSION) and the commit of the build (git describe).
+    group: identification
+    read: true
+    read_sessions: [Default, Extended]
+    data:
+      - name: nextbswVersion
+        label: neXtBSW version and commit
+        type: ascii
+        length_bytes: 48
+        source: {bsw: nextbsw.version}
+
+  # PLAT-79: which configuration and which generators made the image - SHA-256 over the configuration files of the
+  # project (project, board, derivative, rte.yaml, DBC, diag.yaml, ...) and the sources of the generators, 64 hex
+  # digits (tools/nxconfig/identity.py). The same value the console shows with "info" and `nxconfig identity`
+  # prints for the project without a build; F195 names the commit, this one the configuration.
+  - identifier: 0xF1F1
+    name: ConfigurationIdentity
+    label: Configuration identity
+    description: SHA-256 over the configuration of the project and the generators that made the image (nxconfig identity).
+    group: identification
+    read: true
+    read_sessions: [Default, Extended]
+    data:
+      - name: configurationIdentity
+        label: Configuration identity
+        type: ascii
+        length_bytes: 64
+        source: {bsw: configuration.identity}
+
+  # PLAT-93 (customer-project.md N13): the commit of the customer workspace, the repository that holds the project and
+  # pins neXtBSW - the second baseline a customer cites next to F195 (neXtBSW version and commit). Next to F1F1: the
+  # same supplier-specific identification (nothing else in this file or in the bootloader's identifiers uses F1F2).
+  # git describe with the hash of uncommitted changes; "-" when the project lies in the neXtBSW tree itself, "nogit"
+  # for a workspace that is no git repository. Never part of F1F1: the git state is not an input of the image.
+  - identifier: 0xF1F2
+    name: WorkspaceVersion
+    label: Workspace commit
+    description: Commit of the customer workspace the project was built from (git describe).
+    group: identification
+    read: true
+    read_sessions: [Default, Extended]
+    data:
+      - name: workspaceVersion
+        label: Workspace commit
+        type: ascii
+        length_bytes: 48
+        source: {bsw: workspace.version}
+
+  # Values of the basic software that do not depend on the board (COM-32/COM-34), read over the RTE in the same
+  # spelling as the BSW targets of rte.yaml. Also the snapshot of the neXtBSW DTCs below.
+  - identifier: 0x0120
+    name: EcuConditions
+    label: ECU conditions
+    description: ECU state, start reason and time since start from the basic software.
+    group: measurement
+    read: true
+    read_sessions: [Default, Extended]
+    data:
+      - name: ecuState
+        label: ECU state
+        type: uint8
+        source: {bsw: ecu.state}
+        values:
+          - {value: 0, text: STARTUP}
+          - {value: 1, text: RUN}
+          - {value: 2, text: STANDBY}
+          - {value: 3, text: SHUTDOWN}
+          - {value: 4, text: SLEEP}
+          - {value: 5, text: RUNDOWN}
+# [if supply]
+      # the board has a supply measurement (provider of the role power_supply)
+      - {name: supply, label: Supply voltage, type: uint16, unit: mV, source: {bsw: bsw.power.supply_mv}}
+      - {name: supplyQlf, label: Qualifier of the supply voltage, type: uint8, source: {bsw: bsw.power.qlf}}
+# [end supply]
+      - name: resetReason
+        label: Start reason
+        type: uint8
+        source: {bsw: bsw.reset.reason}
+        values:
+          - {value: 0, text: UNKNOWN}
+          - {value: 1, text: POWER_ON}
+          - {value: 2, text: RESET}
+          - {value: 3, text: WATCHDOG}
+          - {value: 4, text: SUPPLY}
+          - {value: 5, text: WAKEUP}
+      - {name: uptime, label: Time since start, type: uint32, unit: ms, source: {bsw: bsw.time.ms}}
+
+  # COM-45: status of the basic software, for the diagnosis only (tools/rtegen BSW_STATUS, read by the integration of
+  # the application). The safety status (last safe state / safety reset with cause, reset loop counter) follows as
+  # soon as ecu/safety offers a reader for it.
+  - identifier: 0x0121
+    name: BswStatus
+    label: Status of the basic software
+    description: Deadline violations of task cycles and runnables of the RTE since the start (SYS-05).
+    group: measurement
+    read: true
+    read_sessions: [Default, Extended]
+    data:
+      - name: deadlineViolations
+        label: RTE deadline violations since the start
+        type: uint32
+        source: {bsw: bsw.rte.deadline_violations}
+# [if calibration]
+
+  # the calibration segment (SYS-89): which dataset the ECU uses and what the start-up and run-time checks found
+  - identifier: 0x0122
+    name: CalibrationState
+    label: Calibration state
+    description: >-
+      Layout and dataset identifier of the CALV header of the calibration segment and the result of its checks.
+    group: measurement
+    read: true
+    read_sessions: [Default, Extended]
+    data:
+      - {name: layout, label: Layout identifier, type: uint32, source: {bsw: bsw.calibration.layout}}
+      - {name: dataset, label: Dataset identifier, type: uint32, source: {bsw: bsw.calibration.dataset}}
+      - name: status
+        label: Check of the segment
+        type: uint8
+        source: {bsw: bsw.calibration.status}
+        values:
+          - {value: 0, text: VALID}
+          - {value: 1, text: ERASED}
+          - {value: 2, text: MAGIC}
+          - {value: 3, text: FORMAT}
+          - {value: 4, text: HEADER_CRC}
+          - {value: 5, text: LENGTH}
+          - {value: 6, text: LAYOUT}
+          - {value: 7, text: VALUES_CRC}
+          - {value: 8, text: CHANGED}
+          - {value: 0xFE, text: NOT_CHECKED}
+          - {value: 0xFF, text: NO_SEGMENT}
+# [end calibration]
+
+  # NVM-05: operating time and reset statistics of the ECU over its life (NvM block EcuStatistics of project.yaml
+  # nvm.blocks; without it the values of this start only, persistent 0). Reset causes per start from both sources:
+  # the MCU's own reset status and the role power_supply (a system basis chip or a plain regulator); bit masks as
+  # ecu.wakeup (bit 0 power, 1 reset, 2 watchdog, 3 supply, 4 timer, 8.. CAN buses, 16.. local inputs, 7 unknown).
+  - identifier: 0x0130
+    name: EcuStatistics
+    label: Operating time and reset statistics
+    description: Operating time, starts and the reset causes of every start as the MCU and the power supply saw them.
+    group: measurement
+    read: true
+    read_sessions: [Default, Extended]
+    data:
+      - {name: operatingTime, label: Operating time, type: uint32, unit: s, source: {bsw: bsw.stats.operating_s}}
+      - {name: starts, label: Starts, type: uint32, source: {bsw: bsw.stats.starts}}
+      - name: persistent
+        label: Stored in the NvM block EcuStatistics
+        type: uint8
+        source: {bsw: bsw.stats.persistent}
+        values:
+          - {value: 0, text: THIS_START_ONLY}
+          - {value: 1, text: STORED}
+      - {name: lastMcuReasons, label: Reasons of the latest start (MCU), type: uint32, source: {bsw: bsw.stats.last_mcu}}
+      - name: lastSupplyReasons
+        label: Reasons of the latest start (power supply)
+        type: uint32
+        source: {bsw: bsw.stats.last_supply}
+      - {name: mcuPower, label: MCU power-on resets, type: uint16, source: {bsw: bsw.stats_mcu.power}}
+      - {name: mcuReset, label: "MCU resets (pin, software, debugger)", type: uint16, source: {bsw: bsw.stats_mcu.reset}}
+      - {name: mcuWatchdog, label: MCU watchdog resets, type: uint16, source: {bsw: bsw.stats_mcu.watchdog}}
+      - {name: mcuSupply, label: MCU low-voltage resets, type: uint16, source: {bsw: bsw.stats_mcu.supply}}
+      - {name: mcuUnknown, label: MCU starts without known cause, type: uint16, source: {bsw: bsw.stats_mcu.unknown}}
+      - {name: supplyPower, label: Supply power-on starts, type: uint16, source: {bsw: bsw.stats_supply.power}}
+      - {name: supplyReset, label: Supply resets, type: uint16, source: {bsw: bsw.stats_supply.reset}}
+      - {name: supplyWatchdog, label: Supply watchdog resets, type: uint16, source: {bsw: bsw.stats_supply.watchdog}}
+      - {name: supplyFault, label: Supply fault restarts, type: uint16, source: {bsw: bsw.stats_supply.supply}}
+      - {name: supplyTimer, label: Cyclic wake-ups, type: uint16, source: {bsw: bsw.stats_supply.timer}}
+      - {name: supplyCan, label: CAN wake-ups, type: uint16, source: {bsw: bsw.stats_supply.can}}
+      - {name: supplyLocal, label: Local wake-ups, type: uint16, source: {bsw: bsw.stats_supply.local}}
+      - {name: supplyUnknown, label: Supply starts without known cause, type: uint16, source: {bsw: bsw.stats_supply.unknown}}
+
+# --------------------------------------------------------------------- fault memory (services 19 / 14)
+# Simplified AUTOSAR DEM (decision 2026-09-21): status byte, debouncing, enable conditions, operation cycle, aging,
+# snapshots and extended data - no warning lamp, no OBD. Without a partitioned EEPROM emulation the blocks
+# DemEvents/DemEntries stay in RAM and the memory starts cleared after every start.
+fault_memory:
+  max_entries: 8
+  overflow: replace_oldest
+  snapshot_records_max: 1
+  extended_records_max: 1
+  aging_cycle: PowerCycle
+  cycle_ms: 10
+  write_interval_ms: 1000
+
+# ------------------------------------------------------------------------ neXtBSW DTC range (TOOL-178)
+# Block of the DTCs the basic software raises itself; the BSW DTCs below derive their numbers from it (plan in
+# the header of tools/diaggen/standard_diag.yaml). Studio: page "Diagnose", tab "Grundlagen" (TOOL-189).
+bsw_dtc_range:
+  base: 0x160000
+  size: 0x10000
+
+dtcs:
+  # RteSystem reports a violated deadline of a task cycle or a runnable (SYS-05) - recording only, the reaction
+  # stays with the safe supervisor. A reported event matures on the first report.
+  - name: RteDeadline
+    label: RTE deadline violated
+    description: A task cycle or a runnable took longer than its period (runtime supervision of the RTE, SYS-05).
+    group: nextbsw
+    severity: check_at_next_halt
+    operation_cycle: PowerCycle
+    enable_conditions: [EcuRunning]
+    confirmation_threshold: 1
+    priority: 2
+    event:
+      bsw: rte.deadline
+      description: RteSystem reports FAILED on a violation and PASSED when a supervision window starts clean.
+    debounce:
+      counter: {failed_threshold: 1, passed_threshold: -1}
+    aging:
+      threshold_cycles: 40
+    snapshots:
+      - record_number: 0x01
+        label: Conditions at first confirmation
+        dids: [EcuConditions, ActiveDiagnosticSession]
+    extended_data:
+      - record_number: 0x01
+        label: Counters of the fault memory
+        data:
+          - {name: occurrenceCounter, label: Occurrence counter, counter: occurrence_counter}
+          - {name: agingCounter, label: Aging counter, counter: aging_counter}
+# [each can_bus]
+
+  # COM-46: the CAN system reports bus-off of every used bus (FAILED while the controller is bus-off, PASSED while
+  # it is back on the bus, error passive included) - recording only, the recovery (pause, dropped frames, COM-35/37)
+  # stays with the CAN system. bsw_instance is the index of the bus among the used CAN buses (+0x03nn).
+  - name: CanBusOffCAN0
+    label: CAN bus CAN0 bus-off
+    description: The CAN controller of bus CAN0 went bus-off (transmit error counter above 255, COM-35).
+    group: nextbsw
+    severity: check_at_next_halt
+    operation_cycle: PowerCycle
+    enable_conditions: [EcuRunning]
+    confirmation_threshold: 1
+    priority: 2
+    bsw_instance: 0
+    event:
+      bsw: can.busoff.CAN0
+      description: The CAN system reports FAILED when the bus goes bus-off and PASSED when it is back on the bus.
+    debounce:
+      counter: {failed_threshold: 1, passed_threshold: -1}
+    aging:
+      threshold_cycles: 40
+    snapshots:
+      - record_number: 0x01
+        label: Conditions at first confirmation
+        dids: [EcuConditions]
+    extended_data:
+      - record_number: 0x01
+        label: Counters of the fault memory
+        data:
+          - {name: occurrenceCounter, label: Occurrence counter, counter: occurrence_counter}
+          - {name: agingCounter, label: Aging counter, counter: aging_counter}
+# [end can_bus]
+# [if supply]
+
+  # IO-59: the supply voltage of the ECU, only with a supply measurement (provider of the role power_supply). The RTE
+  # samples bsw.power every fault memory cycle: without failed_below/failed_above the state of the provider decides -
+  # its thresholds are project values of its module (e.g. modules.<sbc>.undervoltage_mv/overvoltage_mv of a UJA113x,
+  # checked by nxconfig); a limit in mV here (failed_below for undervoltage, failed_above for overvoltage) compares
+  # the measured voltage instead. No reading (provider not started or lost, 0 mV) is no result. 500 ms debouncing
+  # in both directions rides through a short dip (inrush current of a load).
+  - name: SupplyUndervoltage
+    label: Supply voltage too low
+    description: The supply voltage of the ECU is below the undervoltage threshold (IO-59).
+    group: nextbsw
+    severity: check_at_next_halt
+    operation_cycle: PowerCycle
+    enable_conditions: [EcuRunning]
+    confirmation_threshold: 1
+    priority: 2
+    event:
+      bsw: bsw.power.undervoltage
+      description: The RTE samples the state of the supply provider (or the voltage against failed_below).
+    debounce:
+      time: {failed_ms: 500, passed_ms: 500}
+    aging:
+      threshold_cycles: 40
+    snapshots:
+      - record_number: 0x01
+        label: Conditions at first confirmation
+        dids: [EcuConditions]
+    extended_data:
+      - record_number: 0x01
+        label: Counters of the fault memory
+        data:
+          - {name: occurrenceCounter, label: Occurrence counter, counter: occurrence_counter}
+          - {name: agingCounter, label: Aging counter, counter: aging_counter}
+
+  - name: SupplyOvervoltage
+    label: Supply voltage too high
+    description: The supply voltage of the ECU is above the overvoltage threshold (IO-59).
+    group: nextbsw
+    severity: check_at_next_halt
+    operation_cycle: PowerCycle
+    enable_conditions: [EcuRunning]
+    confirmation_threshold: 1
+    priority: 2
+    event:
+      bsw: bsw.power.overvoltage
+      description: The RTE samples the state of the supply provider (or the voltage against failed_above).
+    debounce:
+      time: {failed_ms: 500, passed_ms: 500}
+    aging:
+      threshold_cycles: 40
+    snapshots:
+      - record_number: 0x01
+        label: Conditions at first confirmation
+        dids: [EcuConditions]
+    extended_data:
+      - record_number: 0x01
+        label: Counters of the fault memory
+        data:
+          - {name: occurrenceCounter, label: Occurrence counter, counter: occurrence_counter}
+          - {name: agingCounter, label: Aging counter, counter: aging_counter}
+# [end supply]
+# [if calibration]
+
+  # The start-up checks of the calibration segment report exactly once, before the ECU reaches RUN - so no enable
+  # condition, and a debouncing that matures on that single report (SYS-101, SYS-102).
+  - name: CalibrationSegmentInvalid
+    label: Calibration segment invalid
+    description: Header, layout identifier or CRC of the calibration segment do not fit the application (SYS-89).
+    group: nextbsw
+    severity: check_immediately
+    operation_cycle: PowerCycle
+    confirmation_threshold: 1
+    priority: 1
+    event:
+      bsw: calibration.segment
+      description: RteSystem reports the start-up check of the segment once (FAILED or PASSED).
+    debounce:
+      counter: {failed_threshold: 1, passed_threshold: -1}
+    snapshots:
+      - record_number: 0x01
+        dids: [EcuConditions]
+    extended_data:
+      - record_number: 0x01
+        data:
+          - {name: occurrenceCounter, label: Occurrence counter, counter: occurrence_counter}
+
+  - name: CalibrationPlausibility
+    label: Calibration values implausible
+    description: A safety relevant calibration value violates its limits or rules (SYS-90).
+    group: nextbsw
+    severity: check_immediately
+    operation_cycle: PowerCycle
+    confirmation_threshold: 1
+    priority: 1
+    event:
+      bsw: calibration.plausibility
+      description: PlausibilityMonitor reports the start-up check once, a refused XCP write again.
+    debounce:
+      counter: {failed_threshold: 1, passed_threshold: -1}
+    snapshots:
+      - record_number: 0x01
+        dids: [EcuConditions]
+    extended_data:
+      - record_number: 0x01
+        data:
+          - {name: occurrenceCounter, label: Occurrence counter, counter: occurrence_counter}
+# [end calibration]
+
+  # SYS-113: the cause of a safety reset (safe state S1 + reset S2 of the safe supervisor, a fault exception, the MCU
+  # watchdog), reported after the next start: the reset-loop record of the family port (no-init RAM, SYS-43) keeps
+  # the cause, the BSP task hands it to the fault memory (libs/bsw/dem dem/SafetyResetReport.h) - FAILED until the
+  # fault memory took it over, then PASSED; every other cause PASSED. Recording only, the reaction was the
+  # supervisor's. One report per start matures the DTC (no enable condition: a fault that resets again soon after
+  # the start still gets its DTC). The number: +0x05FD MCU watchdog, +0x05FC fault exception, +0x05FB a safety
+  # reset whose cause has no DTC of its own here (fixed sub-types, no bsw_instance); an event of the supervisor takes
+  # its number in SafeSupervisor::Event as bsw_instance (+0x05nn, checked by nxconfig). Further causes: a DTC with event safety.<event in lower case> and its number, e.g.
+  # safety.stack_overflow with bsw_instance 0x15. The held safe states (ROM check, watchdog self-test, the hold at
+  # the reset-loop limit) end only with a power cycle, which clears the record - no DTC after the next start.
+  - name: SafetyResetMcuWatchdog
+    label: Safety reset by the MCU watchdog
+    description: The MCU watchdog reset the ECU (program-flow supervision); reported after the next start (SYS-113).
+    group: nextbsw
+    severity: check_immediately
+    operation_cycle: PowerCycle
+    confirmation_threshold: 1
+    priority: 1
+    event:
+      bsw: safety.mcu_watchdog
+      description: The BSP task reports the cause of the safety reset before this start once (FAILED or PASSED).
+    debounce:
+      counter: {failed_threshold: 1, passed_threshold: -1}
+    aging:
+      threshold_cycles: 40
+    snapshots:
+      - record_number: 0x01
+        dids: [EcuConditions]
+    extended_data:
+      - record_number: 0x01
+        data:
+          - {name: occurrenceCounter, label: Occurrence counter, counter: occurrence_counter}
+          - {name: agingCounter, label: Aging counter, counter: aging_counter}
+
+  - name: SafetyResetFaultException
+    label: Safety reset by a fault exception
+    description: A fault exception of the core (hard fault, MPU, bus, usage, lockup) reset the ECU (SYS-113).
+    group: nextbsw
+    severity: check_immediately
+    operation_cycle: PowerCycle
+    confirmation_threshold: 1
+    priority: 1
+    event:
+      bsw: safety.fault_exception
+      description: The BSP task reports the cause of the safety reset before this start once (FAILED or PASSED).
+    debounce:
+      counter: {failed_threshold: 1, passed_threshold: -1}
+    aging:
+      threshold_cycles: 40
+    snapshots:
+      - record_number: 0x01
+        dids: [EcuConditions]
+    extended_data:
+      - record_number: 0x01
+        data:
+          - {name: occurrenceCounter, label: Occurrence counter, counter: occurrence_counter}
+          - {name: agingCounter, label: Aging counter, counter: aging_counter}
+
+  - name: SafetyResetDeadmanConfiguration
+    label: Safety reset by the deadman configuration check
+    description: The configuration of the halt deadman deviated; the safe supervisor reset the ECU (SYS-41, SYS-113).
+    group: nextbsw
+    severity: check_immediately
+    operation_cycle: PowerCycle
+    confirmation_threshold: 1
+    priority: 1
+    bsw_instance: 0x10
+    event:
+      bsw: safety.deadman_configuration_error
+      description: The BSP task reports the cause of the safety reset before this start once (FAILED or PASSED).
+    debounce:
+      counter: {failed_threshold: 1, passed_threshold: -1}
+    aging:
+      threshold_cycles: 40
+    snapshots:
+      - record_number: 0x01
+        dids: [EcuConditions]
+    extended_data:
+      - record_number: 0x01
+        data:
+          - {name: occurrenceCounter, label: Occurrence counter, counter: occurrence_counter}
+          - {name: agingCounter, label: Aging counter, counter: aging_counter}
+
+  - name: SafetyResetOther
+    label: Safety reset, other cause
+    description: >-
+      The safe supervisor reset the ECU for a cause without a DTC of its own in this description (SYS-113); the
+      console line SAFETY RESET of that start names it.
+    group: nextbsw
+    severity: check_immediately
+    operation_cycle: PowerCycle
+    confirmation_threshold: 1
+    priority: 1
+    event:
+      bsw: safety.reset_other
+      description: The BSP task reports a safety reset before this start whose cause has no DTC here (fallback).
+    debounce:
+      counter: {failed_threshold: 1, passed_threshold: -1}
+    aging:
+      threshold_cycles: 40
+    snapshots:
+      - record_number: 0x01
+        dids: [EcuConditions]
+    extended_data:
+      - record_number: 0x01
+        data:
+          - {name: occurrenceCounter, label: Occurrence counter, counter: occurrence_counter}
+          - {name: agingCounter, label: Aging counter, counter: aging_counter}
+
+  # SYS-43/SYS-113: this start followed two or more safety resets in a row (the reset-loop counter of the no-init
+  # record); the start at the configured limit holds the safe state without the fault memory and is not reported.
+  - name: SafetyResetLoop
+    label: Safety resets in a row
+    description: The ECU started after two or more consecutive safety resets (reset-loop limit, SYS-43, SYS-113).
+    group: nextbsw
+    severity: check_immediately
+    operation_cycle: PowerCycle
+    confirmation_threshold: 1
+    priority: 1
+    event:
+      bsw: safety.reset_loop
+      description: The BSP task reports the reset-loop counter of the start once (FAILED from two in a row).
+    debounce:
+      counter: {failed_threshold: 1, passed_threshold: -1}
+    aging:
+      threshold_cycles: 40
+    snapshots:
+      - record_number: 0x01
+        dids: [EcuConditions]
+    extended_data:
+      - record_number: 0x01
+        data:
+          - {name: occurrenceCounter, label: Occurrence counter, counter: occurrence_counter}
+          - {name: agingCounter, label: Aging counter, counter: aging_counter}
+
+# ------------------------------------------------------------------------- DTC groups (service 14)
+# All DTCs (0xFFFFFF) and a single DTC number need no entry. NeXtBSW: every DTC of the basic software at once.
+# Group identifier, first and last of NeXtBSW are derived from bsw_dtc_range (bsw: true).
+dtc_groups:
+  - name: NeXtBSW
+    label: neXtBSW basic software
+    description: DTCs the basic software raises itself (the whole neXtBSW range, bsw_dtc_range).
+    bsw: true

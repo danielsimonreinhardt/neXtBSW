@@ -1,0 +1,68 @@
+# SYS-116: copy of testboard_safe_outputs with the board facts of the active short (bridge_reset_state, high_side_hold).
+# Synthetic s32k1xx board for the safe outputs table (IO-32): S32K144 LQFP64, 8 MHz crystal, no SBC, two gate
+# drivers with their module (gdTmc6200, connect.drv_en is safe_off) and a complementary PWM group on another FTM
+# instance and other channels than the eval board. Test data only, no hardware.
+#
+# - GD_A: DRV_EN active high on PTD16 -> GPIO PCOR of port D, bit 16
+# - GD_B: DRV_EN active low on PTA7   -> GPIO PSOR of port A, bit 7
+# - LED:  a plain output without a module connection -> not in the table
+# - BRIDGE: FTM1 pairs on channels 2/3 and 4/5 (mask 0x3C), low side active low -> SWOCTRL 0x3C of FTM1
+schema_version: 1
+
+board:
+  name: testboard_active_short
+  mcu: S32K144
+  package: LQFP64
+  clock: { sosc_hz: 8000000 }
+
+devices:
+  - name: GD_A
+    part: TMC6200-TA
+    module: gdTmc6200
+    connect: { drv_en: GD_A_DRV_EN, fault: GD_A_FAULT }
+  - name: GD_B
+    part: TMC6200-TA
+    module: gdTmc6200
+    connect: { drv_en: GD_B_DRV_EN, fault: GD_B_FAULT }
+
+spi:     # [MUX] S32K144_LQFP64.pinmux.yaml: LPSPI1 PTD0..PTD3 MUX 3, LPSPI0 PTB2..PTB5 MUX 3
+  - name: GD_A_SPI
+    instance: LPSPI1
+    sck:  { pin: PTD0 }
+    sin:  { pin: PTD1 }
+    sout: { pin: PTD2 }
+    pcs:  { pin: PTD3, index: 0 }
+    device: GD_A
+  - name: GD_B_SPI
+    instance: LPSPI0
+    sck:  { pin: PTB2 }
+    sin:  { pin: PTB3 }
+    sout: { pin: PTB4 }
+    pcs:  { pin: PTB5, index: 1 }
+    device: GD_B
+
+pwm:     # [MUX] FTM1_CH2 PTC14, FTM1_CH3 PTC15, FTM1_CH4 PTA10, FTM1_CH5 PTA11 (MUX 2)
+  - name: BRIDGE
+    instance: FTM1
+    mode: complementary
+    active: { high_side: high, low_side: low }
+    gate_driver: GD_A
+    bridge_reset_state: freewheel   # SYS-116: gate driver inputs pulled low in reset
+    high_side_hold: true            # SYS-116: test data - a high side that can stay on
+    pairs:
+      - { name: BRIDGE_V, high_side: BRIDGE_V_HS, low_side: BRIDGE_V_LS }
+      - { name: BRIDGE_W, high_side: BRIDGE_W_HS, low_side: BRIDGE_W_LS }
+    channels:
+      - { name: BRIDGE_V_HS, channel: 2, pin: PTC14 }
+      - { name: BRIDGE_V_LS, channel: 3, pin: PTC15 }
+      - { name: BRIDGE_W_HS, channel: 4, pin: PTA10 }
+      - { name: BRIDGE_W_LS, channel: 5, pin: PTA11 }
+
+dio:
+  inputs:
+    - { name: GD_A_FAULT, pin: PTE8, active: high }
+    - { name: GD_B_FAULT, pin: PTE9, active: high }
+  outputs:
+    - { name: GD_A_DRV_EN, pin: PTD16, active: high }
+    - { name: GD_B_DRV_EN, pin: PTA7, active: low }
+    - { name: LED, pin: PTD15 }

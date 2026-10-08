@@ -1,0 +1,67 @@
+# Synthetic s32k1xx board for the hardware trigger chain PWM -> TRGMUX -> PDB -> ADC (IO-62): S32K144 LQFP100 with an
+# 8 MHz crystal, a three-phase bridge on FTM3 channels 0..5 (channels 6/7 stay free for the trigger match), three
+# phase current amplifiers and a DC link divider split over both ADCs - U current and DC link on ADC0, V and W
+# currents on ADC1 - so that the group converts on two ADCs in parallel and two channels one after another on each.
+# AUX_SENSE on ADC1 is no member of the group; the tests use it for a software conversion on an exclusive ADC. Test
+# data only, no hardware; not the eval board's wiring.
+#
+# [MUX] S32K144_LQFP100.pinmux.yaml: ADC0_SE4 PTB0, ADC0_SE10 PTC2, ADC1_SE2 PTD2, ADC1_SE3 PTD3, ADC1_SE6 PTD4
+# (MUX 0); FTM3_CH0..5 PTB8, PTB9, PTB10, PTB11, PTC10, PTC11 (MUX 2).
+# Phase current: 1 mOhm, gain 20, reference 1650 mV -> U = 1650 mV + 20 mV/A
+schema_version: 1
+
+board:
+  name: testboard_sample_group
+  mcu: S32K144
+  package: LQFP100
+  clock: { sosc_hz: 8000000 }
+  adc_reference_mv: 5000
+
+rails:
+  - { name: SUPPLY_3V3, mv: 3300, source: "synthetic test rail IO-62" }
+
+adc:
+  - name: PHASE_I_U
+    instance: ADC0
+    channel: SE4
+    pin: PTB0
+    sensor: { kind: shunt_amplifier, shunt_uohm: 1000, gain: 20, reference: { rail: SUPPLY_3V3, ratio_permille: 500 },
+              source: "synthetic test circuit IO-62" }
+  - name: PHASE_I_V
+    instance: ADC1
+    channel: SE2
+    pin: PTD2
+    sensor: { kind: shunt_amplifier, shunt_uohm: 1000, gain: 20, reference: { rail: SUPPLY_3V3, ratio_permille: 500 },
+              source: "synthetic test circuit IO-62" }
+  - name: PHASE_I_W
+    instance: ADC1
+    channel: SE3
+    pin: PTD3
+    sensor: { kind: shunt_amplifier, shunt_uohm: 1000, gain: 20, reference: { rail: SUPPLY_3V3, ratio_permille: 500 },
+              source: "synthetic test circuit IO-62" }
+  - name: DC_LINK_U
+    instance: ADC0
+    channel: SE10
+    pin: PTC2
+    scale: { divider: { r_top: 24000, r_bottom: 2200 }, offset_mv: 0 }
+  - name: AUX_SENSE
+    instance: ADC1
+    channel: SE6
+    pin: PTD4
+
+pwm:
+  - name: BRIDGE
+    instance: FTM3
+    mode: complementary
+    active: { high_side: high, low_side: low }
+    pairs:
+      - { name: BRIDGE_U, high_side: BRIDGE_U_HS, low_side: BRIDGE_U_LS }
+      - { name: BRIDGE_V, high_side: BRIDGE_V_HS, low_side: BRIDGE_V_LS }
+      - { name: BRIDGE_W, high_side: BRIDGE_W_HS, low_side: BRIDGE_W_LS }
+    channels:
+      - { name: BRIDGE_U_HS, channel: 0, pin: PTB8 }
+      - { name: BRIDGE_U_LS, channel: 1, pin: PTB9 }
+      - { name: BRIDGE_V_HS, channel: 2, pin: PTB10 }
+      - { name: BRIDGE_V_LS, channel: 3, pin: PTB11 }
+      - { name: BRIDGE_W_HS, channel: 4, pin: PTC10 }
+      - { name: BRIDGE_W_LS, channel: 5, pin: PTC11 }

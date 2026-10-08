@@ -1,0 +1,17 @@
+# Befunde der statischen Analyse, die echte Fehler oder Absicherungsluecken sind (PLAT-74).
+#
+# Sie stehen weiter in baseline.yaml (damit der Lauf gruen bleibt, bis sie behoben sind) und werden hier mit
+# Begruendung und Vorschlag fuer die zustaendige Aufgabe gefuehrt. Der Bericht listet sie getrennt. Sie werden NICHT
+# als Abweichung weg-begruendet und NICHT von PLAT-74 im Code repariert - der Code gehoert anderen Aufgaben.
+# Ist ein Befund behoben, meldet der Lauf den Eintrag als nicht mehr gefunden: dann hier entfernen und die Baseline
+# neu schreiben.
+#
+# Felder wie in deviations.yaml (rule, files, pattern/symbol), dazu note (was ist falsch, warum), owner (Vorschlag).
+version: 1
+# Geschlossen (Eintrag entfernt, Baseline neu geschrieben):
+#   BEF-001 RTE-19, BEF-002 SYS-26 (Schleifen statt Rekursion bzw. Feldgrenze),
+#   BEF-003 und BEF-004 SYS-133 (2026-09-30): LPIT0_Ch1_IRQHandler und deadmanExpectedConfiguration() stehen ausserhalb
+#   der Kopfdatei in platforms/s32k1xx/port/main/src/integration/Integration.cpp. NICHT inline machen oder wieder in
+#   eine Kopfdatei legen: dann gewinnt der schwache Vorgabewert von safeSupervisionCheck und SM-06 prueft den Totmann
+#   nicht mehr (test_deadman_expected_elf.py meldet es am Abbild).
+defects: []

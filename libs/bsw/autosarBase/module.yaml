@@ -1,0 +1,10 @@
+# Module manifest (doc/architecture/README.md, section 5), minimal (DOC-14): a library is a catalogue entry only -
+# tools/nxconfig and tools/bswgen assign no board device, take no project values and generate nothing for it.
+module: autosarBase
+kind: library
+description: AUTOSAR base types Std_Types.h, Platform_Types.h and Compiler.h for the RTE and the generated component code (32-bit ARM Cortex-M and Cortex-R, little endian)
+# Evidence (CHANGELOG.md): Meilenstein 4 introduced the headers; ARCH-45 added the type test (host) and the
+# translation probe for the core profiles, ARCH-46 the <stdint.h> base - "mock" because nothing of it runs on a board.
+verification: mock
+verification_note: Type definitions only; sizes, signedness, limits and CPU macros checked by a host type test and by arm-none-eabi-gcc -fsyntax-only for Cortex-M4F, Cortex-M0+ and Cortex-R4 (ARCH-45), type identity with <stdint.h> (ARCH-46), besides compiling the target builds.
+cmake_target: autosarBase

@@ -1,0 +1,84 @@
+# SPDX-License-Identifier: Apache-2.0
+# RTE-26 test profile (tools/rtegen/test/calib): calibration objects of stage K1 in a hand-written C component.
+# Generic on purpose - a torque limiter without any board. Values (defaults of the component type until the
+# dataset of stage K2 exists): CalMapSwc_data.m.
+version: 1
+name: CalMapSwc
+description: Torque limiter with a map, two curves, a shared axis and scalar limits (RTE-26 test)
+implementation: c
+runnables:
+  - name: Run10ms
+    period_ms: 10
+ports:
+  - { name: Speed_rpm, direction: in, type: uint16, runnables: [Run10ms] }
+  - { name: Temp_degC, direction: in, type: sint16, runnables: [Run10ms] }
+  - { name: Torque_Nm, direction: out, type: sint16, runnables: [Run10ms] }
+  - { name: Boost_mbar, direction: out, type: uint16, runnables: [Run10ms] }
+parameters:
+  - name: SpeedAxis_rpm             # shared axis (A2L AXIS_PTS), used by TorqueLimit_Nm and BoostCurve
+    kind: axis
+    type: uint16
+    dim: 5
+    unit: rpm
+    min: 0
+    max: 8000
+    safety: asil_b                  # at least the class of every user
+    description: Speed breakpoints
+    runnables: [Run10ms]
+  - name: TorqueLimit_Nm            # map: X shared (speed), Y own (temperature, TorqueLimit_Nm_Y)
+    kind: map
+    type: sint16
+    lsb: 0.1
+    unit: Nm
+    min: 0
+    max: 250
+    safety: asil_b
+    description: Torque limit over speed and temperature
+    axes:
+      x: SpeedAxis_rpm
+      y: {dim: 3, type: sint8, unit: degC, min: -40, max: 125, description: Temperature breakpoints}
+    runnables: [Run10ms]
+  - name: BoostCurve                # curve over the shared axis (COM_AXIS)
+    kind: curve
+    type: uint16
+    unit: mbar
+    min: 0
+    max: 2500
+    axis: SpeedAxis_rpm
+    runnables: [Run10ms]
+  - name: DerateCurve               # curve with own breakpoints DerateCurve_X (STD_AXIS)
+    kind: curve
+    type: uint8
+    lsb: 0.5
+    unit: "%"
+    min: 0
+    max: 100
+    description: Derating over temperature
+    axis: {dim: 4, type: sint16, lsb: 0.1, unit: degC, min: -40, max: 150}
+    runnables: [Run10ms]
+  - name: MaxTorque_Nm
+    kind: value
+    type: sint16
+    lsb: 0.1
+    unit: Nm
+    min: 0
+    max: 300
+    safety: asil_b
+    description: Absolute torque limit
+    runnables: [Run10ms]
+  - name: Mode                      # value table (A2L COMPU_VTAB)
+    type: uint8
+    value_table: {0: Off, 1: Eco, 2: Sport}
+    description: Operating mode
+    runnables: [Run10ms]
+  - name: Offsets_Nm
+    kind: array
+    type: sint16
+    dim: 3
+    unit: Nm
+    min: -20
+    max: 20
+    runnables: [Run10ms]
+  - name: Gain                      # RTE-03 parameter without calibration keys: stays as it was
+    type: float32
+    runnables: [Run10ms]

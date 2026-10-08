@@ -1,0 +1,129 @@
+From f24b43f19cb2a24edb6252aecddbb5507490e913 Mon Sep 17 00:00:00 2001
+From: Your Name <you@example.com>
+Date: Thu, 1 Oct 2026 22:00:00 +0200
+Subject: [PATCH] Fix range checks of the output and PWM console testers
+
+OutputTester compared the output number only after casting it to
+Output::OutputId. With a one-byte enum (AAPCS short enums, the
+arm-none-eabi-gcc default) the cast keeps the low byte, so
+"out set 259 1" passed the check and wrote output 3. Compare the
+number itself, and let "get" print and read only for a valid line.
+
+OutputPwmTester "setPeriod" reported a channel out of range but still
+called OutputPwm::setPeriod(), whose uint16_t parameter turned
+65536 + k into channel k. "set" did not check the scanned numbers: a
+missing or invalid duty scanned as 0 and was written, an invalid
+channel scanned as 0 and reached channel 0. Both commands now return
+without a call unless the whole line is valid and the channel is in
+range.
+
+Signed-off-by: Your Name <you@example.com>
+---
+ .../src/outputManager/OutputTester.cpp        | 30 +++++++++++--------
+ .../src/outputPwm/OutputPwmTester.cpp         | 26 ++++++++++------
+ 2 files changed, 35 insertions(+), 21 deletions(-)
+
+diff --git a/libs/bsp/bspOutputManager/src/outputManager/OutputTester.cpp b/libs/bsp/bspOutputManager/src/outputManager/OutputTester.cpp
+index df2f885f0..a747ffbf4 100644
+--- a/libs/bsp/bspOutputManager/src/outputManager/OutputTester.cpp
++++ b/libs/bsp/bspOutputManager/src/outputManager/OutputTester.cpp
+@@ -51,8 +51,10 @@ void OutputTester::executeCommand(::util::command::CommandContext& context, uint
+         {
+             uint32_t const outputNo = context.scanIntToken<uint32_t>();
+             uint32_t vol            = context.scanIntToken<uint32_t>();
++            // Compare the number itself: OutputId may be a one-byte enum (e.g. AAPCS
++            // short enums), so a cast first would let 256 + n pass and write output n.
+             (void)context.check(
+-                static_cast<Output::OutputId>(outputNo) < Output::TOTAL_NUMBER_OF_OUTPUTS);
++                outputNo < static_cast<uint32_t>(Output::TOTAL_NUMBER_OF_OUTPUTS));
+             if (vol > 0U)
+             {
+                 vol = 1U;
+@@ -76,20 +78,24 @@ void OutputTester::executeCommand(::util::command::CommandContext& context, uint
+         }
+         case 3: // "get"
+         {
+-            ::util::format::SharedStringWriter out(context);
+             uint32_t const outputNo = context.scanIntToken<uint32_t>();
+             (void)context.check(
+-                static_cast<Output::OutputId>(outputNo) < Output::TOTAL_NUMBER_OF_OUTPUTS);
+-            (void)out.printf("%d : %s -> ", outputNo, Output::getName(outputNo));
+-            bool t;
+-            bsp::BspReturnCode const ret = Output::get(static_cast<Output::OutputId>(outputNo), t);
+-            if (ret == bsp::BSP_OK)
+-            {
+-                (void)out.printf("%d\r\n", static_cast<int>(t));
+-            }
+-            else
++                outputNo < static_cast<uint32_t>(Output::TOTAL_NUMBER_OF_OUTPUTS));
++            if (context.checkEol())
+             {
+-                (void)out.printf("Nok \r\n");
++                ::util::format::SharedStringWriter out(context);
++                (void)out.printf("%d : %s -> ", outputNo, Output::getName(outputNo));
++                bool t;
++                bsp::BspReturnCode const ret
++                    = Output::get(static_cast<Output::OutputId>(outputNo), t);
++                if (ret == bsp::BSP_OK)
++                {
++                    (void)out.printf("%d\r\n", static_cast<int>(t));
++                }
++                else
++                {
++                    (void)out.printf("Nok \r\n");
++                }
+             }
+             break;
+         }
+diff --git a/libs/bsp/bspOutputPwm/src/outputPwm/OutputPwmTester.cpp b/libs/bsp/bspOutputPwm/src/outputPwm/OutputPwmTester.cpp
+index e17670cb0..660b8bcf2 100644
+--- a/libs/bsp/bspOutputPwm/src/outputPwm/OutputPwmTester.cpp
++++ b/libs/bsp/bspOutputPwm/src/outputPwm/OutputPwmTester.cpp
+@@ -49,17 +49,18 @@ void OutputPwmTester::executeCommand(CommandContext& context, uint8_t idx)
+         }
+         case 2: // set
+         {
+-            SharedStringWriter out(context);
+-            uint32_t chanId = context.scanIntToken<uint32_t>();
+-
+-            if (chanId >= OutputPwm::outputPwmNumberAll)
++            uint32_t chanId    = context.scanIntToken<uint32_t>();
++            uint32_t dutyCycle = context.scanIntToken<uint32_t>();
++            // Nothing is written unless the whole line is valid: a missing or
++            // invalid number scans as 0 (channel 0 or duty 0).
++            (void)context.check(
++                (chanId < OutputPwm::outputPwmNumberAll) || (chanId == 0xFF),
++                ICommand::Result::BAD_VALUE);
++            if (!context.checkEol())
+             {
+-                if (chanId != 0xFF)
+-                {
+-                    return;
+-                }
++                return;
+             }
+-            uint32_t dutyCycle = context.scanIntToken<uint32_t>();
++            SharedStringWriter out(context);
+             if (dutyCycle > OutputPwm::MAX_DUTY_CYCLE)
+             {
+                 dutyCycle = OutputPwm::MAX_DUTY_CYCLE;
+@@ -109,9 +110,16 @@ void OutputPwmTester::executeCommand(CommandContext& context, uint8_t idx)
+ 
+             if (chanId >= OutputPwm::outputPwmNumberAll)
+             {
++                // setPeriod() takes a uint16_t channel: 65536 + k would reach channel k
+                 out.printf("nOk wrong channel\n\r");
++                (void)context.check(false, ICommand::Result::BAD_VALUE);
++                return;
+             }
+             uint32_t period = context.scanIntToken<uint32_t>();
++            if (!context.checkEol())
++            {
++                return;
++            }
+             if (period > 0xffff)
+             {
+                 period = 0xffff;
+-- 
+2.30.1.windows.1
+

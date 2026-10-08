@@ -1,0 +1,23 @@
+# Synthetic s32k1xx board for the message buffer check (ARCH-42): S32K146 LQFP64, 8 MHz crystal, no SBC, three CAN
+# buses on the three FlexCAN instances with passive transceivers. FlexCAN0 and FlexCAN1 of the S32K146 have 32
+# message buffers, FlexCAN2 has 16 (S32K-RM Rev. 13 Table 55-1, mcudb message_buffers). Test data only.
+schema_version: 1
+
+board:
+  name: testboard_s32k146_can
+  mcu: S32K146
+  package: LQFP64
+  clock: { sosc_hz: 8000000 }
+
+devices:
+  - { name: PHY_POWERTRAIN, part: TJA1051 }
+  - { name: PHY_BODY, part: TJA1051 }
+  - { name: PHY_SERVICE, part: TJA1051 }
+
+can:
+  - { name: POWERTRAIN, instance: FlexCAN0, rx: { pin: PTE4 }, tx: { pin: PTE5 }, phy: PHY_POWERTRAIN }
+  - { name: BODY, instance: FlexCAN1, rx: { pin: PTA12 }, tx: { pin: PTA13 }, phy: PHY_BODY }
+  - { name: SERVICE, instance: FlexCAN2, rx: { pin: PTC16 }, tx: { pin: PTC17 }, phy: PHY_SERVICE }
+
+uart:
+  - { name: CONSOLE, instance: LPUART1, rx: { pin: PTC8 }, tx: { pin: PTC9 } }

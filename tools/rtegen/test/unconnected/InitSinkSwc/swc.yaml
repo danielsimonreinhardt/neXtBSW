@@ -1,0 +1,17 @@
+# SPDX-License-Identifier: Apache-2.0
+# Test component of the RTE-27 profile tools/rtegen/test/unconnected: a hand-written C component whose two inputs
+# stay unconnected in the ECU description. It copies what it reads to its outputs and counts its runs, so the host
+# test sees that the runnable runs and which values the RTE hands it (init value 0, qualifier QLF_NOT_AVAILABLE, RTE-28).
+version: 1
+name: InitSinkSwc
+description: Reads two unconnected inputs and echoes them (RTE-27 test)
+implementation: c
+runnables:
+  - name: Run10ms
+    period_ms: 10
+ports:
+  - { name: Level_mV, direction: in, type: uint32, runnables: [Run10ms] }     # unconnected: init value 0
+  - { name: LevelQlf, direction: in, type: uint8, runnables: [Run10ms] }      # unconnected qualifier: 8
+  - { name: Echo_mV, direction: out, type: uint32, runnables: [Run10ms] }
+  - { name: EchoQlf, direction: out, type: uint8, runnables: [Run10ms] }
+  - { name: Runs, direction: out, type: uint16, runnables: [Run10ms] }

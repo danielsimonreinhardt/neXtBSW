@@ -1,0 +1,333 @@
+# Baseline der statischen Analyse (PLAT-74) - bekannte Befunde aus der Bestandsaufnahme ueber den eigenen Code.
+# Erzeugt mit `python -m tools.misra baseline`; nicht von Hand erweitern. Ein Befund, der weder hier noch in
+# deviations.yaml steht, bricht den Lauf. Zuordnung ohne Zeilennummer: Datei + Regel + Quellzeile (text), gezaehlt.
+# Echte Fehler unter diesen Befunden stehen in defects.yaml (mit Aufgabe), nicht hier und nicht als Abweichung.
+# Faellt ein Befund weg, meldet der Lauf ihn als "behoben"; dann neu schreiben (die Baseline wird nur kleiner).
+version: 1
+tools: {clang-tidy: 22.1.8, cppcheck: 2.17.1}
+updated: '2026-10-05'
+entries:
+  bootloader/devices/sbcUja113x/sbc_uja113x.c:
+  - {tool: clang-tidy, rule: readability-implicit-bool-conversion, count: 1, text: 'bool ok = sbc_write(UJA113X_REG_REGULATOR_CONTROL, (uint8_t)((d->regulator & ~UJA113X_V2C_MASK)
+      | (UJA113X_V2C_ON_NORMAL << UJA113X_V2C_SHIFT)))'}
+  - {tool: clang-tidy, rule: readability-implicit-bool-conversion, count: 1, text: 'd->stage = read_all(true) ? 2U : 0xE3U;'}
+  - {tool: clang-tidy, rule: readability-implicit-bool-conversion, count: 1, text: 'return sbc_read(UJA113X_REG_IDENTIFICATION_0, &d->id) && sbc_read(UJA113X_REG_MODE_CONTROL,
+      &d->mode)'}
+  - {tool: clang-tidy, rule: readability-implicit-bool-conversion, count: 1, text: 'return sbc_read(UJA113X_REG_MODE_CONTROL, &d->modeAfter) && sbc_read(UJA113X_REG_REGULATOR_CONTROL,
+      &d->regulatorAfter)'}
+  bootloader/devices/sbcUja113x/sbc_uja113x.h:
+  - {tool: clang-tidy, rule: readability-implicit-bool-conversion, count: 1, text: bool const readOk = (d->stage == 1U) || (d->stage == 2U);}
+  - {tool: clang-tidy, rule: readability-implicit-bool-conversion, count: 1, text: return readOk && ((d->watchdogStatus & UJA113X_SDMS_MASK) != 0U);}
+  bootloader/platforms/common/arch/cortex_m_app_entry.inc:
+  - {tool: clang-tidy, rule: readability-implicit-bool-conversion, count: 1, text: return (sp > BL_RAM_START) && (sp <= BL_RAM_END) && ((reset & 1U) != 0U)}
+  bootloader/platforms/s32k1xx/bl_reset_s32k1xx.h:
+  - {tool: clang-tidy, rule: readability-implicit-bool-conversion, count: 1, text: return (rcmSrs == RCM_SRS_WDOG_MASK) && ((tst == BL_WDOG_TST_FAST_LOW) || (tst
+      == BL_WDOG_TST_FAST_HIGH));}
+  bootloader/platforms/s32k1xx/bl_spi_s32k1xx.c:
+  - {tool: clang-tidy, rule: readability-implicit-bool-conversion, count: 2, text: 'SPI->TCR = (frame->cpol ? LPSPI_TCR_CPOL_MASK : 0UL) | (frame->cpha ? LPSPI_TCR_CPHA_MASK
+      : 0UL)'}
+  bootloader/platforms/s32k1xx/hal_s32k1xx.c:
+  - {tool: cppcheck, rule: constParameterPointer, count: 1, text: 'static bool wait_until(uint32_t volatile* reg, uint32_t mask, uint32_t value, uint32_t timeoutMs)'}
+  - {tool: cppcheck, rule: misra-c2012-10.7, count: 1, text: 'data[4U + i] = (uint8_t)(w3 >> (24U - (8U * i)));'}
+  - {tool: cppcheck, rule: misra-c2012-10.7, count: 1, text: 'data[i] = (uint8_t)(w2 >> (24U - (8U * i)));'}
+  - {tool: cppcheck, rule: misra-c2012-2.5, count: 1, text: '#define CAN_RX_MB_FIRST 0U'}
+  - {tool: cppcheck, rule: misra-c2012-9.3, count: 1, text: 'uint8_t buf[8] = {0U};'}
+  - {tool: clang-tidy, rule: readability-implicit-bool-conversion, count: 1, text: 'bool const request = (flag[0] == BL_BOOT_REQUEST_MAGIC) && (flag[1] == ~BL_BOOT_REQUEST_MAGIC);'}
+  - {tool: clang-tidy, rule: readability-implicit-bool-conversion, count: 1, text: canReady = soscOk && can_init();}
+  - {tool: clang-tidy, rule: readability-implicit-bool-conversion, count: 1, text: 'return bl_sector_aligned(address) && ftfc_command(FTFC_CMD_ERASE_SECTOR, address,
+      NULL);'}
+  - {tool: clang-tidy, rule: readability-implicit-bool-conversion, count: 1, text: 'return wait_until(&can->MCR, FLEXCAN_MCR_FRZACK_MASK, 0U, CAN_TIMEOUT_MS)'}
+  bootloader/platforms/s32k1xx/upd_family.h:
+  - {tool: cppcheck, rule: misra-c2012-20.7, count: 1, text: '#define UPD_STUB_EARLY_PHRASES(X) X(UPD_FCF_ADDR) X(UPD_FCF_ADDR + BL_PHRASE_SIZE)'}
+  - {tool: clang-tidy, rule: readability-implicit-bool-conversion, count: 1, text: return (sp > BL_RAM_START) && (sp <= BL_RAM_END) && ((reset & 1U) != 0U)}
+  bootloader/src/core/app_image.c:
+  - {tool: cppcheck, rule: misra-c2012-21.15, count: 1, text: '(void)memcpy(record, hal_flash_ptr(BL_APP_RECORD_ADDR), sizeof(*record));'}
+  - {tool: cppcheck, rule: misra-c2012-8.9, count: 1, text: 'static uint32_t const layoutValues[LAYOUT_VALUE_COUNT] = {'}
+  - {tool: clang-tidy, rule: readability-implicit-bool-conversion, count: 1, text: return (record->magic == APP_RECORD_MAGIC)}
+  - {tool: clang-tidy, rule: readability-implicit-bool-conversion, count: 1, text: return (start >= BL_APP_START) && (start < BL_APP_END) && (size > 0U)}
+  - {tool: clang-tidy, rule: readability-implicit-bool-conversion, count: 1, text: return app_record_valid(record) && (record->start == BL_APP_START);}
+  - {tool: clang-tidy, rule: readability-implicit-bool-conversion, count: 1, text: return record_startable(&record) && (record.size == checked->size) && (record.crc
+      == checked->crc);}
+  bootloader/src/core/bl_main.c:
+  - {tool: clang-tidy, rule: cppcoreguidelines-init-variables, count: 1, text: bool functional;}
+  - {tool: clang-tidy, rule: cppcoreguidelines-init-variables, count: 1, text: uint16_t reqLen;}
+  - {tool: clang-tidy, rule: readability-implicit-bool-conversion, count: 1, text: stayInBootloader = bootRequest || !appValid;}
+  bootloader/src/core/bl_sectors.h:
+  - {tool: cppcheck, rule: misra-c2012-14.2, count: 1, text: for (uint32_t address = BL_FLASH_START; address < BL_APP_START;)}
+  - {tool: clang-tidy, rule: readability-implicit-bool-conversion, count: 1, text: return (offset <= size) && (len <= (size - offset));}
+  - {tool: clang-tidy, rule: readability-implicit-bool-conversion, count: 1, text: 'return bl_sector_at(address, &sector) && (sector.start == address);'}
+  bootloader/src/core/crc32.c:
+  - {tool: cppcheck, rule: misra-c2012-17.8, count: 2, text: 'crc = (crc >> 4) ^ table[crc & 0x0FU];'}
+  - {tool: cppcheck, rule: misra-c2012-17.8, count: 1, text: crc = ~crc;}
+  - {tool: cppcheck, rule: misra-c2012-17.8, count: 1, text: 'crc ^= data[i];'}
+  - {tool: cppcheck, rule: misra-c2012-8.9, count: 1, text: 'static uint32_t const table[16] = {'}
+  bootloader/src/core/isotp.c:
+  - {tool: clang-tidy, rule: cppcoreguidelines-init-variables, count: 1, text: uint32_t id;}
+  - {tool: clang-tidy, rule: cppcoreguidelines-init-variables, count: 1, text: uint8_t len;}
+  - {tool: clang-tidy, rule: hicpp-signed-bitwise, count: 1, text: 'frame[0] = (uint8_t)((PCI_FF << 4) | ((len >> 8) & 0x0FU));'}
+  - {tool: clang-tidy, rule: hicpp-signed-bitwise, count: 1, text: 'uint16_t const dl = (uint16_t)(((uint16_t)(data[0] & 0x0FU) << 8) | data[1]);'}
+  - {tool: cppcheck, rule: misra-c2012-15.4, count: 1, text: '{'}
+  - {tool: cppcheck, rule: misra-c2012-15.7, count: 1, text: '}'}
+  - {tool: clang-tidy, rule: readability-implicit-bool-conversion, count: 1, text: 'bool bl_transport_tx_done(void) { return (tp.txState == ISOTP_TX_IDLE) && hal_can_tx_idle();
+      }'}
+  bootloader/src/core/seedkey.c:
+  - {tool: clang-tidy, rule: cppcoreguidelines-init-variables, count: 3, text: seedkey_state_t state;}
+  - {tool: clang-tidy, rule: readability-implicit-bool-conversion, count: 1, text: '*state = erased ? SEEDKEY_KEY_MISSING : SEEDKEY_KEY_INVALID;'}
+  - {tool: clang-tidy, rule: readability-implicit-bool-conversion, count: 1, text: bool const valid = (seedkeyState.magic == SEEDKEY_NOINIT_MAGIC) && (seedkeyState.crc
+      == seedkey_state_crc());}
+  - {tool: clang-tidy, rule: readability-implicit-bool-conversion, count: 1, text: 'erased = erased && (record[i] == 0xFFU);'}
+  - {tool: clang-tidy, rule: readability-implicit-bool-conversion, count: 1, text: 'seedkeyState.lockout = lockout ? 1U : 0U;'}
+  bootloader/src/core/sha256.c:
+  - {tool: clang-tidy, rule: cppcoreguidelines-init-variables, count: 1, text: uint32_t wt;}
+  - {tool: cppcheck, rule: misra-c2012-8.9, count: 1, text: 'static uint32_t const sha256K[64] = {'}
+  bootloader/src/core/uds.c:
+  - {tool: clang-tidy, rule: hicpp-signed-bitwise, count: 2, text: 'uint16_t const did = (uint16_t)(((uint16_t)req[1] << 8) | req[2]);'}
+  - {tool: clang-tidy, rule: hicpp-signed-bitwise, count: 1, text: 'uint16_t const rid = (uint16_t)(((uint16_t)req[2] << 8) | req[3]);'}
+  - {tool: cppcheck, rule: misra-c2012-10.8, count: 1, text: if (len != (uint16_t)(3U + BL_FINGERPRINT_LEN))}
+  - {tool: cppcheck, rule: misra-c2012-10.8, count: 1, text: 'send_response(uds, rsp, (uint16_t)(3U + BL_FINGERPRINT_LEN), nowMs);'}
+  - {tool: cppcheck, rule: misra-c2012-10.8, count: 1, text: 'send_response(uds, rsp, (uint16_t)(3U + BL_UID_LEN), nowMs);'}
+  - {tool: cppcheck, rule: misra-c2012-10.8, count: 1, text: 'send_response(uds, rsp, (uint16_t)(3U + DID_SECURITY_INFO_LEN), nowMs);'}
+  - {tool: cppcheck, rule: misra-c2012-10.8, count: 1, text: 'send_response(uds, rsp, (uint16_t)(3U + DID_TARGET_COMPAT_LEN), nowMs);'}
+  - {tool: cppcheck, rule: misra-c2012-15.7, count: 1, text: '}'}
+  - {tool: cppcheck, rule: misra-c2012-2.5, count: 1, text: '#define CC_ENABLE_RX_AND_TX 0x00U'}
+  - {tool: clang-tidy, rule: readability-implicit-bool-conversion, count: 1, text: bool ok = record_sector_erased() || hal_flash_erase_sector(BL_APP_RECORD_ADDR);}
+  - {tool: clang-tidy, rule: readability-implicit-bool-conversion, count: 1, text: 'ok = ok && hal_flash_program(BL_APP_RECORD_ADDR, (uint8_t const*)&record, sizeof(record));'}
+  - {tool: clang-tidy, rule: readability-implicit-bool-conversion, count: 1, text: 'uds->fingerprintValid ? uds->fingerprint : NULL);'}
+  bootloader/updater/platforms/s32k1xx/upd_flash_s32k1xx.c:
+  - {tool: clang-tidy, rule: readability-implicit-bool-conversion, count: 1, text: 'return ((address % BL_PHRASE_SIZE) == 0U) && address_allowed(address, BL_PHRASE_SIZE)'}
+  - {tool: clang-tidy, rule: readability-implicit-bool-conversion, count: 1, text: 'return bl_record_sector(&record) && bl_range_inside(address, len, record.start,
+      record.size);'}
+  - {tool: clang-tidy, rule: readability-implicit-bool-conversion, count: 1, text: 'return bl_sector_at(address, &sector) && (sector.start == address) && address_allowed(address,
+      sector.size)'}
+  bootloader/updater/platforms/s32k1xx/upd_main.c:
+  - {tool: cppcheck, rule: misra-c2012-8.11, count: 1, text: 'extern uint8_t const upd_blob[];'}
+  - {tool: cppcheck, rule: misra-c2012-8.5, count: 1, text: extern uint32_t const upd_blob_size;}
+  - {tool: clang-tidy, rule: readability-implicit-bool-conversion, count: 1, text: bool const nothingWritten = (result >= UPD_ERR_HEADER) && (result < UPD_ERR_FLASH_STUB)}
+  - {tool: clang-tidy, rule: readability-implicit-bool-conversion, count: 1, text: 'upd_report(nothingWritten ? (uint8_t)UPD_STEP_ERROR : (uint8_t)UPD_STEP_DONE,
+      (uint8_t)result, &lastStats);'}
+  bootloader/updater/src/core/bl_update.c:
+  - {tool: clang-tidy, rule: cppcoreguidelines-init-variables, count: 1, text: bool ok;}
+  - {tool: cppcheck, rule: misra-c2012-14.2, count: 1, text: for (uint32_t base = first.start + first.size; base < (BL_FLASH_START + UPD_BL_AREA_SIZE); ++index)}
+  - {tool: cppcheck, rule: misra-c2012-21.16, count: 1, text: '&& (memcmp(&img[addr + n], major, majorLen) == 0))'}
+  - {tool: cppcheck, rule: misra-c2012-21.16, count: 1, text: 'if (((size - addr) >= (n + majorLen)) && (memcmp(&img[addr], accepted[i], n) == 0)'}
+  - {tool: clang-tidy, rule: readability-implicit-bool-conversion, count: 1, text: bool const special = (order != ORDER_BODY) && ((off == 0U) UPD_STUB_EARLY_PHRASES(IS_EARLY_PHRASE));}
+  - {tool: clang-tidy, rule: readability-implicit-bool-conversion, count: 1, text: ok = upd_flash_erase_sector(base)}
+  - {tool: clang-tidy, rule: readability-implicit-bool-conversion, count: 1, text: 'return (memcmp(upd_flash_ptr(BL_FLASH_START), img, size) == 0)'}
+  - {tool: clang-tidy, rule: readability-implicit-bool-conversion, count: 1, text: 'stats->start = resumed ? (uint8_t)UPD_START_RESUME : (uint8_t)UPD_START_FRESH;'}
+  ecu/application/include/systems/EcuStateSystem.h:
+  - {tool: clang-tidy, rule: cppcoreguidelines-virtual-class-destructor, count: 1, text: 'class Command : public ::util::command::GroupCommand'}
+  ecu/application/include/systems/RteSystem.h:
+  - {tool: clang-tidy, rule: cppcoreguidelines-virtual-class-destructor, count: 1, text: 'class Command : public ::util::command::GroupCommand'}
+  - {tool: clang-tidy, rule: cppcoreguidelines-virtual-class-destructor, count: 1, text: 'class RteSystem : public ::lifecycle::AsyncLifecycleComponent'}
+  - {tool: clang-tidy, rule: cppcoreguidelines-virtual-class-destructor, count: 1, text: 'class TaskRunner : public ::async::IRunnable'}
+  ecu/application/src/app/app.cpp:
+  - {tool: clang-tidy, rule: cppcoreguidelines-virtual-class-destructor, count: 1, text: 'class IdleHandler : private ::async::RunnableType'}
+  ecu/application/src/logger/InterleavedEntryOutput.h:
+  - {tool: clang-tidy, rule: cppcoreguidelines-virtual-class-destructor, count: 1, text: 'class InterleavedEntryOutput : public IEntryOutput<E, Timestamp>'}
+  ecu/application/src/logger/LossReportingEntryOutput.h:
+  - {tool: clang-tidy, rule: cppcoreguidelines-virtual-class-destructor, count: 1, text: 'class LossReportingEntryOutput : public IEntryOutput<E, Timestamp>'}
+  ecu/safety/safeSupervisor/src/safeSupervisor/SafeSupervisor.cpp:
+  - {tool: clang-tidy, rule: cppcoreguidelines-pro-type-member-init, count: 1, text: struct ResetLine}
+  - {tool: cppcheck, rule: useStlAlgorithm, count: 1, text: '{'}
+  ecu/uds/configuration/include/uds/session/DiagSession.h:
+  - {tool: clang-tidy, rule: cppcoreguidelines-virtual-class-destructor, count: 1, text: class ApplicationDefaultSession;}
+  - {tool: clang-tidy, rule: cppcoreguidelines-virtual-class-destructor, count: 1, text: class ApplicationExtendedSession;}
+  - {tool: clang-tidy, rule: cppcoreguidelines-virtual-class-destructor, count: 1, text: class DiagSession}
+  - {tool: clang-tidy, rule: cppcoreguidelines-virtual-class-destructor, count: 1, text: class ProgrammingSession;}
+  ecu/uds/include/systems/DiagSystem.h:
+  - {tool: clang-tidy, rule: cppcoreguidelines-virtual-class-destructor, count: 1, text: class DiagSystem}
+  ecu/uds/include/transport/routing/DiagTransportRouter.h:
+  - {tool: clang-tidy, rule: cppcoreguidelines-virtual-class-destructor, count: 1, text: class DiagTransportRouter}
+  ecu/uds/include/uds/app/AppSessionHandling.h:
+  - {tool: clang-tidy, rule: cppcoreguidelines-virtual-class-destructor, count: 1, text: 'class AppUdsLifecycleConnector : public IUdsLifecycleConnector'}
+  - {tool: clang-tidy, rule: cppcoreguidelines-virtual-class-destructor, count: 1, text: 'class BootloaderSessionPersistence : public ISessionPersistence'}
+  ecu/uds/src/systems/DiagSystem.cpp:
+  - {tool: clang-tidy, rule: bugprone-casting-through-void, count: 1, text: ': static_cast<char const*>(static_cast<void const*>(bootId.data())));'}
+  ecu/uds/src/transport/routing/DiagTransportRouter.cpp:
+  - {tool: clang-tidy, rule: cppcoreguidelines-pro-type-member-init, count: 1, text: 'DiagTransportRouter::DiagTransportRouter()'}
+  ecu/uds/src/uds/app/DiagStack.cpp:
+  - {tool: clang-tidy, rule: bugprone-casting-through-void, count: 1, text: 'static_cast<uint8_t const*>(static_cast<void const*>(text)), ::strlen(text));'}
+  ecu/xcp/include/systems/XcpSystem.h:
+  - {tool: clang-tidy, rule: cppcoreguidelines-virtual-class-destructor, count: 1, text: 'class CommitRunnable : public ::async::RunnableType'}
+  - {tool: clang-tidy, rule: cppcoreguidelines-virtual-class-destructor, count: 1, text: 'class DoneRunnable : public ::async::RunnableType'}
+  - {tool: clang-tidy, rule: cppcoreguidelines-virtual-class-destructor, count: 1, text: class XcpSystem}
+  ecu/xcp/src/systems/XcpSystem.cpp:
+  - {tool: cppcheck, rule: useStlAlgorithm, count: 1, text: 'for (auto const& entry : entries)'}
+  ecu/xcp/src/xcp/XcpSlave.cpp:
+  - {tool: clang-tidy, rule: hicpp-signed-bitwise, count: 2, text: 'else if ((packet[1] & (CAL_PAGE_MODE_ECU | CAL_PAGE_MODE_XCP | CAL_PAGE_MODE_ALL)) == 0U)'}
+  libs/bsw/bccMc33771/include/bcc/Mc33771c.h:
+  - {tool: clang-tidy, rule: hicpp-signed-bitwise, count: 1, text: if ((static_cast<int32_t>(1) << c) == samples)}
+  libs/bsw/bccMc33771/src/bcc/Mc33771c.cpp:
+  - {tool: clang-tidy, rule: bugprone-too-small-loop-variable, count: 1, text: 'for (uint8_t bit = 0U; bit < (sizeof(names) / sizeof(names[0])); ++bit)'}
+  - {tool: clang-tidy, rule: hicpp-signed-bitwise, count: 1, text: '&& (((v[1] ^ sysCfg2Value()) & SYS_CFG2_COMPARE) == 0U)'}
+  - {tool: clang-tidy, rule: hicpp-signed-bitwise, count: 1, text: '&& (((v[2] ^ adcCfgValue()) & ADC_CFG_COMPARE) == 0U) && (v[3] == ovUvEnValue())'}
+  - {tool: clang-tidy, rule: hicpp-signed-bitwise, count: 1, text: '&& (((v[6] ^ faultMask1Value()) & MC33771C_FAULT_MASK1_WRITABLE) == 0U)'}
+  - {tool: clang-tidy, rule: hicpp-signed-bitwise, count: 1, text: '&& (((v[7] ^ faultMask2Value()) & MC33771C_FAULT_MASK2_WRITABLE) == 0U)'}
+  - {tool: clang-tidy, rule: hicpp-signed-bitwise, count: 1, text: '&& (v[4] == thAllCtValue()) && (((v[5] ^ gpioCfg1Value()) & MC33771C_GPIO_CFG1_MASK) == 0U)'}
+  - {tool: clang-tidy, rule: hicpp-signed-bitwise, count: 1, text: _balancingMask = static_cast<uint16_t>(_balancingMask & ~expired);}
+  - {tool: clang-tidy, rule: hicpp-signed-bitwise, count: 1, text: 'bool const same = (((v[0] ^ sysCfg1Value()) & SYS_CFG1_COMPARE) == 0U)'}
+  - {tool: clang-tidy, rule: hicpp-signed-bitwise, count: 1, text: if (((value >> MC33771C_AN_OT_SHIFT) & _config.temperatureInputs) != 0U)}
+  - {tool: clang-tidy, rule: hicpp-signed-bitwise, count: 1, text: if (((value >> MC33771C_AN_UT_SHIFT) & _config.temperatureInputs) != 0U)}
+  - {tool: clang-tidy, rule: hicpp-signed-bitwise, count: 1, text: 'if ((status == Status::OK) && (((current ^ expected) & compareMask) != 0U))'}
+  - {tool: clang-tidy, rule: hicpp-signed-bitwise, count: 1, text: 'if ((status == Status::OK) && (((dataOf(rx) ^ value) & verifyMask) != 0U))'}
+  - {tool: cppcheck, rule: shadowFunction, count: 1, text: uint16_t init = 0U;}
+  libs/bsw/canSystem/include/can/CanPhyReadiness.h:
+  - {tool: cppcheck, rule: constParameterReference, count: 1, text: static void removeListener(ICanPhyReadinessListener& listener)}
+  - {tool: cppcheck, rule: constVariablePointer, count: 1, text: 'ICanPhyReadinessListener* const current = _listener.load(std::memory_order_acquire);'}
+  libs/bsw/e2e/src/e2e/E2E.c:
+  - {tool: clang-tidy, rule: cppcoreguidelines-init-variables, count: 1, text: uint8_t status;}
+  - {tool: clang-tidy, rule: hicpp-signed-bitwise, count: 1, text: 'return ((bitOffset % 8U) == 0U) ? (uint8_t)(byte & 0x0FU) : (uint8_t)((byte >> 4U) & 0x0FU);'}
+  - {tool: clang-tidy, rule: readability-implicit-bool-conversion, count: 1, text: bool valid = ((dataLength % 8U) == 0U) && (dataLength >= 16U) && (dataLength <=
+      256U)}
+  - {tool: clang-tidy, rule: readability-implicit-bool-conversion, count: 1, text: 'uint8_t reg = isFirstCall ? CRC8_INITIAL_VALUE : (uint8_t)(startValue ^ CRC8_XOR_VALUE);'}
+  - {tool: clang-tidy, rule: readability-implicit-bool-conversion, count: 1, text: valid = ((nibbleOffset % 4U) == 0U) && ((nibbleOffset / 8U) < bytes) && ((nibbleOffset
+      / 8U) != (crcOffset / 8U))}
+  libs/bsw/e2e/src/e2e/E2E_P01.c:
+  - {tool: clang-tidy, rule: hicpp-signed-bitwise, count: 1, text: '&& (e2e_readNibble(data, config->DataIDNibbleOffset) == ((config->DataID >> 8U) & 0x0FU));'}
+  - {tool: cppcheck, rule: misra-c2012-10.4, count: 1, text: if ((E2E_P01CheckConfig(config) != E2E_E_OK) || (newData != (length != 0U))}
+  - {tool: clang-tidy, rule: readability-implicit-bool-conversion, count: 1, text: bool valid = (config->DataIDMode <= E2E_P01_DATAID_NIBBLE)}
+  - {tool: clang-tidy, rule: readability-implicit-bool-conversion, count: 1, text: 'case E2E_P01STATUS_INITIAL: return profileBehavior ? E2E_P_WRONGSEQUENCE : E2E_P_OK;'}
+  - {tool: clang-tidy, rule: readability-implicit-bool-conversion, count: 1, text: 'case E2E_P01STATUS_SYNC: return profileBehavior ? E2E_P_OK : E2E_P_WRONGSEQUENCE;'}
+  - {tool: clang-tidy, rule: readability-implicit-bool-conversion, count: 1, text: dataValid = dataValid}
+  - {tool: clang-tidy, rule: readability-implicit-bool-conversion, count: 1, text: if ((E2E_P01CheckConfig(config) != E2E_E_OK) || (newData != (length != 0U))}
+  - {tool: clang-tidy, rule: readability-implicit-bool-conversion, count: 1, text: 'return valid ? E2E_E_OK : E2E_E_INPUTERR_WRONG;'}
+  libs/bsw/e2e/src/e2e/E2E_P02.c:
+  - {tool: cppcheck, rule: misra-c2012-10.4, count: 1, text: if ((E2E_P02CheckConfig(config) != E2E_E_OK) || (newData != (length != 0U))}
+  - {tool: clang-tidy, rule: readability-implicit-bool-conversion, count: 1, text: bool const valid = ((config->DataLength % 8U) == 0U) && (config->DataLength >=
+      16U)}
+  - {tool: clang-tidy, rule: readability-implicit-bool-conversion, count: 1, text: 'case E2E_P02STATUS_INITIAL: return profileBehavior ? E2E_P_WRONGSEQUENCE : E2E_P_OK;'}
+  - {tool: clang-tidy, rule: readability-implicit-bool-conversion, count: 1, text: 'case E2E_P02STATUS_SYNC: return profileBehavior ? E2E_P_OK : E2E_P_WRONGSEQUENCE;'}
+  - {tool: clang-tidy, rule: readability-implicit-bool-conversion, count: 1, text: if ((E2E_P02CheckConfig(config) != E2E_E_OK) || (newData != (length != 0U))}
+  - {tool: clang-tidy, rule: readability-implicit-bool-conversion, count: 1, text: 'return valid ? E2E_E_OK : E2E_E_INPUTERR_WRONG;'}
+  libs/bsw/e2e/src/e2e/E2E_P11.c:
+  - {tool: clang-tidy, rule: hicpp-signed-bitwise, count: 1, text: '&& (e2e_readNibble(data, config->DataIDNibbleOffset) == ((config->DataID >> 8U) & 0x0FU));'}
+  - {tool: cppcheck, rule: misra-c2012-10.4, count: 1, text: if ((E2E_P11CheckConfig(config) != E2E_E_OK) || (newData != (length != 0U))}
+  - {tool: clang-tidy, rule: readability-implicit-bool-conversion, count: 1, text: bool const valid = (nibble || (config->DataIDMode == E2E_P11_DATAID_BOTH))}
+  - {tool: clang-tidy, rule: readability-implicit-bool-conversion, count: 1, text: dataValid = dataValid}
+  - {tool: clang-tidy, rule: readability-implicit-bool-conversion, count: 1, text: if ((E2E_P11CheckConfig(config) != E2E_E_OK) || (newData != (length != 0U))}
+  - {tool: clang-tidy, rule: readability-implicit-bool-conversion, count: 1, text: 'return valid ? E2E_E_OK : E2E_E_INPUTERR_WRONG;'}
+  libs/bsw/ecuState/include/ecuState/EcuState.h:
+  - {tool: clang-tidy, rule: hicpp-signed-bitwise, count: 1, text: 'return (index < CAN_BUS_COUNT) ? (1UL << (CAN_BUS_SHIFT + index)) : UNKNOWN;'}
+  - {tool: clang-tidy, rule: hicpp-signed-bitwise, count: 1, text: 'return (index < LOCAL_COUNT) ? (1UL << (LOCAL_SHIFT + index)) : UNKNOWN;'}
+  libs/bsw/ecuState/src/ecuState/EcuStateMachine.cpp:
+  - {tool: cppcheck, rule: useStlAlgorithm, count: 2, text: 's = StepState::PENDING;'}
+  libs/bsw/gdTmc6200/include/gd/Tmc6200.h:
+  - {tool: clang-tidy, rule: bugprone-narrowing-conversions, count: 1, text: ': (ma <= TMC6200_GATE_CURRENT_MEDIUM_MA) ? 2'}
+  - {tool: clang-tidy, rule: bugprone-narrowing-conversions, count: 1, text: 'constexpr int16_t shortDelayForNs(uint32_t const ns) { return (ns == 750U) ? 0 : (ns
+      == 1500U) ? 1 : KEEP; }'}
+  - {tool: clang-tidy, rule: bugprone-narrowing-conversions, count: 1, text: 'return (celsius == 150) ? 0 : (celsius == 143) ? 1 : (celsius == 136) ? 2 : (celsius
+      == 120) ? 3 : KEEP;'}
+  - {tool: clang-tidy, rule: bugprone-narrowing-conversions, count: 1, text: 'return (ns == 100U) ? 0 : (ns == 1000U) ? 1 : (ns == 2000U) ? 2 : (ns == 3000U) ? 3
+      : KEEP;'}
+  - {tool: clang-tidy, rule: hicpp-signed-bitwise, count: 1, text: constexpr uint16_t SHUTDOWN = COMMUNICATION | DEVICE_RESET | CHARGE_PUMP_UNDERVOLTAGE | OVERTEMPERATURE_SHUTDOWN}
+  libs/bsw/hallDecoder/include/hallDecoder/HallDecoder.h:
+  - {tool: cppcheck, rule: returnByReference, count: 1, text: 'Statistics statistics() const { return _statistics; }'}
+  libs/bsw/hallDecoder/src/hallDecoder/HallDecoder.cpp:
+  - {tool: clang-tidy, rule: bugprone-branch-clone, count: 1, text: '{'}
+  - {tool: clang-tidy, rule: cppcoreguidelines-pro-type-member-init, count: 1, text: Reading r;}
+  - {tool: clang-tidy, rule: hicpp-signed-bitwise, count: 1, text: uint8_t const oldest = static_cast<uint8_t>((_core.write + STAMPS - SECTORS) & STAMP_MASK);}
+  libs/bsw/highSideSwitch/include/highSideSwitch/HighSideSwitchSystem.h:
+  - {tool: clang-tidy, rule: cppcoreguidelines-virtual-class-destructor, count: 1, text: 'class Command : public ::util::command::GroupCommand'}
+  - {tool: clang-tidy, rule: cppcoreguidelines-virtual-class-destructor, count: 1, text: class HighSideSwitchSystem}
+  libs/bsw/sbcUja113x/include/sbc/Uja113x.h:
+  - {tool: clang-tidy, rule: cppcoreguidelines-pro-type-member-init, count: 1, text: struct Uja113xConfig}
+  - {tool: clang-tidy, rule: hicpp-signed-bitwise, count: 1, text: return (system | supply | transceiver | wake | failure | wakeBank1 | failureBank1) != 0U;}
+  - {tool: clang-tidy, rule: hicpp-signed-bitwise, count: 1, text: return static_cast<uint8_t>((bankStatus >> (2U * indexInBank)) & 0x03U);}
+  libs/bsw/sbcUja113x/include/sbc/Uja113xCanPhy.h:
+  - {tool: clang-tidy, rule: cppcoreguidelines-virtual-class-destructor, count: 1, text: 'class Uja113xCanPhy : public ::bios::CanPhy'}
+  libs/bsw/sbcUja113x/include/sbc/Uja113xPowerSupply.h:
+  - {tool: clang-tidy, rule: bugprone-invalid-enum-default-initialization, count: 1, text: 'SleepWakeup wakeupConfig{};'}
+  - {tool: clang-tidy, rule: hicpp-signed-bitwise, count: 1, text: startup.interrupts.wake | (static_cast<uint16_t>(startup.interrupts.wakeBank1) << 8U));}
+  libs/bsw/sbcUja113x/src/sbc/Uja113x.cpp:
+  - {tool: clang-tidy, rule: hicpp-signed-bitwise, count: 1, text: (batteryHysteresisCode(b.overvoltageHysteresisMv) << UJA113X_BMHOC_SHIFT)}
+  - {tool: clang-tidy, rule: hicpp-signed-bitwise, count: 1, text: (c.failSafeBefore & static_cast<uint8_t>(~UJA113X_RCC_MASK)) | (rcc - 1U));}
+  - {tool: clang-tidy, rule: hicpp-signed-bitwise, count: 1, text: (regulator & keepMask) | (static_cast<uint8_t>(_config.v2) << UJA113X_V2C_SHIFT));}
+  - {tool: clang-tidy, rule: hicpp-signed-bitwise, count: 1, text: (static_cast<uint16_t>(high) << 2U) | (low & UJA113X_BM_ADC_LSB_MASK));}
+  - {tool: clang-tidy, rule: hicpp-signed-bitwise, count: 1, text: (static_cast<uint8_t>(_config.watchdogMode) << UJA113X_WMC_SHIFT)}
+  - {tool: clang-tidy, rule: hicpp-signed-bitwise, count: 1, text: = static_cast<uint8_t>((current & static_cast<uint8_t>(~mask)) | (value & mask));}
+  - {tool: clang-tidy, rule: hicpp-signed-bitwise, count: 1, text: openLoad | (openLoadThresholdCode(pin.openLoadThresholdMa) << shift));}
+  - {tool: clang-tidy, rule: hicpp-signed-bitwise, count: 1, text: return static_cast<uint8_t>((static_cast<uint8_t>(pin.shutdown) << UJA113X_IOSC_SHIFT)}
+  - {tool: clang-tidy, rule: hicpp-signed-bitwise, count: 1, text: shortCircuit | (shortCircuitThresholdCode(pin.shortCircuitThresholdMa) << shift));}
+  - {tool: clang-tidy, rule: hicpp-signed-bitwise, count: 2, text: value | (static_cast<uint8_t>(_config.enPin.shutdown) << UJA113X_ENSC_SHIFT)}
+  - {tool: cppcheck, rule: shadowFunction, count: 1, text: bool const cyclic = wakeup.cyclic;}
+  - {tool: cppcheck, rule: useStlAlgorithm, count: 3, text: '{'}
+  platforms/s32k1xx/bsp/bspClock/src/clockConfig.cpp:
+  - {tool: cppcheck, rule: duplicateCondition, count: 1, text: if (soscValid)}
+  - {tool: clang-tidy, rule: hicpp-signed-bitwise, count: 1, text: 'PCC->PCCn[PCC_ADC0_INDEX] = CLOCK_SOURCE_ADC0;'}
+  - {tool: clang-tidy, rule: hicpp-signed-bitwise, count: 1, text: 'PCC->PCCn[PCC_ADC1_INDEX] = CLOCK_SOURCE_ADC1;'}
+  - {tool: clang-tidy, rule: hicpp-signed-bitwise, count: 1, text: 'PCC->PCCn[PCC_FTM0_INDEX] = CLOCK_SOURCE_FTM0;'}
+  - {tool: clang-tidy, rule: hicpp-signed-bitwise, count: 1, text: 'PCC->PCCn[PCC_FTM1_INDEX] = CLOCK_SOURCE_FTM1;'}
+  - {tool: clang-tidy, rule: hicpp-signed-bitwise, count: 1, text: 'PCC->PCCn[PCC_FTM2_INDEX] = CLOCK_SOURCE_FTM2;'}
+  - {tool: clang-tidy, rule: hicpp-signed-bitwise, count: 1, text: 'PCC->PCCn[PCC_FTM3_INDEX] = CLOCK_SOURCE_FTM3;'}
+  - {tool: clang-tidy, rule: hicpp-signed-bitwise, count: 1, text: 'PCC->PCCn[PCC_FlexIO_INDEX] = CLOCK_SOURCE_FLEXIO;'}
+  - {tool: clang-tidy, rule: hicpp-signed-bitwise, count: 1, text: 'PCC->PCCn[PCC_LPI2C0_INDEX] = CLOCK_SOURCE_LPI2C0;'}
+  - {tool: clang-tidy, rule: hicpp-signed-bitwise, count: 1, text: 'PCC->PCCn[PCC_LPIT_INDEX] = CLOCK_SOURCE_LPIT;'}
+  - {tool: clang-tidy, rule: hicpp-signed-bitwise, count: 1, text: 'PCC->PCCn[PCC_LPSPI0_INDEX] = CLOCK_SOURCE_LPSPI0;'}
+  - {tool: clang-tidy, rule: hicpp-signed-bitwise, count: 1, text: 'PCC->PCCn[PCC_LPSPI1_INDEX] = CLOCK_SOURCE_LPSPI1;'}
+  - {tool: clang-tidy, rule: hicpp-signed-bitwise, count: 1, text: 'PCC->PCCn[PCC_LPSPI2_INDEX] = CLOCK_SOURCE_LPSPI2;'}
+  - {tool: clang-tidy, rule: hicpp-signed-bitwise, count: 1, text: 'PCC->PCCn[PCC_LPTMR0_INDEX] = CLOCK_SOURCE_LPTMR0;'}
+  - {tool: clang-tidy, rule: hicpp-signed-bitwise, count: 1, text: 'PCC->PCCn[PCC_LPUART0_INDEX] = CLOCK_SOURCE_LPUART0;'}
+  - {tool: clang-tidy, rule: hicpp-signed-bitwise, count: 1, text: 'PCC->PCCn[PCC_LPUART1_INDEX] = CLOCK_SOURCE_LPUART1;'}
+  - {tool: clang-tidy, rule: hicpp-signed-bitwise, count: 1, text: 'PCC->PCCn[PCC_LPUART2_INDEX] = CLOCK_SOURCE_LPUART2;'}
+  platforms/s32k1xx/bsp/bspFlexioI2c/src/i2c/FlexioI2cMaster.cpp:
+  - {tool: cppcheck, rule: constVariablePointer, count: 1, text: FLEXIO_Type* const io = _config.base;}
+  platforms/s32k1xx/bsp/bspLpspi/include/spi/Lpspi.h:
+  - {tool: clang-tidy, rule: cppcoreguidelines-virtual-class-destructor, count: 1, text: 'class Lpspi : public ISpiDevice'}
+  platforms/s32k1xx/hardFaultHandler/src/HardFaultDump.cpp:
+  - {tool: clang-tidy, rule: cert-dcl50-cpp, count: 1, text: 'void writeLine(::hardfault::LineWriter const writer, char const* const format, ...)'}
+  platforms/s32k1xx/port/bspConfiguration/include/bsp/adc/AdcAccessCommand.h:
+  - {tool: clang-tidy, rule: cppcoreguidelines-virtual-class-destructor, count: 1, text: 'class AdcAccessCommand : public ::util::command::GroupCommand'}
+  platforms/s32k1xx/port/bspConfiguration/include/bsp/io/outputPwm/ComplementaryPwm.h:
+  - {tool: clang-tidy, rule: cppcoreguidelines-virtual-class-destructor, count: 1, text: 'class ComplementaryPwm : public OutputPwm::IDynamicPwmClient'}
+  platforms/s32k1xx/port/bspConfiguration/src/bsp/adc/AnalogInput.cpp:
+  - {tool: clang-tidy, rule: cppcoreguidelines-pro-type-cstyle-cast, count: 1, text: 'tAdc12Bit AnalogInput::fAdc0(*ADC0);'}
+  platforms/s32k1xx/port/main/include/lifecycle/StaticBsp.h:
+  - {tool: clang-tidy, rule: cppcoreguidelines-virtual-class-destructor, count: 1, text: 'class DummyEcuPowerStateController : public bios::IEcuPowerStateController'}
+  platforms/s32k1xx/port/main/include/systems/CanSystem.h:
+  - {tool: clang-tidy, rule: cppcoreguidelines-virtual-class-destructor, count: 1, text: 'class AcceptAllFilter : public ::can::BitFieldFilter'}
+  - {tool: clang-tidy, rule: cppcoreguidelines-virtual-class-destructor, count: 1, text: 'class CanRxRunnable : public ::async::RunnableType'}
+  - {tool: clang-tidy, rule: cppcoreguidelines-virtual-class-destructor, count: 1, text: class CanSystem}
+  - {tool: clang-tidy, rule: cppcoreguidelines-virtual-class-destructor, count: 1, text: class Channel}
+  - {tool: clang-tidy, rule: cppcoreguidelines-virtual-class-destructor, count: 1, text: 'class Command : public ::util::command::GroupCommand'}
+  - {tool: clang-tidy, rule: cppcoreguidelines-virtual-class-destructor, count: 1, text: 'class GateRunnable : public ::async::RunnableType'}
+  platforms/s32k1xx/port/main/include/systems/CheckedOutputPwmTester.h:
+  - {tool: clang-tidy, rule: cppcoreguidelines-virtual-class-destructor, count: 1, text: 'class CheckedOutputPwmTester : public ::bios::OutputPwmTester'}
+  platforms/s32k1xx/port/main/include/systems/GateDriverSystem.h:
+  - {tool: clang-tidy, rule: cppcoreguidelines-virtual-class-destructor, count: 1, text: 'class BiosTmc6200Io : public ::gd::ITmc6200Io'}
+  - {tool: clang-tidy, rule: cppcoreguidelines-virtual-class-destructor, count: 1, text: 'class Command : public ::util::command::GroupCommand'}
+  - {tool: clang-tidy, rule: cppcoreguidelines-virtual-class-destructor, count: 1, text: class GateDriverSystem}
+  platforms/s32k1xx/port/main/include/systems/SafeOffOutputTester.h:
+  - {tool: clang-tidy, rule: cppcoreguidelines-virtual-class-destructor, count: 1, text: 'class SafeOffOutputTester : public ::bios::OutputTester'}
+  platforms/s32k1xx/port/main/include/systems/SbcSystem.h:
+  - {tool: clang-tidy, rule: cppcoreguidelines-virtual-class-destructor, count: 1, text: 'class Command : public ::util::command::GroupCommand'}
+  - {tool: clang-tidy, rule: cppcoreguidelines-virtual-class-destructor, count: 1, text: class SbcSystem}
+  platforms/s32k1xx/port/main/src/integration/DebugHaltGuardSystem.h:
+  - {tool: clang-tidy, rule: cppcoreguidelines-virtual-class-destructor, count: 1, text: class DebugHaltGuardSystem}
+  platforms/s32k1xx/port/main/src/integration/Integration.cpp:
+  - {tool: clang-tidy, rule: cppcoreguidelines-virtual-class-destructor, count: 1, text: 'class Tmc6200SpiDevice : public ::gd::ITmc6200Spi'}
+  platforms/s32k1xx/port/main/src/integration/Tmc6200PowerStageOutput.h:
+  - {tool: clang-tidy, rule: cppcoreguidelines-virtual-class-destructor, count: 1, text: 'class Tmc6200PowerStageOutput : public IPowerStageOutput'}
+  platforms/s32k1xx/port/main/src/os/isr/isr_sys.cpp:
+  - {tool: cppcheck, rule: unreachableCode, count: 6, text: 'etl::infinite_loop();'}
+  platforms/s32k1xx/port/main/src/systems/CanSystem.cpp:
+  - {tool: clang-tidy, rule: clang-analyzer-core.CallAndMessage, count: 1, text: 'auto const sendFrame = [bus, &frame, &result]() { result = bus->send(frame); };'}
+  - {tool: clang-tidy, rule: cppcoreguidelines-init-variables, count: 1, text: uint32_t digit;}
+  - {tool: clang-tidy, rule: cppcoreguidelines-init-variables, count: 1, text: uint8_t framesReceived;}
+  - {tool: cppcheck, rule: useStlAlgorithm, count: 4, text: '{'}
+  platforms/s32k1xx/port/main/src/systems/GateDriverSystem.cpp:
+  - {tool: clang-tidy, rule: hicpp-signed-bitwise, count: 1, text: uint16_t const added = static_cast<uint16_t>(faults & ~_reportedFaults);}
+  platforms/s32k1xx/port/safety/adcSafetyConsole/include/adcSafetyConsole/AdcSafetyConsole.h:
+  - {tool: clang-tidy, rule: cppcoreguidelines-virtual-class-destructor, count: 1, text: 'class AdcSafetyCommand : public ::util::command::GroupCommand'}
+  platforms/s32k1xx/port/safety/safeIo/src/safeIo/SafeIo.cpp:
+  - {tool: clang-tidy, rule: cppcoreguidelines-pro-type-member-init, count: 1, text: '::bios::Io::PinConfiguration pinConfigSafetyTest;'}
+  platforms/s32k1xx/port/safety/safeIo/src/safeIo/SafeState.cpp:
+  - {tool: clang-tidy, rule: cppcoreguidelines-pro-type-member-init, count: 1, text: '::bios::Io::PinConfiguration pinConfig;'}
+  platforms/s32k1xx/port/safety/safeMemory/include/safeMemory/RomCheck.h:
+  - {tool: cppcheck, rule: returnByReference, count: 1, text: 'static Statistics statistics() { return _statistics; }'}
+  platforms/s32k1xx/port/safety/safeMemory/include/safeMemory/mpu.h:
+  - {tool: clang-tidy, rule: hicpp-signed-bitwise, count: 1, text: UM_RWX = UM_R | UM_W | UM_X}
+  platforms/s32k1xx/port/safety/safeMemory/src/safeMemory/MemoryProtection.cpp:
+  - {tool: cppcheck, rule: cstyleCast, count: 1, text: 'mpu::setDescriptor(i + 1U, (mpu::Descriptor const&)memoryProtectionConfigurationRam[i]);'}
+  platforms/s32k1xx/port/safety/safeSystem/src/safeSystem/SafeSystem.cpp:
+  - {tool: clang-tidy, rule: cppcoreguidelines-pro-type-member-init, count: 1, text: AdcDiagnostics diag;}
+  - {tool: clang-tidy, rule: hicpp-signed-bitwise, count: 1, text: '| (1 << SIM_CHIPCTL_ADC_SUPPLYEN_SHIFT); // Enable ADC supply monitor'}
