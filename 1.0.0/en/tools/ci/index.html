@@ -1,0 +1,5753 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Hardware-neutral, configurable basic software for 32-bit automotive MCUs, built on Eclipse OpenBSW">
+      
+      
+      
+      
+        <link rel="prev" href="../docgen/website/">
+      
+      
+        <link rel="next" href="../setup/">
+      
+      
+        
+          <link rel="alternate" href="../../../tools/ci/" hreflang="de">
+        
+          <link rel="alternate" href="./" hreflang="en">
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>tools/ci – provider-neutral CI (TOOL-03) - neXtBSW</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#toolsci--provider-neutral-ci-tool-03" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../" title="neXtBSW" class="md-header__button md-logo" aria-label="neXtBSW" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            neXtBSW
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              tools/ci – provider-neutral CI (TOOL-03)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="indigo"  aria-label="Dunkel"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Dunkel" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="indigo"  aria-label="Hell"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Hell" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Select language">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="../../../tools/ci/" hreflang="de" class="md-select__link">
+              Deutsch
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../" title="neXtBSW" class="md-nav__button md-logo" aria-label="neXtBSW" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    neXtBSW
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Start
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../doc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Wegweiser
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../doc/guide/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Integrator
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Integrator
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../doc/guide/getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Erste Schritte
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../doc/guide/host-durchlauf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Host-Durchlauf ohne Hardware
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../doc/guide/your-first-board/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Das erste Board
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../doc/guide/the-application/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Die Anwendung
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../doc/guide/build-and-flash/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bauen und Flashen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../doc/guide/customer-project/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Eigenes ECU-Repository
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../doc/guide/new-derivative/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Neues Derivat
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../doc/guide/board-readme-template/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vorlage Board-README
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_10" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../doc/reference/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Konfigurationsreferenz
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3_10" id="__nav_3_10_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Konfigurationsreferenz
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../doc/reference/derivative/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Derivative
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../doc/reference/board/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Board
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../doc/reference/project/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../doc/reference/rte/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rte
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../doc/reference/diag/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diag
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../doc/reference/console/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Console
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_11" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../projects/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Projekte, Komponenten, Boards
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3_11" id="__nav_3_11_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Projekte, Komponenten, Boards
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../swc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Software-Komponenten
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../swc/DemoSwcSubstitute/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    C-Ersatz der DemoSwc
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ecu/platforms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Board-Ports
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../boards/buildtest_s32k148/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S32K148 build-test board (S32K148 LQFP176)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_12" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_12" id="__nav_3_12_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release Notes
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_12">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Release Notes
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../doc/release-notes/v1.0.0-rc2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.0.0-rc2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../doc/release-notes/v1.0.0-rc1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.0.0-rc1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../doc/safety/start/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Safety-Assessor
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Safety-Assessor
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../doc/safety/safety-manual/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sicherheitshandbuch
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../doc/safety/concept/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sicherheitskonzept
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../doc/safety/figures/concept-figures/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bilder zum Konzept
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../doc/safety/anomaly-register/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Anomalie-Register
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_6" id="__nav_4_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Arbeitsprodukte
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Arbeitsprodukte
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../doc/safety/safety-plan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW safety plan — software SEooC at ASIL B (SYS-60)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../doc/safety/verification-plan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW verification plan and archived reports per baseline (SYS-67)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../doc/safety/safety-case/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW safety case — software SEooC at ASIL B (SYS-64)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../doc/safety/cm-plan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW configuration management plan and baselines (SYS-68)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../doc/safety/sw-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW — software architectural design specification of the safety part (SYS-65)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../doc/safety/architecture-safety-analysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW software architectural safety analysis beyond the mechanisms (SYS-71)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../doc/safety/fmea/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW failure analysis of the base-software safety mechanisms (stage 1)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../doc/safety/figures/fmea-figures/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fmea figures
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../doc/safety/dfa/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW dependent failure analysis of the stage-1 mechanisms (SYS-70)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../doc/safety/unit-design/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW — software unit design: watchdog handling, fault handlers, safety task (SYS-92, N2)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../doc/safety/coexistence/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW — coexistence of ASIL B and QM software in one image (SYS-61)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../doc/safety/partner-and-degraded/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Partner MCU supervision, degraded reaction and active short circuit — concept
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../doc/safety/config-range/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW — argument over the admissible configuration range (SYS-92, N3)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../doc/safety/hsi-s32k1xx/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW hardware-software interface of the stage-1 safety mechanisms — s32k1xx (SYS-66)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../doc/safety/hardware-mechanisms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hardware safety mechanisms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../doc/safety/security-interplay/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW — interplay of functional safety and cybersecurity (SYS-92, N1)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../doc/safety/static-analysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Static analysis and coding guidelines (PLAT-74)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../doc/safety/tool-classification/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW tool classification and safeguards of the generated code (PLAT-75)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../doc/safety/component-qualification/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW — route per pre-existing component and qualification plan (SYS-62)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../doc/safety/dev-environment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW development environment: languages, guidelines, tools, build and test flow (DOC-22)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../doc/safety/board-test-spec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW board test specification per SSR with operational use cases (SYS-75)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../doc/openbsw-beitraege/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributor
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Contributor
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_1" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../doc/architecture/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architektur
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_1" id="__nav_5_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Architektur
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../doc/architecture/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../doc/architecture/openbsw/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Openbsw
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../doc/architecture/openbsw-naehe/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Openbsw naehe
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../doc/architecture/autosar/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Autosar
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../doc/architecture/autosar-standard-set/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Autosar standard set
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../doc/architecture/autosar-ecuc-map/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Autosar ecuc map
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../doc/architecture/autosar-ecuc-evaluation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Autosar ecuc evaluation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../doc/architecture/plattformen/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plattformen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../doc/architecture/customer-project/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Customer project
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../doc/architecture/versioning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW – Versionierung und Support
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../doc/architecture/csec-concept/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CSEc in neXtBSW: keys, message authentication and secure start (SYS-56)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../doc/architecture/kalibrierung/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Calibration in neXtBSW: parameters, maps, a versioned calibration database, measurement signals (ARCH-64)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../doc/architecture/pin-interrupts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pin interrupts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../doc/architecture/signal-qualifier/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Signal qualifiers for received messages (COM-03)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../doc/architecture/treiber-granularitaet/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW – granularity of device drivers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../doc/architecture/treiber-anbindung-analyse/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW – binding device drivers to the system: analysis of the hand-written integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../doc/architecture/openbsw-console-number-arguments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OpenBSW console commands with a number argument - audit (PLAT-110)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_1_19" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_1_19" id="__nav_5_1_19_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Geplant nach R1
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_1_19_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_1_19">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Geplant nach R1
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../doc/architecture/planned/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Planned
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../doc/architecture/non-cortex-m-audit/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Non cortex m audit
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../doc/architecture/rm4x-quellen/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rm4x quellen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../doc/architecture/stm32-nucleo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Stm32 nucleo
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../doc/figures/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bilder
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_2" id="__nav_5_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Bilder
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../doc/figures/01-schichten/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    01 schichten
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../doc/figures/02-konfigurationsfluss/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    02 konfigurationsfluss
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../doc/figures/03-startablauf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    03 startablauf
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../doc/figures/04-flash-uds/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    04 flash uds
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../doc/figures/05-ecu-zustaende/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    05 ecu zustaende
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../doc/figures/06-safety-kette/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    06 safety kette
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../doc/figures/07-modulkarte/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    07 modulkarte
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../doc/figures/08-lesepfade/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    08 lesepfade
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../bootloader/doc/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Moduldokumentation
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_3" id="__nav_5_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Moduldokumentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../doc/reference/modules/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modules
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../bootloader/doc/iso14229-1-clause16-conformance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Conformance with ISO 14229-1 clause 16 (non-volatile server memory programming)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../libs/bsw/autosarBase/doc/autosarBase/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AUTOSAR base types (autosarBase)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../libs/bsw/canPhyPassive/doc/canPhyPassive/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Passive CAN transceiver (canPhyPassive)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../libs/bsw/canSystem/doc/canSystem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CAN system, hardware independent parts (canSystem)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../libs/bsw/consoleContext/doc/consoleContext/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Console context (consoleContext)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../libs/bsw/dem/doc/dem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    dem – fault memory (simplified AUTOSAR DEM)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../libs/bsw/e2e/doc/e2e/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    E2E-Bibliothek (e2e)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../libs/bsw/ecuState/doc/ecuState/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ECU-Zustandsverwaltung (ecuState)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../libs/bsw/gdTmc6200/doc/gdTmc6200/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Gate-Treiber TMC6200 (gdTmc6200)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../libs/bsw/hallDecoder/doc/hallDecoder/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hall decoder (hallDecoder)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../libs/bsw/highSideSwitch/doc/highSideSwitch/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Smart high-side switch (highSideSwitch)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../libs/bsw/mcuLink/doc/mcuLink/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mcuLink
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../libs/bsw/nvm/doc/nvm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NvM core (libs/bsw/nvm)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../libs/bsw/nvmDataFlash/doc/nvmDataFlash/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nvmDataFlash - data flash areas (NVM-12)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../libs/bsw/sbcUja113x/doc/sbcUja113x/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SBC-Treiber UJA113x (sbcUja113x)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../libs/bsp/bspAdcAccess/doc/bspAdcAccess/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Serialized ADC access (bspAdcAccess)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../libs/bsp/bspI2c/doc/bspI2c/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    I2C master contract (bspI2c)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../libs/bsp/bspPinEdge/doc/bspPinEdge/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pin edge contract (bspPinEdge)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../libs/bsp/bspPinEvent/doc/bspPinEvent/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    bspPinEvent
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../libs/bsp/bspSampleGroup/doc/bspSampleGroup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sample group (bspSampleGroup)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../libs/bsp/bspSpi/doc/bspSpi/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SPI device contract (bspSpi)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../platforms/common/clockCheck/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Clock start-up check (PLAT-72)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../platforms/common/interruptPriority/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interrupt priorities as ranks (PLAT-10, wired up in PLAT-21, per core profile since ARCH-24)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../platforms/s32k1xx/bsp/bspCsec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    bspCsec – CSEc of the S32K1 family
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../platforms/s32k1xx/bsp/bspMcu/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    bspMcu (Familie s32k1xx) – Derivat-Header und mcu/mcu.h (PLAT-11)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../platforms/s32k1xx/startup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Startup templates per core architecture (PLAT-10)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../platforms/s32k1xx/port/safety/safeLifecycle/doc/safeLifecycle/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Safety task, s32k1xx (safeLifecycle)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../platforms/s32k1xx/port/safety/safeMemory/doc/safeMemory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Memory safety of the s32k1xx family (safeMemory)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../platforms/s32k1xx/port/safety/safeSupervisor/doc/safeSupervisor/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Safe supervisor, project values of the s32k1xx port (safeSupervisor)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../platforms/s32k1xx/port/safety/safeSystem/doc/safeSystem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference and supply supervision, s32k1xx (safeSystem)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../platforms/s32k1xx/port/bspConfiguration/src/bsp/capture/doc/capture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Input capture, s32k1xx (capture)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../platforms/s32k1xx/port/bspConfiguration/src/bsp/hall/doc/hall/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hall sensor set, s32k1xx (hall)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_4" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../test/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tests und Werkzeuge
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_4" id="__nav_5_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tests und Werkzeuge
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docgen/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    docgen - generated reference documentation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docgen/website/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Doku-Website
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/ci – provider-neutral CI (TOOL-03)
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/ci – provider-neutral CI (TOOL-03)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#pinning--every-value-exactly-once" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pinning – every value exactly once
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-run-decides" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What run decides
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#a-customer-workspace-tool-67" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A customer workspace (TOOL-67)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="A customer workspace (TOOL-67)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ci-files-for-a-workspace" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CI files for a workspace
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#release-publication-tool-69-gap-n15" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Release publication (TOOL-69, gap N15)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#another-provider" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Another provider
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#own-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Own tests
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/setup – the Python environment of a workspace (TOOL-63)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../distcheck/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    distcheck – distribution check and export of the open tree
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../canflash/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/canflash – application and bootloader over CAN (UDS on ISO-TP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../boardtest/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/boardtest – board measurement scripts with host tests (TOOL-05)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../misra/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/misra – static analysis (PLAT-74)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../trace/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/trace — traceability of the safety requirements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../a2lgen/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    a2lgen - A2L for XCP on CAN (TOOL-01)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../calgen/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    calgen – calibration datasets (stage K2)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../csec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    csec – host side of the CSEc way back to the factory state
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../elfcheck/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    elfcheck – linked images against the derivative map and the core
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nxupdate/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../schedana/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/schedana – analyse processor load, scheduling and data flow (TOOL-09)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../stackuse/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    stackuse – worst-case stack per execution context
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Beitragen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../SECURITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sicherheitsluecken melden
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../mcudb/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ableitung der Chipdaten (mcudb)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#pinning--every-value-exactly-once" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pinning – every value exactly once
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-run-decides" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What run decides
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#a-customer-workspace-tool-67" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A customer workspace (TOOL-67)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="A customer workspace (TOOL-67)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ci-files-for-a-workspace" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CI files for a workspace
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#release-publication-tool-69-gap-n15" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Release publication (TOOL-69, gap N15)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#another-provider" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Another provider
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#own-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Own tests
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="toolsci--provider-neutral-ci-tool-03">tools/ci – provider-neutral CI (TOOL-03)<a class="headerlink" href="#toolsci--provider-neutral-ci-tool-03" title="Permanent link">&para;</a></h1>
+<p>All the logic of a CI pipeline lives here, not with the CI provider. A provider (today GitHub Actions,
+<code>.github/workflows/ci.yml</code>) only checks out, provides Python and calls two commands. The same two commands run
+locally:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>python<span class="w"> </span>-m<span class="w"> </span>tools.ci<span class="w"> </span>setup<span class="w"> </span>--python-packages<span class="w">   </span><span class="c1"># pinned tools into the cache, pinned Python packages</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>python<span class="w"> </span>-m<span class="w"> </span>tools.ci<span class="w"> </span>run<span class="w"> </span>--strict<span class="w">              </span><span class="c1"># check tools, tools/test (all groups), artefacts, report</span>
+</code></pre></div>
+<p>On the workstation with the <code>.venv</code> (the packages are already installed there): <code>.venv/Scripts/python -m tools.ci setup</code>
+and <code>.venv/Scripts/python -m tools.ci run --jobs 4</code>. Further commands:</p>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>check [--toolchain local]</code></td>
+<td>tool, Python and package versions against the pinning, coverage of the build profiles</td>
+</tr>
+<tr>
+<td><code>run --toolchain local</code></td>
+<td>pipeline with the tools of the workstation (for example the GCC of a vendor IDE); deviations as warnings</td>
+</tr>
+<tr>
+<td><code>run -k &lt;name&gt;</code> / <code>--group &lt;g&gt;</code></td>
+<td>trial run with a selection (not with <code>--strict</code>)</td>
+</tr>
+<tr>
+<td><code>run --no-coverage</code></td>
+<td>pipeline without the coverage measurement (TOOL-40)</td>
+</tr>
+<tr>
+<td><code>run --no-static-analysis</code></td>
+<td>pipeline without the static analysis (PLAT-74)</td>
+</tr>
+<tr>
+<td><code>setup --python-packages --core-only</code></td>
+<td>core packages only, without PySide6 (TOOL-63); the Studio tests are then skipped</td>
+</tr>
+<tr>
+<td><code>setup --tool misra</code></td>
+<td>only the static analysis tools (pip wheels) into the cache</td>
+</tr>
+<tr>
+<td><code>setup --tool strictdoc</code></td>
+<td>only StrictDoc (DOC-21) into <code>&lt;cache&gt;/strictdoc-venv</code>; <code>run</code> announces it to tools/test as <code>NX_STRICTDOC_VENV</code>, <code>check</code> compares it with <code>constraints-docs.txt</code></td>
+</tr>
+<tr>
+<td><code>lint</code></td>
+<td><code>actionlint</code> (pinned version) over <code>.github/workflows</code></td>
+</tr>
+<tr>
+<td><code>summary &lt;out&gt;</code></td>
+<td>print the Markdown report of a run (job summary)</td>
+</tr>
+<tr>
+<td><code>preflight [--since v&lt;previous&gt;]</code></td>
+<td>pre-flight before the release CI (TOOL-209, <code>doc/safety/verification-plan.md</code> 8.2): PF-1 freeze check, PF-2 <code>check --strict</code>, PF-3 increment since the previous release, PF-4 target build + static analysis + coverage, PF-5 safety documents; report <code>preflight.md/json</code>, step timeouts (<code>--timeout-factor</code>), a timed-out test is repeated once alone</td>
+</tr>
+<tr>
+<td><code>run --workspace &lt;dir&gt;</code></td>
+<td>the pipeline of a customer repository (TOOL-67, see below)</td>
+</tr>
+<tr>
+<td><code>template &lt;name&gt; [--out &lt;workspace&gt;]</code></td>
+<td>the CI files a workspace starts from (<code>github</code>, <code>gitlab</code>, <code>tests</code>, <code>pipeline</code>, <code>coverage</code>, <code>misra-deviations</code>)</td>
+</tr>
+<tr>
+<td><code>release [--version X.Y.Z] [--tag vX.Y.Z-rcN]</code></td>
+<td>release publication of a tagged baseline (TOOL-69, see below); a release candidate by its own tag (TOOL-232)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="pinning--every-value-exactly-once">Pinning – every value exactly once<a class="headerlink" href="#pinning--every-value-exactly-once" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>versions.toml</code></td>
+<td>ARM GCC, CMake, Ninja (and actionlint): version, download URL and SHA-256 for Windows/Linux each</td>
+</tr>
+<tr>
+<td><code>../misra/requirements.txt</code></td>
+<td>cppcheck and clang-tidy (pip wheels) of the static analysis</td>
+</tr>
+<tr>
+<td><code>../requirements-docs.txt</code>, <code>constraints-docs.txt</code></td>
+<td>StrictDoc 0.30.1 and its 88 dependencies, exact pins, own venv (not the <code>.venv</code>, not the Studio build; the workstation <code>.venv</code> pins a different pypdf)</td>
+</tr>
+<tr>
+<td><code>.python-version</code></td>
+<td>Python interpreter; also read by <code>actions/setup-python</code></td>
+</tr>
+<tr>
+<td><code>constraints.txt</code></td>
+<td>exact versions of all Python packages of <code>tools/requirements.txt</code> <strong>and</strong> <code>tools/requirements-studio.txt</code></td>
+</tr>
+<tr>
+<td><code>pipeline.toml</code></td>
+<td>allowed skips, presets deliberately not built, steps outside CI, artefact patterns</td>
+</tr>
+<tr>
+<td><code>templates/</code></td>
+<td>the CI files a customer workspace starts from (TOOL-67); they call the same commands, they do not repeat their logic</td>
+</tr>
+</tbody>
+</table>
+<p>Which tests and target builds exist is stated only in <code>tools/test/tests.yaml</code> (TOOL-04).</p>
+<p><code>tools/requirements.txt</code> holds the <strong>core</strong> packages (generators, checks, host tests, CI); PySide6, pytest,
+pytest-qt and pyinstaller are only needed by <code>tools/studio</code> and live in <code>tools/requirements-studio.txt</code>
+(TOOL-63). <code>setup --python-packages</code> installs both, because the CI runs the Studio tests as well, and also
+<code>tools/requirements-site.txt</code> (MkDocs of the documentation website, DOC-71; exact pins in the file itself, TOOL-232),
+also with <code>--core-only</code> - without it <code>docgen-site</code> is skipped, and under <code>run --strict</code> a skipped entry is red. <code>check</code>
+reports them separately: the core list must fit, the Studio list counts as "skipped" when it is absent and as a
+finding when it is half installed or wrongly pinned. The environment of a customer workspace is built from the
+same two files by <a href="../setup/"><code>tools/setup</code></a>; <code>check</code> names a stale one under "Umgebung".</p>
+<p>The tool cache is located under <code>NX_CI_CACHE</code>, otherwise <code>%LOCALAPPDATA%/nextbsw/ci-cache</code> or
+<code>~/.cache/nextbsw/ci-cache</code> (ARM GCC unpacked about 1 GB). A tool only counts as installed once the marker file with
+the checksum has been written after unpacking.</p>
+<h2 id="what-run-decides">What <code>run</code> decides<a class="headerlink" href="#what-run-decides" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Stage</th>
+<th>Decision</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Provide the tools</td>
+<td>pinned versions from the cache (missing ones are downloaded) at the front of the <code>PATH</code>, ARM GCC also as <code>NX_ARM_GCC_BIN</code></td>
+</tr>
+<tr>
+<td>2</td>
+<td>Check</td>
+<td>versions (<code>--strict</code>: every deviation is red); release identity (ARCH-55, SYS-68): a commit with tag <code>vX.Y.Z</code> or <code>vX.Y.Z-rcN</code> (release candidate, TOOL-232) must equal the root file <code>VERSION</code>, and any other tag starting with <code>v</code> + digit on it (<code>v1.0.0-rc</code>, <code>v1.0.0-beta1</code>) is red; every visible CMake preset is built by a target entry in <code>tests.yaml</code> or listed with a reason under <code>presets.not_built</code>, otherwise red („Profil ohne CI-Entscheidung“). A preset with a cache variable of its own besides <code>NX_PROJECT</code> is a profile of its own (<code>&lt;project&gt; [VAR=value]</code>, PLAT-71)</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Tests and target builds</td>
+<td>one call <code>python -m tools.test --group all --clean --json …</code>; with <code>--strict</code> every skipped test not listed under <code>allowed_skips</code> is red</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Coverage (TOOL-40)</td>
+<td><code>tools/test/coverage.py</code> per module (<code>coverage.json</code>, <code>coverage.md</code>, table in the summary); only over the whole list (not with <code>-k</code>/<code>--group</code>/<code>--no-coverage</code>). <code>[coverage]</code> in <code>pipeline.toml</code>: <code>enabled</code>, <code>enforce</code> (below threshold red or warning, today a warning, SYS-19 stage 2), <code>strict</code> (failed measurement red or warning)</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Static analysis (PLAT-74)</td>
+<td><code>python -m tools.misra run</code> over the compile database of the demo build (<a href="../misra/"><code>tools/misra</code></a>); <code>[static_analysis]</code>: <code>enforce</code> (a finding in neither baseline nor deviation list is red), <code>strict_tools</code> (missing tool red with <code>--strict</code>, otherwise skipped); only over the whole list, <code>--no-static-analysis</code> skips it</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Artefacts</td>
+<td>ELF/HEX/MAP of the target builds with sizes</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Report</td>
+<td><code>ci-result.json</code>, <code>summary.md</code>, <code>tests.json</code>, <code>tests.log</code> in <code>--out</code> (default <code>build/ci-out</code>); what lies outside CI (MATLAB, hardware, <code>doc/confidential</code>, keys) is listed as skipped</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Provenance (SYS-67, cm-plan G1):</strong> <code>ci-result.json</code> records under <code>provenance</code> the full commit, tree hash, <code>git describe</code>,
+the OpenBSW gitlink, <code>VERSION</code> and whether the working tree was dirty, before the first stage and at the end
+(<code>provenance.end</code>); the summary prints the line <code>Stand …</code>. A HEAD that moved during the run is red with <code>--strict</code>.</p>
+<h2 id="a-customer-workspace-tool-67">A customer workspace (TOOL-67)<a class="headerlink" href="#a-customer-workspace-tool-67" title="Permanent link">&para;</a></h2>
+<p>A customer has his own repository – the <strong>workspace</strong>, the folder with <code>nextbsw.yaml</code> (ARCH-56) – with neXtBSW as
+a submodule on a fixed tag. He gets one run that judges <em>his</em> repository:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>python<span class="w"> </span>-m<span class="w"> </span>tools.ci<span class="w"> </span>run<span class="w"> </span>--workspace<span class="w"> </span>&lt;dir&gt;<span class="w"> </span>--strict<span class="w">    </span><span class="c1"># from the tree; &lt;dir&gt; is the customer repository</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>python<span class="w"> </span>-m<span class="w"> </span>tools.ci<span class="w"> </span>run<span class="w"> </span>--workspace<span class="w"> </span>&lt;dir&gt;<span class="w"> </span>--release<span class="w">   </span><span class="c1"># plus: the pinned tree must be a released baseline</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>python<span class="w"> </span>-m<span class="w"> </span>tools.ci<span class="w"> </span>check<span class="w"> </span>--workspace<span class="w"> </span>&lt;dir&gt;<span class="w">           </span><span class="c1"># pin, tools, environment, profile coverage only</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>python<span class="w"> </span>-m<span class="w"> </span>tools.ci<span class="w"> </span>template<span class="w"> </span>gitlab<span class="w"> </span>--out<span class="w"> </span>&lt;dir&gt;<span class="w">       </span><span class="c1"># the CI file of his provider</span>
+</code></pre></div>
+<p>What changes against a run in the tree, and nothing else:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>tree</th>
+<th>workspace</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>pipeline</td>
+<td><code>tools/ci/pipeline.toml</code></td>
+<td><code>&lt;workspace&gt;/ci/pipeline.toml</code> (missing: the tree's, as a fallback)</td>
+</tr>
+<tr>
+<td>tests</td>
+<td><code>tools/test/tests.yaml</code></td>
+<td><code>tools/test --workspace &lt;dir&gt;</code>: <code>&lt;workspace&gt;/ci/tests.yaml</code> plus the tree entries marked <code>in_workspace</code> (<a href="../test/"><code>tools/test</code></a>)</td>
+</tr>
+<tr>
+<td>profiles</td>
+<td><code>CMakePresets.json</code> of the tree</td>
+<td><code>CMakePresets.json</code> of the workspace; a profile without a <code>target</code> entry and without a reason under <code>presets.not_built</code> is red, exactly as in the tree</td>
+</tr>
+<tr>
+<td>build root, report</td>
+<td><code>build/…</code> of the tree</td>
+<td><code>&lt;workspace&gt;/build/nxtest</code>, <code>&lt;workspace&gt;/build/ci-out</code>; a build root inside the tree is refused</td>
+</tr>
+<tr>
+<td>first stage</td>
+<td>versions and profiles</td>
+<td><strong>the pin</strong> on top of it</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The pin stage (ARCH-55/56).</strong> <code>nextbsw.yaml</code> states which neXtBSW version the workspace is built with; the stage compares
+it with the <code>VERSION</code> of the tree the run uses and checks that <code>nextbsw.path</code> points at that tree. A deviation is <strong>red</strong>: an
+image built with another tree than the pin names cannot be reproduced. The <code>.venv</code> of the workspace is reported against
+the requirements of the pinned tree (TOOL-63) as a warning.</p>
+<p><strong><code>--release</code>: the provenance of the pinned tree (TOOL-65, gap N10).</strong> Version and path say <em>which</em> tree; they do
+not say whether it is a <strong>released</strong> one. <code>tools/nxconfig/pincheck.py</code> answers that, and the stage reports it in
+every run:</p>
+<table>
+<thead>
+<tr>
+<th>finding</th>
+<th>meaning</th>
+<th>without <code>--release</code></th>
+<th>with <code>--release</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>no-tag</code></td>
+<td>the pinned commit carries no release tag – a development pin</td>
+<td>warning</td>
+<td><strong>error</strong></td>
+</tr>
+<tr>
+<td><code>dirty</code></td>
+<td>the pinned tree has local changes (tracked or untracked)</td>
+<td>warning</td>
+<td><strong>error</strong></td>
+</tr>
+<tr>
+<td><code>tag-lightweight</code></td>
+<td><code>v&lt;version&gt;</code> exists, but as a bare pointer without author, date and message</td>
+<td>warning</td>
+<td><strong>error</strong></td>
+</tr>
+<tr>
+<td><code>tag-mismatch</code>, <code>tag-elsewhere</code></td>
+<td>the commit carries another release tag, or <code>v&lt;version&gt;</code> sits elsewhere in the history</td>
+<td>warning</td>
+<td><strong>error</strong></td>
+</tr>
+<tr>
+<td><code>tag-unreachable</code>, <code>master-unknown</code></td>
+<td><code>v&lt;version&gt;</code> hangs off a side branch, or there is no <code>master</code> to measure against</td>
+<td>warning</td>
+<td><strong>error</strong></td>
+</tr>
+<tr>
+<td><code>overlay-version</code>, <code>overlay-missing</code></td>
+<td>an overlay (<code>search.overlays</code>) names another version, or is not fetched</td>
+<td>warning</td>
+<td><strong>error</strong></td>
+</tr>
+<tr>
+<td><code>no-git</code> with <code>source: archive</code></td>
+<td>no git checkout, on purpose – the identity is <code>url</code> plus <code>sha256</code></td>
+<td>note</td>
+<td>note</td>
+</tr>
+</tbody>
+</table>
+<p>The findings are printed in every run; the flag decides whether they stop it, because a development pin is the state every
+customer starts in and a pipeline that is red from day one teaches everybody to ignore it. <code>--release</code> is the point at which
+an image leaves the house and has to be reproducible from a tag (customer-project.md 4.4 and 5.7). Every message names file,
+line and YAML path of <code>nextbsw.yaml</code> and the command that fixes it. Without <code>--workspace</code>, <code>--release</code> asks the same question
+of the tree the run builds. <code>nxconfig pin</code> prints the rule's own severities and exits 1 on an error.</p>
+<p>The same rule read on its own, without a pipeline:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>python<span class="w"> </span>tools/nxconfig<span class="w"> </span>pin<span class="w"> </span>&lt;project.yaml<span class="w"> </span><span class="p">|</span><span class="w"> </span>folder&gt;<span class="w"> </span><span class="o">[</span>--release<span class="o">]</span><span class="w"> </span><span class="o">[</span>--json<span class="o">]</span>
+</code></pre></div>
+<p><strong>Coverage and static analysis measure the customer's own code (TOOL-217, gap N19).</strong> The thresholds in
+<code>tools/test/coverage.yaml</code> and the baseline in <code>tools/misra</code> belong to the tree, so a workspace run never uses them; the
+workspace keeps its own files next to its list:</p>
+<table>
+<thead>
+<tr>
+<th>File in the workspace</th>
+<th>Content</th>
+<th>Start from</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ci/coverage.yaml</code></td>
+<td>thresholds per module of the workspace</td>
+<td><code>template coverage</code></td>
+</tr>
+<tr>
+<td><code>ci/misra/deviations.yaml</code></td>
+<td>justified deviations (required once the stage is on)</td>
+<td><code>template misra-deviations</code></td>
+</tr>
+<tr>
+<td><code>ci/misra/baseline.yaml</code></td>
+<td>inventory of known findings</td>
+<td><code>python -m tools.misra baseline --workspace &lt;dir&gt;</code></td>
+</tr>
+<tr>
+<td><code>ci/misra/defects.yaml</code>, <code>ci/misra/rules.yaml</code></td>
+<td>optional; without <code>rules.yaml</code> the tree's rule set applies</td>
+<td>-</td>
+</tr>
+</tbody>
+</table>
+<p><code>[coverage]</code> and <code>[static_analysis]</code> of <code>ci/pipeline.toml</code> switch the stages on (<code>static_analysis.compile_db</code> names the
+compile database relative to the build root). Only files of the workspace are own code; the pinned tree, the build root and
+<code>.venv</code> are context. A stage switched off is named as not run; a stage switched on without its file is red with the command
+that writes the starting point. <strong>The tree is only read:</strong> build directory and report lie in the workspace
+(<code>tools/test/test_workspace.py</code> proves it).</p>
+<h3 id="ci-files-for-a-workspace">CI files for a workspace<a class="headerlink" href="#ci-files-for-a-workspace" title="Permanent link">&para;</a></h3>
+<p><code>python -m tools.ci template &lt;name&gt; [--out &lt;workspace&gt;]</code> prints the file, or writes it where it belongs (never
+over an existing one without <code>--force</code>):</p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Place in the workspace</th>
+<th>Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>github</code></td>
+<td><code>.github/workflows/ci.yml</code></td>
+<td>checkout with the submodule and <code>fetch-depth: 0</code> (the release tag has to come along), Python from <code>&lt;tree&gt;/tools/ci/.python-version</code>, <code>tools/setup venv .</code>, <code>tools.ci setup</code>, <code>tools.ci run --strict --workspace</code>, job summary, artefacts</td>
+</tr>
+<tr>
+<td><code>gitlab</code></td>
+<td><code>.gitlab-ci.yml</code></td>
+<td><code>GIT_SUBMODULE_STRATEGY: recursive</code>, tool cache, the same four commands</td>
+</tr>
+<tr>
+<td><code>tests</code></td>
+<td><code>ci/tests.yaml</code></td>
+<td>commented starting point of the customer's own test list (format of <code>tools/test/tests.yaml</code>)</td>
+</tr>
+<tr>
+<td><code>pipeline</code></td>
+<td><code>ci/pipeline.toml</code></td>
+<td>commented starting point of the customer's own pipeline (format of this folder's <code>pipeline.toml</code>), coverage and static analysis of his own code switched on</td>
+</tr>
+<tr>
+<td><code>coverage</code></td>
+<td><code>ci/coverage.yaml</code></td>
+<td>coverage thresholds for his own code (format of <code>tools/test/coverage.yaml</code>, TOOL-217)</td>
+</tr>
+<tr>
+<td><code>misra-deviations</code></td>
+<td><code>ci/misra/deviations.yaml</code></td>
+<td>empty, commented deviation list of the static analysis of his own code (format of <code>tools/misra</code>, TOOL-217)</td>
+</tr>
+</tbody>
+</table>
+<p>Both provider files fetch a <strong>private</strong> neXtBSW repository with a token in the secret <code>NEXTBSW_TOKEN</code> (for a public tree the
+line is deleted); the templates stay thin hulls around the same two commands anyone runs locally.</p>
+<h2 id="release-publication-tool-69-gap-n15">Release publication (TOOL-69, gap N15)<a class="headerlink" href="#release-publication-tool-69-gap-n15" title="Permanent link">&para;</a></h2>
+<p>A release is more than the tag: <code>python -m tools.ci release</code> gathers what <code>doc/architecture/customer-project.md</code>
+gap N15 asks for into one local run - it never pushes and never tags the real tree by itself (<code>tools/ci/release.py</code>
+has the reasons, <code>tools/ci/test_release.py</code> proves it with temporary repositories):</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>python<span class="w"> </span>-m<span class="w"> </span>tools.ci<span class="w"> </span>release<span class="w">                                              </span><span class="c1"># VERSION, profile open, build/release/&lt;tag&gt;</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>python<span class="w"> </span>-m<span class="w"> </span>tools.ci<span class="w"> </span>release<span class="w"> </span>--version<span class="w"> </span><span class="m">0</span>.2.0<span class="w"> </span>--profile<span class="w"> </span>open,licensed<span class="w"> </span>--archive<span class="w"> </span>--report-dir<span class="w"> </span>build/ci-out
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>python<span class="w"> </span>-m<span class="w"> </span>tools.ci<span class="w"> </span>release<span class="w"> </span>--tag<span class="w"> </span>v1.0.0-rc1<span class="w"> </span>--report-dir<span class="w"> </span>build/ci-out<span class="w">   </span><span class="c1"># a release candidate (TOOL-232)</span>
+</code></pre></div>
+<p><strong>Release candidates (TOOL-232).</strong> <code>VERSION</code> stays <code>X.Y.Z</code>; a candidate of it is tagged <code>vX.Y.Z-rcN</code> (N = 1, 2, ...
+without leading zero; Release R1 is <code>v1.0.0-rc1</code>). The tag of a <code>release</code> run is <code>--tag</code>, else the release tag of
+<code>VERSION</code> that HEAD already carries (the release itself before a candidate, the newest candidate otherwise), else
+<code>v&lt;VERSION&gt;</code>. Tag plan, archive folder, <code>ci-out-&lt;tag&gt;.zip</code>, <code>RELEASE_NOTES-&lt;tag&gt;.md</code> and the default <code>--out</code> are
+named after it, and the <code>gh release create</code> line marks a candidate <code>--prerelease</code>. A tag of another form
+(<code>v1.0.0-rc</code>, <code>v1.0.0-beta1</code>) or of another version (<code>v1.0.1-rc1</code> on <code>VERSION</code> 1.0.0) is refused before anything is
+written. <code>check --release</code> / <code>run --release</code> judge a candidate on HEAD with the same rule as <code>v&lt;VERSION&gt;</code> (annotated,
+reachable from <code>master</code>, tree clean); the rule (<code>tools/ci/rctag.py</code>) lives in <code>tools/ci</code> until it moves to
+<code>tools/nxconfig/version.py</code> after R1, so <code>nxconfig pin --release</code> of a workspace does not know candidates yet.</p>
+<table>
+<thead>
+<tr>
+<th>Piece</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Tag (SYS-68)</strong></td>
+<td><code>plan_tag</code> checks the annotated tag <code>v&lt;version&gt;</code> is ready (clean, not already there, <code>VERSION</code> matches, on <code>master</code>) and prints the exact <code>git tag -a</code> command - it never runs it. <code>create_tag</code> runs it for real; run it only against a temporary test repository, never the tree you release, that command is the user's own deliberate step.</td>
+</tr>
+<tr>
+<td><strong>CI report (SYS-67)</strong></td>
+<td><code>--report-dir</code> (default <code>build/ci-out</code>) is first checked by <code>report_binding</code>: verdict pass, a <code>--strict</code> run of the tree, clean at the start, HEAD not moved, its tree hash equal to <code>HEAD^{tree}</code> of the checkout to be tagged, same <code>VERSION</code>. Then it is copied under the release tag into the archive - <code>NX_RELEASE_ARCHIVE</code>, else a per-user cache directory (<code>default_archive_root</code>) - and zipped as <code>ci-out-&lt;tag&gt;.zip</code> with a <code>.sha256</code> file next to it; the plan prints the tag-message line <code>CI report: sha256 …</code> and the <code>gh release create</code> command for the release asset (never run). With <code>--strict</code> an unbound report stops the command and names every reason. Rules and retention: <a href="../../doc/safety/verification-plan/"><code>doc/safety/verification-plan.md</code></a> section 7. A missing report is only noted.</td>
+</tr>
+<tr>
+<td><strong>Release notes</strong></td>
+<td>the lines <code>CHANGELOG.md</code> gained since the previous release tag, wherever in the file they landed - this changelog's <code>##</code> headings name tasks, not versions, so there is no per-release section to cut out instead. The first release takes the whole file. Written to <code>RELEASE_NOTES-v&lt;version&gt;.md</code> in the output folder.</td>
+</tr>
+<tr>
+<td><strong>Export per profile</strong></td>
+<td>one <code>tools/distcheck export</code> per requested profile (default <code>open</code>); a profile blocked by findings is reported, not silently forced (<code>--allow-findings</code> is for trial runs, exactly as in <code>tools/distcheck</code> itself).</td>
+</tr>
+<tr>
+<td><strong>Target repository</strong></td>
+<td><code>tools/distcheck/release-targets.yaml</code> names where an exported profile would go, once decided; without an entry the plan carries the profile as undecided (arch54-hosting, <code>customer-project.md</code> Q2) instead of a guessed address.</td>
+</tr>
+<tr>
+<td><strong>Archive + SHA-256 (<code>--archive</code>, variant 3)</strong></td>
+<td>zips each exported profile as <code>nextbsw-&lt;version&gt;-&lt;profile&gt;.zip</code> next to a <code>.sha256</code> file in <code>sha256sum</code> format.</td>
+</tr>
+</tbody>
+</table>
+<p>Everything lands under <code>--out</code> (default <code>build/release/v&lt;version&gt;</code>) as <code>release-plan.json</code>/<code>release-plan.md</code> plus
+the release notes, the exports and, with <code>--archive</code>, the zips - the plan for what would be pushed where, never
+the push itself.</p>
+<h2 id="another-provider">Another provider<a class="headerlink" href="#another-provider" title="Permanent link">&para;</a></h2>
+<p>Without any change to <code>tools/ci</code>: check out with submodules, Python from <code>tools/ci/.python-version</code>, then
+<code>python -m tools.ci setup --python-packages</code> and <code>python -m tools.ci run --strict --out ci-out</code>, and keep <code>ci-out</code> as
+artefact. Linux is pinned in <code>versions.toml</code>, but so far only proven under Windows.</p>
+<h2 id="own-tests">Own tests<a class="headerlink" href="#own-tests" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>python<span class="w"> </span>-m<span class="w"> </span>unittest<span class="w"> </span>tools/ci/test_ci.py
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>python<span class="w"> </span>-m<span class="w"> </span>unittest<span class="w"> </span>tools/ci/test_release.py
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>python<span class="w"> </span>-m<span class="w"> </span>unittest<span class="w"> </span>tools/ci/test_verification_plan.py<span class="w">   </span><span class="c1"># doc/safety/verification-plan.md against the repository</span>
+</code></pre></div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../docgen/website/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Doku-Website">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Doku-Website
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../setup/" class="md-footer__link md-footer__link--next" aria-label="Next: tools/setup – the Python environment of a workspace (TOOL-63)">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                tools/setup – the Python environment of a workspace (TOOL-63)
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright 2026 Daniel Simon Reinhardt-Probul - Apache-2.0
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.sections", "navigation.indexes", "navigation.top", "navigation.footer", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

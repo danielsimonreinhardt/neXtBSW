@@ -1,0 +1,424 @@
+# Stack profile of the demo image (projects/evalboard_s32k144_demo, S32K144, Cortex-M4F, FreeRTOS) - SYS-65.
+#
+# What this file is: the facts about the image that neither the .su files nor the call graph contain - which
+# functions run in which execution context, how large each context's stack is, and where the indirect calls of the
+# analysed contexts go. Every value names its source. The tool itself knows no board and no project
+# (tools/stackuse/README.md); a second image gets a second profile.
+#
+# Scope (doc/safety/sw-architecture.md section 7): the safety task and the interrupt stack (MSP) with every handler
+# of the image, because a safety handler nests on the same stack as all others. The other tasks are listed with
+# their entries so that their numbers are visible, but their indirect calls are not resolved here (they are outside
+# the safety part); their results are lower bounds and say so.
+#
+# References: an exact demangled symbol, or a key (qualified name without return type, parameters, template
+# arguments, clone suffix) that names every symbol with that key.
+
+name: evalboard_s32k144_demo
+
+# Cortex-M4F with lazy FP stacking (FPCCR.LSPEN/ASPEN reset values, not changed by the port): an exception entry
+# reserves the extended frame of 26 words (R0-R3, R12, LR, PC, xPSR, S0-S15, FPSCR, reserved) = 104 B plus up to
+# 4 B alignment (CCR.STKALIGN) = 108 B, on the stack in use when the exception is taken.
+exception_frame_bytes: 108
+
+# MSP: STACK_SIZE of platforms/s32k1xx/port/main/linkerscript/application.dld.in (SYS-97: NX_ISR_STACK_SIZE 0x1000,
+# before 0x400; image symbols __StackTop - __StackLimit = 0x200057e0 - 0x200047e0). FreeRTOS resets MSP to the top of
+# this stack when it starts the first task (port.c prvPortStartFirstTask); before that, main() and the start-up run on
+# it with interrupts enabled (context main-before-scheduler, on_isr_stack).
+isr_stack_bytes: 4096
+# SYS-97: guard below the MSP (NX_ISR_STACK_GUARD_SIZE 0x400 of the linker script, __StackGuardEnd - __StackGuardStart,
+# MPU descriptor MemoryProtection::STACK_GUARD_REGION: the core reads, does not write). The start-up context is an
+# accepted lower bound, so the tool takes the largest frame of the whole image (432 B): 432 + 432 = 864 B needed.
+isr_stack_guard_bytes: 1024
+
+safety_contexts: [safety]
+
+# SYS-97: every vector of the image must be covered by a context of this profile, a default handler or a weak stub
+# to it - a handler linked later (pin events, sample group, fast loop) makes the nested bound incomplete until it
+# gets a context here. Vector table: section .interrupts of platforms/s32k1xx/port/main/src/bsp/startUp.S.
+vectors:
+  section: .interrupts
+  skip: {0: "initial stack pointer (__StackTop), not a handler"}
+  # DefaultISR (-> vIllegalISR) is the handler of every vector the image does not use. SYS-170: the vector table is
+  # generated and routes every external vector (and SysTick) through its SAFE_ISR wrapper Safe_<handler>
+  # (safeLifecycle/IsrWrapper.cpp); the handler behind an unused vector is a weak alias of nxSafeIsrUnusedHandler,
+  # which branches to DefaultISR. Such a wrapper (pre hook, default handler, post hook) is the unused vector itself
+  # (status "wrapper"): not enabled, it cannot fire. A used vector's wrapper is the entry of its context below, so the
+  # hooks count in its depth.
+  default_handlers: [DefaultISR, nxSafeIsrUnusedHandler]
+  wrapper_hooks: [SafePreIsrHook, SafePostIsrHook]
+
+# Frames of functions without a .su entry that the disassembly cannot bound: none needed for this image (newlib,
+# libgcc and the assembly handlers are disassembled like every other function; see the cross-check line of the
+# report).
+frames: {}
+
+# Resolutions valid in every context: interfaces with exactly the implementations listed in this image.
+indirect:
+  # util::logger::Logger::<level>() asks IComponentMapping::isEnabled (vtable offset 0); the only implementation in
+  # the image is logger::ComponentMapping<12> (ecu/application/src/logger).
+  util::logger::Logger::debug: [logger::ComponentMapping::isEnabled]
+  util::logger::Logger::info: [logger::ComponentMapping::isEnabled]
+  util::logger::Logger::warn: [logger::ComponentMapping::isEnabled]
+  util::logger::Logger::error: [logger::ComponentMapping::isEnabled]
+  util::logger::Logger::critical: [logger::ComponentMapping::isEnabled]
+  # Logger::doLog: IComponentMapping::getLevelInfo / getComponentInfo, then ILoggerOutput::logOutput; the only
+  # ILoggerOutput in the image is logger::BufferedLoggerOutput (the entry is formatted later, in the idle task).
+  util::logger::Logger::doLog:
+    - logger::ComponentMapping::getLevelInfo
+    - logger::ComponentMapping::getComponentInfo
+    - logger::BufferedLoggerOutput::logOutput
+  # BufferedLoggerOutput::logOutput: ILoggerTime::getTimestamp (logger::DefaultLoggerTime, which calls the
+  # timestamp delegate bsw::time::TimestampProvider::getTimestampUs32Bit) and ILoggerListener::logAvailable, which
+  # no class of the image implements (no symbol), so that call has no target in this image.
+  logger::BufferedLoggerOutput::logOutput:
+    - logger::DefaultLoggerTime::getTimestamp
+    - "unsigned long etl::delegate<unsigned long ()>::function_stub<&bsw::time::TimestampProvider::getTimestampUs32Bit>(etl::delegate<unsigned long ()>::invocation_element const&)"
+  logger::DefaultLoggerTime::getTimestamp:
+    - "unsigned long etl::delegate<unsigned long ()>::function_stub<&bsw::time::TimestampProvider::getTimestampUs32Bit>(etl::delegate<unsigned long ()>::invocation_element const&)"
+  # ILifecycleComponentCallback::transitionDone: the only callback is the lifecycle manager.
+  lifecycle::LifecycleComponent::transitionDone: [lifecycle::LifecycleManager::transitionDone]
+  # Console output: ISharedOutputStream (startOutput/endOutput) and IOutputStream (write, isEof) - every
+  # implementation in the image.
+  util::format::PrintfFormatter::format: &streams
+    - util::stream::StdoutStream::write
+    - util::stream::StdoutStream::isEof
+    - util::stream::NormalizeLfOutputStream::write
+    - util::stream::NormalizeLfOutputStream::isEof
+    - util::stream::TaggedSharedOutputStream::write
+    - util::stream::TaggedSharedOutputStream::isEof
+    - util::stream::StringBufferOutputStream::write
+    - util::stream::StringBufferOutputStream::isEof
+    - util::stream::NullOutputStream::write
+    - util::stream::NullOutputStream::isEof
+    - util::format::PrintfArgumentReader::readArgument
+    - logger::EntrySerializer::EntryReader::readArgument
+  util::format::PrintfFormatter::fillWidth: *streams
+  util::format::PrintfFormatter::formatIntParam: *streams
+  util::format::PrintfFormatter::formatStringParam: *streams
+  console::AsyncConsole::terminate: &shared
+    - util::stream::TaggedSharedOutputStream::startOutput
+    - util::stream::TaggedSharedOutputStream::endOutput
+    - util::stream::SharedOutputStream::startOutput
+    - util::stream::SharedOutputStream::endOutput
+    - util::command::CommandContext::startOutput
+    - util::command::CommandContext::endOutput
+    - "void etl::delegate<void ()>::method_stub<console::InterleavedConsoleInput, &console::InterleavedConsoleInput::onLineProcessed>(etl::delegate<void ()>::invocation_element const&)"
+  # commandExecuted inlines AsyncConsole::terminate (the onLineProcessed delegate)
+  console::AsyncConsole::commandExecuted: *shared
+  # The stream classes decorate each other (TaggedSharedOutputStream -> NormalizeLfOutputStream -> StdoutStream,
+  # CommandContext -> the console's shared stream); every call from one stream to the next may reach any stream.
+  util::stream::NormalizeLfOutputStream::write: *streams
+  util::stream::NormalizeLfOutputStream::isEof: *streams
+  util::stream::TaggedSharedOutputStream::isEof: *streams
+  util::stream::TaggedSharedOutputStream::startOutput: &sharedAndStreams
+    - util::stream::StdoutStream::write
+    - util::stream::StdoutStream::isEof
+    - util::stream::NormalizeLfOutputStream::write
+    - util::stream::NormalizeLfOutputStream::isEof
+    - util::stream::TaggedSharedOutputStream::write
+    - util::stream::TaggedSharedOutputStream::isEof
+    - util::stream::StringBufferOutputStream::write
+    - util::stream::StringBufferOutputStream::isEof
+    - util::stream::NullOutputStream::write
+    - util::stream::NullOutputStream::isEof
+    - util::stream::TaggedSharedOutputStream::startOutput
+    - util::stream::TaggedSharedOutputStream::endOutput
+    - util::stream::SharedOutputStream::startOutput
+    - util::stream::SharedOutputStream::endOutput
+    - util::command::CommandContext::startOutput
+    - util::command::CommandContext::endOutput
+  util::stream::TaggedSharedOutputStream::endOutput: *sharedAndStreams
+  util::stream::SharedOutputStream::startOutput: *sharedAndStreams
+  util::command::CommandContext::startOutput: *sharedAndStreams
+  util::command::CommandContext::endOutput: *sharedAndStreams
+  util::stream::TaggedOutputHelper::endLine: *streams
+  util::stream::TaggedOutputHelper::writeByte: *streams
+  util::stream::TaggedOutputHelper::writeBytes: *streams
+  # the charIo API table of bspCharInputOutput (charIo.cpp) holds SerialLogger__outchar as __outchar
+  charIO__outchar: [SerialLogger__outchar]
+  # the line delegate of the console input: InterleavedConsoleInput::onLineProcessed calls the InputLine output
+  # hooks (IOutputStream of the terminal)
+  "void etl::delegate<void ()>::method_stub<console::InterleavedConsoleInput, &console::InterleavedConsoleInput::onLineProcessed>(etl::delegate<void ()>::invocation_element const&)": *streams
+  # GroupCommand::lookupCommand: ICommand::getId of the sub-commands (vtable offset 12), which a GroupCommand answers
+  # from its own table (getInfo)
+  util::command::GroupCommand::lookupCommand: [safety::SafetyCommand::getInfo, safety::AdcSafetyCommand::getInfo]
+  # ETL_ASSERT calls etl::private_error_handler::assert_handler<0>::assert_function_ptr, which main.cpp sets to
+  # safety::etlAssertFailed (SYS-98, ecu/safety/safeSupervisor/src/safeSupervisor/SafeSupervisor.cpp) before anything
+  # else runs
+  bsp::Uart::getInstance: &etlAssert ["safety::etlAssertFailed(etl::exception const&)"]
+  bsp::getUartRxBuffer: *etlAssert
+  # etl::singleton_base<T>::instance() asserts that the singleton exists (ETL_ASSERT, inlined): the runtime hooks
+  # of asyncFreeRtos (StaticContextHook) and CanSystem::instance() in the CAN receive interrupt
+  asyncEnterIsrGroup: *etlAssert
+  asyncLeaveIsrGroup: *etlAssert
+  asyncEnterTask: *etlAssert
+  asyncLeaveTask: *etlAssert
+  call_can_isr_RX: *etlAssert
+  # FlexCANDevice::transmitISR calls the frame-sent delegate fFrameSentCallback, which the transceiver's constructor
+  # sets to CanFlex2Transceiver::canFrameSentCallback (external/openbsw/platforms/s32k1xx/bsp/canflex2Transceiver,
+  # CanFlex2Transceiver.cpp; the only FlexCANDevice construction in the image); an empty delegate asserts (ETL_ASSERT
+  # in etl::delegate::operator()). canFrameSentCallback only queues the runnable _canFrameSent
+  # (async::execute -> TaskContext::execute -> RunnableExecutor::enqueue, asyncFreeRtos), which runs
+  # canFrameSentAsyncCallback - the listeners and the DoCAN transmit path below - later in the CAN task.
+  # SYS-97 (AN-084): SYS-65 listed canFrameSentAsyncCallback here as well; the interrupt never calls it, and with it
+  # the unresolved DoCAN callbacks made the CAN level a lower bound.
+  bios::FlexCANDevice::transmitISR:
+    - "void etl::delegate<void ()>::method_stub<bios::CanFlex2Transceiver, &bios::CanFlex2Transceiver::canFrameSentCallback>(etl::delegate<void ()>::invocation_element const&)"
+    - "safety::etlAssertFailed(etl::exception const&)"
+  # ICANFrameSentListener / IFilteredCANFrameSentListener::canFrameSent: the implementations in the image (reached
+  # from canFrameSentAsyncCallback in the CAN task, see above)
+  bios::CanFlex2Transceiver::canFrameSentAsyncCallback: &frameSent
+    - "{anon}::TxCounter::canFrameSent"
+    - docan::DoCanPhysicalCanTransceiver::canFrameSent
+  can::AbstractCANTransceiver::notifySentListeners: *frameSent
+  # IDoCanFrameTransmitterCallback::dataFramesSent: DoCanTransmitter is the only implementation
+  docan::DoCanPhysicalCanTransceiver::canFrameSent: [docan::DoCanTransmitter::dataFramesSent]
+  # SYS-97 (AN-084, finding STK-6): the DoCAN transmit path behind canFrameSent -> DoCanTransmitter::dataFramesSent
+  # (external/openbsw/libs/bsw/docan, DoCanTransmitter.h). No analysed context reaches it since the transmit
+  # interrupt is resolved to canFrameSentCallback (above); the resolutions stay so that a context that does reach it
+  # (a CAN task context, or a port that calls canFrameSentAsyncCallback from the interrupt) is not a lower bound.
+  # Every indirect call of the functions, read from the disassembly of the image; one DoCAN stack in the image
+  # (ecu/uds DiagStack, bus of the diagnosis). Such a context would still report the cycle write ->
+  # notifySentListeners -> canFrameSent -> dataFramesSent -> sendNextFrames -> startSendDataFrames -> write, which
+  # the send lock of DoCanTransmitter bounds - an argument for whoever adds that context, not made here.
+  # - ETL_ASSERT (RemoveGuard/setRemoveLock, the counter checks, ipool::destroy, the empty-delegate check of
+  #   DoCanParameters::nowUs): assert_function_ptr = safety::etlAssertFailed (main.cpp, SYS-98)
+  # - IDoCanTickGenerator::tickNeeded (vtable offset 0; GCC compares the slot with the only implementation and calls
+  #   it through blx otherwise): uds::app::DiagStack is the only tick generator
+  # - DoCanParameters::nowUs(): the delegate DiagStack.cpp creates, function_stub<&systemUs>
+  # - IDoCanDataFrameTransmitter::startSendDataFrames / cancelSendDataFrames (vtable offset 4): the only frame
+  #   transmitter is DoCanPhysicalCanTransceiver
+  # - ITransportMessageProcessedListener::transportMessageProcessed (vtable offset 0), the notification listener
+  #   a sender passes to DoCanTransmitter::send: every implementation in the image (DiagDispatcher with its thunk,
+  #   IncomingDiagConnection, DoCanReceiver, DefaultTransportMessageProcessedListener; DoIP and
+  #   OutgoingDiagConnection are not linked)
+  docan::DoCanTransmitter::dataFramesSent:
+    - "safety::etlAssertFailed(etl::exception const&)"
+    - uds::app::DiagStack::tickNeeded
+  docan::DoCanTransmitter::handleResult:
+    - "safety::etlAssertFailed(etl::exception const&)"
+    - &docanNowUs "unsigned long etl::delegate<unsigned long ()>::function_stub<&uds::app::(anonymous namespace)::systemUs>(etl::delegate<unsigned long ()>::invocation_element const&)"
+    - docan::DoCanPhysicalCanTransceiver::cancelSendDataFrames
+  docan::DoCanTransmitter::sendNextFrames: [docan::DoCanPhysicalCanTransceiver::startSendDataFrames]
+  docan::DoCanTransmitter::releaseRemoveLock:
+    - "safety::etlAssertFailed(etl::exception const&)"
+    - uds::DiagDispatcher::transportMessageProcessed
+    - "non-virtual thunk to uds::DiagDispatcher::transportMessageProcessed(transport::TransportMessage&, transport::ITransportMessageProcessedListener::ProcessingResult)"
+    - uds::IncomingDiagConnection::transportMessageProcessed
+    - docan::DoCanReceiver::transportMessageProcessed
+    - transport::DefaultTransportMessageProcessedListener::transportMessageProcessed
+  # startSendDataFrames writes the frame through ICanTransceiver::write(frame, listener) (vtable offset 44): the only
+  # transceiver class in the image is bios::CanFlex2Transceiver
+  docan::DoCanPhysicalCanTransceiver::startSendDataFrames:
+    - "bios::CanFlex2Transceiver::write(can::CANFrame const&, can::ICANFrameSentListener&)"
+  # DoCanFrameCodec: IDoCanFrameSizeMapper::mapFrameSize (only DoCanDefaultFrameSizeMapper) and ETL_ASSERT
+  docan::DoCanFrameCodec::adjustFrame: [docan::DoCanDefaultFrameSizeMapper::mapFrameSize]
+  docan::DoCanFrameCodec::encodeDataFrame: ["safety::etlAssertFailed(etl::exception const&)"]
+  # DoCanReceiver::transportMessageProcessed releases the message at its provider, the helper of the transport layer
+  # (AbstractTransportLayer::fProvidingListenerHelper); the helper forwards to fpMessageProvider, which only
+  # DiagTransportRouter sets (ecu/uds/src/transport/routing/DiagTransportRouter.cpp) - so no helper-to-helper cycle
+  docan::DoCanReceiver::transportMessageProcessed: &releaseMessage
+    - transport::AbstractTransportLayer::TransportMessageProvidingListenerHelper::releaseTransportMessage
+    - "non-virtual thunk to transport::AbstractTransportLayer::TransportMessageProvidingListenerHelper::releaseTransportMessage(transport::TransportMessage&)"
+    - transport::DiagTransportRouter::releaseTransportMessage
+    - "non-virtual thunk to transport::DiagTransportRouter::releaseTransportMessage(transport::TransportMessage&)"
+  transport::AbstractTransportLayer::TransportMessageProvidingListenerHelper::releaseTransportMessage: &routerRelease
+    - transport::DiagTransportRouter::releaseTransportMessage
+    - "non-virtual thunk to transport::DiagTransportRouter::releaseTransportMessage(transport::TransportMessage&)"
+  "non-virtual thunk to transport::AbstractTransportLayer::TransportMessageProvidingListenerHelper::releaseTransportMessage(transport::TransportMessage&)": *routerRelease
+  # vfctprintf of bspCharInputOutput passes fctprintf_helper as the output function (bspIo.cpp)
+  out_wrapped_function: [fctprintf_helper]
+  # printf of the stand-alone printf library (_vsnprintf, out_rev_): the output function pointer is one of the
+  # library's out_* functions
+  _vsnprintf: &printfOut [out_buffer, out_discard, out_wrapped_function]
+  out_rev_: *printfOut
+  # LifecycleManager::transitionDone: the timestamp delegate _getTimestamp and Logger::debug's isEnabled (inlined)
+  lifecycle::LifecycleManager::transitionDone:
+    - "unsigned long etl::delegate<unsigned long ()>::function_stub<&bsw::time::TimestampProvider::getTimestampUs32Bit>(etl::delegate<unsigned long ()>::invocation_element const&)"
+    - logger::ComponentMapping::isEnabled
+
+# Cycles that are bounded in this image, not open recursion. The tool counts every member of such a cycle as often as
+# given here (default once) - an upper bound when the argument holds.
+# - The output streams decorate each other, each class at most once on a chain (Tagged -> NormalizeLf -> Stdout;
+#   CommandContext -> Tagged).
+# - SYS-98: the ETL assert handler (safety::etlAssertFailed) no longer prints through etl::print and the UART driver,
+#   so the cycle ETL_ASSERT -> handler -> Uart::getInstance -> ETL_ASSERT of SYS-65 is gone.
+bounded_recursion:
+  - util::stream::StdoutStream::write
+  - util::stream::StdoutStream::isEof
+  - util::stream::NormalizeLfOutputStream::write
+  - util::stream::NormalizeLfOutputStream::isEof
+  - util::stream::TaggedSharedOutputStream::write
+  - util::stream::TaggedSharedOutputStream::isEof
+  - util::stream::StringBufferOutputStream::write
+  - util::stream::StringBufferOutputStream::isEof
+  - util::stream::NullOutputStream::write
+  - util::stream::NullOutputStream::isEof
+  - util::stream::TaggedSharedOutputStream::startOutput
+  - util::stream::TaggedSharedOutputStream::endOutput
+  - util::stream::SharedOutputStream::startOutput
+  - util::stream::SharedOutputStream::endOutput
+  - util::command::CommandContext::startOutput
+  - util::command::CommandContext::endOutput
+  - util::stream::TaggedOutputHelper::endLine
+  - util::stream::TaggedOutputHelper::writeByte
+  - util::stream::TaggedOutputHelper::writeBytes
+
+# Dispatch of every OpenBSW task (external/openbsw/libs/bsw/asyncFreeRtos): the FreeRTOS task function calls the
+# task delegate (defaultTaskFunction -> dispatch()), which calls the executor delegates for runnables
+# (RunnableExecutor::handleEvent) and timeouts (TaskContext::handleTimeout); both then call IRunnable::execute of
+# the entries below.
+_dispatch: &dispatch
+  - async::TaskContext::staticTaskFunction
+  - "void etl::delegate<void (async::TaskContext<async::FreeRtosAdapter<async::AsyncBinding> >&)>::function_stub<&async::TaskContext<async::FreeRtosAdapter<async::AsyncBinding> >::defaultTaskFunction>(etl::delegate<void (async::TaskContext<async::FreeRtosAdapter<async::AsyncBinding> >&)>::invocation_element const&, async::TaskContext<async::FreeRtosAdapter<async::AsyncBinding> >&)"
+  - "async::TaskContext<async::FreeRtosAdapter<async::AsyncBinding> >::dispatch()"
+  - - "void etl::delegate<void ()>::method_stub<async::RunnableExecutor<async::IRunnable, async::EventPolicy<async::TaskContext<async::FreeRtosAdapter<async::AsyncBinding> >, 0u>, async::Lock>, &async::RunnableExecutor<async::IRunnable, async::EventPolicy<async::TaskContext<async::FreeRtosAdapter<async::AsyncBinding> >, 0u>, async::Lock>::handleEvent>(etl::delegate<void ()>::invocation_element const&)"
+    - "void etl::delegate<void ()>::method_stub<async::TaskContext<async::FreeRtosAdapter<async::AsyncBinding> >, &async::TaskContext<async::FreeRtosAdapter<async::AsyncBinding> >::handleTimeout>(etl::delegate<void ()>::invocation_element const&)"
+  - "async::TaskContext<async::FreeRtosAdapter<async::AsyncBinding> >::handleTimeout()"
+
+# A task's own stack additionally holds, when it is preempted: the exception frame (108 B, above) and the context
+# FreeRTOS saves in PendSV_Handler (R4-R11, LR = 36 B, plus S16-S31 = 64 B when the task used the FPU) = 208 B.
+# Interrupt handlers themselves run on the MSP.
+contexts:
+  # PLAT-107: `bsw_task: safety` - the stack is the one of the build (generated tasks/BswTasks.h,
+  # NX_BSW_TASK_STACK_SAFETY = project.yaml bsw_tasks.safety.stack_bytes, default 2048 of
+  # ecu/configuration/taskStacks.yaml; the 2048 below only applies to a run without that header), and the worst case
+  # must fit below the floor of the task (min_stack_bytes) - a floor below it fails the run.
+  - name: safety
+    kind: task
+    bsw_task: safety
+    stack_bytes: 2048       # without BswTasks.h: safety_task_stackSize, ecu/configuration/include/app/appConfig.h
+    context_bytes: 208
+    note: >
+      Safety task (TASK_SAFETY, highest application priority): SafetySystem::execute -> SafetyManager::cyclic every
+      10 ms, the lifecycle transitions of the safety component (init, run, shutdown) and the console command
+      "safety" (SafetyCommand, wrapped by AsyncCommandWrapper in this context; test and fault-injection functions,
+      gap analysis task 19).
+    dispatch: *dispatch
+    entries:
+      - systems::SafetySystem::execute
+      - systems::SafetySystem::init
+      - systems::SafetySystem::run
+      - systems::SafetySystem::shutdown
+      - console::AsyncCommandWrapper::execute()
+    indirect:
+      # the wrapper of this context wraps SafetyCommand (SafetySystem, _asyncCommandWrapperForSafetyCommand)
+      console::AsyncCommandWrapper::execute(): [util::command::GroupCommand::execute]
+      util::command::GroupCommand::execute: [safety::SafetyCommand::executeCommand, safety::SafetyCommand::getInfo]
+
+  # The same task split by entry (informative, same stack): the cyclic supervision alone is what a product build
+  # without console test commands (gap analysis task 19) keeps.
+  - name: safety-cyclic-only
+    kind: task
+    bsw_task: safety
+    stack_bytes: 2048
+    context_bytes: 208
+    note: Safety task, only the cyclic supervision (SafetySystem::execute -> SafetyManager::cyclic).
+    dispatch: *dispatch
+    entries: [systems::SafetySystem::execute]
+  - name: safety-console-only
+    kind: task
+    bsw_task: safety
+    stack_bytes: 2048
+    context_bytes: 208
+    note: Safety task, only the console command "safety" (AsyncCommandWrapper -> SafetyCommand).
+    dispatch: *dispatch
+    entries: [console::AsyncCommandWrapper::execute()]
+    indirect:
+      console::AsyncCommandWrapper::execute(): [util::command::GroupCommand::execute]
+      util::command::GroupCommand::execute: [safety::SafetyCommand::executeCommand, safety::SafetyCommand::getInfo]
+
+  # ------------------------------------------------------------------ interrupt handlers, all on the MSP
+  # Levels: NVIC priority as the image sets it (lower = more urgent); HardFault is fixed above every level.
+  - name: isr-hardfault
+    kind: isr
+    level: -1
+    note: HardFault, and BusFault/UsageFault which escalate to it; customHardFaultHandler switches the power outputs off first (SM-17), then dumps and resets.
+    entries: [HardFault_Handler, BusFault_Handler, UsageFault_Handler]
+  - name: isr-memory-faults
+    kind: isr
+    level: 0
+    note: >
+      ERM double-bit ECC and FTFC fault (SM-15, SM-16) through the SAFE_ISR wrappers, and the watchdog pre-reset
+      interrupt (WDOG_EWM, branches to customHardFaultHandler). The image does not set their NVIC level, so they keep
+      the reset value 0; handlers of one level do not preempt each other.
+    entries: [Safe_ERM_double_fault_IRQHandler, Safe_FTFC_Fault_IRQHandler, Safe_WDOG_EWM_IRQHandler]
+  - name: isr-deadman
+    kind: isr
+    level: 4
+    note: >
+      LPIT0 channel 1, halt deadman (SM-06, IO-32): NX_IRQ_MAX_SYSCALL_LEVEL - 1 = 4
+      (platforms/s32k1xx/port/main/src/integration/LpitHaltDeadman.h), above the RTOS syscall boundary.
+    entries: [LPIT0_Ch1_IRQHandler]
+  - name: isr-can0
+    kind: isr
+    level: 8
+    note: FlexCAN0 message buffers, NX_IRQ_LEVEL_CAN_CAN0 (rank 3, generated interruptPriorities.h).
+    entries: [Safe_CAN0_ORed_0_15_MB_IRQHandler, Safe_CAN0_ORed_16_31_MB_IRQHandler]
+  # COM-05/ARCH-61: the diagnostic CAN (board bus CAN1 on FlexCAN2, 16 message buffers, one vector) has a handler of
+  # its own since the demo uses that bus; same NVIC level as CAN0, so the two cannot nest (found by PLAT-107: the
+  # vector was UNCOVERED and stackuse-demo red)
+  - name: isr-can1
+    kind: isr
+    level: 8
+    note: FlexCAN2 message buffers 0-15 (board bus CAN1), NX_IRQ_LEVEL_CAN_CAN1 (rank 3, generated interruptPriorities.h).
+    entries: [Safe_CAN2_ORed_0_15_MB_IRQHandler]
+  - name: isr-uart
+    kind: isr
+    level: 9
+    note: LPUART2 console, NX_IRQ_LEVEL_UART_UART (rank 4, generated interruptPriorities.h); SYS-170 through its wrapper.
+    entries: [Safe_LPUART2_RxTx_IRQHandler]
+  - name: isr-kernel
+    kind: isr
+    level: 15
+    note: >
+      FreeRTOS SysTick (SYS-170: through its wrapper Safe_SysTick_Handler), PendSV (context switch) and SVC (start of
+      the first task) at configKERNEL_INTERRUPT_PRIORITY, the lowest level; PendSV and SVC are not wrapped (unit-design
+      5.4).
+    entries: [Safe_SysTick_Handler, PendSV_Handler, SVC_Handler]
+  # Not listed: the vectors the demo does not enable (LPUART0/1, PORTA-E, FlexCAN1, FlexCAN2 16-31, ...) are SAFE_ISR
+  # wrappers of the default handler (vIllegalISR, prints and stops); a disabled vector cannot preempt anything.
+
+  # ------------------------------------------------------------------ start-up on the MSP (SYS-97)
+  - name: main-before-scheduler
+    kind: task
+    on_isr_stack: true
+    context_bytes: 0
+    note: >
+      main() from the reset handler up to the first task: startUp.S sets SP = __StackTop and calls main on the MSP;
+      vTaskStartScheduler runs FREERTOS_TASKS_C_ADDITIONS_INIT (asyncInitialized -> app::startApp, the lifecycle set
+      up) on the same stack before prvPortStartFirstTask resets MSP to __StackTop. Interrupts are enabled during this
+      phase (startUp.S cpsie i, the vectors main enables), so every level can nest on top of it.
+    entries: [Reset_Handler]
+    lower_bound_accepted: >
+      the set-up of the application in app::startApp (lifecycle components, systems, console commands, etl::print
+      visitors) is reached through virtual calls this profile does not resolve. The phase runs once, before the
+      scheduler and before any output is driven by the application; an overflow here writes into the guard below the
+      interrupt stack and ends in the hard fault reaction (outputs off, reset), never in silent corruption. Evidence
+      for the real depth: the fill-pattern high-water mark of the interrupt stack (board check of SYS-97), which
+      includes this phase.
+    indirect:
+      # static constructors: __libc_init_array calls every function pointer of .init_array
+      __libc_init_array: ["table:.init_array"]
+      # etl::print in app::run: ETL_ASSERT of the format parser and the variant visitors of the format arguments
+      # (the visitor tables in .first hold only do_visit_single instances)
+      app::run: ["safety::etlAssertFailed(etl::exception const&)", etl::private_variant::do_visit_single]
+      etl::private_format::parse_format_spec: &etlOnly ["safety::etlAssertFailed(etl::exception const&)"]
+      etl::private_format::parse_nested_replacement: *etlOnly
+      # FREERTOS_TASKS_C_ADDITIONS_INIT: FreeRtosAdapter::runningHook -> _startApp, the delegate app::run passes
+      # (AsyncAdapter::run(create<&startApp>())), ETL_ASSERT for an empty delegate
+      asyncInitialized:
+        - "safety::etlAssertFailed(etl::exception const&)"
+        - "void etl::delegate<void ()>::function_stub<&app::startApp>(etl::delegate<void ()>::invocation_element const&)"
+      # static task memory of idle and timer task (ETL_ASSERT on the task index)
+      vApplicationGetIdleTaskMemory: *etlOnly
+      vApplicationGetTimerTaskMemory: *etlOnly
+      # the MCU start reason source: McuResetReason.cpp registers startReasonsOfThisStart
+      ecustate::mcuStartReasons: ["(anonymous namespace)::startReasonsOfThisStart()"]
+      # hard fault dump of the previous start: formatDump(dump, &printLine) (HardFaultDumpRegion.cpp)
+      "(anonymous namespace)::writeLine(void (*)(char const*), char const*, ...)": ["(anonymous namespace)::printLine(char const*)"]
+      # SBC access: ISpiTransfer::transfer (vtable offset 0), the only implementation is the LPSPI driver
+      sbc::Uja113x::read: &spiTransfer [bsp::spi::Lpspi::transfer]
+      sbc::compensateWatchdogTestReset: *spiTransfer
+      # logger start: ComponentConfig::start calls the level reader (GCC compares with readLevels) through blx
+      "void etl::delegate<void (util::logger::ILoggerOutput&)>::method_stub<logger::ComponentConfig<(unsigned char)12>, &logger::ComponentConfig<(unsigned char)12>::start>(etl::delegate<void (util::logger::ILoggerOutput&)>::invocation_element const&, util::logger::ILoggerOutput&)": [logger::ComponentConfig::readLevels]

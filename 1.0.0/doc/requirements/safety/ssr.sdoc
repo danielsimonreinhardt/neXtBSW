@@ -1,0 +1,4034 @@
+[DOCUMENT]
+TITLE: Software safety requirements (SSR)
+OPTIONS:
+  VIEW_STYLE: Table
+
+[GRAMMAR]
+IMPORT_FROM_FILE: @nextbsw
+
+[TEXT]
+STATEMENT: >>>
+Working state: dev at c8bf73bc (after v0.2.0)
+
+Moved from doc/safety/requirements.yaml by DOC-21 step 3 (content unchanged, decision Q2: this document is the only
+source). Relations: Parent with the role DerivedFrom = derived_from (assumed safety goal ASG-* or assumption of use
+AoU-*), Parent with the role Specifies = mechanisms (SM-*), a Parent without a role = the BSW requirement the SSR
+constrains (none yet). FINDINGS, CODE (one 'file :: symbol' per line) and NOTE as before. Check and matrix: python
+tools/trace check, python tools/trace matrix (doc/safety/traceability.md), CI entry safety-trace. The header of
+requirements.yaml follows; its traceability chain and the rules on IDs, status, clauses and review status were
+brought up to date by DOC-48 (2026-10-04), each change marked there.
+
+Update DOC-43 (step 3b, 2026-10-02): every lettered clause is a CLAUSE node of its own with the UID SSR-nnn(a), its
+text, VERIFICATION and TESTS (entries of tools/test/tests.yaml that name the requirement and verify this clause),
+and a Parent relation to its SSR; a requirement with clauses has no STATEMENT of its own. A clause is never
+renumbered; a dropped clause keeps its UID with STATUS withdrawn. REVIEW_STATUS (proposed, rework, inspected,
+accepted) is a field of every SSR, and of a clause where it differs. tools/trace checks the clause nodes (UID,
+parent, letters in order, verification within the requirement's, every test entry known and naming the
+requirement) and warns about a clause verified by test without a test entry and about a test entry that no clause
+claims.
+
+Update DOC-44 (2026-10-02, commit 7c071ae9): the test gaps per clause of DOC-43 were closed (tests allocated to
+clauses, two new test entries, SSR-068(c) and SSR-091(e) argued as review) and **11 clauses were added**, review
+status proposed: SSR-005(g) ... SSR-005(k) for the command hold of SYS-150/151/161, SSR-020(e), SSR-028(c),
+SSR-028(d), SSR-040(e), SSR-051(c) and SSR-088(d). The document now has 59 requirements and 160 clause nodes (159 in
+force, SSR-010(d) withdrawn). This change came after the release of 2026-10-02 and is not accepted yet (document
+register, anomaly-register.md section 6).
+
+Update DOC-51 (2026-10-04, after the confirmation review CM-07, record doc/safety/reviews/records/CR-07-1.md, the
+user under deviation D-01): the inspection **INS-SSR-02** (review section at the end) inspected SSR-086, SSR-089 ...
+SSR-092, the 11 clauses of DOC-44 and SSR-024(d) and judged the 27 clauses with more than one "shall" (decision ZD);
+their review status is now inspected (SSR-024(d) accepted: R4 confirmed in CM-07). **SM-26 and SM-27 are not credited
+for release R1** (mechanisms.sdoc CREDITED no, decision ZD): SSR-089 and SSR-092 specify SM-23 only, SSR-091
+specifies SM-34 instead (the withdrawal is a reaction of the safe supervisor to a device fault report), SSR-090 (the
+configuration check) specifies no mechanism of the catalogue; their text is unchanged, the NOTE of SSR-089 is brought to the state of the
+tree. The findings R3, R4, R5 and R7 of INS-SSR-01 (carried out by DOC-43) were confirmed by the reviewer in
+CM-07 (anomalies AN-048 ... AN-050, AN-052 closed). Still 59 requirements and 160 clause nodes.
+
+Update ZE (decision ZE of CM-07, commit 7bec5034 of DOC-51, 2026-10-04): SSR-062 is partial - CODE the age qualifier
+that tools/rtegen generates (AgeSupervision, age_link), clause (a) tested by rtegen-age, clause (b) (the event to the
+safe supervisor) open with SYS-99 (gap G3), the board proof with SYS-28. tools/trace check warns "SSR-062(b)
+verification test, no test entry"; the reviewer accepted this warning until SYS-99 (re-check of CR-07-1, ZE).
+
+Re-check of CR-07-1 (2026-10-04, the user under deviation D-01, at dev 898dbcd1): INS-SSR-02 confirmed (R4, ZD; it is
+an author-side inspection, the re-check is its check), the allocation of SSR-091 to SM-34 accepted; this document is
+released with concept issue 3 (verdict accepted, CM-07 closed). Header and state line brought up by DOC-57.
+
+.. code-block:: text
+
+    neXtBSW software safety requirements (SYS-22) - stage 1, ASIL B, Safety Element out of Context.
+
+    Decision of the user 2026-09-21 (decision board `safety-anforderungen`): requirements as YAML in the repository
+    with stable IDs, linked to code and to tests, matrix generated and checked in the CI.
+
+    Traceability chain (DOC-48: the catalogue nodes of DOC-21 step 3 instead of the concept tables):
+      ASG-* / AoU-*  (doc/requirements/safety/goals.sdoc and assumptions.sdoc, moved there from concept.md
+                      sections 2.2 and 4; the proposed AoU-24/25 of fmea.md section 6 are nodes there too)
+        -> SSR-*     (this file; Parent relation with the role DerivedFrom)
+        -> SSR-nnn(x) (CLAUSE nodes of this file, Parent relation to their SSR; since DOC-43)
+        -> SM-*      (doc/requirements/safety/mechanisms.sdoc; Parent relation with the role Specifies) and
+                      findings / gaps / tasks F*, G*, T*, N* (FINDINGS)
+        -> code      (CODE: file :: symbol, checked for existence; plus `// nx-req: SSR-nnn` tags in the code)
+        -> tests     (tools/test/tests.yaml: field `requirements: [SSR-nnn, ...]` of a test entry; per clause the
+                      field TESTS)
+    Check and matrix: `python tools/trace check`, `python tools/trace matrix` (doc/safety/traceability.md); CI entry
+    `safety-trace` in tools/test/tests.yaml.
+
+    Rules
+    - IDs are stable: an ID is never reused or renumbered. A requirement or clause that is dropped keeps its ID
+      with STATUS withdrawn (status value since DOC-43; first use SSR-010(d)).
+    - Stage 1 credits base-software mechanisms only (user, `abn-sys19`, concept section 1.4): a stage-1 requirement
+      must not name SM-33, SM-52 or SM-40 ... SM-43; the check refuses it.
+    - status: implemented (in the code, no known limit), partial (in the code, with a known limit named in `findings`),
+      open (not in the code yet - a proposed task or gap; no test expected), withdrawn (dropped, ID kept; DOC-43).
+    - verification: test | review | analysis | board. "test" means an entry of tools/test/tests.yaml must name the
+      requirement; review-only evidence is reported as "requirement without test" (fmea.md F15).
+    - No invented numbers (concept section 0): every time below is a code constant, a value derived from one, or a
+      configured value, and says so.
+    - Text in English, like the rest of doc/ (CLAUDE.md, user 2026-09-17).
+    - `text` is free of implementation detail (SYS-72): it names the element that carries the requirement (safe
+      supervisor, safety task, generator, build, bootloader ...) and the observable behaviour, but no function, class,
+      constant, event identifier, file, register or configuration key. Those go to `note` ("Realisation: ...") and to
+      `code`. Other requirements are cited by their ID.
+    - `text` is atomic (SYS-72): one statement with one "shall" per clause. A requirement that still bundles several
+      statements lists them as lettered clauses (a), (b) ..., each verifiable on its own and citable as SSR-nnn(a);
+      since DOC-43 every clause is a CLAUSE node of its own whose UID is that citation, SSR-nnn(x) (no new IDs).
+      A check together with the event it raises on a failure counts as one statement.
+    - Review status: the field REVIEW_STATUS of every SSR (proposed, rework, inspected, accepted), and of a clause
+      where it differs (since DOC-43). The inspection record stays in the section "Review status and inspection
+      record" at the end of this file.
+<<<
+
+[[SECTION]]
+TITLE: Reaction and safe state
+
+[SSR]
+UID: SSR-001
+TITLE: Reaction decided in one place
+FINDINGS: F1
+STAGE: 1
+ASIL: B
+STATUS: implemented
+VERIFICATION: test, review
+REVIEW_STATUS: inspected
+CODE: >>>
+ecu/safety/safeSupervisor/src/safeSupervisor/SafeSupervisor.cpp :: SafeSupervisor::handle
+<<<
+NOTE: >>>
+Realisation: events are raised on monitors of the supervisor (trigger, check, hit); the single place of (c) is
+SafeSupervisor::handle(). Clause (c) is verified by review. SYS-117 added SD to (b): an event of the closed list
+whose project mapping names safe-output groups gets SD instead of its fail-safe reaction, decided in handle()
+as well (SSR-087).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: ASG-06
+  ROLE: DerivedFrom
+
+[CLAUSE]
+UID: SSR-001(a)
+STATEMENT: >>>
+Every safety mechanism of the base software shall report a detected fault only as an event to the safe
+supervisor, optionally with one context word, and shall not choose a reaction itself.
+<<<
+VERIFICATION: test
+TESTS: kernel-fault-reaction, kernel-fault-reaction-mutations, no-heap-operator-delete
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-001
+
+[CLAUSE]
+UID: SSR-001(b)
+STATEMENT: >>>
+The safe supervisor shall assign to every event it defines exactly one reaction out of S3 (report and
+continue), SD (degraded, only as SSR-087 allows), S1, S1 held and S1 + S2.
+<<<
+VERIFICATION: test
+TESTS: safe-supervisor, safe-supervisor-bare, safe-supervisor-degraded, safety-reset-console, safety-reset-console-mutations, safe-console
+REVIEW_STATUS: accepted
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-001
+
+[CLAUSE]
+UID: SSR-001(c)
+STATEMENT: The reaction to an event shall be selected at exactly one place of the safe supervisor.
+VERIFICATION: review
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-001
+
+[SSR]
+UID: SSR-002
+TITLE: De-energise before every safety reset
+STATEMENT: >>>
+For every event whose reaction includes a software reset (S2), the safe supervisor shall complete S1 (every
+entry of the safe outputs table, SSR-005, driven to its inactive level) before it requests the reset.
+<<<
+STAGE: 1
+ASIL: B
+STATUS: implemented
+VERIFICATION: test
+REVIEW_STATUS: inspected
+CODE: >>>
+ecu/safety/safeSupervisor/src/safeSupervisor/SafeSupervisor.cpp :: SafeSupervisor::handle
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: ASG-01
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: ASG-02
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: SM-25
+  ROLE: Specifies
+
+[SSR]
+UID: SSR-003
+TITLE: Safe state held without reset for faults a reset cannot remove
+FINDINGS: F1
+STAGE: 1
+ASIL: B
+STATUS: implemented
+VERIFICATION: test, board
+REVIEW_STATUS: inspected
+CODE: >>>
+ecu/safety/safeSupervisor/src/safeSupervisor/SafeSupervisor.cpp :: SafeSupervisor::holdSafeState
+<<<
+NOTE: >>>
+Realisation: events WATCHDOG_STARTUP_CHECK_FAILURE and ROM_CHECK_FAILURE, loop in
+SafeSupervisor::holdSafeState().
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: ASG-06
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: ASG-07
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: AoU-04
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: SM-07
+  ROLE: Specifies
+- TYPE: Parent
+  VALUE: SM-14
+  ROLE: Specifies
+
+[CLAUSE]
+UID: SSR-003(a)
+STATEMENT: >>>
+On a failed start-up test of the watchdog (SSR-017) and on a failed ROM check (SSR-024) the safe
+supervisor shall enter limp home and S1 and then hold that state without a reset (S1 held).
+<<<
+VERIFICATION: test, board
+TESTS: safe-supervisor, safe-supervisor-bare
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-003
+
+[CLAUSE]
+UID: SSR-003(b)
+STATEMENT: While S1 is held, all interrupts shall stay suspended.
+VERIFICATION: test, board
+TESTS: safe-supervisor
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-003
+
+[CLAUSE]
+UID: SSR-003(c)
+STATEMENT: >>>
+While S1 is held, every entry of the safe outputs table shall be driven to its inactive level again in
+every round.
+<<<
+VERIFICATION: test, board
+TESTS: safe-supervisor, safe-state-hold
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-003
+
+[CLAUSE]
+UID: SSR-003(d)
+STATEMENT: >>>
+While S1 is held, the MCU watchdog shall be serviced in every round so that it does not reset the MCU.
+<<<
+VERIFICATION: test, board
+TESTS: safe-supervisor
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-003
+
+[CLAUSE]
+UID: SSR-003(e)
+STATEMENT: On entering S1 held, one line on the diagnostic console shall name the event.
+VERIFICATION: test, board
+TESTS: safe-console
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-003
+
+[CLAUSE]
+UID: SSR-003(f)
+STATEMENT: S1 held shall end only with a power cycle or a reset from outside the MCU.
+VERIFICATION: test, board
+TESTS: safe-supervisor, safe-supervisor-bare
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-003
+
+[SSR]
+UID: SSR-004
+TITLE: Leaving the safe state never re-energises a power output
+STAGE: 1
+ASIL: B
+STATUS: implemented
+VERIFICATION: test
+REVIEW_STATUS: inspected
+CODE: >>>
+platforms/s32k1xx/port/safety/safeIo/src/safeIo/SafeState.cpp :: SafeState::leaveSafeState
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: ASG-01
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: ASG-02
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: AoU-30
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: SM-23
+  ROLE: Specifies
+
+[CLAUSE]
+UID: SSR-004(a)
+STATEMENT: Leaving the safe state shall release only the indicator output and switch no power output on again.
+VERIFICATION: test
+TESTS: safe-state
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-004
+
+[CLAUSE]
+UID: SSR-004(b)
+STATEMENT: A power stage shall come back only through an explicit enable of its own driver.
+VERIFICATION: test
+TESTS: safe-state-hold
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-004
+
+[SSR]
+UID: SSR-005
+TITLE: One safe outputs table for every switch-off path
+FINDINGS: F8
+STAGE: 1
+ASIL: B
+STATUS: partial
+VERIFICATION: test, board
+REVIEW_STATUS: inspected
+CODE: >>>
+platforms/s32k1xx/hardFaultHandler/include/hardFaultHandler/safeOutputs.h :: nxSafeOutputsSwitchOff
+platforms/s32k1xx/port/safety/safeIo/src/safeIo/SafeState.cpp :: SafeState::enterSafeState
+tools/bswgen/bswgen.py :: collect_safe_outputs
+platforms/s32k1xx/port/main/src/integration/SafeOffCommandHold.h :: SafeOffCommandHold
+platforms/s32k1xx/port/main/src/systems/SafeOffOutputTester.cpp :: SafeOffOutputTester
+<<<
+NOTE: >>>
+partial because the walk duration is computed, not measured (F8). Realisation: outputs declared `safe_off`,
+(f) by a data synchronisation barrier at the end of nxSafeOutputsSwitchOff.
+Clauses (g) to (k) were added by DOC-44 for the command hold of SYS-150, SYS-151 and SYS-161 (safety reviews
+SR-147-2 a, SR-147-3 b, SR-151-2 a): the console wrapper SafeOffOutputTester, the 1-ms hold SafeOffCommandHold in the
+halt guard poll, the record of the commanded level written by every driver path, the console command safeoff show.
+Review status of these clauses: proposed; board proof open (changelog SYS-150/SYS-151).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: ASG-01
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: ASG-02
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: AoU-06
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: AoU-07
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: SM-23
+  ROLE: Specifies
+
+[CLAUSE]
+UID: SSR-005(a)
+STATEMENT: >>>
+The generator shall derive one safe outputs table per project from its PWM groups and from every module
+output the configuration declares as to be switched off in the safe state.
+<<<
+VERIFICATION: test, board
+TESTS: bswgen
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-005
+
+[CLAUSE]
+UID: SSR-005(b)
+STATEMENT: The safe state, the fault handlers and the halt deadman shall all use that same table.
+VERIFICATION: test, board
+TESTS: safe-outputs-order, safe-state, debug-halt-guard
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-005
+
+[CLAUSE]
+UID: SSR-005(c)
+STATEMENT: Walking the table shall need no stack, no RAM and no driver object.
+VERIFICATION: test, board
+TESTS: safe-outputs-order
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-005
+
+[CLAUSE]
+UID: SSR-005(d)
+STATEMENT: The walk shall skip an entry whose peripheral has its clock gated.
+VERIFICATION: test, board
+TESTS: safe-state
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-005
+
+[CLAUSE]
+UID: SSR-005(e)
+STATEMENT: The walk shall drive every other entry to its inactive level.
+VERIFICATION: test, board
+TESTS: safe-state, safe-state-hold
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-005
+
+[CLAUSE]
+UID: SSR-005(f)
+STATEMENT: The walk shall not end before every write of it has taken effect at the peripheral.
+VERIFICATION: test, board
+TESTS: safe-outputs-order
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-005
+
+[CLAUSE]
+UID: SSR-005(g)
+STATEMENT: >>>
+The diagnostic console shall refuse every command that sets an output declared as to be switched off in the
+safe state, whatever value and whatever spelling of its number the command uses.
+<<<
+VERIFICATION: test, board
+TESTS: safe-off-output-tester
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-005
+
+[CLAUSE]
+UID: SSR-005(h)
+STATEMENT: >>>
+Outside S1, a level of such an output that its driver did not command shall be taken back within one poll of
+the halt guard.
+<<<
+VERIFICATION: test, board
+TESTS: safe-off-command-hold, safe-off-hold-mutations
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-005
+
+[CLAUSE]
+UID: SSR-005(i)
+STATEMENT: >>>
+A level of such an output that its driver commanded shall never be taken back by that hold, also not when the
+driver commands it while the hold checks the output.
+<<<
+VERIFICATION: test, board
+TESTS: safe-off-command-hold, safe-off-hold-mutations
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-005
+
+[CLAUSE]
+UID: SSR-005(j)
+STATEMENT: >>>
+Every write path of the family port to such an output shall record the commanded level before it writes the
+pin.
+<<<
+VERIFICATION: test
+TESTS: safe-off-write-paths, safe-off-hold-mutations
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-005
+
+[CLAUSE]
+UID: SSR-005(k)
+STATEMENT: >>>
+A diagnostic command shall show, for each such output, the commanded level, the level at the pin and the
+number of times the hold took the level back.
+<<<
+VERIFICATION: test
+TESTS: safe-off-hold-command
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-005
+
+[SSR]
+UID: SSR-006
+TITLE: Safe state on a board without power outputs
+STAGE: 1
+ASIL: B
+STATUS: implemented
+VERIFICATION: test
+REVIEW_STATUS: inspected
+CODE: >>>
+platforms/s32k1xx/hardFaultHandler/include/hardFaultHandler/safeOutputs.h :: nxSafeOutputsSwitchOff
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: ASG-02
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: SM-23
+  ROLE: Specifies
+
+[CLAUSE]
+UID: SSR-006(a)
+STATEMENT: >>>
+On a project without PWM groups and without outputs to be switched off in the safe state, the safe outputs
+table shall be empty.
+<<<
+VERIFICATION: test
+TESTS: safe-outputs-table-charge, safe-outputs-table-bt148
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-006
+
+[CLAUSE]
+UID: SSR-006(b)
+STATEMENT: On such a project, entering the safe state shall write no peripheral register.
+VERIFICATION: test
+TESTS: safe-state
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-006
+
+[SSR]
+UID: SSR-007
+TITLE: One power-stage adapter per switched-off output, enforced by the build
+STATEMENT: >>>
+The build shall fail when the number of power-stage adapters of the image differs from the number of outputs
+the generator counted as to be switched off in the safe state, so that no driver keeps believing its output
+is on after the safe state switched it off.
+<<<
+STAGE: 1
+ASIL: B
+STATUS: implemented
+VERIFICATION: test
+REVIEW_STATUS: inspected
+CODE: >>>
+platforms/s32k1xx/port/main/src/integration/Integration.cpp :: NX_SAFE_OFF_OUTPUT_COUNT
+tools/bswgen/bswgen.py :: safe_off_outputs
+<<<
+NOTE: >>>
+Realisation - the generator's count is NX_SAFE_OFF_OUTPUT_COUNT, compared by a compile-time assertion.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: ASG-02
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: AoU-06
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: SM-24
+  ROLE: Specifies
+
+[[/SECTION]]
+
+[[SECTION]]
+TITLE: Program flow and time
+
+[SSR]
+UID: SSR-010
+TITLE: MCU watchdog serviced by the safety task only
+FINDINGS: F9
+STAGE: 1
+ASIL: B
+STATUS: partial
+VERIFICATION: test, board
+REVIEW_STATUS: inspected
+CODE: >>>
+ecu/safety/safeWatchdog/src/safeWatchdog/SafeWatchdog.cpp :: SafeWatchdog::enableMcuWatchdog
+platforms/s32k1xx/port/safety/safeLifecycle/src/safeLifecycle/SafetyManager.cpp :: WATCHDOG_CYCLIC_COUNTER
+<<<
+NOTE: >>>
+Realisation: time-out SafeWatchdog::WATCHDOG_TIMEOUT_MS from modules.safeLifecycle.watchdog_timeout_ms (250 ms
+in the demo); serviced through SafeWatchdog every SafetyManager::WATCHDOG_CYCLIC_COUNTER safety cycles
+(derived by tools/nxconfig as floor(time-out / (3 x task period))); (d) by the watchdog warning interrupt.
+partial - a slowed safety task below 31.25 ms per cycle is not detected by the watchdog (F9); since SYS-40 the
+period check SSR-018 (SM-04) covers it against the same LPO clock. Since SYS-41 CS[INT] (the
+warning interrupt that de-energises before the reset) is re-checked at every service (SSR-012, SSR-066,
+test safe-watchdog); board check B6 of fmea.md section 8 (clear CS[INT] with the probe) is open.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: ASG-06
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: AoU-13
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: AoU-14
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: SM-01
+  ROLE: Specifies
+
+[CLAUSE]
+UID: SSR-010(a)
+STATEMENT: The MCU watchdog shall be enabled at start-up with the time-out of the project configuration.
+VERIFICATION: test, board
+TESTS: nxconfig-watchdog
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-010
+
+[CLAUSE]
+UID: SSR-010(b)
+STATEMENT: The MCU watchdog shall run on a clock independent of the core clock.
+VERIFICATION: test, board
+TESTS: safe-watchdog
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-010
+
+[CLAUSE]
+UID: SSR-010(c)
+STATEMENT: The MCU watchdog shall be serviced only from the safety task, at the service interval of SSR-011.
+VERIFICATION: test, board
+TESTS: nxconfig-watchdog
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-010
+
+[CLAUSE]
+UID: SSR-010(d)
+STATEMENT: When the service stops, S1 shall be completed before the watchdog resets the MCU (see also SSR-028).
+STATUS: withdrawn
+VERIFICATION: test, board
+NOTE: >>>
+Withdrawn by DOC-43 (finding R3 of INS-SSR-01, AN-048): it repeated SSR-028(a) for the watchdog warning; the test
+link safe-outputs-order belongs to SSR-028.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-010
+
+[SSR]
+UID: SSR-011
+TITLE: Watchdog timing relation is a checked property
+FINDINGS: F2
+STAGE: 1
+ASIL: B
+STATUS: implemented
+VERIFICATION: test
+REVIEW_STATUS: inspected
+CODE: >>>
+tools/nxconfig/checks.py :: watchdog_timing_messages
+tools/nxconfig/checks.py :: safety_timing
+platforms/s32k1xx/port/safety/safeLifecycle/src/safeLifecycle/SafetyManager.cpp :: WATCHDOG_CYCLIC_COUNTER
+<<<
+NOTE: >>>
+Realisation: fastest watchdog clock from mcudb clock.lpo; messages carry the YAML path
+modules.safeLifecycle.<value>. SYS-25: values in one configuration level (modules.safeLifecycle), relation by
+construction;
+watchdog_timing_messages is the counter-check. SYS-53 (decision sys25-lpo): the relation is computed at the
+fastest LPO of the derivative (mcudb clock.lpo), the static_assert in SafetyManager.cpp checks it there as
+well; demo 7 cycles, 210 ms <= 230.2 ms.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: ASG-06
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: AoU-08
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: SM-01
+  ROLE: Specifies
+
+[CLAUSE]
+UID: SSR-011(a)
+STATEMENT: >>>
+The watchdog service interval shall be derived from the configured watchdog time-out and safety task period
+so that 3 x service interval <= time-out holds at the fastest frequency the data sheet allows for the watchdog
+clock.
+<<<
+VERIFICATION: test
+TESTS: nxconfig-watchdog
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-011
+
+[CLAUSE]
+UID: SSR-011(b)
+STATEMENT: The configuration check shall verify this relation again, independently of the derivation.
+VERIFICATION: test
+TESTS: nxconfig-watchdog
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-011
+
+[CLAUSE]
+UID: SSR-011(c)
+STATEMENT: The configuration check shall reject a time-out shorter than three safety task periods.
+VERIFICATION: test
+TESTS: nxconfig-watchdog
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-011
+
+[CLAUSE]
+UID: SSR-011(d)
+STATEMENT: >>>
+The configuration check shall reject a time-out beyond the range of the watchdog counter of the family.
+<<<
+VERIFICATION: test
+TESTS: nxconfig-watchdog
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-011
+
+[CLAUSE]
+UID: SSR-011(e)
+STATEMENT: >>>
+A rejected configuration shall stop the configure step with a message that names the offending
+configuration value.
+<<<
+VERIFICATION: test
+TESTS: nxconfig-watchdog
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-011
+
+[SSR]
+UID: SSR-012
+TITLE: Watchdog configuration re-checked at every service
+STATEMENT: >>>
+At every watchdog service the enable, the clock source and the time-out value of the MCU watchdog shall be
+compared with the expected configuration, and a difference shall raise an event.
+<<<
+FINDINGS: F12
+STAGE: 1
+ASIL: B
+STATUS: implemented
+VERIFICATION: test
+REVIEW_STATUS: inspected
+CODE: >>>
+ecu/safety/safeWatchdog/src/safeWatchdog/SafeWatchdog.cpp :: SafeWatchdog::cyclic
+platforms/s32k1xx/port/safety/safeSupervisionCheck/src/safeSupervisionCheck/WatchdogControlCheck.cpp :: checkWatchdogControl
+<<<
+NOTE: >>>
+Realisation: event SAFE_WATCHDOG_CONFIGURATION_ERROR.
+SYS-41 (F12 closed for the watchdog, F15 closed by the host test safe-watchdog): the family check
+checkWatchdogControl() adds CS[INT] (against the requested value), CS[WIN] (0), CS[PRES] (0) and CS[UPDATE]
+(1, as enableWatchdog writes it) to the driver's EN/CLK/TOVAL check; the event carries the differing fields in
+its context (1 driver check, 2 INT, 4 WIN, 8 PRES, 16 UPDATE). Open: whether UPDATE = 0 after start is wanted
+(needs a neXtBSW copy of the OpenBSW driver), board check B6.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: ASG-06
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: SM-02
+  ROLE: Specifies
+
+[SSR]
+UID: SSR-013
+TITLE: Watchdog over-service detected
+STATEMENT: >>>
+More than one service of the MCU watchdog between two consecutive checks of the safety task shall raise an
+event.
+<<<
+STAGE: 1
+ASIL: B
+STATUS: implemented
+VERIFICATION: test
+REVIEW_STATUS: inspected
+CODE: >>>
+ecu/safety/safeWatchdog/src/safeWatchdog/SafeWatchdog.cpp :: SafeWatchdog::cyclic
+<<<
+NOTE: >>>
+Realisation: service counter of the watchdog driver, event SAFE_WATCHDOG_SERVICE_DEVIATION. Host test
+safe-watchdog since SYS-41 (F15 closed for safeWatchdog); services that bypass the driver stay invisible
+(fmea.md SM-03).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: ASG-06
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: SM-03
+  ROLE: Specifies
+
+[SSR]
+UID: SSR-014
+TITLE: Control flow through the safety cycle supervised
+STAGE: 1
+ASIL: B
+STATUS: implemented
+VERIFICATION: test
+REVIEW_STATUS: inspected
+CODE: >>>
+platforms/s32k1xx/port/safety/safeLifecycle/src/safeLifecycle/SafetyManager.cpp :: SafetyManager::cyclic
+<<<
+NOTE: >>>
+Realisation: hits ENTER/LEAVE, events SAFETY_MANAGER_SEQUENCE_DEVIATION and SAFE_WATCHDOG_SEQUENCE_DEVIATION.
+SYS-41: six checkpoints (ENTER, MEMORY_CHECKED, SYSTEM_CHECKED, IO_CHECKED, PERIPHERALS_CHECKED, LEAVE), since
+SYS-40 seven (PERIOD_CHECKED after the period check SSR-018, directly after ENTER); a cycle
+that ends early or leaves out a sub-check is a deviation at the next hit. Detection tested by safety-cycle (F15
+closed for SafetyManager::cyclic), the reaction by safe-supervisor (SSR-001).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: ASG-06
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: SM-04
+  ROLE: Specifies
+
+[CLAUSE]
+UID: SSR-014(a)
+STATEMENT: >>>
+Each safety cycle and each watchdog service shall pass a checkpoint of a sequence monitor at its start and
+at its end.
+<<<
+VERIFICATION: test
+TESTS: safety-cycle
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-014
+
+[CLAUSE]
+UID: SSR-014(b)
+STATEMENT: >>>
+Each sub-check of the safety cycle shall be followed by a checkpoint of its own, in the order of the cycle.
+<<<
+VERIFICATION: test
+TESTS: safety-cycle
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-014
+
+[CLAUSE]
+UID: SSR-014(c)
+STATEMENT: >>>
+A missing, repeated or out-of-order checkpoint shall raise an event, one for the safety cycle and one for
+the watchdog service.
+<<<
+VERIFICATION: test
+TESTS: safety-cycle
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-014
+
+[SSR]
+UID: SSR-015
+TITLE: RTE task and runnable deadlines reported
+FINDINGS: F10
+STAGE: 1
+ASIL: B
+STATUS: partial
+VERIFICATION: test, board
+REVIEW_STATUS: inspected
+CODE: >>>
+ecu/application/src/systems/RteSystem.cpp :: rteTimingMonitor
+ecu/safety/safeSupervisor/src/safeSupervisor/SafeSupervisor.cpp :: SafeSupervisor::deliverDeferredEvents
+<<<
+NOTE: >>>
+Realisation: (e) through a mailbox outside the protected RAM that the safety task delivers to the supervisor.
+partial - task activation (starvation, late start) is not supervised (F10, SYS-21).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: ASG-06
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: AoU-18
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: SM-05
+  ROLE: Specifies
+
+[CLAUSE]
+UID: SSR-015(a)
+STATEMENT: The generated RTE shall measure every task cycle against the task period of the ECU description.
+VERIFICATION: test, board
+TESTS: rte-deadline
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-015
+
+[CLAUSE]
+UID: SSR-015(b)
+STATEMENT: The generated RTE shall measure every runnable against its own period of the ECU description.
+VERIFICATION: test, board
+TESTS: rte-deadline
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-015
+
+[CLAUSE]
+UID: SSR-015(c)
+STATEMENT: The measurement shall need no configuration value beyond the ECU description.
+VERIFICATION: test, board
+TESTS: rte-deadline
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-015
+
+[CLAUSE]
+UID: SSR-015(d)
+STATEMENT: At most one deadline event per source and measurement window shall be reported.
+VERIFICATION: test, board
+TESTS: rte-deadline
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-015
+
+[CLAUSE]
+UID: SSR-015(e)
+STATEMENT: >>>
+The event shall reach the safe supervisor without write access of the RTE to the safety data (SSR-020).
+<<<
+VERIFICATION: test, board
+TESTS: safety-context, safety-context-elf, safe-supervisor-mpu
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-015
+
+[CLAUSE]
+UID: SSR-015(f)
+STATEMENT: The reaction shall be S3 (report and continue).
+VERIFICATION: test, board
+TESTS: safe-supervisor
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-015
+
+[SSR]
+UID: SSR-016
+TITLE: Core halt or stall longer than the deadman time-out de-energises
+FINDINGS: F12
+STAGE: 1
+ASIL: B
+STATUS: implemented
+VERIFICATION: test, board
+REVIEW_STATUS: rework
+CODE: >>>
+platforms/s32k1xx/port/main/src/integration/DebugHaltGuardSystem.h :: LpitHaltDeadman
+platforms/s32k1xx/port/main/src/integration/Integration.cpp :: LPIT0_Ch1_IRQHandler
+<<<
+NOTE: >>>
+Realisation: LPIT channel 1 (LpitHaltDeadman), the 10 ms are a code constant of the family port. The deadman
+itself is board-proven (IO-32). Its configuration re-check (latent faults, F12) is SSR-066: since
+SYS-41 host verified (lpit-deadman-check, safety-cycle), target binding pending (SYS-48) - until the strong
+deadmanExpectedConfiguration() exists, the check does not run on the target (the definition stands out of line
+in integration/Integration.cpp since SYS-133, test_deadman_expected_elf.py checks the image).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: ASG-01
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: ASG-02
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: AoU-16
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: SM-06
+  ROLE: Specifies
+
+[CLAUSE]
+UID: SSR-016(a)
+STATEMENT: >>>
+A hardware timer that keeps counting while the core is halted shall be re-triggered by the running software
+at every poll of the halt guard.
+<<<
+VERIFICATION: test, board
+TESTS: lpit-halt-deadman, lpit-deadman-check, safety-cycle
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-016
+
+[CLAUSE]
+UID: SSR-016(b)
+STATEMENT: >>>
+When the timer expires after its fixed time-out (10 ms for the S32K1 family), its interrupt shall complete
+S1 as its first action.
+<<<
+VERIFICATION: test, board
+TESTS: safe-outputs-order
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-016
+
+[CLAUSE]
+UID: SSR-016(c)
+STATEMENT: >>>
+After the expiry the PWM shall stay inhibited and the gate-driver enable off until the next explicit
+enable.
+<<<
+VERIFICATION: test, board
+TESTS: debug-halt-guard, safe-off-equivalence
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-016
+
+[SSR]
+UID: SSR-017
+TITLE: Watchdog hardware tested at every start
+STAGE: 1
+ASIL: B
+STATUS: implemented
+VERIFICATION: test, board
+REVIEW_STATUS: inspected
+CODE: >>>
+platforms/s32k1xx/port/main/src/main.cpp :: executeFastTest
+<<<
+NOTE: >>>
+Realisation: executeFastTest(), event WATCHDOG_STARTUP_CHECK_FAILURE. The test covers the reaction; a real
+watchdog hardware failure cannot be provoked (board proof of the reaction only).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: ASG-06
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: AoU-25
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: SM-07
+  ROLE: Specifies
+
+[CLAUSE]
+UID: SSR-017(a)
+STATEMENT: >>>
+At every start, before the application runs, the ability of the MCU watchdog to reset the MCU shall be
+tested with deliberate watchdog resets.
+<<<
+VERIFICATION: board
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-017
+
+[CLAUSE]
+UID: SSR-017(b)
+STATEMENT: A failed test shall raise an event whose reaction is S1 held (SSR-003).
+VERIFICATION: test, board
+TESTS: safe-supervisor
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-017
+
+[SSR]
+UID: SSR-018
+TITLE: Safety task period supervised against a hardware time base
+FINDINGS: F9, T1
+STAGE: 1
+ASIL: B
+STATUS: partial
+VERIFICATION: test, board
+REVIEW_STATUS: inspected
+CODE: >>>
+platforms/s32k1xx/port/safety/safeLifecycle/src/safeLifecycle/SafetyManager.cpp :: SafetyManager::checkCyclePeriod
+ecu/safety/safeWatchdog/src/safeWatchdog/CyclePeriodCheck.cpp :: CyclePeriodCheck::sample
+platforms/s32k1xx/port/safety/safeSupervisionCheck/src/safeSupervisionCheck/LptmrCycleTimer.cpp :: checkCycleTimer
+<<<
+NOTE: >>>
+Realisation: event SAFETY_CYCLE_PERIOD_VIOLATION. SYS-40 (SM-04): LPTMR on the 1 kHz LPO clock; bound 14 ticks per
+interval (an interval of 17 ms or more is
+always reported, derived from the 10 ms period, CYCLE_LATENESS_MS = 2 ms and the LPO range of the data sheet),
+window 8 cycles >= 68 ticks. Host verified with mutants (cycle-period-check, lptmr-cycle-timer, safety-cycle,
+cycle-period-constants). partial - detection happens when the late cycle runs; a stall that ends before the
+watchdog fires has no hardware deadline yet (T1b); board checks B4 and B7 of fmea.md section 8 are open; the
+since SYS-25 period and lateness are project values (modules.safeLifecycle), the window is the derived service
+interval.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: ASG-06
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: AoU-05
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: SM-04
+  ROLE: Specifies
+
+[CLAUSE]
+UID: SSR-018(a)
+STATEMENT: >>>
+At the start of every safety cycle, before its checks, the distance to the previous cycle start shall be
+measured with a free-running hardware timer on a clock independent of the core clock and of the scheduler's
+time base.
+<<<
+VERIFICATION: test, board
+TESTS: lptmr-cycle-timer, cycle-period-check, safety-cycle
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-018
+
+[CLAUSE]
+UID: SSR-018(b)
+STATEMENT: >>>
+A distance beyond an upper bound derived from the nominal period, the tolerated lateness of a cycle start
+and the tolerance of the timer's clock shall raise an event.
+<<<
+VERIFICATION: test, board
+TESTS: cycle-period-check, cycle-period-constants, safety-cycle
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-018
+
+[CLAUSE]
+UID: SSR-018(c)
+STATEMENT: >>>
+A sum of distances over one watchdog service interval below the corresponding lower bound shall raise the
+same event.
+<<<
+VERIFICATION: test, board
+TESTS: cycle-period-check
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-018
+
+[CLAUSE]
+UID: SSR-018(d)
+STATEMENT: A deviation of the timer's configuration from its expected value shall raise the same event.
+VERIFICATION: test, board
+TESTS: cycle-timer-off, lptmr-cycle-timer
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-018
+
+[CLAUSE]
+UID: SSR-018(e)
+STATEMENT: >>>
+The reaction to the event shall be S1 + S2, and its context word shall carry the kind of violation and the
+measured value.
+<<<
+VERIFICATION: test, board
+TESTS: cycle-period-check, cycle-timer-off
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-018
+
+[[/SECTION]]
+
+[[SECTION]]
+TITLE: Memory
+
+[SSR]
+UID: SSR-020
+TITLE: Safety data writable only from the safety context
+FINDINGS: N3
+STAGE: 1
+ASIL: B
+STATUS: implemented
+VERIFICATION: test, board
+REVIEW_STATUS: inspected
+CODE: >>>
+platforms/s32k1xx/port/safety/safeMemory/src/safeMemory/MemoryProtection.cpp :: MemoryProtection::fusaGateOpen
+platforms/s32k1xx/port/safety/safeLifecycle/src/safeLifecycle/IsrHooks.cpp :: SafePreIsrHook
+<<<
+NOTE: >>>
+Realisation: MPU fusa gate, closed on scope exit (ProtectedRamScopedUnlock); the safety context is the list of
+safety-context files checked by the static rule safety-context.
+Clause (e), the guard below the interrupt stack (SM-10, SYS-97), was added by DOC-44 so that its evidence
+(safety-gate, stackuse-demo) belongs to a clause; review status proposed.
+Clauses (b) and (c) are tested by safety-shell-unlock (DOC-44) on the real scoped unlock.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: ASG-06
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: AoU-17
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: SM-10
+  ROLE: Specifies
+
+[CLAUSE]
+UID: SSR-020(a)
+STATEMENT: >>>
+The RAM of the safety manager (supervisor state, monitors, counters, stack) shall be read-only outside the
+safety shell.
+<<<
+VERIFICATION: test, board
+TESTS: safe-supervisor-mpu, safety-context-elf, bswgen-mpu
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-020
+
+[CLAUSE]
+UID: SSR-020(b)
+STATEMENT: The safety shell shall open write access only with all interrupts suspended.
+VERIFICATION: test, board
+TESTS: safety-shell-unlock
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-020
+
+[CLAUSE]
+UID: SSR-020(c)
+STATEMENT: The safety shell shall close write access again on every path that leaves it.
+VERIFICATION: test, board
+TESTS: safety-shell-unlock, safety-gate
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-020
+
+[CLAUSE]
+UID: SSR-020(d)
+STATEMENT: >>>
+Code outside the safety context shall report events only through mailboxes in RAM that is not
+write-protected.
+<<<
+VERIFICATION: test, board
+TESTS: safety-context, safety-context-elf, safe-supervisor-mpu
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-020
+
+[CLAUSE]
+UID: SSR-020(e)
+STATEMENT: >>>
+The interrupt stack shall have a guard region directly below it that the core can read but not write and that
+is at least as large as the largest frame on that stack, so that an overflow of the interrupt stack is a fault
+on the first write into the guard.
+<<<
+VERIFICATION: test, board
+TESTS: safety-gate, stackuse-demo
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-020
+
+[SSR]
+UID: SSR-021
+TITLE: Protection gate state checked on entry and exit of the safety cycle
+FINDINGS: F15
+STAGE: 1
+ASIL: B
+STATUS: implemented
+VERIFICATION: test
+REVIEW_STATUS: inspected
+CODE: >>>
+platforms/s32k1xx/port/safety/safeLifecycle/src/safeLifecycle/SafetyManager.cpp :: mpuStatusCheckOnEnterMonitor
+platforms/s32k1xx/port/safety/safeMemory/src/safeMemory/MemoryProtection.cpp :: MemoryProtection::fusaGateIsLocked
+<<<
+NOTE: >>>
+Realisation: events MPU_UNLOCKED_ON_SAFETY_MANAGER_ENTRY and MPU_LOCKED_ON_SAFETY_MANAGER_EXIT.
+SYS-42 (F15 closed for SM-11): host test safety-gate runs the real SafetyManager::cyclic, the real gate
+(MemoryProtection.cpp, ProtectedRamScopedUnlock.h) and the real supervisor on an MPU register model with the
+descriptors of MemoryProtection::init(). A gate left open, a lost closing write and every single flipped bit of
+the gate word are reported on entry (before the first check), a gate closed during the cycle and a lost opening
+write on exit; 9 built-in faults (safety-gate-mutations) are all detected.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: ASG-06
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: SM-11
+  ROLE: Specifies
+
+[CLAUSE]
+UID: SSR-021(a)
+STATEMENT: >>>
+At the entry of every safety cycle, before its first check, the write protection of the safety RAM
+(SSR-020) shall be found active; otherwise an event shall be raised.
+<<<
+VERIFICATION: test
+TESTS: safety-gate, safety-gate-mutations
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-021
+
+[CLAUSE]
+UID: SSR-021(b)
+STATEMENT: >>>
+At the exit of every safety cycle the write protection shall be found active again; otherwise an event
+shall be raised.
+<<<
+VERIFICATION: test
+TESTS: safety-gate, safety-gate-mutations
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-021
+
+[SSR]
+UID: SSR-022
+TITLE: MPU enabled with the region count of the derivative
+STATEMENT: >>>
+Every safety cycle shall check that the MPU is globally enabled and offers the number of regions the
+derivative database specifies, and raise an event otherwise.
+<<<
+STAGE: 1
+ASIL: B
+STATUS: implemented
+VERIFICATION: test
+REVIEW_STATUS: inspected
+CODE: >>>
+platforms/s32k1xx/port/safety/safeMemory/src/safeMemory/SafeMemory.cpp :: hasRegionsOfDerivative
+<<<
+NOTE: >>>
+Realisation - region count NX_MPU_REGIONS from mcudb, event MPU_NOT_ENABLED.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: ASG-06
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: SM-12
+  ROLE: Specifies
+
+[SSR]
+UID: SSR-023
+TITLE: MPU region descriptors unchanged
+STATEMENT: >>>
+Every safety cycle shall compare each MPU region descriptor (start, end, access rights, validity) with its
+configured value, and a difference shall raise an event with the failing region in its context word.
+<<<
+STAGE: 1
+ASIL: B
+STATUS: implemented
+VERIFICATION: test
+REVIEW_STATUS: inspected
+CODE: >>>
+platforms/s32k1xx/port/safety/safeMemory/src/safeMemory/MemoryProtection.cpp :: MemoryProtection::areRegionsConfiguredCorrectly
+<<<
+NOTE: >>>
+Realisation - event MPU_CONFIGURATION_ERROR.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: ASG-06
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: SM-13
+  ROLE: Specifies
+
+[SSR]
+UID: SSR-024
+TITLE: ROM check of the application image
+FINDINGS: F3, G6
+STAGE: 1
+ASIL: B
+STATUS: implemented
+VERIFICATION: test, board
+REVIEW_STATUS: inspected
+CODE: >>>
+platforms/s32k1xx/port/safety/safeMemory/src/safeMemory/RomCheck.cpp :: RomCheck::idle
+platforms/s32k1xx/port/safety/safeMemory/tools/romCheckImage.py :: check_image
+<<<
+NOTE: >>>
+Realisation: event ROM_CHECK_FAILURE. SYS-38: build side and first pass, board-proven 2026-09-21 (eighth part).
+SYS-44: the once-per-start limit is
+lifted by the re-check period (SSR-067); the re-check itself is host verified, its board proof is fmea.md B9.
+SYS-91: the calibration segment left the list and is checked against its own CALV header in every pass
+(RomCheck::setOwnAreaCheck); host verified, board repetition of SYS-89 point 3 passed 2026-09-28.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: ASG-07
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: ASG-06
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: SM-14
+  ROLE: Specifies
+
+[CLAUSE]
+UID: SSR-024(a)
+STATEMENT: >>>
+The build shall write the list of flash areas and the reference CRC into every application image of the
+family.
+<<<
+VERIFICATION: test, board
+TESTS: rom-check-image, application-linker, target-calibration
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-024
+
+[CLAUSE]
+UID: SSR-024(b)
+STATEMENT: >>>
+The build shall fail if the list is missing or implausible, or if any flash byte of the image lies outside
+the listed areas, except in the one area with its own reference (the calibration segment, which may be flashed
+without a build).
+<<<
+VERIFICATION: test, board
+TESTS: rom-check-image, application-linker
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-024
+
+[CLAUSE]
+UID: SSR-024(c)
+STATEMENT: At run time the ROM check shall refuse an implausible list without reading the listed addresses.
+VERIFICATION: test, board
+TESTS: rom-check
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-024
+
+[CLAUSE]
+UID: SSR-024(d)
+STATEMENT: >>>
+At run time the ROM check shall compute the CRC over the listed areas once per start and check the area with its
+own reference in the same pass through its owner; the repetition during operation is SSR-067.
+<<<
+VERIFICATION: test, board
+TESTS: rom-check, calibration-segment
+REVIEW_STATUS: accepted
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-024
+
+[CLAUSE]
+UID: SSR-024(e)
+STATEMENT: >>>
+A CRC mismatch, an implausible list or a deviation of the area with its own reference shall raise an event
+whose reaction is S1 held (SSR-003).
+<<<
+VERIFICATION: test, board
+TESTS: rom-check, calibration-segment
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-024
+
+[SSR]
+UID: SSR-025
+TITLE: Context in which the ROM check may run
+FINDINGS: F3
+STAGE: 1
+ASIL: B
+STATUS: implemented
+VERIFICATION: test, review
+REVIEW_STATUS: inspected
+CODE: >>>
+platforms/s32k1xx/port/main/src/integration/RomCheckSystem.h :: RomCheckSystem
+ecu/application/src/app/app.cpp :: RomCheck::idle
+platforms/s32k1xx/port/safety/safeMemory/src/safeMemory/RomCheck.cpp :: RomCheck::idleOn
+<<<
+NOTE: >>>
+Requirement from fmea.md section 5.1 (decision on F3). SYS-44: both callers run in the idle context (component
+romcheck once, the idle handler of the application for the re-check); host test rom-check shows that no word of
+a pass is fed inside the safety shell and that one shell is opened per pass (none per round while waiting).
+The calling context itself is still review only; a static check of it would make that part a test as well.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: ASG-06
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: ASG-07
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: SM-14
+  ROLE: Specifies
+
+[CLAUSE]
+UID: SSR-025(a)
+STATEMENT: The ROM check shall not run with interrupts suspended.
+VERIFICATION: review
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-025
+
+[CLAUSE]
+UID: SSR-025(b)
+STATEMENT: >>>
+The ROM check shall not run in a context with an RTE deadline unless it is sliced into bounded steps.
+<<<
+VERIFICATION: review
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-025
+
+[CLAUSE]
+UID: SSR-025(c)
+STATEMENT: >>>
+A ROM check run in one pass shall run only in the context of lowest priority, where every supervised task
+preempts it.
+<<<
+VERIFICATION: review
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-025
+
+[CLAUSE]
+UID: SSR-025(d)
+STATEMENT: >>>
+Only the bookkeeping at the end of a pass and its report to the safe supervisor shall run inside the
+safety shell (SSR-020).
+<<<
+VERIFICATION: test
+TESTS: rom-check
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-025
+
+[SSR]
+UID: SSR-026
+TITLE: Uncorrectable RAM ECC error detected
+STATEMENT: >>>
+Every safety cycle shall check whether the hardware has recorded an uncorrectable ECC error of the RAM and
+raise an event when it has.
+<<<
+FINDINGS: F11
+STAGE: 1
+ASIL: B
+STATUS: implemented
+VERIFICATION: test
+REVIEW_STATUS: inspected
+CODE: >>>
+platforms/s32k1xx/port/safety/safeMemory/src/safeMemory/IntegrityEccHandler.cpp :: checkRamDoubleBitError
+platforms/s32k1xx/port/safety/safeMemory/src/safeMemory/IntegrityEccHandler.cpp :: takeEccErrors
+<<<
+NOTE: >>>
+SYS-41 (F11 closed, F15 closed by safe-memory-ecc): the reference manual (S32K1xx RM Rev. 13, 22.4) confirms
+that ERM_SR0 records without the CR0 enables; takeEccErrors() reads ERM_SR0 once, keeps the RAM address and
+clears exactly the flags it read before the report (no reset loop, no masking), the event carries the source
+(bit 0 RAM channel 0, bit 1 RAM channel 1, bit 2 flash) - the completion is SSR-068. Coverage limit: memory
+that is not read is not checked (no scrubbing, fmea.md SM-15). Board check B5 (ERM_SR0 after an injected
+error and after a reset) is open; the behaviour no longer depends on it.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: ASG-06
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: SM-15
+  ROLE: Specifies
+
+[SSR]
+UID: SSR-027
+TITLE: Uncorrectable flash ECC error detected
+STATEMENT: >>>
+Every safety cycle shall check whether the flash controller has recorded an uncorrectable ECC error and raise
+an event when it has.
+<<<
+FINDINGS: F11
+STAGE: 1
+ASIL: B
+STATUS: implemented
+VERIFICATION: test
+REVIEW_STATUS: inspected
+CODE: >>>
+platforms/s32k1xx/port/safety/safeMemory/src/safeMemory/IntegrityEccHandler.cpp :: checkFlashDoubleBitError
+platforms/s32k1xx/port/safety/safeMemory/src/safeMemory/IntegrityEccHandler.cpp :: takeEccErrors
+<<<
+NOTE: >>>
+SYS-41 (F11 closed, F15 closed by safe-memory-ecc): FTFC_FERSTAT[DFDIF] is cleared (write 1) right after it
+was read and before the report; the event carries bit 2 (flash) in its context. A second error is reported
+again.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: ASG-06
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: ASG-07
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: SM-16
+  ROLE: Specifies
+
+[SSR]
+UID: SSR-028
+TITLE: Fault handlers de-energise first
+STAGE: 1
+ASIL: B
+STATUS: implemented
+VERIFICATION: test, board
+REVIEW_STATUS: inspected
+CODE: >>>
+platforms/s32k1xx/hardFaultHandler/src/armv7m/hardFaultHandler.S :: customHardFaultHandler
+platforms/s32k1xx/hardFaultHandler/src/armv6m/hardFaultHandler.S :: customHardFaultHandler
+<<<
+NOTE: >>>
+Realisation - in assembler with scratch registers only; the fault record is the fault dump.
+Clauses (c) and (d) were added by DOC-44 so that the evidence of the fault record (hard-fault-dump) and of the polled
+console line (hold-console-elf, SYS-39, SYS-98) belongs to a clause; review status proposed.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: ASG-01
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: ASG-02
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: ASG-06
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: SM-17
+  ROLE: Specifies
+
+[CLAUSE]
+UID: SSR-028(a)
+STATEMENT: >>>
+Every fault exception handler (hard fault, bus fault, usage fault, watchdog warning) shall complete S1 as
+its first action, before the fault record, any output and the reset.
+<<<
+VERIFICATION: test, board
+TESTS: safe-outputs-order, freertos-config-elf
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-028
+
+[CLAUSE]
+UID: SSR-028(b)
+STATEMENT: This first action shall use neither the stack nor RAM.
+VERIFICATION: test, board
+TESTS: safe-outputs-order
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-028
+
+[CLAUSE]
+UID: SSR-028(c)
+STATEMENT: >>>
+The fault record shall be kept in memory that survives the reset and shall carry a validity mark and a
+checksum, so that a record that was not written completely is not reported.
+<<<
+VERIFICATION: test, board
+TESTS: hard-fault-dump
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-028
+
+[CLAUSE]
+UID: SSR-028(d)
+STATEMENT: >>>
+After S1, the console line and the reset of a fault reaction shall be produced by polling the UART
+transmitter only, without kernel, heap, logger or interrupt enable.
+<<<
+VERIFICATION: test, board
+TESTS: hold-console-elf
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-028
+
+[[/SECTION]]
+
+[[SECTION]]
+TITLE: MCU periphery and supply
+
+[SSR]
+UID: SSR-030
+TITLE: ADC reference supervised against a configured band
+STATEMENT: >>>
+Every safety cycle shall derive the ADC reference voltage from an internal channel of known voltage and raise
+an event when it lies outside the band given by the board's nominal reference voltage and the configured
+tolerance.
+<<<
+FINDINGS: F16
+STAGE: 1
+ASIL: B
+STATUS: implemented
+VERIFICATION: test
+REVIEW_STATUS: inspected
+CODE: >>>
+platforms/s32k1xx/port/safety/safeSystem/src/safeSystem/SafeSystem.cpp :: SafeSystem::checkAdcReference
+<<<
+NOTE: >>>
+Realisation: bandgap channel, band board.adc_reference_mv +/- modules.safeSystem.adc_reference_tolerance_mv,
+event ADC_REFERENCE_ERROR. A drift inside the band is a silent gain error on every channel (F16, proposed
+AoU-24).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: ASG-03
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: ASG-06
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: AoU-24
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: SM-18
+  ROLE: Specifies
+
+[SSR]
+UID: SSR-031
+TITLE: Loss of the ADC reference supervision detected
+STATEMENT: >>>
+Consecutive failed readings of the reference channel of SSR-030 shall raise the event of SSR-030 once when
+they reach a configured number.
+<<<
+STAGE: 1
+ASIL: B
+STATUS: implemented
+VERIFICATION: test
+REVIEW_STATUS: inspected
+CODE: >>>
+platforms/s32k1xx/port/safety/safeSystem/src/safeSystem/SafeSystem.cpp :: ADC_REF_ERROR_LIMIT
+<<<
+NOTE: >>>
+Realisation - limit modules.safeSystem.adc_read_error_limit (ADC_REF_ERROR_LIMIT).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: ASG-03
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: ASG-06
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: SM-19
+  ROLE: Specifies
+
+[SSR]
+UID: SSR-032
+TITLE: Internal supplies of the MCU supervised
+STATEMENT: >>>
+The internal supplies of the MCU (flash, oscillator and core supply) shall be measured in turn against their
+nominal values, using the last valid reference voltage of SSR-030, and a value out of range shall raise an
+event.
+<<<
+STAGE: 1
+ASIL: B
+STATUS: implemented
+VERIFICATION: test
+REVIEW_STATUS: inspected
+CODE: >>>
+platforms/s32k1xx/port/safety/safeSystem/src/safeSystem/SafeSystem.cpp :: SafeSystem::checkInternalSupplies
+<<<
+NOTE: >>>
+Realisation: event INTERNAL_SUPPLIES_ERROR. Since SYS-41 failed readings of the supply channel are limited like
+those of the reference channel (SSR-069,
+F14 closed). Coverage limits of the band (+- 200 mV is wide for the 1.2 V core supply, common cause with the
+measured VREFH) are fmea.md SM-20's, not a gap of this requirement.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: ASG-06
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: SM-20
+  ROLE: Specifies
+
+[SSR]
+UID: SSR-033
+TITLE: Safety-relevant pin configuration locked at start-up
+FINDINGS: F4, F15
+STAGE: 1
+ASIL: B
+STATUS: partial
+VERIFICATION: test, board
+REVIEW_STATUS: inspected
+CODE: >>>
+platforms/s32k1xx/port/safety/safeIo/src/safeIo/SafeIo.cpp :: SafeIo::init
+<<<
+NOTE: >>>
+Realisation: PCR lock (PCR[LK]), event LOCK_REGISTER_ERROR.
+partial - demo scope, one pin (F4, SYS-24). SYS-42 (F15 closed for SM-21): host test safe-io with the real
+SafeIo.cpp, the real bspIo driver and a PORT register model with the PCR lock; every function other than GPIO
+and a lock that did not take are LOCK_REGISTER_ERROR with the pin id. The test found that the read-back compared
+the MUX bits only - a lost lock write or PCR[LK] stuck at 0 passed; since SYS-42 LK is part of the read-back.
+9 built-in faults (safe-io-mutations) are all detected. Board: a normal start must not raise LOCK_REGISTER_ERROR
+with the extended read-back (SYS-42 checklist).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: ASG-01
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: ASG-02
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: SM-21
+  ROLE: Specifies
+
+[CLAUSE]
+UID: SSR-033(a)
+STATEMENT: >>>
+At start-up the configuration of every pin in the lock list of SSR-070 shall be locked against change.
+<<<
+VERIFICATION: test, board
+TESTS: safe-io, bswgen-safe-io
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-033
+
+[CLAUSE]
+UID: SSR-033(b)
+STATEMENT: Every lock shall be verified by read-back, and a lock that did not take shall raise an event.
+VERIFICATION: test, board
+TESTS: safe-io, safe-io-mutations
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-033
+
+[SSR]
+UID: SSR-034
+TITLE: Safety-relevant registers checked cyclically
+FINDINGS: F4
+STAGE: 1
+ASIL: B
+STATUS: partial
+VERIFICATION: test, board
+REVIEW_STATUS: inspected
+CODE: >>>
+platforms/s32k1xx/port/safety/safeIo/src/safeIo/SafeIo.cpp :: SafeIo::cyclic
+<<<
+NOTE: >>>
+Realisation: event CHECK_REGISTER_ERROR.
+partial - since SYS-24 the checked registers come from the generated list (SSR-070); board check open.
+SYS-42: detection tested by safe-io on a GPIO register model (output via PDDR, disabled input via PIDR, a
+reconfiguration through the driver; once per change, the return releases the indicator; neighbouring pins do
+not report), the reaction S1 without reset by safe-state-hold and safe-supervisor.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: ASG-01
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: ASG-02
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: SM-22
+  ROLE: Specifies
+
+[CLAUSE]
+UID: SSR-034(a)
+STATEMENT: >>>
+Every safety cycle shall read back the registers of the check list of SSR-070 and compare them with their
+expected values.
+<<<
+VERIFICATION: test, board
+TESTS: safe-io, bswgen-safe-io, safe-io-mutations
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-034
+
+[CLAUSE]
+UID: SSR-034(b)
+STATEMENT: A difference shall raise an event whose reaction is S1 without reset.
+VERIFICATION: test, board
+TESTS: safe-state-hold, safe-supervisor
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-034
+
+[[/SECTION]]
+
+[[SECTION]]
+TITLE: Data and communication
+
+[SSR]
+UID: SSR-040
+TITLE: Quality qualifier for every analogue value
+STAGE: 1
+ASIL: B
+STATUS: implemented
+VERIFICATION: test, board
+REVIEW_STATUS: inspected
+CODE: >>>
+tools/rtegen/templates/RteConfig.cpp.j2 :: QLF_ERROR_RANGE
+<<<
+NOTE: >>>
+Realisation - QLF_OK, QLF_ERROR_RANGE, QLF_ERROR, computed in the generated conversion.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: ASG-03
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: ASG-05
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: AoU-12
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: SM-30
+  ROLE: Specifies
+
+[CLAUSE]
+UID: SSR-040(a)
+STATEMENT: Every value the RTE provides from an ADC channel shall carry a quality qualifier.
+VERIFICATION: test, board
+TESTS: rtegen, bswgen
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-040
+
+[CLAUSE]
+UID: SSR-040(b)
+STATEMENT: >>>
+The qualifier shall be "range error" when the raw value is at a converter limit or the value lies outside
+its configured range.
+<<<
+VERIFICATION: test, board
+TESTS: rtegen
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-040
+
+[CLAUSE]
+UID: SSR-040(c)
+STATEMENT: The qualifier shall be "error" on a failed conversion, and the last value shall be held.
+VERIFICATION: test, board
+TESTS: rtegen, adc-access, adc-access-averaging
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-040
+
+[CLAUSE]
+UID: SSR-040(d)
+STATEMENT: Otherwise the qualifier shall be "OK".
+VERIFICATION: test, board
+TESTS: rtegen
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-040
+
+[CLAUSE]
+UID: SSR-040(e)
+STATEMENT: >>>
+The qualifier of a value shall reach the application through the RTE together with the value, so that
+the application can decide on it (AoU-12).
+<<<
+VERIFICATION: test, board
+TESTS: rtegen, demoswc-sil, boardtest
+NOTE: >>>
+Added by DOC-44 for the reaction of SM-30 (the application decides) and for the evidence of demoswc-sil
+(the application reads the qualifier from the generated RTE) and boardtest (the console answer of the
+qualifier in the board test; a self-test of the measurement script, not a proof on the product).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-040
+
+[SSR]
+UID: SSR-041
+TITLE: End-to-end protection of configured CAN signals
+STAGE: 1
+ASIL: B
+STATUS: implemented
+VERIFICATION: test, board
+REVIEW_STATUS: inspected
+CODE: >>>
+libs/bsw/e2e/src/e2e/E2E_P01.c :: E2E_P01Check
+libs/bsw/e2e/src/e2e/E2E_P02.c :: E2E_P02Check
+libs/bsw/e2e/src/e2e/E2E_P11.c :: E2E_P11Check
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: ASG-05
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: AoU-11
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: SM-31
+  ROLE: Specifies
+
+[CLAUSE]
+UID: SSR-041(a)
+STATEMENT: >>>
+Every signal the project configures with an E2E profile (P01, P02, P11) shall be protected with CRC, data
+ID and counter on transmission.
+<<<
+VERIFICATION: test, board
+TESTS: e2e-ref, e2e-host, e2e-mutations, e2e, rtegen
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-041
+
+[CLAUSE]
+UID: SSR-041(b)
+STATEMENT: Every such signal shall be checked on reception.
+VERIFICATION: test, board
+TESTS: e2e-ref, e2e-host, e2e-mutations, e2e, rtegen
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-041
+
+[CLAUSE]
+UID: SSR-041(c)
+STATEMENT: The result of the check shall be mapped to the signal's qualifier.
+VERIFICATION: test, board
+TESTS: rtegen, can-bus-state
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-041
+
+[SSR]
+UID: SSR-042
+TITLE: No transmission into an unhealthy bus
+STAGE: 1
+ASIL: B
+STATUS: implemented
+VERIFICATION: test, board
+REVIEW_STATUS: inspected
+CODE: >>>
+libs/bsw/canSystem/include/can/CanBusState.h :: CanBusMonitor
+libs/bsw/canSystem/include/can/CanPhyGate.h :: CanPhyGate
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: ASG-05
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: SM-32
+  ROLE: Specifies
+
+[CLAUSE]
+UID: SSR-042(a)
+STATEMENT: For every CAN bus the base software shall track the bus state, including bus-off.
+VERIFICATION: test, board
+TESTS: can-bus-state, can-console
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-042
+
+[CLAUSE]
+UID: SSR-042(b)
+STATEMENT: >>>
+For every CAN bus the base software shall block transmission while no physical-layer provider of that bus
+reports ready.
+<<<
+VERIFICATION: test, board
+TESTS: can-phy-gate
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-042
+
+[[/SECTION]]
+
+[[SECTION]]
+TITLE: Start-up, reset, ECU state
+
+[SSR]
+UID: SSR-050
+TITLE: Start reason from two independent sources
+STAGE: 1
+ASIL: B
+STATUS: implemented
+VERIFICATION: test, board
+REVIEW_STATUS: rework
+CODE: >>>
+platforms/s32k1xx/port/mcuResetReason/src/mcuResetReason/McuResetReason.cpp :: mcuStartReasons
+libs/bsw/ecuState/src/ecuState/EcuStateController.cpp :: mcuStartReasons
+<<<
+NOTE: >>>
+Realisation - (b) captured before main().
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: ASG-06
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: SM-50
+  ROLE: Specifies
+
+[CLAUSE]
+UID: SSR-050(a)
+STATEMENT: >>>
+The start reason shall be taken from two sources, the power-supply role and the MCU's own reset status.
+<<<
+VERIFICATION: test, board
+TESTS: ecustate, bsw-providers-sbc, bsw-providers-nosbc, bsw-providers-nosbc-nomcu, rcm-start-line
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-050
+
+[CLAUSE]
+UID: SSR-050(b)
+STATEMENT: The MCU's reset status shall be captured before any start-up code can change it.
+VERIFICATION: test, board
+TESTS: rcm-start-line
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-050
+
+[CLAUSE]
+UID: SSR-050(c)
+STATEMENT: >>>
+The two sources shall be unified by a documented rank rule, so that a configured reaction to a watchdog
+reset takes effect even when only the MCU saw the reset.
+<<<
+VERIFICATION: test, board
+TESTS: ecustate, bsw-providers-sbc
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-050
+
+[SSR]
+UID: SSR-051
+TITLE: Bootloader starts only a valid, compatible image
+FINDINGS: N4
+STAGE: 1
+ASIL: B
+STATUS: implemented
+VERIFICATION: test, board
+REVIEW_STATUS: inspected
+CODE: >>>
+bootloader/src/core/app_image.c :: app_image_valid
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: ASG-07
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: SM-51
+  ROLE: Specifies
+
+[CLAUSE]
+UID: SSR-051(a)
+STATEMENT: >>>
+The bootloader shall start the application only if its validity record, identifier, version field and CRC
+over the image match.
+<<<
+VERIFICATION: test, board
+TESTS: bootloader-host, bl-update-host, bl-update-mutations
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-051
+
+[CLAUSE]
+UID: SSR-051(b)
+STATEMENT: >>>
+Bootloader, application, updater and flash tool shall take the memory layout from one common generated
+source.
+<<<
+VERIFICATION: test, board
+TESTS: bootloader-host, bl-s3-host
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-051
+
+[CLAUSE]
+UID: SSR-051(c)
+STATEMENT: >>>
+When the bootloader does not start the application, it shall stay reachable for a download, also after a download
+that was interrupted at any flash operation.
+<<<
+VERIFICATION: test, board
+TESTS: bootloader-host, bl-update-host, bl-platform-host, canflash-tool
+NOTE: >>>
+Added by DOC-44 for the reaction of SM-51 ("stays reachable for a download", fmea.md) and for the evidence of
+bl-platform-host (the board's SBC and SPI start-up in the bootloader) and canflash-tool (the tool side of the download).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-051
+
+[SSR]
+UID: SSR-052
+TITLE: Defined run-down with time-outs per step
+STAGE: 1
+ASIL: B
+STATUS: implemented
+VERIFICATION: test, board
+REVIEW_STATUS: inspected
+CODE: >>>
+libs/bsw/ecuState/src/ecuState/EcuStateMachine.cpp :: EcuStateMachine::abortRunDown
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: ASG-06
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: SM-53
+  ROLE: Specifies
+
+[CLAUSE]
+UID: SSR-052(a)
+STATEMENT: >>>
+The ECU state management shall run down through defined steps, including a flush of the pending outputs.
+<<<
+VERIFICATION: test, board
+TESTS: ecustate
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-052
+
+[CLAUSE]
+UID: SSR-052(b)
+STATEMENT: Every run-down step shall have a time-out from the project configuration.
+VERIFICATION: test, board
+TESTS: ecustate
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-052
+
+[CLAUSE]
+UID: SSR-052(c)
+STATEMENT: A step that does not finish within its time-out shall lead to a restart.
+VERIFICATION: test, board
+TESTS: ecustate
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-052
+
+[[/SECTION]]
+
+[[SECTION]]
+TITLE: Open: gaps and proposed tasks
+
+[SSR]
+UID: SSR-060
+TITLE: Safe state verified by read-back
+FINDINGS: G1
+STAGE: 1
+ASIL: B
+STATUS: partial
+VERIFICATION: test, board
+REVIEW_STATUS: inspected
+CODE: >>>
+platforms/s32k1xx/port/safety/safeIo/src/safeIo/SafeIo.cpp :: readsBackSafe
+platforms/s32k1xx/port/safety/safeIo/include/safeIo/SafeIoRegisters.h :: readbackAccepts
+platforms/s32k1xx/port/safety/safeIo/src/registerList/SafeOutputReadbackList.cpp :: safeOutputReadbacks
+tools/bswgen/bswgen.py :: collect_safe_outputs
+<<<
+NOTE: >>>
+SYS-30 (2026-09-30). Realisation: the generator writes one read-back entry per entry of the safe outputs table
+(NX_SAFE_OUTPUT_READBACKS: for a PWM group its software output control, CHnOC set and CHnOCV clear; for a
+safe_off output the pin level PDIR of its port, the inactive level), defined in the register list library of
+SafeIo; SafeIo::cyclic() reads them in every safety cycle while the latch of S1 is set and raises
+LOCK_REGISTER_ERROR with context class SAFE_OUTPUT and the entry index for the first entry that does not show
+the safe state (reaction S1 + S2: the reset puts the pins into their reset state), once until the next init().
+With an active short selected (SYS-116, SSR-089) the short passes as well. SYS-138 (2026-09-30, decision K6 of
+the safety review SYS-116/SYS-30): the read-back is one function of the family port that the safe supervisor uses
+as well - in S1 held in every round of the hold loop before its walk, for the groups of SD in every safety cycle
+before their walk, and in the S1 + S2 sequence before the reset (then without the console line); not confirmed:
+LOCK_REGISTER_ERROR, S1 + S2. An entry whose clock is gated is not confirmed once SafeIo::init() has run (before
+SYS-138 it was not judged). Host verified (safe-io, safe-supervisor-degraded, with mutants). Partial: not yet in
+the hard fault and watchdog handlers and the halt deadman of the family port; nothing is judged before
+SafeIo::init(); with the input of a pin disabled (a register fault SM-22 reports itself) its level reads 0;
+board proof open (fmea.md B15, B16).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: ASG-01
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: ASG-02
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: SM-23
+  ROLE: Specifies
+
+[CLAUSE]
+UID: SSR-060(a)
+STATEMENT: >>>
+After S1 the base software shall read back the level of every output to be switched off in the safe state
+and the output state of every PWM group.
+<<<
+VERIFICATION: test, board
+TESTS: bswgen-safe-readback, safe-io
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-060
+
+[CLAUSE]
+UID: SSR-060(b)
+STATEMENT: An output found active shall raise an event.
+VERIFICATION: test, board
+TESTS: safe-io
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-060
+
+[SSR]
+UID: SSR-061
+TITLE: Plausibility between two independent measurement paths
+FINDINGS: G2
+STAGE: 1
+ASIL: B
+STATUS: open
+VERIFICATION: test
+REVIEW_STATUS: inspected
+RELATIONS:
+- TYPE: Parent
+  VALUE: ASG-01
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: ASG-03
+  ROLE: DerivedFrom
+
+[CLAUSE]
+UID: SSR-061(a)
+STATEMENT: >>>
+The base software shall offer a plausibility check over configured pairs of signals from independent
+measurement paths, with tolerance and debounce time configured in physical units.
+<<<
+VERIFICATION: test
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-061
+
+[CLAUSE]
+UID: SSR-061(b)
+STATEMENT: A violation shall raise an event to the safe supervisor.
+VERIFICATION: test
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-061
+
+[SSR]
+UID: SSR-062
+TITLE: Age supervision of safety-relevant signals
+FINDINGS: G3
+STAGE: 1
+ASIL: B
+STATUS: partial
+VERIFICATION: test
+REVIEW_STATUS: inspected
+CODE: >>>
+tools/rtegen/rtegen.py :: AgeSupervision
+tools/rtegen/rtegen.py :: age_link
+<<<
+NOTE: >>>
+Realisation of (a) since SYS-32: tools/rtegen generates per port element with a configured period an age
+qualifier (target age.qlf.<Swc>.<Port>.<Element>) that becomes invalid when the value is not refreshed within its
+period; host test rtegen-age with 6 built-in mutations. Partial (CM-07 decision ZE, DOC-51): (b), the event to the
+safe supervisor, is open with SYS-99 (gap G3); the board proof needs a device package (SYS-28).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: ASG-03
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: ASG-05
+  ROLE: DerivedFrom
+
+[CLAUSE]
+UID: SSR-062(a)
+STATEMENT: >>>
+A safety-relevant signal, including a value from an on-board device, that is not refreshed within its
+configured period shall be marked invalid in its qualifier.
+<<<
+VERIFICATION: test
+TESTS: rtegen-age
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-062
+
+[CLAUSE]
+UID: SSR-062(b)
+STATEMENT: Where the configuration asks for it, such a signal shall also raise an event.
+VERIFICATION: test
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-062
+
+[SSR]
+UID: SSR-063
+TITLE: Safe state reaches bus-commanded actuators
+FINDINGS: G4
+STAGE: 1
+ASIL: B
+STATUS: open
+VERIFICATION: test
+REVIEW_STATUS: inspected
+NOTE: >>>
+Realisation proposed - permission declared in the module manifest.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: ASG-04
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: ASG-01
+  ROLE: DerivedFrom
+
+[CLAUSE]
+UID: SSR-063(a)
+STATEMENT: >>>
+Every actuator switched by a bus command shall need a permission of the base software, declared in the
+configuration of its module.
+<<<
+VERIFICATION: test
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-063
+
+[CLAUSE]
+UID: SSR-063(b)
+STATEMENT: Every entry into S1, including S1 held and the fault handlers, shall revoke that permission.
+VERIFICATION: test
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-063
+
+[CLAUSE]
+UID: SSR-063(c)
+STATEMENT: The driver shall check the permission before every command that switches the actuator on.
+VERIFICATION: test
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-063
+
+[CLAUSE]
+UID: SSR-063(d)
+STATEMENT: An actuator commanded off that is found on shall be reported.
+VERIFICATION: test
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-063
+
+[SSR]
+UID: SSR-064
+TITLE: Device reports to the safe supervisor
+FINDINGS: G5, F5
+STAGE: 1
+ASIL: B
+STATUS: implemented
+VERIFICATION: test
+REVIEW_STATUS: inspected
+CODE: >>>
+ecu/safety/safeSupervisor/src/safeSupervisor/SafeSupervisor.cpp :: handleDeviceFault
+ecu/safety/safeSupervisor/src/safeSupervisor/SafeSupervisor.cpp :: correlateDeviceBus
+<<<
+NOTE: >>>
+Realisation: DEVICE_REPORT through a per-package event box delivered by the safety task, DEVICE_FAULT with the
+reaction chosen in SafeSupervisor::handle() (fault class IDENTITY: S1 held), qualifier QLF_ERROR. SYS-29
+(2026-09-22); no driver reports yet (SYS-28), board checks B1-B5 of SYS-29 open.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: ASG-01
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: ASG-03
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: ASG-04
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: SM-34
+  ROLE: Specifies
+
+[CLAUSE]
+UID: SSR-064(a)
+STATEMENT: >>>
+The safe supervisor shall accept device reports with one context word (bus, device instance, fault class,
+detail) in two event classes, a report class and a fault class.
+<<<
+VERIFICATION: test
+TESTS: safe-supervisor
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-064
+
+[CLAUSE]
+UID: SSR-064(b)
+STATEMENT: >>>
+The report class shall have the reaction S3 for every context word and shall be reportable from any
+context, reaching the safe supervisor without write access to the safety data (SSR-020).
+<<<
+VERIFICATION: test
+TESTS: safe-supervisor
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-064
+
+[CLAUSE]
+UID: SSR-064(c)
+STATEMENT: The fault class shall be raised only in the safety context.
+VERIFICATION: test
+TESTS: safety-context
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-064
+
+[CLAUSE]
+UID: SSR-064(d)
+STATEMENT: >>>
+The reaction to the fault class shall be S1 held for an identity fault and S1 + S2 for every other fault
+class and for a malformed context word.
+<<<
+VERIFICATION: test
+TESTS: safe-supervisor
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-064
+
+[CLAUSE]
+UID: SSR-064(e)
+STATEMENT: >>>
+Communication faults of two different devices on one bus within one correlation window shall be reported
+as one event.
+<<<
+VERIFICATION: test
+TESTS: safe-supervisor
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-064
+
+[CLAUSE]
+UID: SSR-064(f)
+STATEMENT: While such a bus event lasts, the qualifier of every device value on that bus shall be "error".
+VERIFICATION: test
+TESTS: rtegen, safe-supervisor
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-064
+
+[SSR]
+UID: SSR-065
+TITLE: Limit on repeated safety resets
+FINDINGS: F13, T4
+STAGE: 1
+ASIL: B
+STATUS: implemented
+VERIFICATION: test
+REVIEW_STATUS: inspected
+CODE: >>>
+ecu/safety/safeSupervisor/include/safeSupervisor/ResetLoopLimit.h :: onStart
+ecu/safety/safeSupervisor/src/safeSupervisor/SafeSupervisor.cpp :: startResetLoopLimit
+platforms/s32k1xx/port/main/src/main.cpp :: resetLoopRecord
+<<<
+NOTE: >>>
+SYS-43 (2026-09-22, decision `sys43-resetschleife`): safety resets counted from the supervisor's mark before
+the reset, the MCU's reset status (watchdog, power-on) and the hard fault dump; S1 held without a reset
+(RESET_LOOP_LIMIT) from `reset_loop_limit` on, cleared by power-on and after `reset_loop_clear_ms`. Both values
+are provisional defaults in the family port (3, 60000 ms) until the supervisor's module manifest exists. Host
+verified with 17 built-in faults; board checks B10/B11 of fmea.md open.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: ASG-02
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: ASG-06
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: SM-50
+  ROLE: Specifies
+
+[CLAUSE]
+UID: SSR-065(a)
+STATEMENT: Consecutive safety resets shall be counted in memory that keeps its content across a software reset.
+VERIFICATION: test
+TESTS: safe-supervisor
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-065
+
+[CLAUSE]
+UID: SSR-065(b)
+STATEMENT: When the count reaches a configured number, the ECU shall enter S1 held instead of restarting again.
+VERIFICATION: test
+TESTS: safe-supervisor
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-065
+
+[CLAUSE]
+UID: SSR-065(c)
+STATEMENT: The count shall be cleared by a power-on reset and after a configured time without a safety reset.
+VERIFICATION: test
+TESTS: safe-supervisor
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-065
+
+[SSR]
+UID: SSR-066
+TITLE: Complete configuration checks of the supervision peripherals
+FINDINGS: F12, T2
+STAGE: 1
+ASIL: B
+STATUS: partial
+VERIFICATION: test
+REVIEW_STATUS: inspected
+CODE: >>>
+platforms/s32k1xx/port/safety/safeSupervisionCheck/src/safeSupervisionCheck/WatchdogControlCheck.cpp :: checkWatchdogControl
+platforms/s32k1xx/port/safety/safeSupervisionCheck/src/safeSupervisionCheck/LpitDeadmanCheck.cpp :: checkLpitDeadman
+platforms/s32k1xx/port/safety/safeLifecycle/src/safeLifecycle/SafetyManager.cpp :: SafetyManager::checkSupervisionPeripherals
+<<<
+NOTE: >>>
+SYS-41. Watchdog part implemented and host verified (safe-watchdog: INT, WIN, PRES, UPDATE; SSR-012). Deadman
+part: host verified, target binding pending (SYS-48) - checkLpitDeadman() compares MCR[M_CEN], MCR[DBG_EN],
+the channel's MIER bit, TCTRL (T_EN excluded, retrigger and handler switch it), TVAL, NVIC enable and priority
+every safety cycle from the safety task (DEADMAN_CONFIGURATION_ERROR, context = fields, S1 + S2), tested by
+lpit-deadman-check and safety-cycle; the expected values come from the owner of the deadman through
+deadmanExpectedConfiguration(), which is weak and nullptr until SYS-48 adds the strong definition (out of line
+in integration/Integration.cpp since SYS-133), so the check does not run on the target yet. Status partial until
+then.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: ASG-02
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: ASG-06
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: SM-02
+  ROLE: Specifies
+- TYPE: Parent
+  VALUE: SM-06
+  ROLE: Specifies
+
+[CLAUSE]
+UID: SSR-066(a)
+STATEMENT: >>>
+The configuration check of the MCU watchdog (SSR-012) shall also cover the warning interrupt, the window,
+the prescaler and the permission to update the configuration.
+<<<
+VERIFICATION: test
+TESTS: safe-watchdog
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-066
+
+[CLAUSE]
+UID: SSR-066(b)
+STATEMENT: >>>
+The configuration of the halt deadman (SSR-016) - its interrupt enable in the timer and in the interrupt
+controller, its interrupt priority, its time-out value and its behaviour in debug halt - shall be re-checked in
+every safety cycle, and a difference shall raise an event with reaction S1 + S2.
+<<<
+VERIFICATION: test
+TESTS: lpit-deadman-check, safety-cycle
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-066
+
+[SSR]
+UID: SSR-067
+TITLE: ROM check repeated during operation
+FINDINGS: F3, G6, T5
+STAGE: 1
+ASIL: B
+STATUS: implemented
+VERIFICATION: test, board
+REVIEW_STATUS: inspected
+CODE: >>>
+platforms/s32k1xx/port/safety/safeMemory/module.yaml :: rom_check_period_ms
+platforms/s32k1xx/port/safety/safeMemory/src/safeMemory/RomCheck.cpp :: RomCheck::idleOn
+platforms/s32k1xx/port/safety/safeMemory/src/safeMemory/RomCheck.cpp :: crcKnownAnswer
+platforms/s32k1xx/port/safety/safeMemory/src/romCheckFlashWrites/RomCheckFlashWrites.cpp :: RomCheckFlashWrites::begin
+ecu/application/src/systems/nvm/FlashWriteBracket.h :: FlashWriteBracket
+<<<
+NOTE: >>>
+SYS-44 (task T5): period modules.safeMemory.rom_check_period_ms (default 60000 ms, start to start); every pass
+begins with a known-answer test (ROMCHECK_UNIT_FAILED); no pass starts while a flash write is open (every NvM
+write is bracketed, FlashWriteBracket) or a flash command runs (FTFC FSTAT CCIF), a pass during which one began
+is discarded, a due pass kept off for more than one period is reported (ROMCHECK_OVERDUE). The data flash
+written by the NvM is suspended as well as the program flash. Host verified with 17 mutants; board B1/B9 open.
+Known limit: with period 0 a write that never ends keeps the first pass off without a report.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: ASG-07
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: AoU-25
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: SM-14
+  ROLE: Specifies
+
+[CLAUSE]
+UID: SSR-067(a)
+STATEMENT: >>>
+The ROM check (SSR-024) shall be repeated with a configured period; the value 0 shall mean once per start.
+<<<
+VERIFICATION: test, board
+TESTS: rom-check
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-067
+
+[CLAUSE]
+UID: SSR-067(b)
+STATEMENT: Every pass shall be preceded by a known-answer test of the CRC unit.
+VERIFICATION: test, board
+TESTS: rom-check, rom-check-mutations
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-067
+
+[CLAUSE]
+UID: SSR-067(c)
+STATEMENT: No pass shall run while the program flash is written.
+VERIFICATION: test, board
+TESTS: rom-check, rom-check-mutations, nvm-flash-write-bracket
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-067
+
+[SSR]
+UID: SSR-068
+TITLE: ECC supervision complete
+FINDINGS: F11, T2
+STAGE: 1
+ASIL: B
+STATUS: implemented
+VERIFICATION: test, review
+REVIEW_STATUS: rework
+CODE: >>>
+platforms/s32k1xx/port/safety/safeMemory/src/safeMemory/IntegrityEccHandler.cpp :: takeEccErrors
+platforms/s32k1xx/port/safety/safeMemory/src/safeMemory/IntegrityEccHandler.cpp :: eccCorrectionCount
+<<<
+NOTE: >>>
+SYS-41: flags recorded (RAM address) and cleared by write-1-to-clear, exactly the ones read, before the report;
+one event INTEGRITY_EVENT_DMA_ECC_ERROR (name kept) with the source in its context (bit 0 RAM channel 0, bit 1
+RAM channel 1, bit 2 flash) instead of separate events; single-bit corrections counted (eccCorrectionCount())
+and cleared without a reaction. Start-up decision: no RAM test in SYS-41 - the startup writes the whole SRAM
+(ECC initialisation); a March test would be a task of its own. Host test safe-memory-ecc; board check B5 open.
+Clause (c) is a statement about the documentation, not about the behaviour of the product (finding R1 of INS-SSR-01,
+still open); since DOC-44 it is verified by review - the decision is recorded in this note and in the SM-15/SM-16
+entries of fmea.md, and the start-up code writes the whole SRAM (platforms/s32k1xx/port/main/src/bsp/startUp.S,
+section Init ECC RAM). No test can show a process statement; the rewording of R1 stays with the safety review.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: ASG-06
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: SM-15
+  ROLE: Specifies
+- TYPE: Parent
+  VALUE: SM-16
+  ROLE: Specifies
+
+[CLAUSE]
+UID: SSR-068(a)
+STATEMENT: ECC error indications shall be recorded and cleared, an uncorrectable one before it is reported.
+VERIFICATION: test
+TESTS: safe-memory-ecc
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-068
+
+[CLAUSE]
+UID: SSR-068(b)
+STATEMENT: >>>
+The report shall tell RAM and flash errors apart (a separate event or the source in the context word).
+<<<
+VERIFICATION: test
+TESTS: safe-memory-ecc
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-068
+
+[CLAUSE]
+UID: SSR-068(c)
+STATEMENT: The start-up behaviour (RAM test or not) shall be decided and documented.
+VERIFICATION: review
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-068
+
+[SSR]
+UID: SSR-069
+TITLE: Read-failure limit for the internal supply channel
+STATEMENT: >>>
+Consecutive failed readings of the internal supply channel of SSR-032 shall raise the event of SSR-032 once
+when they reach the configured number of SSR-031.
+<<<
+FINDINGS: F14, T2
+STAGE: 1
+ASIL: B
+STATUS: implemented
+VERIFICATION: test
+REVIEW_STATUS: inspected
+CODE: >>>
+platforms/s32k1xx/port/safety/safeSystem/src/safeSystem/SafeSystem.cpp :: SafeSystem::checkInternalSupplies
+<<<
+NOTE: >>>
+SYS-41: the same limit as the reference channel, modules.safeSystem.adc_read_error_limit (no second parameter;
+demo 10 cycles = 100 ms nominal), then INTERNAL_SUPPLIES_ERROR once with context 2 ("no measurement"). A good
+reading ends the series; a missing reference does not count (that is SM-19). Diagnostic value
+consecutiveSupplyErrors, console safeadc stats. Host test safe-system; a failing supply channel cannot be
+provoked on the board.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: ASG-06
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: SM-20
+  ROLE: Specifies
+
+[SSR]
+UID: SSR-070
+TITLE: Register lock and check list derived from the configuration
+STATEMENT: >>>
+The generator shall derive the list of registers to lock (SSR-033) and to check cyclically (SSR-034) from the
+safe outputs table, the PWM groups and the clock plan, covering the pin function of every safe output and PWM
+pin, direction and level of every output to be switched off in the safe state, the PWM timer configuration,
+the clock gates, the system clock and the supervision peripherals.
+<<<
+FINDINGS: F4
+STAGE: 1
+ASIL: B
+STATUS: partial
+VERIFICATION: test, board
+REVIEW_STATUS: inspected
+CODE: >>>
+tools/bswgen/bswgen.py :: collect_safe_io
+platforms/s32k1xx/port/safety/safeIo/src/safeIo/SafeIo.cpp :: SafeIo::init
+<<<
+NOTE: >>>
+partial - SYS-24 derives the list with bswgen (bsp/safeIo/safeIoConfiguration.h) in four classes: pin function
+(PCR of PWM, safe_off and role pins, locked), GPIO direction (PDDR/PIDR), clock gates (PCC CGC) and PWM timer
+(FTM SC, MOD, CNTIN, COMBINE, POL, INVCTRL, CONF.BDMMODE, deadtime); checked against an independent expectation
+(bswgen-safe-io) and on a register model (safe-io, 20 mutants). Open: system clock (SCG) and supervision
+peripherals as classes, board check with SYS-06 (SYS-55).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: ASG-01
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: ASG-02
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: SM-21
+  ROLE: Specifies
+- TYPE: Parent
+  VALUE: SM-22
+  ROLE: Specifies
+
+[[/SECTION]]
+
+[[SECTION]]
+TITLE: Safeguards of the generated code (PLAT-75)
+
+[TEXT]
+STATEMENT: >>>
+Missing safeguards against a wrong generator output, from doc/safety/tool-classification.md sections 4, 7 and 8.
+Each belongs to a proposed task (letters A-E of tool-classification.md section 7). SSR-080 (A, PLAT-77) and SSR-084
+(E, PLAT-81) are implemented since SYS-49, SSR-083 (D, PLAT-80) and SSR-081 (B and F, PLAT-78 and PLAT-82) since
+2026-09-22; SSR-082 is implemented since PLAT-79 (host 2026-10-01, board 2026-10-01).
+The safeguards that exist are traced through the requirements of the mechanisms they protect (SSR-005, SSR-007,
+SSR-022, SSR-024, SSR-040, SSR-041, SSR-051).
+<<<
+
+[SSR]
+UID: SSR-080
+TITLE: Safe outputs table checked in the linked image against an independent expectation
+STATEMENT: >>>
+Every entry of the safe outputs table in the linked application image (register address, value, gate register
+and mask, order) shall be compared with an expectation derived from the board, the project and the module
+manifests with register addresses taken from the reference manual, by a check that does not use the generator's
+code; a difference shall fail the build verification.
+<<<
+STAGE: 1
+ASIL: B
+STATUS: implemented
+VERIFICATION: test
+REVIEW_STATUS: inspected
+CODE: >>>
+tools/bswgen/test/safe_outputs_expectation.py :: expected
+platforms/s32k1xx/hardFaultHandler/test/test_safe_outputs_table.py :: image_findings
+<<<
+NOTE: >>>
+tool-classification.md proposal A, finding TF5 (PLAT-77). The expectation (safe_outputs_expectation.py) imports
+neither bswgen nor nxconfig; its reference manual addresses are cross-checked against the NXP device headers.
+Checked in the linked image of every profile (two own, demo, charge, S32K148, S32K116, the table definition of
+the port built by the target compiler and linked with the fault handler of the core) and in the application
+ELFs of the demo, charge and S32K148 target builds; generator, generat and image mutants turn it red.
+Implemented since SYS-49 (status lifted together with the tool classification test); BswGenSafeOutputsHostTest
+now uses the same expectation instead of its own copy of the rules. Not covered: the pin function of the
+safe_off outputs (GPIO mux, direction; generator only), the S32K116 application ELF (does not link, PLAT-12),
+and the table in the flashed image (board check TB1).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: ASG-01
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: ASG-02
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: AoU-06
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: AoU-10
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: SM-23
+  ROLE: Specifies
+
+[SSR]
+UID: SSR-081
+TITLE: Change of a safety-relevant generated file detected
+STAGE: 1
+ASIL: B
+STATUS: implemented
+VERIFICATION: test
+REVIEW_STATUS: inspected
+CODE: >>>
+tools/bswgen/test/reference_output.py :: differences
+tools/elfcheck/timing.py :: check_image
+tools/elfcheck/timing.py :: check_irq_probe
+<<<
+NOTE: >>>
+tool-classification.md proposals B and F, findings TF1 and TF7. Part B (reviewed expected output per test
+profile) since PLAT-78 (tests bswgen-reference, rtegen-reference, tools/bswgen/test/reference_output.py). Part F
+since PLAT-82 (tools/elfcheck/timing.py, tests elfcheck-timing*): rte::TASKS, rte::RUNNABLES and
+rte::MODE_RUNNABLES of the linked image (periods = SM-05 deadlines, offsets, task contexts), the context number
+of every task (TASK_* enumerators from the debugging information) and the interrupt ranks, syscall level, NVIC
+bits and OS tick as compiled (.debug_macro) against rte.yaml, tasks.yaml, the ARXML of a Simulink component,
+the swc.yaml of a hand-written C component (RTE-20), the project's interrupt ranks and mcudb, by a parser that
+imports no generator; the NVIC level of every rank through the target compiler (probe of the generated
+headers). Demo and S32K148 images, own profile test/multitask built for Cortex-M4 and M0+, own interrupt
+profiles; image, generat, template and configuration mutants turn it red. C components since PLAT-102 (gap
+found 2026-09-24 in TOOL-93: before, a project with a C component could not be checked against its image at
+all): the swc.yaml is read by an own narrow reader in timing.py (name, runnables, periods), not by rtegen or
+tools/swc/swc_yaml.py, so the two readers stay diverse; the expectation of the profiles test_c_swc and
+test_calib agrees with the reviewed reference output, and the own profile test/c_swc (C component LevelMonSwc
+next to the Simulink DemoSwc) built for Cortex-M4 and its S32K148 firmware (target build target-c-swc) pass,
+while a period that drifts apart between swc.yaml and the image (both directions), a renamed runnable and
+image mutants of the C rows turn it red (classes TimingCSwcHostBuildTest, TimingCSwcImageTest). Not covered:
+the NVIC register values in a running device (board check TB4) and the VIM channels of Cortex-R.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: ASG-06
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: AoU-10
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: SM-05
+  ROLE: Specifies
+- TYPE: Parent
+  VALUE: SM-18
+  ROLE: Specifies
+- TYPE: Parent
+  VALUE: SM-23
+  ROLE: Specifies
+- TYPE: Parent
+  VALUE: SM-30
+  ROLE: Specifies
+
+[CLAUSE]
+UID: SSR-081(a)
+STATEMENT: >>>
+For every test profile, the generated files that configure a stage-1 mechanism (safe outputs table,
+derivative facts, interrupt priorities, ADC reference band, memory layout, task list and periods, qualifier
+limits, CAN signal access) shall be compared with a reviewed expected output.
+<<<
+VERIFICATION: test
+TESTS: bswgen-reference, rtegen-reference
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-081
+
+[CLAUSE]
+UID: SSR-081(b)
+STATEMENT: >>>
+The task list, task priorities, periods and interrupt priorities of the linked image shall be compared with
+the configuration by a parser that does not use the generators' code.
+<<<
+VERIFICATION: test
+TESTS: elfcheck-timing, elfcheck-timing-host, elfcheck-timing-demo, elfcheck-timing-bt148
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-081
+
+[SSR]
+UID: SSR-082
+TITLE: Configuration and generator identity recognisable in the image
+STAGE: 1
+ASIL: B
+STATUS: implemented
+VERIFICATION: test, board
+REVIEW_STATUS: inspected
+CODE: >>>
+tools/nxconfig/identity.py :: of
+tools/nxconfig/identity.py :: manifest_path
+<<<
+NOTE: >>>
+tool-classification.md proposal C, finding TF4. Implemented by PLAT-79 (tools/nxconfig/identity.py: SHA-256 over
+the configuration inputs and the generator sources, one manifest per generator, identical image after
+reconfiguration; console `version` and `info`, UDS DID 0xF1F1) with PLAT-98 (console commands) and PLAT-93 (the
+neXtBSW version and the workspace commit, DID 0xF1F2). Tests nxconfig-identity and identity; board 2026-10-01
+(DID 0xF1F1, `version`, `info`) passed, the board record is not linked yet (deficit D-15).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: ASG-07
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: AoU-10
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: SM-51
+  ROLE: Specifies
+
+[CLAUSE]
+UID: SSR-082(a)
+STATEMENT: Every generated file shall carry the generator's version and a fingerprint of all its inputs.
+VERIFICATION: test, board
+TESTS: nxconfig-identity
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-082
+
+[CLAUSE]
+UID: SSR-082(b)
+STATEMENT: >>>
+The image shall carry one combined identity of all generated files that can be read at run time, so that
+the configuration and the generator version that produced an image can be compared with the reviewed ones.
+<<<
+VERIFICATION: test, board
+TESTS: nxconfig-identity, identity
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-082
+
+[SSR]
+UID: SSR-083
+TITLE: Memory layout of the linked images checked against the derivative
+STATEMENT: >>>
+The loadable sections of the linked bootloader, application and updater images, the position of the validity
+record and of the checksum list, and the build attributes of the core shall be checked against the derivative
+database, not against the generated memory layout that the images were linked with.
+<<<
+STAGE: 1
+ASIL: B
+STATUS: implemented
+VERIFICATION: test
+REVIEW_STATUS: inspected
+CODE: >>>
+tools/elfcheck/check.py :: check_images
+<<<
+NOTE: >>>
+tool-classification.md proposal D, finding TF6. Implemented by PLAT-80 (tools/elfcheck, tests elfcheck*): demo,
+S32K148 build test, S32K116 (own small application image) and stm32 bootloader; key sector not yet checked.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: ASG-07
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: AoU-10
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: SM-14
+  ROLE: Specifies
+- TYPE: Parent
+  VALUE: SM-51
+  ROLE: Specifies
+
+[SSR]
+UID: SSR-084
+TITLE: CAN signal layout of every project checked against an independent decoder
+STATEMENT: >>>
+For every DBC file of a project, every used signal shall be packed and unpacked by the generated code and by an
+independent decoder at its limits and at further values, and a difference in the raw bytes or the physical
+values shall fail the verification.
+<<<
+STAGE: 1
+ASIL: B
+STATUS: implemented
+VERIFICATION: test
+REVIEW_STATUS: inspected
+CODE: >>>
+tools/dbcgen/test_project_dbcs.py :: discover
+tools/dbcgen/test_project_dbcs.py :: ProjectDbcBackToBackTest
+<<<
+NOTE: >>>
+tool-classification.md proposal E, finding TF8 (PLAT-81, implemented since SYS-49). Every DBC under projects/
+and tools/ and every ECU description with can.dbc is found automatically; every signal of the messages the
+node sends or receives is packed and unpacked by the generated code and by cantools (bit-field and DBC limits,
+raw and physical zero, random values with a fixed seed per DBC; raw bytes and physical values; E2E signals
+with the bit offset rtegen hands to the E2E library); eight mutants of the generat turn it red. Messages
+dbcgen cannot generate (multiplexed, IEEE float) are skipped and listed; a description that uses one fails.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: ASG-05
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: AoU-10
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: SM-30
+  ROLE: Specifies
+
+[SSR]
+UID: SSR-086
+TITLE: Latent faults of the RAM error correction tested at every start
+STAGE: 1
+ASIL: B
+STATUS: implemented
+VERIFICATION: test, board
+REVIEW_STATUS: inspected
+CODE: >>>
+platforms/s32k1xx/port/safety/safeMemory/src/safeMemory/EccLatentTest.cpp :: testEccChannel
+platforms/s32k1xx/port/safety/safeMemory/src/safeMemory/EccLatentTest.cpp :: runEccLatentTest
+platforms/s32k1xx/port/safety/safeMemory/src/safeMemory/EccLatentTestTarget.cpp :: eimInjectedRead
+<<<
+NOTE: >>>
+SYS-73 (iso26262-gap.md section 6 no. 18). Realisation: error injection module (EIM) per ERM channel of the
+derivative (S32K14x: SRAM_L and SRAM_U; S32K11x: SRAM_U, double-bit case left out because the Cortex-M0+ takes
+it as a hard fault), reserved words in the hot bss and the no-init RAM, called in main() after the reset-loop
+limit; failure = INTEGRITY_EVENT_DMA_ECC_ERROR with context bit 3 (S1 + S2, after the configured number of such
+resets S1 held by SSR-065). Host tests safe-memory-ecc-latent (both layouts) with 25 mutants, placement and
+register-only window on the linked image (safe-memory-ecc-latent-elf). Board run open. The flash ECC has no
+injection module; what can be tested without erasing or programming is in fmea.md SM-55.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: ASG-06
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: SM-55
+  ROLE: Specifies
+
+[CLAUSE]
+UID: SSR-086(a)
+STATEMENT: >>>
+At every start, before the base software starts its drivers, the error correction of every RAM array that
+has one shall be shown to correct and record an injected single-bit error and, where the core can read an
+uncorrectable word without a fault exception, to record an injected double-bit error, each with the address
+of a reserved test word; a failure shall raise an event with the array and the failed check in its context.
+<<<
+VERIFICATION: test, board
+TESTS: safe-memory-ecc-latent, safe-memory-ecc-latent-s32k11x, safe-memory-ecc-latent-mutations, safe-memory-ecc-latent-elf
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-086
+
+[CLAUSE]
+UID: SSR-086(b)
+STATEMENT: >>>
+The injection shall be switched off, the error record of the test cleared and the error interrupt
+configuration restored before the start continues, so that the test's own errors cause no reaction.
+<<<
+VERIFICATION: test, board
+TESTS: safe-memory-ecc-latent, safe-memory-ecc-latent-mutations
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-086
+
+[[/SECTION]]
+
+[[SECTION]]
+TITLE: Degraded reaction (SYS-117)
+
+[SSR]
+UID: SSR-087
+TITLE: Degraded reaction switches only the mapped safe-output groups and keeps them until the power cycle
+STAGE: 1
+ASIL: B
+STATUS: implemented
+VERIFICATION: test, board
+REVIEW_STATUS: accepted
+CODE: >>>
+ecu/safety/safeSupervisor/src/safeSupervisor/SafeSupervisor.cpp :: degradeDeviceFault
+ecu/safety/safeSupervisor/src/safeSupervisor/SafeSupervisor.cpp :: enterDegraded
+ecu/safety/safeSupervisor/src/safeSupervisor/SafeSupervisor.cpp :: holdDegradedGroups
+ecu/safety/safeSupervisor/src/safeSupervisor/SafeSupervisor.cpp :: startDegraded
+ecu/safety/safeSupervisor/include/safeSupervisor/Degraded.h :: onStart
+ecu/safety/safeSupervisor/src/safeSupervisor/DegradedRte.cpp :: readGroups
+platforms/s32k1xx/port/safety/safeIo/src/safeIo/SafeStateDegraded.cpp :: enterDegradedState
+<<<
+NOTE: >>>
+SYS-117, doc/safety/partner-and-degraded.md part B (decisions B1-B6 of 2026-09-29, each the recommended
+variant). Realisation: reaction SD in SafeSupervisor::handle() (DEVICE_FAULT today, the only event of the
+closed list NX_SAFE_DEGRADABLE_EVENTS in safeSupervisor/Degraded.h); a group is a set of entries of the one safe
+outputs table (SM-23), walked by SafeState::enterDegradedState() of the family port; latch with inverted copy in
+the protected RAM, record in no-init RAM (.noinit.safeDegraded, key and check word like the reset-loop record of
+SYS-43), re-applied in startResetLoopLimit() from main() before the BSP; RTE targets safety.degraded,
+safety.degraded.<GROUP>, safety.qlf.degraded (tools/rtegen). The error memory gets the degradation through a DTC
+that samples such a port. Compiled only into a project with a mapping; every other project keeps its reactions
+unchanged (the object code of the demo's supervisor is the same). Host tests with fault injection and 21
+mutants; board run open. Known limits (fmea.md SM-23, SYS-117 residuals): the gate-driver enables join the
+groups with IO-45; between the PWM driver's initialisation after a safety reset and the first safety cycle, and
+between a release of the timer's output control by another path and the next safety cycle, a degraded group is
+not forced (at most one safety cycle).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: ASG-01
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: ASG-06
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: AoU-04
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: AoU-32
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: SM-23
+  ROLE: Specifies
+
+[CLAUSE]
+UID: SSR-087(a)
+STATEMENT: >>>
+For an event on the safe supervisor's closed list of degradable events that the project maps to
+safe-output groups, the safe supervisor shall drive only the outputs of those groups to their safe state, and
+then latch the groups, record them in memory that survives a reset, and report them - without a reset, without
+limp home and without entering S1 while another group still works.
+<<<
+VERIFICATION: test, board
+TESTS: safe-supervisor-degraded, safe-supervisor-degraded-mutations, safe-state-degraded
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-087
+
+[CLAUSE]
+UID: SSR-087(b)
+STATEMENT: >>>
+A device fault shall be degraded only if its report is well-formed, its fault class is not a wrong or
+unknown part, it names the bus configured for the device, and - while the safe supervisor regards that bus as
+lost - every device on the bus is mapped (then the groups of all of them are degraded); every other device
+fault shall keep its fail-safe reaction.
+<<<
+VERIFICATION: test, board
+TESTS: safe-supervisor-degraded, safe-supervisor-degraded-mutations
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-087
+
+[CLAUSE]
+UID: SSR-087(c)
+STATEMENT: >>>
+Degraded groups shall only accumulate; no group shall leave the degraded state before the next power
+cycle, and leaving S1 shall release none.
+<<<
+VERIFICATION: test, board
+TESTS: safe-supervisor-degraded, safe-supervisor-degraded-mutations
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-087
+
+[CLAUSE]
+UID: SSR-087(d)
+STATEMENT: >>>
+The safe supervisor shall drive the outputs of the degraded groups to their safe state again in every
+safety cycle.
+<<<
+VERIFICATION: test, board
+TESTS: safe-supervisor-degraded, safe-supervisor-degraded-mutations
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-087
+
+[CLAUSE]
+UID: SSR-087(e)
+STATEMENT: >>>
+When the last group that still works is degraded, the safe supervisor shall enter S1 without a reset.
+<<<
+VERIFICATION: test, board
+TESTS: safe-supervisor-degraded, safe-supervisor-degraded-mutations
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-087
+
+[CLAUSE]
+UID: SSR-087(f)
+STATEMENT: >>>
+At every start that is not a power-on, the groups recorded before the reset shall be driven to their safe
+state again before the drivers start; a record that is not plausible shall be read as every group degraded,
+and a power-on shall clear the record.
+<<<
+VERIFICATION: test, board
+TESTS: safe-supervisor-degraded, safe-supervisor-degraded-mutations
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-087
+
+[CLAUSE]
+UID: SSR-087(g)
+STATEMENT: >>>
+The safe supervisor shall make the degraded groups readable to the application from every task, and shall
+report every group as degraded, with an error qualifier, while its latch is not plausible.
+<<<
+VERIFICATION: test, board
+TESTS: safe-supervisor-degraded, rtegen-safety
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-087
+
+[SSR]
+UID: SSR-088
+TITLE: Only degradable events and independent groups can be mapped to the degraded reaction
+STAGE: 1
+ASIL: B
+STATUS: implemented
+VERIFICATION: test
+REVIEW_STATUS: accepted
+CODE: >>>
+tools/nxconfig/degraded.py :: check
+ecu/safety/safeSupervisor/include/safeSupervisor/Degraded.h :: NX_SAFE_DEGRADABLE_EVENTS
+ecu/safety/safeSupervisor/src/safeSupervisor/SafeSupervisor.cpp :: NX_SAFE_DEGRADED_CHECK_MAPPING
+<<<
+NOTE: >>>
+SYS-117. Realisation: tools/nxconfig/degraded.py reads the closed list and the event numbers from the
+supervisor's headers (a code fact, not a project value), checks project.yaml safety.output_groups and
+safety.degraded with the YAML path, and derives the group and mapping words into
+integration/safeSupervisorConfiguration.h; SafeSupervisor.cpp checks every generated mapping once more with a
+static_assert. Host tests nxconfig-degraded and the refused configurations of safe-supervisor-degraded-mutations.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: ASG-06
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: AoU-04
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: AoU-10
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: AoU-32
+  ROLE: DerivedFrom
+
+[CLAUSE]
+UID: SSR-088(a)
+STATEMENT: >>>
+The configuration check shall refuse, naming the configuration path, a degraded mapping of an event that
+is not on the safe supervisor's closed list - every fault of the MCU itself (memory, program image, program
+flow, time base, watchdog, clock, supply, kernel) is not on it.
+<<<
+VERIFICATION: test
+TESTS: nxconfig-degraded
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-088
+
+[CLAUSE]
+UID: SSR-088(b)
+STATEMENT: >>>
+The configuration check shall refuse a mapping without a group, with an unknown group or an unknown
+device, a second mapping of the same event and device, a PWM group in no group or in two, two groups on one
+timer, and a mapping in a project without an error memory.
+<<<
+VERIFICATION: test
+TESTS: nxconfig-degraded
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-088
+
+[CLAUSE]
+UID: SSR-088(c)
+STATEMENT: >>>
+The build of the safe supervisor shall fail for a generated mapping of an event that is not degradable, or
+of a group the project does not have.
+<<<
+VERIFICATION: test
+TESTS: safe-supervisor-degraded-mutations
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-088
+
+[CLAUSE]
+UID: SSR-088(d)
+STATEMENT: >>>
+At run time an event that is not on the closed list, a device fault without a mapping, a malformed
+context word and a device on the wrong bus shall keep the reaction without degradation.
+<<<
+VERIFICATION: test
+TESTS: safe-supervisor-degraded
+REVIEW_STATUS: inspected
+NOTE: >>>
+Added by DOC-44: the run-time counterpart of (a) to (c), shown by safe-supervisor-degraded with the
+real supervisor and its own test profile.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-088
+
+[SSR]
+UID: SSR-089
+TITLE: Selected safe state of a PWM group applied by every switch-off path, freewheel on any doubt
+STAGE: 1
+ASIL: B
+STATUS: partial
+VERIFICATION: test, board
+REVIEW_STATUS: inspected
+CODE: >>>
+platforms/s32k1xx/hardFaultHandler/include/hardFaultHandler/safeOutputs.h :: nxSafeOutputSelectedValue
+platforms/s32k1xx/hardFaultHandler/src/armv7m/hardFaultHandler.S :: nxSafeOutputsSelect
+platforms/s32k1xx/hardFaultHandler/src/armv6m/hardFaultHandler.S :: nxSafeOutputsSelect
+platforms/s32k1xx/hardFaultHandler/src/SafeOutputSelection.cpp :: selectTableValid
+platforms/s32k1xx/hardFaultHandler/src/SafeOutputSelection.cpp :: nxSafeStateSelect
+platforms/s32k1xx/hardFaultHandler/src/SafeOutputSelection.cpp :: nxSafeStateBlockShort
+platforms/s32k1xx/hardFaultHandler/src/SafeOutputSelection.cpp :: nxSafeStateShortTestBegin
+platforms/s32k1xx/port/safety/safeIo/src/safeIo/SafeStateDegraded.cpp :: nxSafeOutputSelectedValue
+tools/bswgen/bswgen.py :: collect_safe_outputs
+<<<
+NOTE: >>>
+SYS-116, doc/safety/partner-and-degraded.md part C (decisions C1-C6 of 2026-09-29, each the recommended
+variant). Realisation: with NX_SAFE_OUTPUT_SELECT (tools/bswgen safeOutputsConfiguration.cmake, only when a
+group allows a short) every walk works through nxSafeOutputsSelect - the entries of nxSafeOutputs with the
+freewheel value, the group, the timer's clock gate and a value per short; the selection word
+nxSafeStateSelection[group - 1] must hold NX_SAFE_STATE_WORD_SHORT_LOW or _HIGH exactly; the bound enable's
+short value is a store of 0 to its set/clear register; service and start test in hardFaultHandler/
+safeStateSelection.h. *State issue 3 (DOC-51, INS-SSR-02; the NOTE of SYS-116 said that the configuration check
+refuses every short and that the bridge-fault rule, the hold of the short, the RTE port and the call of the start
+test are follow-ups):* both follow-ups are in the tree - the safe supervisor withdraws the short on a bridge fault
+(C4, SYS-140, SSR-091) and the family port keeps it (C2, SYS-139, SSR-092) - so the configuration check accepts an
+active short (SSR-090 (b)); the RTE port of the request with the report of a refusal (C6, SYS-141,
+ecu/application/src/systems/safeState/SafeStateRte.h) and the call of the start test in RteSystem::init(), power-on
+only and bounded (SYS-141/SYS-143), exist. Partial: board proof open (fmea.md B12 ... B14). Answers the findings
+PD-1, PD-2 and (on the host) PD-5 of partner-and-degraded.md section 7.1. The integrator's side is AoU-33 (concept
+section 4.3 since issue 3; in force through the safety manual since CM-10). SM-26 and SM-27 are not credited for
+release R1 (CM-07 decision ZD): this requirement specifies SM-23, whose walk it extends; the Specifies relations to
+SM-26 and SM-27 were removed in issue 3.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: ASG-01
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: ASG-02
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: AoU-04
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: SM-23
+  ROLE: Specifies
+
+[CLAUSE]
+UID: SSR-089(a)
+STATEMENT: >>>
+For a PWM group whose project allows an active short, every path that puts the outputs into their safe
+state (S1, S1 held, SD, the fault handlers and the halt deadman) shall drive the group to the safe state
+selected at run time - every switch of the group off (freewheel), or every low-side resp. every high-side
+switch on with the others off (active short).
+<<<
+VERIFICATION: test, board
+TESTS: safe-state-select, bswgen-safe-state
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-089
+
+[CLAUSE]
+UID: SSR-089(b)
+STATEMENT: >>>
+Every such path shall drive the group to freewheel when the selection does not hold exactly the encoding of
+a short the project allows for the group, and when the clock of the group's timer is off.
+<<<
+VERIFICATION: test, board
+TESTS: safe-state-select
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-089
+
+[CLAUSE]
+UID: SSR-089(c)
+STATEMENT: >>>
+Every such path shall leave the gate-driver enable bound to a group in an active short as it is, and shall
+drive every other switched-off output inactive as SSR-005 requires; no path shall switch an output on.
+<<<
+VERIFICATION: test, board
+TESTS: safe-state-select
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-089
+
+[CLAUSE]
+UID: SSR-089(d)
+STATEMENT: >>>
+To apply the selection, a path shall read at most one word of ordinary memory per entry of the safe outputs
+table and shall need no stack, no driver object and no memory write (refines SSR-005 for such a project).
+<<<
+VERIFICATION: test, board
+TESTS: safe-state-select, bswgen-safe-state
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-089
+
+[CLAUSE]
+UID: SSR-089(e)
+STATEMENT: >>>
+The base software shall accept a request for the safe state of a group only if the project allows that
+state for the group and the state has not been withdrawn; a refused request shall leave the selection
+unchanged and shall be reported to the requester; after every reset the selection shall be freewheel.
+<<<
+VERIFICATION: test, board
+TESTS: safe-state-select
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-089
+
+[CLAUSE]
+UID: SSR-089(f)
+STATEMENT: >>>
+Withdrawing the active short of a group shall select freewheel at once and shall refuse every active short
+of that group until the next power-on.
+<<<
+VERIFICATION: test, board
+TESTS: safe-state-select
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-089
+
+[CLAUSE]
+UID: SSR-089(g)
+STATEMENT: >>>
+When the start-up test of a group's active short is run, the base software shall force the short on the
+group's timer and read it back, restore and read back the state found before, and withdraw the short (f) on a
+failed read-back.
+<<<
+VERIFICATION: test, board
+TESTS: safe-state-select
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-089
+
+[CLAUSE]
+UID: SSR-089(h)
+STATEMENT: >>>
+The switch-off paths of a project whose groups allow no active short shall be built exactly as without
+this requirement.
+<<<
+VERIFICATION: test, board
+TESTS: bswgen-safe-state, safe-state-select
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-089
+
+[SSR]
+UID: SSR-090
+TITLE: Configuration check of the safe states of a PWM group
+STAGE: 1
+ASIL: B
+STATUS: implemented
+VERIFICATION: test
+REVIEW_STATUS: inspected
+CODE: >>>
+tools/nxconfig/safestate.py :: check
+tools/nxconfig/safestate.py :: read_facts
+<<<
+NOTE: >>>
+SYS-116. Realisation: tools/nxconfig/safestate.py with project.yaml pwm.<group>.safe_states, safe_state_test,
+safe_state_test_us and board.yaml pwm[].bridge_reset_state, high_side_hold; the code facts of (b) are the macros
+NX_SAFE_BRIDGE_FAULT_CLASSES (safeSupervisor/Degraded.h) and NX_SAFE_STATE_SHORT_HOLD (family port,
+integration/SafeStateHold.h). Host test nxconfig-safestate. *Issue 3 (DOC-51):* SM-26 is not credited for
+release R1 (CM-07 decision ZD), so this requirement specifies no mechanism of the catalogue (the Specifies relation
+to SM-26 was removed); it stays a requirement on the configuration check, derived from ASG-01, AoU-04 and AoU-10.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: ASG-01
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: AoU-04
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: AoU-10
+  ROLE: DerivedFrom
+
+[CLAUSE]
+UID: SSR-090(a)
+STATEMENT: >>>
+The configuration check shall refuse, naming the configuration path, a list of safe states without
+freewheel or with a state twice, an active short on a family whose timer cannot force it with single stores, on
+a group without a low-side and a high-side channel in every pair, a high-side short without a high side that
+can stay on, and a start-up test without an active short or without its duration.
+<<<
+VERIFICATION: test
+TESTS: nxconfig-safestate
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-090
+
+[CLAUSE]
+UID: SSR-090(b)
+STATEMENT: >>>
+The configuration check shall refuse every active short while the tree lacks the safe supervisor's
+freewheel rule for bridge faults or the family port's hold of the short.
+<<<
+VERIFICATION: test
+TESTS: nxconfig-safestate
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-090
+
+[CLAUSE]
+UID: SSR-090(c)
+STATEMENT: >>>
+The configuration check shall warn when a group allows an active short without a bound gate-driver enable,
+without a stated or with a freewheeling reset state of the bridge, or without the start-up test.
+<<<
+VERIFICATION: test
+TESTS: nxconfig-safestate
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-090
+
+[SSR]
+UID: SSR-091
+TITLE: A bridge fault withdraws the active short before the reaction walks the table
+STAGE: 1
+ASIL: B
+STATUS: implemented
+VERIFICATION: test, board, review
+REVIEW_STATUS: inspected
+CODE: >>>
+ecu/safety/safeSupervisor/src/safeSupervisor/SafeSupervisor.cpp :: blockShortOnBridgeFault
+ecu/safety/safeSupervisor/src/safeSupervisor/SafeSupervisor.cpp :: bridgeGroupsOf
+ecu/safety/safeSupervisor/include/safeSupervisor/Degraded.h :: NX_SAFE_BRIDGE_FAULT_CLASSES
+tools/nxconfig/safestate.py :: _derive_bridge
+<<<
+NOTE: >>>
+SYS-140, decision C4 (doc/safety/partner-and-degraded.md 5.9). Realisation: NX_SAFE_BRIDGE_FAULT_CLASSES(X)
+X(OUTPUT) X(SUPPLY) X(INTERNAL) in safeSupervisor/Degraded.h; SafeSupervisor::handle() calls
+blockShortOnBridgeFault() first in the case DEVICE_FAULT, under the interrupt lock, before the log line, SD, S1
+held and S1 + S2; the devices bound to a group with a short (board pwm[].gate_driver) are derived by
+tools/nxconfig/safestate.py (NX_MODULE_SAFESUPERVISOR_DERIVED_BRIDGE_FAULT_DEVICE_<n>: instance << 8 | selection
+groups); the withdrawal itself is the family's nxSafeStateBlockShort() (safeSupervisor/SafeStateShort.h). The
+other two sources of 5.9: the hardware fault input forces freewheel by itself and the family port withdraws the
+short when it sees the fault latch or a finding of the threshold path (SSR-092); a failed start test withdraws
+it in the selection service (SSR-089 (g)). Effective only for devices whose package raises DEVICE_FAULT (SYS-28);
+the TMC6200 driver switches its enable off by itself on its shutdown faults (freewheel at the bridge). Host
+test safe-supervisor-bridge-fault with 14 mutants; board proof open (fmea.md B13).
+Clause (e): the generator half is tested by nxconfig-safestate (a project without an active short gets no derived
+bridge device word, the demo is unchanged); that the supervisor of such a project is built as before is verified by
+review of the compile-time guard in the safe supervisor's build (DOC-44, no test compares the two images).
+*Issue 3 (DOC-51):* SM-26 is not credited for release R1 (CM-07 decision ZD); the Specifies relation to SM-26 was
+replaced by SM-34, because the withdrawal is a reaction of the safe supervisor to a device fault report.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: ASG-01
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: ASG-02
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: AoU-04
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: SM-34
+  ROLE: Specifies
+
+[CLAUSE]
+UID: SSR-091(a)
+STATEMENT: >>>
+When the safe supervisor handles a device fault whose class indicates a fault in a bridge - output stage,
+supply or internal fault of the device - reported by a device bound to a PWM group, it shall withdraw the active
+short of that group (SSR-089 (f)) before any path of its reaction drives an output to its safe state.
+<<<
+VERIFICATION: test, board
+TESTS: safe-supervisor-bridge-fault, safe-supervisor-bridge-fault-mutations
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-091
+
+[CLAUSE]
+UID: SSR-091(b)
+STATEMENT: A device fault report that is not well-formed shall withdraw the active short of every group.
+VERIFICATION: test, board
+TESTS: safe-supervisor-bridge-fault, safe-supervisor-bridge-fault-mutations
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-091
+
+[CLAUSE]
+UID: SSR-091(c)
+STATEMENT: >>>
+Device faults of other classes, faults of devices bound to no group and reports without a switching-off
+reaction shall leave the selection unchanged.
+<<<
+VERIFICATION: test, board
+TESTS: safe-supervisor-bridge-fault, safe-supervisor-bridge-fault-mutations
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-091
+
+[CLAUSE]
+UID: SSR-091(d)
+STATEMENT: >>>
+The list of bridge fault classes shall be a fact of the safe supervisor that the configuration check reads
+and that a project cannot shorten; the configuration check shall refuse every active short while the list lacks
+one of these classes.
+<<<
+VERIFICATION: test, board
+TESTS: nxconfig-safestate
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-091
+
+[CLAUSE]
+UID: SSR-091(e)
+STATEMENT: >>>
+The safe supervisor of a project whose groups allow no active short shall be built exactly as without this
+requirement.
+<<<
+VERIFICATION: test, review
+TESTS: nxconfig-safestate
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-091
+
+[SSR]
+UID: SSR-092
+TITLE: The family port keeps an active short that a switch-off path applied
+STAGE: 1
+ASIL: B
+STATUS: implemented
+VERIFICATION: test, board
+REVIEW_STATUS: inspected
+CODE: >>>
+platforms/s32k1xx/port/main/src/integration/ShortHold.h :: lock
+platforms/s32k1xx/port/main/src/integration/ShortHold.h :: outputControl
+platforms/s32k1xx/port/main/src/integration/Tmc6200PowerStageOutput.h :: switchOffAfterDebugHalt
+platforms/s32k1xx/port/main/src/integration/FtmPwmInhibit.h :: forcedValue
+platforms/s32k1xx/port/main/src/integration/HwThresholdWatch.h :: removeForHardwarePath
+platforms/s32k1xx/port/main/src/integration/SafeStateHold.h :: NX_SAFE_STATE_SHORT_HOLD
+<<<
+NOTE: >>>
+SYS-139, decision C2 (a) (doc/safety/partner-and-degraded.md 5.4, 5.7). Realisation: NX_SAFE_STATE_SHORT_HOLD(X)
+X(gdTmc6200) in integration/SafeStateHold.h; ShortHold.h (group in a short = the walk's value for the timer
+entry differs from freewheel); the lock of a bound TMC6200 is shortHold::lock(<base lock>, enabled), its adapter
+keeps DRV_EN in switchOffAfterDebugHalt() and reports it held; FtmPwmInhibit writes forcedValue(); the group lock
+of SYS-123 in ComplementaryPwm writes ftmPwm::lockedOutputControl(); HwThresholdWatch withdraws the short on a
+finding or on FMS[FAULTF]. Only compiled in a project with an active short (NX_SAFE_OUTPUT_SELECT); every other
+project is built as before. The generic adapter of the generated binding (ARCH-52) keeps no enable: the
+configuration check refuses a short there. Host test short-hold with 9 mutants; board proof open (fmea.md B12-B14).
+Clause (d): short-hold shows the withdrawal itself, short-withdraw-order (DOC-44, source test with its own mutants)
+shows that the threshold watch calls it for a finding or the timer's fault latch and before it inhibits the group;
+clause (e) is tested by nxconfig-safestate. *Issue 3 (DOC-51):* SM-26 is not credited for release R1 (CM-07
+decision ZD); this requirement specifies SM-23, whose lock and inhibit paths it extends (the Specifies relation to
+SM-26 was removed).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: ASG-01
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: ASG-02
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: AoU-04
+  ROLE: DerivedFrom
+- TYPE: Parent
+  VALUE: SM-23
+  ROLE: Specifies
+
+[CLAUSE]
+UID: SSR-092(a)
+STATEMENT: >>>
+While a PWM group is in an active short (SSR-089: the walks write its short), the gate-driver enable bound
+to the group shall not be switched off by the safe state lock of its driver, by the lock of a degraded group or
+by the debug halt guard, as long as that enable was on; an enable that was off shall stay off, and every enable
+request in S1 shall be refused.
+<<<
+VERIFICATION: test, board
+TESTS: short-hold, short-hold-mutations
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-092
+
+[CLAUSE]
+UID: SSR-092(b)
+STATEMENT: >>>
+Every path of the family port that forces the group's timer outside the table walk - the PWM inhibit of the
+debug halt guard and of the hold of S1, and the lock of a degraded group - shall write the output control the
+walks write for the group, never freewheel over a selected short.
+<<<
+VERIFICATION: test, board
+TESTS: short-hold, short-hold-mutations
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-092
+
+[CLAUSE]
+UID: SSR-092(c)
+STATEMENT: >>>
+When the short is withdrawn, the clock of the group's timer is off or the selection is not exactly an allowed
+pattern, (a) and (b) shall give the behaviour without an active short: freewheel and the enable off within one
+poll of the hold.
+<<<
+VERIFICATION: test, board
+TESTS: short-hold
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-092
+
+[CLAUSE]
+UID: SSR-092(d)
+STATEMENT: >>>
+A finding of the group's hardware threshold path or its latched fault input shall withdraw the short of the
+group (SSR-089 (f)) before the family port forces the group.
+<<<
+VERIFICATION: test, board
+TESTS: short-hold, short-withdraw-order
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-092
+
+[CLAUSE]
+UID: SSR-092(e)
+STATEMENT: >>>
+The modules whose bound enable the family port keeps shall be a fact of the family port that the
+configuration check reads; the configuration check shall refuse an active short whose bound enable belongs to
+another module, and every active short while the fact is missing.
+<<<
+VERIFICATION: test, board
+TESTS: nxconfig-safestate
+RELATIONS:
+- TYPE: Parent
+  VALUE: SSR-092
+
+[[/SECTION]]
+
+[[SECTION]]
+TITLE: Review status and inspection record
+
+[TEXT]
+STATEMENT: >>>
+Moved verbatim from the section ``review`` of doc/safety/requirements.yaml (SYS-72). tools/trace does not read it.
+Since DOC-43 (step 3b) the review status of every requirement is the field REVIEW_STATUS of its node (of a clause
+only where it differs from its requirement); the map ``requirements`` below keeps the changes and remarks.
+
+.. code-block:: yaml
+
+    # ==================================================================================================================
+    # Review status and inspection record (SYS-72, from doc/safety/iso26262-gap.md section 6 no. 17, rows 8-06, 8-07,
+    # 8-10). tools/trace ignores this section; it does not change the matrix. Proposal for tools/trace (outside SYS-72):
+    # accept a per-requirement key `review` with the values below, check that every requirement has one, and show it as a
+    # matrix column; DOC-21 step 3 carries it as a StrictDoc field REVIEW_STATUS in doc/requirements/nextbsw.sgra.
+    # ==================================================================================================================
+
+    review:
+      statuses:
+        proposed: written, not inspected yet
+        rework: >-
+          inspected; at least one finding is open (listed under `open` below) and needs a change outside this file
+          or a decision
+        inspected: >-
+          inspected against the checklist, every finding closed in this file; waits for the independent
+          confirmation review (iso26262-gap.md section 6 no. 4, question Q1)
+        accepted: >-
+          confirmed by an independent reviewer (independence I1 at least); the record names the reviewer. Since
+          2026-09-30 (AN-093, safety plan tailoring T-11) also: accepted by the user as safety responsible, without
+          independence - the record says so in `independence`, and such an acceptance gives no ASIL statement until an
+          independent review confirms it
+
+      checklist:
+        # Characteristics of a single requirement and properties of the set, in own words after ISO 26262 part 8 clauses
+        # 6.4.2.4 and 6.4.3; the method is an inspection (part 8 table 2).
+        - {id: C1, name: implementation-free, question: "Does the text name only the element and the observable behaviour - no function, class, constant, event identifier, file, register or configuration key?"}
+        - {id: C2, name: atomic, question: "Does every clause make exactly one statement with one 'shall' (a check with its event counts as one)?"}
+        - {id: C3, name: unambiguous, question: "Is every term defined here, in concept.md or by a cited SSR (no 'safety-relevant registers' without a list)?"}
+        - {id: C4, name: verifiable, question: "Can every clause be shown by test, analysis, review or a board check, and is it a property of the product rather than of the process?"}
+        - {id: C5, name: consistent, question: "Does the text agree with the note, the linked code and the other SSR (no contradiction, no silent duplication)?"}
+        - {id: C6, name: complete, question: "Are the conditions under which the behaviour ends, repeats or is cleared stated?"}
+        - {id: C7, name: portable, question: "Does the text hold on a board without SBC, with another derivative and with several CAN buses (review questions of doc/architecture section 11)?"}
+        - {id: C8, name: traceable, question: "Are derived_from, mechanisms and code unchanged or deliberately changed, and does the title still fit?"}
+
+      records:
+        - id: INS-SSR-01
+          date: 2026-09-28
+          baseline: origin/dev 20b2e04 (before), branch claude/sys-72 (after)
+          scope: all 52 requirements of this file, text, title and note; checklist C1-C8
+          method: >-
+            inspection by reading every requirement against the checklist, plus two automatic checks - a search of
+            every text for code identifiers (names with :: or (), all-caps names with an underscore, camelCase words,
+            configuration paths, file endings, back-quoted keys; 0 hits after the rework) and a comparison of every field
+            except text and note with the baseline (0 differences), so that the matrix and the test links stay unchanged
+          inspector: cloud session SYS-72 (an agent, like the authors of the SSR)
+          independence: >-
+            none - this record is an author-side inspection and does not replace the confirmation review at
+            I1 (iso26262-gap.md section 6 no. 4, open question Q1)
+          result:
+            requirements: 52
+            texts_changed: 50 (SSR-080 and SSR-083 passed unchanged)
+            implementation_detail_removed: >-
+              25 texts named a function, constant, event identifier, file or configuration
+              key; moved to `note` as "Realisation" (the code links were already there)
+            split_into_clauses: >-
+              36 texts now list lettered clauses (a) ... (f), 116 clauses in total; 16 texts are one
+              statement
+            made_precise: >-
+              SSR-033, SSR-034 name the lock and check list of SSR-070 instead of "safety-relevant registers";
+              SSR-031, SSR-069 name the channel and the event of SSR-030 / SSR-032; SSR-002, SSR-010, SSR-016, SSR-028
+              say "complete S1" instead of "walk the table"; SSR-084 says what a disagreement causes
+            completed: >-
+              SSR-065(c) states when the count is cleared (behaviour documented in the note since SYS-43 and
+              covered by its tests); SSR-066(b) states the reaction S1 + S2 of the deadman check (from the note)
+            status_count: {inspected: 46, rework: 6, accepted: 0}
+          open:
+            - {id: R1, ssr: SSR-068, check: C4, finding: "clause (c) 'shall be decided and documented' is a process statement, not a property of the product", proposal: "state the decision of SYS-41 as a requirement - the start-up writes every RAM word before its first read, so that the ECC is valid (no RAM test at start) - with verification review of the start-up code"}
+            - {id: R2, ssr: SSR-050, check: C7, finding: "clause (a) assumes a power-supply role; on a board without one (no SBC) the text does not say what the start reason is taken from", proposal: "add: without a power-supply role the MCU's reset status is the only source and the rank rule reduces to it; check with the ecuState host tests (profile without SBC)"}
+            - {id: R3, ssr: "SSR-010, SSR-028", check: C5, finding: "SSR-010(d) (S1 before the watchdog reset) repeats SSR-028(a) for the watchdog warning", proposal: "at DOC-21 step 3 drop SSR-010(d) and move its test link (safe-outputs-order) to SSR-028 in tools/test/tests.yaml"}
+            - {id: R4, ssr: "SSR-024, SSR-067", check: C5, finding: "SSR-024(d) (re-check period) repeats SSR-067(a)", proposal: "at DOC-21 step 3 keep the period only in SSR-067 and let SSR-024(d) say once per start"}
+            - {id: R5, ssr: SSR-007, check: C1, finding: "the title names the configuration keyword safe_off", proposal: "title 'One power-stage adapter per switched-off output, enforced by the build' (changes the matrix: regenerate traceability.md in the same commit)"}
+            - {id: R6, ssr: SSR-016, check: C7, finding: "clause (b) states the family value 10 ms in the text", proposal: "keep the value out of the text ('the deadman time-out of the family port') and list it in the HSI (hsi-s32k1xx.md) and the safety manual, where the integrator's FTTI check reads it"}
+            - {id: R7, ssr: all, check: C4, finding: "verification and test links are given per requirement, not per clause; whether every clause has its own evidence is not shown", proposal: "at DOC-21 step 3 give every clause node its own VERIFICATION and test links; a clause without evidence becomes a warning of tools/trace"}
+        - id: REV-SYS117-R9
+          date: 2026-09-30
+          baseline: integ/night4 with SYS-117 (bf095f44), texts unchanged since
+          scope: SSR-087, SSR-088 and clause (b) of SSR-001 (degraded reaction SD, SYS-117); text, derived_from, mechanisms
+          method: >-
+            safety review of SYS-117 by the user as safety responsible (decision board review-sys117, item R9 "Freigeben
+            (Status accepted)"); R1 ... R12 answered as recommended, R8 released the concept texts AoU-04, AoU-32, the
+            paragraph of concept 2.2 and the SD paragraph of concept section 3
+          inspector: the user (safety responsible)
+          independence: >-
+            none - the user is author side (commissioning approver); recorded under the deviation of the safety plan
+            T-11 (AN-093). The acceptance does not replace a confirmation review at I1
+          result:
+            requirements: 3 (SSR-087, SSR-088, SSR-001 clause (b))
+            status_count: {accepted: 2, accepted_clause: 1}
+          open: []
+
+        - id: DOC-43
+          date: 2026-10-02
+          baseline: integ/night11 baa1d837 (before), branch agent/DOC-43 (after)
+          scope: >-
+            all 59 requirements - lettered clauses as nodes of their own with verification and test entries per
+            clause (R7), the findings R3, R4 and R5 of INS-SSR-01, the review status as the field REVIEW_STATUS
+          method: >-
+            conversion by tools/trace/migrate_clauses.py with an equivalence check (--verify: every text equal word
+            for word after the clauses are joined again, every other field equal, apart from the changes listed
+            under result); the allocation of the test entries to the clauses read from the test comments of
+            tools/test/tests.yaml and, where unclear, from the test sources
+          inspector: agent session DOC-43 (author side, like the authors of the SSR)
+          independence: >-
+            none - the closures of R3, R4, R5 and R7 and the allocation of tests to clauses wait for the acceptance
+            of the safety responsible (safety review of DOC-43)
+          result:
+            requirements: 59
+            clause_nodes: 149 (148 in force, SSR-010(d) withdrawn)
+            closes: [R3, R4, R5, R7]
+            changes: >-
+              R3 SSR-010(d) withdrawn (repeated SSR-028(a)); R4 SSR-024(d) states the pass once per start and leaves
+              the repetition to SSR-067 (new wording, REVIEW_STATUS proposed); R5 title of SSR-007 without the
+              configuration keyword; R7 VERIFICATION and TESTS per clause, tools/trace warns about a clause whose
+              verification names test without a test entry and about a test entry of a requirement that no clause
+              claims
+          open: []
+
+        - id: INS-SSR-02
+          date: 2026-10-04
+          baseline: dev aaa22c86 (= dev 5cc50658 for doc/requirements, the baseline of CM-07), branch agent/DOC-51 (after)
+          scope: >-
+            the requirements and clauses that were still proposed at the baseline - SSR-086, SSR-089, SSR-090,
+            SSR-091, SSR-092 (text, title, note, relations), the 11 clauses of DOC-44 (SSR-005(g) ... SSR-005(k),
+            SSR-020(e), SSR-028(c), SSR-028(d), SSR-040(e), SSR-051(c), SSR-088(d)) and SSR-024(d) of DOC-43; and the
+            27 clauses that test_requirements_quality.py reports with more than one "shall"; checklist C1-C8
+          method: >-
+            inspection by reading every text against the checklist and the code links (CODE fields exist, tools/trace
+            check 0 errors), plus the two automatic checks of DOC-48 (test_requirements_quality.py: no code
+            identifier in a text, a valid review status on every node); ordered by the decision ZD of the
+            confirmation review CM-07 (record doc/safety/reviews/records/CR-07-1.md, 2026-10-04)
+          inspector: agent session DOC-51 (author side, like the authors of the SSR)
+          independence: >-
+            none - an author-side inspection; it is re-checked by the user (D-01, without independence) in the
+            re-check of CR-07-1 and does not replace a confirmation review at I1; confirmed in that re-check on
+            2026-10-04 (R4, ZD)
+          result:
+            inspected: >-
+              SSR-086, SSR-089 ... SSR-092 and the 11 DOC-44 clauses meet C1 (no code identifier; the realisation is
+              in the notes), C3, C4, C6, C7 and C8; review status inspected. SSR-024(d) (R4 wording of DOC-43):
+              accepted - the reviewer confirmed R4 in CM-07 (decision ZD)
+            consistency_C5: >-
+              the NOTE of SSR-089 was stale (configuration check refusing every short, bridge-fault rule, hold of the
+              short, RTE port and start-test call as follow-ups) - brought to the state of the tree (SYS-139, SYS-140,
+              SYS-141, SYS-143); SM-26 and SM-27 not credited for R1: SSR-089 and SSR-092 specify SM-23, SSR-091
+              SM-34, SSR-090 no mechanism (decision ZD); texts unchanged
+            atomicity_C2: >-
+              of the 27 clauses with more than one "shall", 20 are one statement each: a check together with its
+              event (SSR-012, SSR-018(e), SSR-021(a), SSR-021(b), SSR-023, SSR-032, SSR-033(b), SSR-066(b),
+              SSR-080, SSR-084, SSR-086(a)), or one property stated with its limit or its negative (SSR-001(a),
+              SSR-028(c), SSR-040(c), SSR-067(a), SSR-087(b), SSR-087(c), SSR-087(g), SSR-089(d), SSR-089(f)).
+              Seven bundle independent statements, each verified by the tests of its clause: SSR-064(b) (reaction
+              S3; reachable from any context), SSR-087(f) (re-apply; implausible record; power-on clears),
+              SSR-089(c) (bound enable kept; other outputs inactive; no output on), SSR-089(e) (acceptance rule;
+              refused request; freewheel after reset), SSR-091(d) and SSR-092(e) (fact of the code; refusal by the
+              configuration check), SSR-092(a) (enable kept; enable off stays off; request refused in S1). They are
+              remarks, not findings: split them at the next content change of the requirement, after release R1
+              (clause IDs are stable; the clause count of 160 is pinned by tools/trace/test_trace_sdoc.py)
+            status_count: {inspected_requirements: 5, inspected_clauses: 11, accepted_clauses: 1, findings: 0}
+          confirms: [R3, R4, R5, R7]
+          open: []
+      requirements:
+        SSR-001: {changes: [C1 function name to note, C2 split (a)-(c)], remark: "(c) is an architectural constraint, verified by review; clause (b) (SD added by SYS-117) accepted by the user in review-sys117 R9, 2026-09-30 (record REV-SYS117-R9, without independence)"}
+        SSR-002: {changes: [C3 'complete S1' with reference to SSR-005]}
+        SSR-003: {changes: [C1 event identifiers to note, C2 split (a)-(f)]}
+        SSR-004: {changes: [C2 split (a)-(b)]}
+        SSR-005: {changes: [C1 configuration keyword to note, C2 split (a)-(f)], remark: "(c) is a constraint from the use in the fault handlers"}
+        SSR-006: {changes: [C1 configuration keyword removed, C2 split (a)-(b)]}
+        SSR-007: {changes: [C1 macro name to note], closed: [R5 by DOC-43]}
+        SSR-010: {changes: [C1 constants, configuration key and formula to note, C2 split (a)-(d), C5 service interval by reference to SSR-011], closed: [R3 by DOC-43]}
+        SSR-011: {changes: [C1 configuration paths to note, C2 split (a)-(e)]}
+        SSR-012: {changes: [C1 event identifier to note]}
+        SSR-013: {changes: [C1 driver counter and event identifier to note, C3 stated as observable behaviour]}
+        SSR-014: {changes: [C1 hit and event identifiers to note, C2 split (a)-(c)]}
+        SSR-015: {changes: [C1 mailbox to note, C2 split (a)-(f), C5 delivery by reference to SSR-020]}
+        SSR-016: {changes: [C2 split (a)-(c), C3 'every poll of the halt guard'], open: [R6]}
+        SSR-017: {changes: [C1 event identifier to note, C2 split (a)-(b)]}
+        SSR-018: {changes: [C1 event identifier to note, C2 split (a)-(e)]}
+        SSR-020: {changes: [C1 file list to note, C2 split (a)-(d)]}
+        SSR-021: {changes: [C1 event identifiers to note, C2 split (a)-(b)]}
+        SSR-022: {changes: [C1 macro and event identifier to note]}
+        SSR-023: {changes: [C1 event identifier to note]}
+        SSR-024: {changes: [C1 event identifier to note, C2 split (a)-(e)], closed: [R4 by DOC-43]}
+        SSR-025: {changes: [C2 split (a)-(d), C5 safety shell by reference to SSR-020], remark: "(c) and (d) are constraints against timing interference"}
+        SSR-026: {changes: [C1 register names removed]}
+        SSR-027: {changes: [C1 register names removed]}
+        SSR-028: {changes: [C1 assembler and scratch registers to note, C2 split (a)-(b)]}
+        SSR-030: {changes: [C1 configuration keys and event identifier to note]}
+        SSR-031: {changes: [C1 configuration key to note, C3 channel and event by reference to SSR-030]}
+        SSR-032: {changes: [C1 event identifier to note, C3 reference by SSR-030]}
+        SSR-033: {changes: [C1 event identifier to note, C2 split (a)-(b), C3 lock list of SSR-070]}
+        SSR-034: {changes: [C1 event identifier to note, C2 split (a)-(b), C3 check list of SSR-070]}
+        SSR-040: {changes: [C1 qualifier identifiers to note, C2 split (a)-(d)]}
+        SSR-041: {changes: [C2 split (a)-(c)], remark: "the E2E profile names are part of the interface, not of the design"}
+        SSR-042: {changes: [C2 split (a)-(b)]}
+        SSR-050: {changes: [C1 'before main()' to note, C2 split (a)-(c)], open: [R2]}
+        SSR-051: {changes: [C2 split (a)-(b)]}
+        SSR-052: {changes: [C2 split (a)-(c)]}
+        SSR-060: {changes: [C1 configuration keyword and register detail to note, C2 split (a)-(b)]}
+        SSR-061: {changes: [C2 split (a)-(b)]}
+        SSR-062: {changes: [C2 split (a)-(b)], remark: "STATUS partial since CM-07 decision ZE (DOC-51, 7bec5034) - (a) generated by rtegen and tested by rtegen-age, (b) open with SYS-99 (G3); its trace warning accepted until SYS-99 (re-check of CR-07-1)"}
+        SSR-063: {changes: [C1 module manifest to note, C2 split (a)-(d)]}
+        SSR-064: {changes: [C1 event identifiers, function name and qualifier identifier to note, C2 split (a)-(f), C5 delivery by reference to SSR-020]}
+        SSR-065: {changes: [C2 split (a)-(b), C6 clause (c) when the count is cleared]}
+        SSR-066: {changes: [C1 register names removed, C2 split (a)-(b), C6 reaction of (b)]}
+        SSR-067: {changes: [C1 'module parameter' removed, C2 split (a)-(c)]}
+        SSR-068: {changes: [C2 split (a)-(c)], open: [R1]}
+        SSR-069: {changes: [C3 channel, event and limit by reference to SSR-031 and SSR-032]}
+        SSR-070: {changes: [C1 configuration keyword removed, C3 references to SSR-033 and SSR-034]}
+        SSR-080: {changes: []}
+        SSR-081: {changes: [C2 split (a)-(b)]}
+        SSR-082: {changes: [C2 split (a)-(b)]}
+        SSR-083: {changes: []}
+        SSR-084: {changes: [C4 consequence of a disagreement stated]}
+        SSR-086: {changes: [], remark: "inspected in INS-SSR-02 (DOC-51, 2026-10-04): no finding"}
+        SSR-087: {changes: [], remark: "SYS-117; accepted by the user in review-sys117 R9, 2026-09-30 (record REV-SYS117-R9, without independence)"}
+        SSR-088: {changes: [], remark: "SYS-117; accepted by the user in review-sys117 R9, 2026-09-30 (record REV-SYS117-R9, without independence)"}
+        SSR-089: {changes: [C5 stale note brought to the state of the tree, C8 SM-26/SM-27 removed (not credited for R1)], remark: "SYS-116; inspected in INS-SSR-02 (DOC-51); clauses (c) and (e) compound, split after R1"}
+        SSR-090: {changes: [C8 SM-26 removed (not credited for R1)], remark: "SYS-116; inspected in INS-SSR-02 (DOC-51)"}
+        SSR-091: {changes: [C8 SM-26 replaced by SM-34 (not credited for R1)], remark: "SYS-140 (C4); inspected in INS-SSR-02 (DOC-51); clause (d) compound, split after R1"}
+        SSR-092: {changes: [C8 SM-26 removed (not credited for R1)], remark: "SYS-139 (C2); inspected in INS-SSR-02 (DOC-51); clauses (a) and (e) compound, split after R1"}
+<<<
+
+[[/SECTION]]

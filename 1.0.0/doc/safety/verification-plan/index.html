@@ -1,0 +1,8547 @@
+
+<!doctype html>
+<html lang="de" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Hardware-neutral, configurable basic software for 32-bit automotive MCUs, built on Eclipse OpenBSW">
+      
+      
+      
+      
+        <link rel="prev" href="../safety-plan/">
+      
+      
+        <link rel="next" href="../safety-case/">
+      
+      
+        
+          <link rel="alternate" href="./" hreflang="de">
+        
+          <link rel="alternate" href="../../../en/doc/safety/verification-plan/" hreflang="en">
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>neXtBSW verification plan and archived reports per baseline (SYS-67) - neXtBSW</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#nextbsw-verification-plan-and-archived-reports-per-baseline-sys-67" class="md-skip">
+          Zum Inhalt
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Kopfzeile">
+    <a href="../../.." title="neXtBSW" class="md-header__button md-logo" aria-label="neXtBSW" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            neXtBSW
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              neXtBSW verification plan and archived reports per baseline (SYS-67)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="indigo"  aria-label="Dunkel"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Dunkel" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="indigo"  aria-label="Hell"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Hell" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Sprache wechseln">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="de" class="md-select__link">
+              Deutsch
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../../../en/doc/safety/verification-plan/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Suche" placeholder="Suche" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Suche">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Zurücksetzen" aria-label="Zurücksetzen" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Suche wird initialisiert
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="neXtBSW" class="md-nav__button md-logo" aria-label="neXtBSW" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    neXtBSW
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Start
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Wegweiser
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../guide/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Integrator
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Integrator
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Erste Schritte
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/host-durchlauf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Host-Durchlauf ohne Hardware
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/your-first-board/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Das erste Board
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/the-application/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Die Anwendung
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/build-and-flash/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bauen und Flashen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/customer-project/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Eigenes ECU-Repository
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/new-derivative/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Neues Derivat
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/board-readme-template/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vorlage Board-README
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_10" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../reference/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Konfigurationsreferenz
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3_10" id="__nav_3_10_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Konfigurationsreferenz
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/derivative/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Derivative
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/board/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Board
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/project/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/rte/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rte
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/diag/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diag
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/console/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Console
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_11" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../projects/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Projekte, Komponenten, Boards
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3_11" id="__nav_3_11_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Projekte, Komponenten, Boards
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../swc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Software-Komponenten
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../swc/DemoSwcSubstitute/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    C-Ersatz der DemoSwc
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../ecu/platforms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Board-Ports
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../boards/buildtest_s32k148/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S32K148 build-test board (S32K148 LQFP176)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_12" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_12" id="__nav_3_12_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release Notes
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_12">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Release Notes
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../release-notes/v1.0.0-rc2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.0.0-rc2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../release-notes/v1.0.0-rc1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.0.0-rc1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../start/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Safety-Assessor
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Safety-Assessor
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../safety-manual/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sicherheitshandbuch
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../concept/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sicherheitskonzept
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../figures/concept-figures/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bilder zum Konzept
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../anomaly-register/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Anomalie-Register
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_6" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4_6" id="__nav_4_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Arbeitsprodukte
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Arbeitsprodukte
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../safety-plan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW safety plan — software SEooC at ASIL B (SYS-60)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW verification plan and archived reports per baseline (SYS-67)
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW verification plan and archived reports per baseline (SYS-67)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Inhaltsverzeichnis">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Inhaltsverzeichnis
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#0-result-in-one-page" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0. Result in one page
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-scope-and-interfaces" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Scope and interfaces
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-levels-and-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Levels and methods
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Levels and methods">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-unit-verification-6-942" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 Unit verification (6-9.4.2)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-software-integration-verification-6-1042" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Software integration verification (6-10.4.2)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-testing-of-the-embedded-software-6-11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 Testing of the embedded software (6-11)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24-reviews-and-document-checks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.4 Reviews and document checks
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-passfail-criteria" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Pass/fail criteria
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Pass/fail criteria">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-per-level" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 Per level
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-switches-that-decide-what-is-a-gate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 Switches that decide what is a gate
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-requirement-coverage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 Requirement coverage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34-structural-coverage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4 Structural coverage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#35-effectiveness-of-the-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5 Effectiveness of the tests
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#36-counts-used-in-this-plan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.6 Counts used in this plan
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-environment-and-tool-versions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Environment and tool versions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Environment and tool versions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-pinned-versions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 Pinned versions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-host-and-target-the-differences-and-what-bridges-them-6-945-6-1047" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 Host and target: the differences and what bridges them (6-9.4.5, 6-10.4.7)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-test-case-derivation-6-943-6-1043-6-1143" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Test-case derivation (6-9.4.3, 6-10.4.3, 6-11.4.3)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Test-case derivation (6-9.4.3, 6-10.4.3, 6-11.4.3)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 Methods
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-where-the-derivation-is-recorded" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 Where the derivation is recorded
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3 State
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-regression-strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Regression strategy
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-the-report-of-a-baseline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. The report of a baseline
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. The report of a baseline">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#71-content-and-provenance-g1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.1 Content and provenance (G1)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#72-binding-and-archiving-g2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.2 Binding and archiving (G2)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-finding-faults-before-the-release-ci" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Finding faults before the release CI
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8. Finding faults before the release CI">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#81-what-the-first-release-run-showed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.1 What the first release run showed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#82-pre-flight-about-one-hour-then-the-release-ci-once" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.2 Pre-flight (about one hour, then the release CI once)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-what-is-verified-per-baseline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. What is verified per baseline
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9. What is verified per baseline">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#91-release-r1-v100-rc1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.1 Release R1 (v1.0.0-rc1)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-gaps-and-tasks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Gaps and tasks
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="10. Gaps and tasks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#101-findings-after-issue-2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.1 Findings after issue 2
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-review-points-and-decisions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Review points and decisions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#12-clauses-addressed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12. Clauses addressed
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#13-review-questions-of-the-architecture-section-11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13. Review questions of the architecture (section 11)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#14-sources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        14. Sources
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#15-change-history" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        15. Change history
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../safety-case/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW safety case — software SEooC at ASIL B (SYS-64)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cm-plan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW configuration management plan and baselines (SYS-68)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sw-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW — software architectural design specification of the safety part (SYS-65)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture-safety-analysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW software architectural safety analysis beyond the mechanisms (SYS-71)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../fmea/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW failure analysis of the base-software safety mechanisms (stage 1)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../figures/fmea-figures/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fmea figures
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dfa/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW dependent failure analysis of the stage-1 mechanisms (SYS-70)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../unit-design/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW — software unit design: watchdog handling, fault handlers, safety task (SYS-92, N2)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../coexistence/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW — coexistence of ASIL B and QM software in one image (SYS-61)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../partner-and-degraded/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Partner MCU supervision, degraded reaction and active short circuit — concept
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../config-range/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW — argument over the admissible configuration range (SYS-92, N3)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../hsi-s32k1xx/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW hardware-software interface of the stage-1 safety mechanisms — s32k1xx (SYS-66)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../hardware-mechanisms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hardware safety mechanisms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security-interplay/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW — interplay of functional safety and cybersecurity (SYS-92, N1)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../static-analysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Static analysis and coding guidelines (PLAT-74)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tool-classification/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW tool classification and safeguards of the generated code (PLAT-75)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../component-qualification/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW — route per pre-existing component and qualification plan (SYS-62)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dev-environment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW development environment: languages, guidelines, tools, build and test flow (DOC-22)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../board-test-spec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW board test specification per SSR with operational use cases (SYS-75)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../openbsw-beitraege/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributor
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Contributor
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_1" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../architecture/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architektur
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_1" id="__nav_5_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Architektur
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/openbsw/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Openbsw
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/openbsw-naehe/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Openbsw naehe
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/autosar/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Autosar
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/autosar-standard-set/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Autosar standard set
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/autosar-ecuc-map/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Autosar ecuc map
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/autosar-ecuc-evaluation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Autosar ecuc evaluation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/plattformen/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plattformen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/customer-project/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Customer project
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/versioning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW – Versionierung und Support
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/csec-concept/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CSEc in neXtBSW: keys, message authentication and secure start (SYS-56)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/kalibrierung/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Calibration in neXtBSW: parameters, maps, a versioned calibration database, measurement signals (ARCH-64)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/pin-interrupts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pin interrupts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/signal-qualifier/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Signal qualifiers for received messages (COM-03)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/treiber-granularitaet/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW – granularity of device drivers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/treiber-anbindung-analyse/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW – binding device drivers to the system: analysis of the hand-written integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/openbsw-console-number-arguments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OpenBSW console commands with a number argument - audit (PLAT-110)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_1_19" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_1_19" id="__nav_5_1_19_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Geplant nach R1
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_1_19_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_1_19">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Geplant nach R1
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/planned/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Planned
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/non-cortex-m-audit/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Non cortex m audit
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/rm4x-quellen/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rm4x quellen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/stm32-nucleo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Stm32 nucleo
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../figures/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bilder
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_2" id="__nav_5_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Bilder
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../figures/01-schichten/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    01 schichten
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../figures/02-konfigurationsfluss/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    02 konfigurationsfluss
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../figures/03-startablauf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    03 startablauf
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../figures/04-flash-uds/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    04 flash uds
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../figures/05-ecu-zustaende/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    05 ecu zustaende
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../figures/06-safety-kette/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    06 safety kette
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../figures/07-modulkarte/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    07 modulkarte
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../figures/08-lesepfade/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    08 lesepfade
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../bootloader/doc/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Moduldokumentation
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_3" id="__nav_5_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Moduldokumentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/modules/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modules
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../bootloader/doc/iso14229-1-clause16-conformance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Conformance with ISO 14229-1 clause 16 (non-volatile server memory programming)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/autosarBase/doc/autosarBase/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AUTOSAR base types (autosarBase)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/canPhyPassive/doc/canPhyPassive/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Passive CAN transceiver (canPhyPassive)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/canSystem/doc/canSystem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CAN system, hardware independent parts (canSystem)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/consoleContext/doc/consoleContext/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Console context (consoleContext)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/dem/doc/dem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    dem – fault memory (simplified AUTOSAR DEM)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/e2e/doc/e2e/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    E2E-Bibliothek (e2e)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/ecuState/doc/ecuState/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ECU-Zustandsverwaltung (ecuState)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/gdTmc6200/doc/gdTmc6200/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Gate-Treiber TMC6200 (gdTmc6200)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/hallDecoder/doc/hallDecoder/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hall decoder (hallDecoder)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/highSideSwitch/doc/highSideSwitch/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Smart high-side switch (highSideSwitch)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/mcuLink/doc/mcuLink/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mcuLink
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/nvm/doc/nvm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NvM core (libs/bsw/nvm)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/nvmDataFlash/doc/nvmDataFlash/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nvmDataFlash - data flash areas (NVM-12)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/sbcUja113x/doc/sbcUja113x/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SBC-Treiber UJA113x (sbcUja113x)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsp/bspAdcAccess/doc/bspAdcAccess/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Serialized ADC access (bspAdcAccess)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsp/bspI2c/doc/bspI2c/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    I2C master contract (bspI2c)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsp/bspPinEdge/doc/bspPinEdge/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pin edge contract (bspPinEdge)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsp/bspPinEvent/doc/bspPinEvent/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    bspPinEvent
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsp/bspSampleGroup/doc/bspSampleGroup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sample group (bspSampleGroup)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsp/bspSpi/doc/bspSpi/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SPI device contract (bspSpi)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/common/clockCheck/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Clock start-up check (PLAT-72)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/common/interruptPriority/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interrupt priorities as ranks (PLAT-10, wired up in PLAT-21, per core profile since ARCH-24)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/s32k1xx/bsp/bspCsec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    bspCsec – CSEc of the S32K1 family
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/s32k1xx/bsp/bspMcu/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    bspMcu (Familie s32k1xx) – Derivat-Header und mcu/mcu.h (PLAT-11)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/s32k1xx/startup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Startup templates per core architecture (PLAT-10)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/s32k1xx/port/safety/safeLifecycle/doc/safeLifecycle/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Safety task, s32k1xx (safeLifecycle)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/s32k1xx/port/safety/safeMemory/doc/safeMemory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Memory safety of the s32k1xx family (safeMemory)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/s32k1xx/port/safety/safeSupervisor/doc/safeSupervisor/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Safe supervisor, project values of the s32k1xx port (safeSupervisor)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/s32k1xx/port/safety/safeSystem/doc/safeSystem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference and supply supervision, s32k1xx (safeSystem)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/s32k1xx/port/bspConfiguration/src/bsp/capture/doc/capture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Input capture, s32k1xx (capture)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/s32k1xx/port/bspConfiguration/src/bsp/hall/doc/hall/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hall sensor set, s32k1xx (hall)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../tools/test/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tests und Werkzeuge
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_4" id="__nav_5_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tests und Werkzeuge
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/docgen/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    docgen - generated reference documentation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/docgen/website/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Doku-Website
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/ci/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/ci – provider-neutral CI (TOOL-03)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/setup – the Python environment of a workspace (TOOL-63)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/distcheck/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    distcheck – distribution check and export of the open tree
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/canflash/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/canflash – application and bootloader over CAN (UDS on ISO-TP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/boardtest/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/boardtest – board measurement scripts with host tests (TOOL-05)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/misra/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/misra – static analysis (PLAT-74)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/trace/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/trace — traceability of the safety requirements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/a2lgen/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    a2lgen - A2L for XCP on CAN (TOOL-01)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/calgen/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    calgen – calibration datasets (stage K2)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/csec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    csec – host side of the CSEc way back to the factory state
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/elfcheck/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    elfcheck – linked images against the derivative map and the core
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/nxupdate/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/schedana/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/schedana – analyse processor load, scheduling and data flow (TOOL-09)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/stackuse/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    stackuse – worst-case stack per execution context
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Beitragen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../SECURITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sicherheitsluecken melden
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../mcudb/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ableitung der Chipdaten (mcudb)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Inhaltsverzeichnis">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Inhaltsverzeichnis
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#0-result-in-one-page" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0. Result in one page
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-scope-and-interfaces" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Scope and interfaces
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-levels-and-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Levels and methods
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Levels and methods">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-unit-verification-6-942" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 Unit verification (6-9.4.2)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-software-integration-verification-6-1042" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Software integration verification (6-10.4.2)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-testing-of-the-embedded-software-6-11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 Testing of the embedded software (6-11)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24-reviews-and-document-checks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.4 Reviews and document checks
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-passfail-criteria" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Pass/fail criteria
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Pass/fail criteria">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-per-level" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 Per level
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-switches-that-decide-what-is-a-gate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 Switches that decide what is a gate
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-requirement-coverage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 Requirement coverage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34-structural-coverage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4 Structural coverage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#35-effectiveness-of-the-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5 Effectiveness of the tests
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#36-counts-used-in-this-plan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.6 Counts used in this plan
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-environment-and-tool-versions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Environment and tool versions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Environment and tool versions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-pinned-versions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 Pinned versions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-host-and-target-the-differences-and-what-bridges-them-6-945-6-1047" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 Host and target: the differences and what bridges them (6-9.4.5, 6-10.4.7)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-test-case-derivation-6-943-6-1043-6-1143" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Test-case derivation (6-9.4.3, 6-10.4.3, 6-11.4.3)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Test-case derivation (6-9.4.3, 6-10.4.3, 6-11.4.3)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 Methods
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-where-the-derivation-is-recorded" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 Where the derivation is recorded
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3 State
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-regression-strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Regression strategy
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-the-report-of-a-baseline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. The report of a baseline
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. The report of a baseline">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#71-content-and-provenance-g1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.1 Content and provenance (G1)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#72-binding-and-archiving-g2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.2 Binding and archiving (G2)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-finding-faults-before-the-release-ci" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Finding faults before the release CI
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8. Finding faults before the release CI">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#81-what-the-first-release-run-showed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.1 What the first release run showed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#82-pre-flight-about-one-hour-then-the-release-ci-once" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.2 Pre-flight (about one hour, then the release CI once)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-what-is-verified-per-baseline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. What is verified per baseline
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9. What is verified per baseline">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#91-release-r1-v100-rc1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.1 Release R1 (v1.0.0-rc1)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-gaps-and-tasks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Gaps and tasks
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="10. Gaps and tasks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#101-findings-after-issue-2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.1 Findings after issue 2
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-review-points-and-decisions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Review points and decisions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#12-clauses-addressed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12. Clauses addressed
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#13-review-questions-of-the-architecture-section-11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13. Review questions of the architecture (section 11)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#14-sources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        14. Sources
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#15-change-history" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        15. Change history
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="nextbsw-verification-plan-and-archived-reports-per-baseline-sys-67">neXtBSW verification plan and archived reports per baseline (SYS-67)<a class="headerlink" href="#nextbsw-verification-plan-and-archived-reports-per-baseline-sys-67" title="Permanent link">&para;</a></h1>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Title</td>
+<td>Verification plan and archived reports per baseline</td>
+</tr>
+<tr>
+<td>Issue</td>
+<td><strong>2</strong>, 2026-10-04 (issue 1: 2026-10-01, SYS-67, written against <code>integ/night11</code> at <code>baa1d837</code>)</td>
+</tr>
+<tr>
+<td>Author</td>
+<td>SYS-67 (issue 1), SYS-166 (update 2026-10-02), DOC-54 (issue 2) — author side</td>
+</tr>
+<tr>
+<td>Approver</td>
+<td>the safety manager (the user): issue 1 judged in the safety review of 2026-10-02 (VP-1 … VP-11, decisions in section 11) and in the confirmation review CM-04 (record <code>reviews/records/CR-04-1.md</code> (not published, available on request), the user under D-01, 2026-10-04, <code>accepted with conditions</code>); issue 2 <strong>released</strong> on 2026-10-04 in the re-check of the findings F-01 … F-09 in CR-04-1 (steps 6 and 7 at <code>dev</code> efc474ea: all closed, verdict <code>accepted</code>, CM-04 closed; D-01, without independence)</td>
+</tr>
+<tr>
+<td>Status</td>
+<td>issue 2 <strong>accepted</strong> (released 2026-10-04 in the re-check of CM-04, record CR-04-1); update DOC-59 after it, as the reviewer decided there: VP-10 open (Z7), T-VP8 = TOOL-228 (T8), finding VF-1 (RN, section 10.1)</td>
+</tr>
+<tr>
+<td>Change history</td>
+<td>section 15</td>
+</tr>
+</tbody>
+</table>
+<p>Working state: dev at 6812a0b4 (after v0.2.0)
+Readers: the user as safety manager and release authority, the coordinator who merges, runs the release CI and tags,
+the agents who write tests, and the reviewer of confirmation measure CM-04 (integration and test strategy).
+Language: English, like the rest of <code>doc/</code> (CLAUDE.md, user 2026-09-17).</p>
+<p><strong>Terms.</strong> "<strong>Release R1</strong>" is the first release the user wants to be releasable, tagged <code>v1.0.0-rc1</code> — a development
+release without a safety claim (safety plan section 5, deviation for release R1); this plan writes it as
+"Release R1 (<code>v1.0.0-rc1</code>)". The release preconditions of safety plan section 6 are always written "precondition
+R1" … "precondition R6"; they are a different thing (CM-04 finding F-05).</p>
+<p><strong>What this document is.</strong> The verification plan that <code>iso26262-gap.md</code> (not published, available on request) found missing (rows 8-20
+to 8-22, 6-22 to 6-36; section 6 task 9) and that the safety plan names as work product of P6-14, P6-16, P6-17, P6-20
+and P8-06. It says, per verification level, which methods neXtBSW uses and how they are rated at ASIL B, what passes
+and what fails, in which environment and with which tool versions, how test cases are derived, what runs on every
+merge and what per baseline, and how the report of a baseline is bound to its tag and archived. It closes the gaps
+G1 and G2 of <a href="../cm-plan/"><code>cm-plan.md</code></a> section 10 together with two small tool changes in <code>tools/ci</code> (section 7).</p>
+<p><strong>What it is not.</strong> Not the configuration management plan (<code>cm-plan.md</code> owns baselines, tags and the release steps;
+this plan defines what "green" means for them), not the description of the tools (<code>dev-environment.md</code> section 7
+lists the test flow and the pinned tools; this plan does not repeat it), not a test specification per case (the
+cases live in the test code, section 5).</p>
+<p><strong>Licence rule.</strong> ISO 26262 is cited by <strong>part and clause only</strong> (for example "6-9.4.3" = ISO 26262-6:2018, clause
+9.4.3). Methods are named in our own words; the rating at ASIL B is given as <strong>HR</strong> (highly recommended) or <strong>R</strong>
+(recommended) for the methods this project uses, never as a copy of a table. The ratings are our reading and are a
+review point (VP-10): <strong>open</strong>, checked by the user against the licensed standard before the first safety release
+(CM-04 re-check Z7; not needed for Release R1 without a safety claim).</p>
+<p><strong>Consistency test.</strong> <a href="../../../tools/ci/test_verification_plan.py"><code>tools/ci/test_verification_plan.py</code></a> checks this
+document against the repository: every group of <code>tools/test/tests.yaml</code> has a level in section 2, every pinned
+version of section 4 equals its pin file, every switch of section 3.2 equals <code>pipeline.toml</code>/<code>coverage.yaml</code>, every
+<code>derivation</code> value in <code>tests.yaml</code> is one of section 5, every provenance field of section 7.1 is written by
+<code>tools/ci</code>, the counts of section 3.6 equal <code>tests.yaml</code> and <code>traceability.md</code>, and the list of section 3.5 is exactly
+the safety entries without <code>fault-injection</code> (both since issue 2). Each rule has a counter-check on a broken copy.
+Numbers in the running text are taken from the table of section 3.6 at the working state.</p>
+<hr />
+<h2 id="0-result-in-one-page">0. Result in one page<a class="headerlink" href="#0-result-in-one-page" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Question</th>
+<th>Answer</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Levels</td>
+<td><strong>unit</strong> (host tests of C/C++ units, generator and tool tests, static analysis, coverage, mutation runs), <strong>integration</strong> (target builds of every profile, image checks of the linked ELF, SIL of the component, integration host tests), <strong>embedded software</strong> (board runs at the workstation, <code>tools/boardtest</code>), plus <strong>document consistency</strong> and <strong>reviews</strong> across levels (section 2)</td>
+</tr>
+<tr>
+<td>Pass/fail</td>
+<td>one rule per level, all automated levels in <strong>one</strong> CI verdict (<code>tools/ci run --strict</code>): every entry green, no unexpected skip, every visible profile decided, no new static-analysis finding; coverage is reported, <strong>not yet a gate</strong> — the gate on the safety modules comes before the first safety release (section 3.4, decision VP-1 a)</td>
+</tr>
+<tr>
+<td>Environment and tools</td>
+<td>every version pinned once (<code>versions.toml</code>, <code>.python-version</code>, <code>constraints*.txt</code>, <code>tools/misra/requirements.txt</code>); the host tests use another compiler than the image - the difference is analysed in section 4.2 with the bridging target checks</td>
+</tr>
+<tr>
+<td>Test-case derivation</td>
+<td>seven methods (section 5); recorded per safety test entry in the field <code>derivation</code> of <code>tests.yaml</code>; <strong>filled for every safety entry</strong> (123 at the working state, section 3.6; T-VP1, SYS-166), and the consistency test requires it on every one; the safety entries without a <code>fault-injection</code> value are listed with their counter-check in section 3.5</td>
+</tr>
+<tr>
+<td>Regression</td>
+<td>four rings: the agent's own entries, <code>tools/test --since</code> at every merge, the full list on the integration branch, the release CI per baseline (section 6)</td>
+</tr>
+<tr>
+<td>Finding faults before the release CI</td>
+<td>the v0.2.0 release needed three CI runs of about 5 h each; a <strong>pre-flight</strong> of about one hour on the frozen candidate runs what only the release CI ran so far — <code>python -m tools.ci preflight</code> (TOOL-209, section 8)</td>
+</tr>
+<tr>
+<td>Report per baseline (G1)</td>
+<td><code>ci-result.json</code> now records <strong>commit, tree hash, describe, OpenBSW gitlink, VERSION, dirty</strong> at the start and the state at the end; a HEAD moved during the run is red with <code>--strict</code> (section 7.1)</td>
+</tr>
+<tr>
+<td>Archive per baseline (G2)</td>
+<td><code>tools.ci release</code> checks that the report is <strong>bound</strong> to the tree that is tagged (same tree hash, clean, strict, pass), copies it to the archive, zips it as <code>ci-out-vX.Y.Z.zip</code> with SHA-256 for the tag message and prints the command for the GitHub release asset; with <code>--strict</code> an unbound report stops it (section 7.2)</td>
+</tr>
+<tr>
+<td>Per baseline</td>
+<td>a matrix of what each release kind needs (section 9); a <strong>safety release</strong> needs all rows, a <strong>development release</strong> the automated rows</td>
+</tr>
+<tr>
+<td>Release R1 (<code>v1.0.0-rc1</code>)</td>
+<td>a development release <strong>plus</strong> (section 9.1, CM-04 Z3/Z4/Z8): the release CI as for a safety release (<code>--strict --clean --slow</code>, report bound with <code>tools.ci release --strict</code>), the pre-flight <code>tools.ci preflight</code> before it (first real run, TOOL-209), the board list of SYS-167 before the tag, and a suite run of the demo cases plus the restart-time measurement F4 on the tagged image</td>
+</tr>
+<tr>
+<td>Decided</td>
+<td>the safety review of 2026-10-02 decided VP-1 … VP-11 except VP-8 and VP-10; CM-04 (2026-10-04) decided VP-8; VP-10 is <strong>open</strong> - check by the user before the first safety release (the re-check of CM-04 found no record of the check, Z7) — every decision is in section 11</td>
+</tr>
+<tr>
+<td>Limits of Release R1</td>
+<td>no coverage gate (VP-1), architecture-level coverage argued, not measured (VP-2), HT-2/HT-3 without bridge (VP-3, SYS-168), no independence of test authoring (VP-9 b, SYS-181), no tool archives, no second-machine reproduction, no asset workflow (TOOL-210, TOOL-211, TOOL-212), the safety entries without a counter-check not sighted (TOOL-228), the HR/R ratings not checked against the standard (VP-10) — all after Release R1 and before the first safety release (sections 9.1, 11)</td>
+</tr>
+<tr>
+<td>Verification of this issue</td>
+<td><strong>mock</strong>: the consistency test of this plan (<code>verification-plan</code>, <code>tools/ci/test_verification_plan.py</code>, including the counts and the counter-check list since issue 2), the host tests of <code>tools/ci</code>, the document tests of <code>doc/safety/test</code>; no hardware</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="1-scope-and-interfaces">1. Scope and interfaces<a class="headerlink" href="#1-scope-and-interfaces" title="Permanent link">&para;</a></h2>
+<p>The plan covers the verification of the neXtBSW element (SEooC, claim of the safety plan section 1.2) in this
+repository: own code, generated code, the modified OpenBSW copies, the configuration data of the project's own
+profiles, and the own tools whose output reaches the image (tool confidence in <code>tool-classification.md</code>). The
+verification of a customer's configuration and integration is the integrator's; <code>tools/ci run --workspace</code> gives him
+the same pipeline. The assumptions of use that hand it over (safety manual sections 1.3 and 7, <code>assumptions.sdoc</code>):</p>
+<table>
+<thead>
+<tr>
+<th>What the integrator verifies</th>
+<th>Assumption of use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>his configuration data under change control, re-verified after every change</td>
+<td>AoU-10, AoU-CFG-1</td>
+</tr>
+<tr>
+<td>the configuration itself on his hardware (the run-time checks detect a change, not a wrong value)</td>
+<td>AoU-DFA-c, AoU-CFG-2</td>
+</tr>
+<tr>
+<td>the board checks of <code>fmea.md</code> section 8 that depend on a value he changed, his schedule and restart time</td>
+<td>AoU-CFG-2, AoU-CFG-3, AoU-08</td>
+</tr>
+<tr>
+<td>his application and its generated model code</td>
+<td>AoU-29</td>
+</tr>
+<tr>
+<td>the parts of the assumed goals the element does not cover</td>
+<td>AoU-23</td>
+</tr>
+<tr>
+<td>the integration test of his ECU and the test in the vehicle (section 2.3, tailored)</td>
+<td>the safety manual section 1.3 row "verification of the integration and of the item", with AoU-10 and AoU-CFG-2</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Interface</th>
+<th>Document</th>
+<th>What it takes from here</th>
+<th>What this plan takes from it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Configuration management</td>
+<td><code>cm-plan.md</code></td>
+<td>what a green report is, the report files, the binding rule (section 7)</td>
+<td>the baseline, the release steps 1-9, the preconditions P1-P9</td>
+</tr>
+<tr>
+<td>Safety plan</td>
+<td><code>safety-plan.md</code></td>
+<td>the work product of P6-14, P6-16, P6-17, P6-20, P8-06; evidence for precondition R2 (section 6 of the safety plan)</td>
+<td>the activities and their status</td>
+</tr>
+<tr>
+<td>Development environment</td>
+<td><code>dev-environment.md</code></td>
+<td>the host/target difference analysis it leaves open (its 7.1)</td>
+<td>the list of pinned tools and the test flow</td>
+</tr>
+<tr>
+<td>Traceability</td>
+<td><code>traceability.md</code> (generated)</td>
+<td>the rule that every SSR has a verification (section 3.3)</td>
+<td>the requirement coverage per SSR</td>
+</tr>
+<tr>
+<td>Reviews</td>
+<td><code>reviews/</code></td>
+<td>the review packages of CM-04 and the inspections</td>
+<td>the record template</td>
+</tr>
+<tr>
+<td>Anomalies</td>
+<td><code>anomaly-register.md</code></td>
+<td>failures of verification that are not fixed in the same task become anomalies</td>
+<td>the register</td>
+</tr>
+<tr>
+<td>Safety case</td>
+<td><code>safety-case.md</code></td>
+<td>EW-26 (this plan), ER-02 (archived report)</td>
+<td>the deficits D-12, D-21</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="2-levels-and-methods">2. Levels and methods<a class="headerlink" href="#2-levels-and-methods" title="Permanent link">&para;</a></h2>
+<p>The levels follow part 6: unit verification (6-9), software integration and its verification (6-10), testing of the
+embedded software (6-11). Every automated verification is an entry of <code>tools/test/tests.yaml</code>; its group says how
+it runs, the table says which level a group serves. One group can serve two levels, because a group is a way of
+running (Python, C/C++ via zig, target build), not a level.</p>
+<!-- vp-levels:start -->
+<table>
+<thead>
+<tr>
+<th>Level</th>
+<th>tests.yaml groups</th>
+<th>What is verified</th>
+<th>Environment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Unit</td>
+<td><code>host</code></td>
+<td>C/C++ units of the element (safety mechanisms, drivers, BSW services) with the real unit code against register models and stubs, own test profiles</td>
+<td>host, <code>zig c++</code>/<code>zig cc</code></td>
+</tr>
+<tr>
+<td>Unit</td>
+<td><code>python</code></td>
+<td>own tools and generators (nxconfig, bswgen, rtegen, dbcgen, …), Python wrappers that build C/C++ host tests, mutation runs, document consistency tests</td>
+<td>host, pinned Python</td>
+</tr>
+<tr>
+<td>Unit</td>
+<td><code>pytest</code></td>
+<td>neXtBSW Studio (tool, not part of the image)</td>
+<td>host, offscreen Qt</td>
+</tr>
+<tr>
+<td>Integration</td>
+<td><code>target</code></td>
+<td>every visible build profile built warning-free with the pinned ARM GCC; checks of the linked image (sections, safe outputs table, disassembly of the fault paths, timing tables, stack use, ROM check list)</td>
+<td>host with ARM GCC, no board</td>
+</tr>
+<tr>
+<td>Integration</td>
+<td><code>build</code></td>
+<td>host builds of the bootloader core as DLL and of the STM32 build test</td>
+<td>host</td>
+</tr>
+<tr>
+<td>Integration</td>
+<td><code>matlab</code></td>
+<td>model tests of the component generator (<code>tools/swc</code>), outside the CI</td>
+<td>workstation with MATLAB</td>
+</tr>
+<tr>
+<td>Embedded software</td>
+<td>— (no entry in the list)</td>
+<td>board runs with <code>tools/boardtest</code>, board checklists of <code>fmea.md</code> section 8 and of the task records, captures in <code>tools/boardtest/captures</code></td>
+<td>eval board, J-Link, VN1610, lab devices; only the user</td>
+</tr>
+</tbody>
+</table>
+<!-- vp-levels:end -->
+
+<h3 id="21-unit-verification-6-942">2.1 Unit verification (6-9.4.2)<a class="headerlink" href="#21-unit-verification-6-942" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Method (own words)</th>
+<th>Rating at B</th>
+<th>How neXtBSW does it</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Walk-through of the code</td>
+<td>R</td>
+<td>the coordinator reads every agent diff before the merge; no record</td>
+<td>done, no record</td>
+</tr>
+<tr>
+<td>Inspection of the code with a record</td>
+<td>HR</td>
+<td>SYS-69 inspections with the template of <code>reviews/record-template.md</code></td>
+<td>planned (safety plan P6-14)</td>
+</tr>
+<tr>
+<td>Static code analysis</td>
+<td>HR</td>
+<td><code>tools/misra</code> (cppcheck with MISRA add-on, clang-tidy, NXCPP scan rules), CI stage, gate (<code>enforce = true</code>)</td>
+<td>done</td>
+</tr>
+<tr>
+<td>Control-flow and data-flow analysis</td>
+<td>R</td>
+<td>clang-tidy checks of the rule set, compiler warnings with <code>-Werror</code>; no separate tool</td>
+<td>partial</td>
+</tr>
+<tr>
+<td>Semi-formal verification</td>
+<td>R</td>
+<td>state machines of the ECU state and the supervisor tested against their tables; no model checker</td>
+<td>partial</td>
+</tr>
+<tr>
+<td>Requirement-based test</td>
+<td>HR</td>
+<td><code>host</code>/<code>python</code> entries with <code>requirements:</code> (the safety entries, count in section 3.6)</td>
+<td>done for every SSR with a test entry (section 3.3)</td>
+</tr>
+<tr>
+<td>Interface test</td>
+<td>HR</td>
+<td>host tests drive the units through their real interfaces (RTE ports, register models with write-1-to-clear, lock bits)</td>
+<td>done</td>
+</tr>
+<tr>
+<td>Fault injection test</td>
+<td>R</td>
+<td>the <code>*-mutations</code> entries insert faults into the unit under test and must be found (count in section 3.6, <code>--slow</code>); register models inject hardware faults</td>
+<td>done</td>
+</tr>
+<tr>
+<td>Resource usage evaluation</td>
+<td>R</td>
+<td><code>tools/stackuse</code> (worst-case stack per task, gate in <code>stackuse-demo</code>), image size per section, <code>elfcheck</code></td>
+<td>partial (execution time: N10 of the safety plan)</td>
+</tr>
+<tr>
+<td>Back-to-back test between model and code</td>
+<td>R</td>
+<td><code>e2e-host</code> (C library against the Python reference model), <code>demoswc-sil</code> (model code in SIL)</td>
+<td>done where models exist</td>
+</tr>
+</tbody>
+</table>
+<h3 id="22-software-integration-verification-6-1042">2.2 Software integration verification (6-10.4.2)<a class="headerlink" href="#22-software-integration-verification-6-1042" title="Permanent link">&para;</a></h3>
+<p>The integration of neXtBSW is fixed by the generators: <code>bswgen</code> and <code>rtegen</code> produce the board and RTE glue from the
+configuration levels, the lifecycle levels of <code>Integration.cpp</code> start the services in a fixed order. The integration
+steps and what each one verifies:</p>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>What is integrated</th>
+<th>Verified by</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>I1 Configuration</td>
+<td>derivative + board + project + RTE into one checked model</td>
+<td><code>nxconfig*</code> entries, messages with YAML path</td>
+</tr>
+<tr>
+<td>I2 Generation</td>
+<td>generated glue against independent expectations</td>
+<td><code>bswgen-reference</code>, <code>rtegen-reference</code>, <code>bswgen-safe-io</code>, <code>safe-outputs-table*</code></td>
+</tr>
+<tr>
+<td>I3 Units with their neighbours on the host</td>
+<td>real units together (supervisor + safety manager + checks)</td>
+<td><code>safety-cycle</code>, <code>ecustate</code>, <code>safe-supervisor*</code>, <code>rte-deadline</code>, <code>demoswc-sil</code></td>
+</tr>
+<tr>
+<td>I4 Build of every profile</td>
+<td>the whole image per profile, warning-free</td>
+<td><code>target-*</code> entries, profile coverage check of <code>tools/ci</code></td>
+</tr>
+<tr>
+<td>I5 Linked image</td>
+<td>placement, tables, priorities, stack, fault paths in the ELF</td>
+<td><code>elfcheck*</code>, <code>safety-context-elf</code>, <code>safe-outputs-order</code>, <code>stackuse-demo</code>, <code>freertos-config-elf</code>, <code>hold-console-elf</code></td>
+</tr>
+<tr>
+<td>I6 On the target</td>
+<td>the image on the board</td>
+<td>section 2.3</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Method (own words)</th>
+<th>Rating at B</th>
+<th>How</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Requirement-based test</td>
+<td>HR</td>
+<td>I3 and I5 entries with <code>requirements:</code></td>
+<td>done</td>
+</tr>
+<tr>
+<td>Interface test</td>
+<td>HR</td>
+<td>generated interfaces checked entry by entry (I2), RTE ports in I3</td>
+<td>done</td>
+</tr>
+<tr>
+<td>Fault injection test</td>
+<td>R</td>
+<td>mutation runs of I3 units, generator mutants (<code>bswgen-safe-io</code> 20 mutants), board fault commands (<code>safety …</code>, test builds)</td>
+<td>done on host, partial on target</td>
+</tr>
+<tr>
+<td>Resource usage evaluation</td>
+<td>R</td>
+<td>stack (I5), image sizes in every CI report, timing tables (<code>elfcheck-timing*</code>)</td>
+<td>partial (no measured WCET, N10)</td>
+</tr>
+<tr>
+<td>Back-to-back test</td>
+<td>R</td>
+<td><code>demoswc-sil</code></td>
+<td>partial</td>
+</tr>
+<tr>
+<td>Verification of control and data flow</td>
+<td>R</td>
+<td><code>safety-context</code> (static rule: who may call the supervisor), <code>elfcheck-timing</code> (task order, priorities)</td>
+<td>partial</td>
+</tr>
+<tr>
+<td>Static code analysis</td>
+<td>HR</td>
+<td>as 2.1, over the compile database of the demo build</td>
+<td>done</td>
+</tr>
+</tbody>
+</table>
+<h3 id="23-testing-of-the-embedded-software-6-11">2.3 Testing of the embedded software (6-11)<a class="headerlink" href="#23-testing-of-the-embedded-software-6-11" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Method (own words)</th>
+<th>Rating at B</th>
+<th>How</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Test in a hardware-in-the-loop setup</td>
+<td>HR</td>
+<td>eval board with lab supplies, electronic load, function generator and oscilloscope through LabControl; no closed-loop plant model</td>
+<td>partial</td>
+</tr>
+<tr>
+<td>Test in an ECU network environment</td>
+<td>HR</td>
+<td>Vector VN1610 with rest-of-bus traffic, UDS and flashing over CAN (<code>tools/canflash</code>, <code>tools/boardtest</code>)</td>
+<td>partial</td>
+</tr>
+<tr>
+<td>Test in the vehicle</td>
+<td>HR</td>
+<td>not applicable to an SEooC; the integrator's (section 1: safety manual 1.3, AoU-10, AoU-CFG-2)</td>
+<td>tailored</td>
+</tr>
+<tr>
+<td>Requirement-based test on the target</td>
+<td>HR</td>
+<td>the board test specification per SSR (<a href="../board-test-spec/"><code>board-test-spec.md</code></a>, SYS-75) run with <code>tools/boardtest suite</code>, record <code>suite-run.json</code> per run; before it board checklists per task, captures with image CRC and commit</td>
+<td>partial (organised per SSR since SYS-75; run per task image so far)</td>
+</tr>
+<tr>
+<td>Fault injection on the target</td>
+<td>R</td>
+<td>console fault commands (<code>safety …</code>, only in test images), J-Link register writes (fmea.md B5-B16), supply faults</td>
+<td>partial</td>
+</tr>
+</tbody>
+</table>
+<p>The board level is the weakest: it is run by the user only and so far per task image, not per baseline. Since SYS-75
+the cases are specified per SSR and repeatable (<code>tools/boardtest suite</code>); the board state for Release R1 was taken from
+2026-10-02 to 2026-10-04 at integration states (captures <code>tools/boardtest/captures/evalboard_s32k144_demo/2026-10-02_board</code>, <code>2026-10-03_board</code> and the suite runs <code>2026-10-02_suite-integ12*</code>),
+not at a tag. Section 9 (VP-6) defines what a safety release needs, section 9.1 what Release R1 needs on its tagged
+image.</p>
+<h3 id="24-reviews-and-document-checks">2.4 Reviews and document checks<a class="headerlink" href="#24-reviews-and-document-checks" title="Permanent link">&para;</a></h3>
+<p>Inspections and confirmation reviews are planned by the safety plan (sections 4 and 5) and recorded in
+<code>doc/safety/reviews</code>. Every safety document that makes a checkable statement has a consistency test in
+<code>doc/safety/test</code> or next to its tool; these tests are part of the unit level of the CI and fail when a document and
+the repository disagree.</p>
+<hr />
+<h2 id="3-passfail-criteria">3. Pass/fail criteria<a class="headerlink" href="#3-passfail-criteria" title="Permanent link">&para;</a></h2>
+<h3 id="31-per-level">3.1 Per level<a class="headerlink" href="#31-per-level" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Level</th>
+<th>Pass</th>
+<th>Fail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Unit, entry</td>
+<td>the runner's verdict <code>pass</code> (exit 0 and the expected summary line, <code>tools/test</code>)</td>
+<td><code>fail</code>, <code>timeout</code>, or a test file no entry covers ("NICHT IN tools/test/tests.yaml")</td>
+</tr>
+<tr>
+<td>Unit, static analysis</td>
+<td>no finding outside baseline and deviation list (<code>tools/misra</code>)</td>
+<td>a new finding; with <code>--strict</code> a missing tool</td>
+</tr>
+<tr>
+<td>Unit, coverage</td>
+<td>reported per module against <code>coverage.yaml</code></td>
+<td>today never red (VP-1)</td>
+</tr>
+<tr>
+<td>Unit, mutation run</td>
+<td>every inserted fault is found</td>
+<td>a surviving fault</td>
+</tr>
+<tr>
+<td>Integration, build</td>
+<td>configure and build with <code>-Werror</code></td>
+<td>any warning or error</td>
+</tr>
+<tr>
+<td>Integration, image check</td>
+<td>the check's own expectation, independent of the generator where stated</td>
+<td>any deviation</td>
+</tr>
+<tr>
+<td>Integration, profiles</td>
+<td>every visible preset is built or listed with a reason under <code>presets.not_built</code></td>
+<td>a profile without a decision</td>
+</tr>
+<tr>
+<td>Embedded software</td>
+<td>the expected console lines and measured values of the checklist, recorded as capture with image CRC</td>
+<td>any deviation; a deviation is an anomaly until explained</td>
+</tr>
+<tr>
+<td>Whole run (<code>tools/ci run --strict</code>)</td>
+<td>verdict <code>pass</code>: every stage ok, no <code>fail</code> finding, every skip listed in <code>allowed_skips</code></td>
+<td>anything else</td>
+</tr>
+</tbody>
+</table>
+<p>A run that is not <code>--strict</code> is a trial; it never counts as evidence of a baseline (section 7.2).</p>
+<h3 id="32-switches-that-decide-what-is-a-gate">3.2 Switches that decide what is a gate<a class="headerlink" href="#32-switches-that-decide-what-is-a-gate" title="Permanent link">&para;</a></h3>
+<p>The values below are the state of the repository; the consistency test compares them with the files.</p>
+<!-- vp-switches:start -->
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>File</th>
+<th>Value</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>run.clean</code></td>
+<td><code>tools/ci/pipeline.toml</code></td>
+<td><code>true</code></td>
+<td>target builds from an empty build root</td>
+</tr>
+<tr>
+<td><code>coverage.enabled</code></td>
+<td><code>tools/ci/pipeline.toml</code></td>
+<td><code>true</code></td>
+<td>coverage is measured in every full run</td>
+</tr>
+<tr>
+<td><code>coverage.enforce</code></td>
+<td><code>tools/ci/pipeline.toml</code></td>
+<td><code>false</code></td>
+<td>below threshold is a warning, not red (VP-1)</td>
+</tr>
+<tr>
+<td><code>coverage.strict</code></td>
+<td><code>tools/ci/pipeline.toml</code></td>
+<td><code>false</code></td>
+<td>a failed measurement is a warning</td>
+</tr>
+<tr>
+<td><code>static_analysis.enabled</code></td>
+<td><code>tools/ci/pipeline.toml</code></td>
+<td><code>true</code></td>
+<td>the static analysis runs in every full run</td>
+</tr>
+<tr>
+<td><code>static_analysis.enforce</code></td>
+<td><code>tools/ci/pipeline.toml</code></td>
+<td><code>true</code></td>
+<td>a new finding is red</td>
+</tr>
+<tr>
+<td><code>static_analysis.strict_tools</code></td>
+<td><code>tools/ci/pipeline.toml</code></td>
+<td><code>true</code></td>
+<td>with <code>--strict</code> a missing analysis tool is red</td>
+</tr>
+<tr>
+<td><code>enforce</code></td>
+<td><code>tools/test/coverage.yaml</code></td>
+<td><code>false</code></td>
+<td>the thresholds are proposals</td>
+</tr>
+</tbody>
+</table>
+<!-- vp-switches:end -->
+
+<h3 id="33-requirement-coverage">3.3 Requirement coverage<a class="headerlink" href="#33-requirement-coverage" title="Permanent link">&para;</a></h3>
+<p>Every SSR names its verification methods (<code>VERIFICATION</code> in <code>doc/requirements/safety/ssr.sdoc</code>), and every test
+entry that verifies one names it in <code>requirements:</code>. <code>tools/trace</code> (entry <code>safety-trace</code>) fails on a dead reference
+and regenerates <code>traceability.md</code>; the counts at the working state are in section 3.6 (59 SSR, 57 with at least one
+test entry, 2 open). A test entry is evidence of a defined test, not of a passed one: the passed state comes from the
+archived report of the baseline (section 7).</p>
+<ul>
+<li><strong>Board verification per SSR.</strong> Every SSR whose <code>VERIFICATION</code> names "board" is covered per clause by the cases of
+  <a href="../board-test-spec/"><code>board-test-spec.md</code></a> (SYS-75; section 5 there: 91 board items by 31 cases, of which 3 cases
+  are for projects with features the demo does not configure, and 7 items without a board case, each with its
+  reason). The board level of a baseline is the run of those cases on its image (section 9, VP-6; for Release R1
+  section 9.1).</li>
+<li><strong>Open SSR.</strong> An SSR with status <code>open</code> is not implemented; it has no test entry and carries no claim. At the
+  working state these are SSR-061 (plausibility between two measurement paths, gap G2) and SSR-063 (safe state of
+  bus-commanded actuators, gap G4). They are a <strong>limit of Release R1</strong>: the safety manual hands the missing coverage to
+  the integrator (AoU-23); their verification is planned with the stage-2 work that implements them.</li>
+</ul>
+<h3 id="34-structural-coverage">3.4 Structural coverage<a class="headerlink" href="#34-structural-coverage" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Level</th>
+<th>Measure</th>
+<th>Target</th>
+<th>State</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Unit</td>
+<td>statement and branch coverage of the C/C++ host tests (<code>tools/test/coverage.py</code>, gcov counting)</td>
+<td>safety modules 95 % statements / 70 % branches, others 80 / 50 (<code>coverage.yaml</code>)</td>
+<td>measured in every full run, <strong>not enforced</strong>; the safety modules miss the branch proposal in part (gap row 6-24)</td>
+</tr>
+<tr>
+<td>Unit</td>
+<td>MC/DC</td>
+<td>not targeted at B (recommended only); the way to it is noted in <code>doc/changelog.d/TOOL-40.md</code></td>
+<td>—</td>
+</tr>
+<tr>
+<td>Architecture</td>
+<td>function and call coverage</td>
+<td>not measured (recommended at B, gap row 6-30)</td>
+<td>argued in VP-2</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Decision VP-1 a (safety review 2026-10-02):</strong> the gate is switched on for the safety modules <strong>before the first
+safety release</strong>; the other modules stay reported. Until then <code>coverage.enforce</code> and <code>enforce</code> stay <code>false</code>
+(section 3.2) and the gate is a <strong>limit of Release R1</strong> (section 9.1). Today <code>coverage.yaml</code> records per module the
+measured value and its cause (<code>reason</code>); several safety modules are below the branch proposal of 70 %. That is a
+measurement, not yet an argument: the argument per module — which branches are not reached, and why their behaviour
+is shown otherwise (by a board case, an image check, or because the branch is defensive and cannot be reached) — is
+part of switching the gate on and is required for the first safety release, not for Release R1, which makes no
+safety claim (CM-04 finding F-08).</p>
+<h3 id="35-effectiveness-of-the-tests">3.5 Effectiveness of the tests<a class="headerlink" href="#35-effectiveness-of-the-tests" title="Permanent link">&para;</a></h3>
+<p>A test of a safety mechanism has a counter-check: a mutation run (<code>*-mutations</code>), a built-in broken copy in the test
+itself ("Gegenprobe"), or a reference against an independent expectation. A safety test entry without one of these is
+a weakness. The <code>derivation</code> value <code>fault-injection</code> marks the entries that insert faults (mutation runs, register
+model faults, broken copies); the safety entries <strong>without</strong> it are the candidates and are listed below (CM-04
+finding F-09; the consistency test keeps the list equal to <code>tests.yaml</code>). The column "Marker" says whether a text
+search of the entry's test files finds a counter-check marker ("Gegenprobe", "counter-check", "broken copy"); it is a
+search, not a judgement. An entry with "none found" may still compare against an independent expectation (for
+example a reference model or a hand-written table) — sighting each one and adding or arguing its counter-check is
+T-VP8 (section 10, task TOOL-228), required before the first safety release.</p>
+<!-- vp-no-counter-check:start -->
+<table>
+<thead>
+<tr>
+<th>Entry</th>
+<th>Marker</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>nxconfig</code></td>
+<td>found</td>
+</tr>
+<tr>
+<td><code>nxconfig-identity</code></td>
+<td>none found</td>
+</tr>
+<tr>
+<td><code>nxconfig-degraded</code></td>
+<td>none found</td>
+</tr>
+<tr>
+<td><code>nxconfig-safestate</code></td>
+<td>none found</td>
+</tr>
+<tr>
+<td><code>nxconfig-watchdog</code></td>
+<td>found</td>
+</tr>
+<tr>
+<td><code>bswgen</code></td>
+<td>found</td>
+</tr>
+<tr>
+<td><code>bswgen-mpu</code></td>
+<td>none found</td>
+</tr>
+<tr>
+<td><code>rtegen</code></td>
+<td>found</td>
+</tr>
+<tr>
+<td><code>rtegen-safety</code></td>
+<td>none found</td>
+</tr>
+<tr>
+<td><code>ecustate</code></td>
+<td>none found</td>
+</tr>
+<tr>
+<td><code>application-linker</code></td>
+<td>found</td>
+</tr>
+<tr>
+<td><code>bl-s3-host</code></td>
+<td>none found</td>
+</tr>
+<tr>
+<td><code>safety-reset-console</code></td>
+<td>none found</td>
+</tr>
+<tr>
+<td><code>cycle-period-check</code></td>
+<td>none found</td>
+</tr>
+<tr>
+<td><code>cycle-period-constants</code></td>
+<td>found</td>
+</tr>
+<tr>
+<td><code>data-flash-system</code></td>
+<td>none found</td>
+</tr>
+<tr>
+<td><code>stackuse-demo</code></td>
+<td>none found</td>
+</tr>
+<tr>
+<td><code>bootloader-host</code></td>
+<td>none found</td>
+</tr>
+<tr>
+<td><code>canflash-tool</code></td>
+<td>found</td>
+</tr>
+<tr>
+<td><code>boardtest</code></td>
+<td>found</td>
+</tr>
+<tr>
+<td><code>e2e-ref</code></td>
+<td>none found</td>
+</tr>
+<tr>
+<td><code>e2e-host</code></td>
+<td>none found</td>
+</tr>
+<tr>
+<td><code>debug-halt-guard</code></td>
+<td>none found</td>
+</tr>
+<tr>
+<td><code>safe-off-equivalence</code></td>
+<td>none found</td>
+</tr>
+<tr>
+<td><code>safe-off-output-tester</code></td>
+<td>none found</td>
+</tr>
+<tr>
+<td><code>safe-off-hold-command</code></td>
+<td>none found</td>
+</tr>
+<tr>
+<td><code>can-bus-state</code></td>
+<td>none found</td>
+</tr>
+<tr>
+<td><code>can-phy-gate</code></td>
+<td>none found</td>
+</tr>
+<tr>
+<td><code>can-console</code></td>
+<td>none found</td>
+</tr>
+<tr>
+<td><code>hard-fault-dump</code></td>
+<td>none found</td>
+</tr>
+<tr>
+<td><code>bsw-providers-sbc</code></td>
+<td>none found</td>
+</tr>
+<tr>
+<td><code>bsw-providers-nosbc</code></td>
+<td>none found</td>
+</tr>
+<tr>
+<td><code>bsw-providers-nosbc-nomcu</code></td>
+<td>none found</td>
+</tr>
+<tr>
+<td><code>rcm-start-line</code></td>
+<td>none found</td>
+</tr>
+<tr>
+<td><code>safe-outputs-order</code></td>
+<td>none found</td>
+</tr>
+<tr>
+<td><code>safe-outputs-table-charge</code></td>
+<td>none found</td>
+</tr>
+<tr>
+<td><code>safe-outputs-table-bt148</code></td>
+<td>none found</td>
+</tr>
+<tr>
+<td><code>safety-context-elf</code></td>
+<td>none found</td>
+</tr>
+<tr>
+<td><code>e2e</code></td>
+<td>none found</td>
+</tr>
+<tr>
+<td><code>adc-access</code></td>
+<td>none found</td>
+</tr>
+<tr>
+<td><code>safe-state</code></td>
+<td>none found</td>
+</tr>
+<tr>
+<td><code>safe-state-degraded</code></td>
+<td>none found</td>
+</tr>
+<tr>
+<td><code>safe-supervisor</code></td>
+<td>found</td>
+</tr>
+<tr>
+<td><code>safe-supervisor-bare</code></td>
+<td>found</td>
+</tr>
+<tr>
+<td><code>nvm-flash-write-bracket</code></td>
+<td>none found</td>
+</tr>
+<tr>
+<td><code>demoswc-sil</code></td>
+<td>none found</td>
+</tr>
+<tr>
+<td><code>target-demo</code></td>
+<td>none found</td>
+</tr>
+<tr>
+<td><code>elfcheck</code></td>
+<td>found</td>
+</tr>
+<tr>
+<td><code>elfcheck-bt148</code></td>
+<td>found</td>
+</tr>
+<tr>
+<td><code>elfcheck-timing</code></td>
+<td>none found</td>
+</tr>
+<tr>
+<td><code>elfcheck-timing-bt148</code></td>
+<td>none found</td>
+</tr>
+</tbody>
+</table>
+<!-- vp-no-counter-check:end -->
+
+<p>Of these 51 entries, 12 carry a marker; 39 are to be sighted (T-VP8). Several of them have a counter-check in a
+neighbouring entry of the same unit (for example <code>safe-outputs-table</code> with <code>fault-injection</code> beside
+<code>safe-outputs-table-charge</code>, <code>e2e-mutations</code> beside <code>e2e</code>), which the sighting may credit.</p>
+<h3 id="36-counts-used-in-this-plan">3.6 Counts used in this plan<a class="headerlink" href="#36-counts-used-in-this-plan" title="Permanent link">&para;</a></h3>
+<p>The consistency test compares this table with <code>tools/test/tests.yaml</code> and the summary of <code>traceability.md</code>; a number
+in the running text is one of these at the working state.</p>
+<!-- vp-counts:start -->
+<table>
+<thead>
+<tr>
+<th>Count</th>
+<th>Value</th>
+<th>Source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>entries</td>
+<td>416</td>
+<td><code>tools/test/tests.yaml</code></td>
+</tr>
+<tr>
+<td>safety entries</td>
+<td>123</td>
+<td>entries with <code>requirements:</code></td>
+</tr>
+<tr>
+<td>mutation entries</td>
+<td>32</td>
+<td>entries named <code>*-mutations</code></td>
+</tr>
+<tr>
+<td>safety entries without fault-injection</td>
+<td>51</td>
+<td>section 3.5</td>
+</tr>
+<tr>
+<td>SSR</td>
+<td>59</td>
+<td><code>traceability.md</code> summary</td>
+</tr>
+<tr>
+<td>SSR with a test entry</td>
+<td>57</td>
+<td><code>traceability.md</code> summary</td>
+</tr>
+<tr>
+<td>SSR open</td>
+<td>2</td>
+<td><code>traceability.md</code> summary</td>
+</tr>
+</tbody>
+</table>
+<!-- vp-counts:end -->
+
+<hr />
+<h2 id="4-environment-and-tool-versions">4. Environment and tool versions<a class="headerlink" href="#4-environment-and-tool-versions" title="Permanent link">&para;</a></h2>
+<h3 id="41-pinned-versions">4.1 Pinned versions<a class="headerlink" href="#41-pinned-versions" title="Permanent link">&para;</a></h3>
+<p>The versions are pinned once in the files named; every report of <code>tools/ci</code> records them (stage "Werkzeuge pruefen",
+<code>static_analysis.tool_versions</code>) and, since this issue, the commit that pins them (section 7.1).</p>
+<!-- vp-tools:start -->
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>Version</th>
+<th>Pinned in</th>
+<th>Used for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ARM GCC (xPack)</td>
+<td>11.3.1</td>
+<td><code>tools/ci/versions.toml</code></td>
+<td>target builds, image</td>
+</tr>
+<tr>
+<td>CMake</td>
+<td>4.4.3</td>
+<td><code>tools/ci/versions.toml</code></td>
+<td>target and host builds</td>
+</tr>
+<tr>
+<td>Ninja</td>
+<td>1.13.2</td>
+<td><code>tools/ci/versions.toml</code></td>
+<td>target and host builds</td>
+</tr>
+<tr>
+<td>Python</td>
+<td>3.12.10</td>
+<td><code>tools/ci/.python-version</code></td>
+<td>all tools and Python tests</td>
+</tr>
+<tr>
+<td>ziglang (zig cc/c++, clang)</td>
+<td>0.16.0</td>
+<td><code>tools/ci/constraints.txt</code></td>
+<td>C/C++ host tests, coverage</td>
+</tr>
+<tr>
+<td>cppcheck (pip wheel)</td>
+<td>1.5.1</td>
+<td><code>tools/misra/requirements.txt</code></td>
+<td>static analysis</td>
+</tr>
+<tr>
+<td>clang-tidy (pip wheel)</td>
+<td>22.1.8</td>
+<td><code>tools/misra/requirements.txt</code></td>
+<td>static analysis</td>
+</tr>
+</tbody>
+</table>
+<!-- vp-tools:end -->
+
+<p>Not pinned and therefore recorded per board record: J-Link software, Vector driver, LabControl (dev-environment.md
+5.3, finding DE7). The board environment is the eval board of <code>boards/</code> with its revision; a record names board, image
+CRC and commit.</p>
+<h3 id="42-host-and-target-the-differences-and-what-bridges-them-6-945-6-1047">4.2 Host and target: the differences and what bridges them (6-9.4.5, 6-10.4.7)<a class="headerlink" href="#42-host-and-target-the-differences-and-what-bridges-them-6-945-6-1047" title="Permanent link">&para;</a></h3>
+<p>The unit level runs on the host with <code>zig c++</code>/<code>zig cc</code> (clang) for x86-64; the image is built by ARM GCC 11.3.1 for
+Cortex-M4F (S32K14x) or Cortex-M0+ (S32K11x). A host result carries over to the target only where the difference
+does not matter or a target check bridges it.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Difference</th>
+<th>Consequence for a host result</th>
+<th>Bridge on the target</th>
+<th>Remaining</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>HT-1</td>
+<td>Compiler and optimiser (clang vs GCC, other flags)</td>
+<td>undefined or implementation-defined behaviour can differ; code generation differs</td>
+<td>static analysis over the target compile database; target build with <code>-Werror</code>; disassembly checks of the fault paths (<code>safe-outputs-order</code>, <code>hold-console-elf</code>, <code>freertos-config-elf</code>)</td>
+<td>units without an ELF check rely on the static analysis</td>
+</tr>
+<tr>
+<td>HT-2</td>
+<td>Pointer and <code>long</code> width (host 64-bit pointers; <code>long</code> 32-bit on Windows, 64-bit on Linux; target 32/32)</td>
+<td>arithmetic on <code>long</code>, casts between pointers and integers, structure layout</td>
+<td>NXCPP/MISRA rules on fixed-width types (<code>uint32</code> = <code>uint32_t</code> since ARCH-46); layout of records checked in the ELF where it matters (<code>safety-context-elf</code>, hard-fault dump layout)</td>
+<td>no general check that host and target layouts agree (VP-3)</td>
+</tr>
+<tr>
+<td>HT-3</td>
+<td>Signedness of plain <code>char</code> (signed on x86-64, unsigned with ARM GCC)</td>
+<td>comparisons and shifts on <code>char</code> can differ</td>
+<td>MISRA essential-type rules in the static analysis</td>
+<td>host tests are not built with <code>-funsigned-char</code> (VP-3)</td>
+</tr>
+<tr>
+<td>HT-4</td>
+<td>Floating point (target single-precision FPU, <code>double</code> in software; host hardware double)</td>
+<td>rounding of <code>double</code> paths, timing</td>
+<td>safety mechanisms use integer arithmetic; FPU and ABI attributes checked by <code>elfcheck</code></td>
+<td>—</td>
+</tr>
+<tr>
+<td>HT-5</td>
+<td>Hardware registers</td>
+<td>the host sees a register model, not the silicon</td>
+<td>register models follow the reference manual and are named per test; the HSI (<code>hsi-s32k1xx.md</code>) lists every register a mechanism uses; board checks per mechanism</td>
+<td>a model can share an error with the code (same reader of the manual): board checks B1-B11</td>
+</tr>
+<tr>
+<td>HT-6</td>
+<td>Interrupts and concurrency</td>
+<td>host tests are single-threaded with simulated interrupts and a virtual clock</td>
+<td>MPU placement and priorities checked in the ELF (<code>safety-context-elf</code>, <code>elfcheck-timing*</code>), <code>safe-supervisor-mpu</code> with the host MMU; board runs under load (B4)</td>
+<td>races are argued, not tested exhaustively</td>
+</tr>
+<tr>
+<td>HT-7</td>
+<td>Start-up code, linker script, memory map</td>
+<td>not executed on the host</td>
+<td><code>application-linker</code>, <code>elfcheck*</code> (sections, overlap, records), <code>rom-check-image</code>, <code>safe-memory-ecc-latent-elf</code>, <code>stackuse-demo</code></td>
+<td>start-up timing only on the board</td>
+</tr>
+<tr>
+<td>HT-8</td>
+<td>Timing and clock</td>
+<td>virtual time on the host</td>
+<td><code>elfcheck-timing*</code> (periods and offsets as configured), <code>cycle-period-constants</code>, board B2, B4, B7</td>
+<td>measured WCET open (N10)</td>
+</tr>
+<tr>
+<td>HT-9</td>
+<td>RTOS (FreeRTOS on the target, stubs on the host)</td>
+<td>scheduling and kernel hooks only in the image</td>
+<td><code>freertos-config-elf</code>, <code>kernel-fault-reaction</code> with the real hooks, board runs</td>
+<td>FreeRTOS qualification is O2 of the safety plan</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="5-test-case-derivation-6-943-6-1043-6-1143">5. Test-case derivation (6-9.4.3, 6-10.4.3, 6-11.4.3)<a class="headerlink" href="#5-test-case-derivation-6-943-6-1043-6-1143" title="Permanent link">&para;</a></h2>
+<h3 id="51-methods">5.1 Methods<a class="headerlink" href="#51-methods" title="Permanent link">&para;</a></h3>
+<!-- vp-derivation:start -->
+<table>
+<thead>
+<tr>
+<th>Value</th>
+<th>Method (own words)</th>
+<th>Rating at B</th>
+<th>Typical evidence in a test</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>requirements-analysis</code></td>
+<td>cases taken from the requirement text, one or more per statement</td>
+<td>HR</td>
+<td>a case per sentence of the SSR or mechanism</td>
+</tr>
+<tr>
+<td><code>equivalence-classes</code></td>
+<td>inputs split into classes that the unit treats alike, one case per class</td>
+<td>HR</td>
+<td>every register value, state or event class once</td>
+</tr>
+<tr>
+<td><code>boundary-values</code></td>
+<td>cases at, just inside and just outside each limit</td>
+<td>HR</td>
+<td>limit, limit plus one tick, zero, counter overflow</td>
+</tr>
+<tr>
+<td><code>error-guessing</code></td>
+<td>cases from experience and earlier findings (board findings, review findings)</td>
+<td>R</td>
+<td>a case named after a finding (Fn, SR-…, board session)</td>
+</tr>
+<tr>
+<td><code>fault-injection</code></td>
+<td>faults inserted into the unit, its inputs or its registers; the test must notice</td>
+<td>R</td>
+<td>a mutation run, register-model faults</td>
+</tr>
+<tr>
+<td><code>operational-use-cases</code></td>
+<td>cases from the way the element is used in a vehicle (start, sleep/wake, flashing, load)</td>
+<td>HR at target level</td>
+<td>board sessions, SIL of the demo component</td>
+</tr>
+<tr>
+<td><code>functional-dependencies</code></td>
+<td>cases from the dependencies between functions (order, shared resources)</td>
+<td>R at target level</td>
+<td>order checks in the ELF, lock and bracket tests</td>
+</tr>
+</tbody>
+</table>
+<!-- vp-derivation:end -->
+
+<h3 id="52-where-the-derivation-is-recorded">5.2 Where the derivation is recorded<a class="headerlink" href="#52-where-the-derivation-is-recorded" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Per safety test entry</strong> (an entry with <code>requirements:</code>) the field <code>derivation:</code> in <code>tools/test/tests.yaml</code> lists
+  the methods used, values from 5.1. The field is optional for the runner (it ignores it) and checked by the
+  consistency test (only known values, only on entries with <code>requirements:</code>).</li>
+<li><strong>Per case</strong> the test code says which class, limit or finding it covers, in the name or the comment of the case;
+  that is the test specification of 8-9.4.2 (ID = entry name plus case name, version = commit, expected result =
+  assertion). A separate specification document is not written (VP-8, decided in CM-04, Z5).</li>
+<li><strong>At target level</strong> the board checklist of the task names its cases with the expected result; the capture is the
+  record. Since SYS-75 the cases per SSR and operational use case are specified in
+  <a href="../board-test-spec/"><code>board-test-spec.md</code></a> and run with <code>tools/boardtest suite</code>; the record of a run is its
+  capture folder with <code>suite-run.json</code> (image, baseline, result and values per case).</li>
+</ul>
+<h3 id="53-state">5.3 State<a class="headerlink" href="#53-state" title="Permanent link">&para;</a></h3>
+<p>Filled for every entry with <code>requirements:</code> (6 in SYS-67, the other 104 in SYS-166, every later one by the task that added it), each read against the entry's
+comment and test; a method is named only where the comment or the test code shows it (for example <code>fault-injection</code>
+only where the test inserts model faults or mutants, so the image checks of <code>elfcheck-bt148</code> and
+<code>elfcheck-timing-bt148</code>, which only run the clean build, carry <code>requirements-analysis</code> alone):</p>
+<!-- vp-derivation-examples:start -->
+<table>
+<thead>
+<tr>
+<th>Entry</th>
+<th>derivation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>nxconfig</code></td>
+<td>requirements-analysis, equivalence-classes</td>
+</tr>
+<tr>
+<td><code>nxconfig-identity</code></td>
+<td>requirements-analysis, equivalence-classes</td>
+</tr>
+<tr>
+<td><code>nxconfig-degraded</code></td>
+<td>requirements-analysis, equivalence-classes, boundary-values</td>
+</tr>
+<tr>
+<td><code>nxconfig-safestate</code></td>
+<td>requirements-analysis, equivalence-classes</td>
+</tr>
+<tr>
+<td><code>nxconfig-watchdog</code></td>
+<td>requirements-analysis, boundary-values, error-guessing</td>
+</tr>
+<tr>
+<td><code>bswgen</code></td>
+<td>requirements-analysis, equivalence-classes</td>
+</tr>
+<tr>
+<td><code>bswgen-mpu</code></td>
+<td>requirements-analysis, boundary-values</td>
+</tr>
+<tr>
+<td><code>bswgen-reference</code></td>
+<td>requirements-analysis, equivalence-classes, fault-injection</td>
+</tr>
+<tr>
+<td><code>rtegen</code></td>
+<td>requirements-analysis, equivalence-classes, functional-dependencies</td>
+</tr>
+<tr>
+<td><code>rtegen-reference</code></td>
+<td>requirements-analysis, equivalence-classes, fault-injection</td>
+</tr>
+<tr>
+<td><code>rtegen-safety</code></td>
+<td>requirements-analysis, equivalence-classes</td>
+</tr>
+<tr>
+<td><code>dbcgen-projects</code></td>
+<td>requirements-analysis, equivalence-classes, boundary-values, fault-injection</td>
+</tr>
+<tr>
+<td><code>ecustate</code></td>
+<td>requirements-analysis, equivalence-classes, operational-use-cases</td>
+</tr>
+<tr>
+<td><code>rte-deadline</code></td>
+<td>requirements-analysis, equivalence-classes, boundary-values, fault-injection</td>
+</tr>
+<tr>
+<td><code>calibration-segment</code></td>
+<td>requirements-analysis, equivalence-classes, fault-injection</td>
+</tr>
+<tr>
+<td><code>application-linker</code></td>
+<td>requirements-analysis, boundary-values</td>
+</tr>
+<tr>
+<td><code>safe-watchdog</code></td>
+<td>requirements-analysis, error-guessing, fault-injection</td>
+</tr>
+<tr>
+<td><code>lpit-deadman-check</code></td>
+<td>requirements-analysis, fault-injection</td>
+</tr>
+<tr>
+<td><code>safety-cycle</code></td>
+<td>requirements-analysis, boundary-values, functional-dependencies, fault-injection</td>
+</tr>
+<tr>
+<td><code>cycle-timer-off</code></td>
+<td>requirements-analysis, error-guessing, fault-injection</td>
+</tr>
+<tr>
+<td><code>safe-memory-ecc</code></td>
+<td>requirements-analysis, equivalence-classes, fault-injection</td>
+</tr>
+<tr>
+<td><code>safe-memory-ecc-latent</code></td>
+<td>requirements-analysis, equivalence-classes, fault-injection</td>
+</tr>
+<tr>
+<td><code>safe-memory-ecc-latent-s32k11x</code></td>
+<td>requirements-analysis, equivalence-classes, fault-injection</td>
+</tr>
+<tr>
+<td><code>safe-memory-ecc-latent-mutations</code></td>
+<td>fault-injection</td>
+</tr>
+<tr>
+<td><code>safe-memory-ecc-latent-elf</code></td>
+<td>requirements-analysis, fault-injection</td>
+</tr>
+<tr>
+<td><code>safe-memory-mpu-regions</code></td>
+<td>requirements-analysis, fault-injection</td>
+</tr>
+<tr>
+<td><code>safe-memory-mpu-regions-16</code></td>
+<td>requirements-analysis, fault-injection</td>
+</tr>
+<tr>
+<td><code>safe-memory-mpu-regions-mutations</code></td>
+<td>fault-injection</td>
+</tr>
+<tr>
+<td><code>safe-io</code></td>
+<td>requirements-analysis, equivalence-classes, fault-injection</td>
+</tr>
+<tr>
+<td><code>bswgen-safe-io</code></td>
+<td>requirements-analysis, equivalence-classes, fault-injection</td>
+</tr>
+<tr>
+<td><code>bswgen-safe-readback</code></td>
+<td>requirements-analysis, fault-injection</td>
+</tr>
+<tr>
+<td><code>safe-io-mutations</code></td>
+<td>fault-injection</td>
+</tr>
+<tr>
+<td><code>safety-gate</code></td>
+<td>requirements-analysis, functional-dependencies, fault-injection</td>
+</tr>
+<tr>
+<td><code>safety-gate-mutations</code></td>
+<td>fault-injection</td>
+</tr>
+<tr>
+<td><code>safety-shell-unlock</code></td>
+<td>requirements-analysis, fault-injection</td>
+</tr>
+<tr>
+<td><code>short-withdraw-order</code></td>
+<td>requirements-analysis, fault-injection</td>
+</tr>
+<tr>
+<td><code>bl-s3-host</code></td>
+<td>requirements-analysis, equivalence-classes, boundary-values</td>
+</tr>
+<tr>
+<td><code>safe-console</code></td>
+<td>requirements-analysis, error-guessing, fault-injection</td>
+</tr>
+<tr>
+<td><code>safety-reset-console</code></td>
+<td>requirements-analysis, boundary-values, error-guessing, functional-dependencies</td>
+</tr>
+<tr>
+<td><code>safety-reset-console-mutations</code></td>
+<td>fault-injection</td>
+</tr>
+<tr>
+<td><code>kernel-fault-reaction</code></td>
+<td>requirements-analysis, error-guessing, functional-dependencies, fault-injection</td>
+</tr>
+<tr>
+<td><code>kernel-fault-reaction-mutations</code></td>
+<td>fault-injection</td>
+</tr>
+<tr>
+<td><code>no-heap-operator-delete</code></td>
+<td>requirements-analysis, equivalence-classes, error-guessing, fault-injection</td>
+</tr>
+<tr>
+<td><code>freertos-config-elf</code></td>
+<td>requirements-analysis, fault-injection</td>
+</tr>
+<tr>
+<td><code>hold-console-elf</code></td>
+<td>requirements-analysis, fault-injection</td>
+</tr>
+<tr>
+<td><code>lpit-halt-deadman</code></td>
+<td>requirements-analysis, fault-injection</td>
+</tr>
+<tr>
+<td><code>cycle-period-check</code></td>
+<td>requirements-analysis, boundary-values, equivalence-classes</td>
+</tr>
+<tr>
+<td><code>lptmr-cycle-timer</code></td>
+<td>requirements-analysis, functional-dependencies, fault-injection</td>
+</tr>
+<tr>
+<td><code>cycle-period-constants</code></td>
+<td>requirements-analysis, boundary-values</td>
+</tr>
+<tr>
+<td><code>data-flash-system</code></td>
+<td>requirements-analysis</td>
+</tr>
+<tr>
+<td><code>stackuse-demo</code></td>
+<td>requirements-analysis, boundary-values</td>
+</tr>
+<tr>
+<td><code>safety-context</code></td>
+<td>requirements-analysis, error-guessing, fault-injection</td>
+</tr>
+<tr>
+<td><code>bl-platform-host</code></td>
+<td>requirements-analysis, equivalence-classes, fault-injection</td>
+</tr>
+<tr>
+<td><code>bootloader-host</code></td>
+<td>requirements-analysis, operational-use-cases</td>
+</tr>
+<tr>
+<td><code>canflash-tool</code></td>
+<td>requirements-analysis, equivalence-classes</td>
+</tr>
+<tr>
+<td><code>boardtest</code></td>
+<td>requirements-analysis, operational-use-cases</td>
+</tr>
+<tr>
+<td><code>bl-update-host</code></td>
+<td>requirements-analysis, fault-injection</td>
+</tr>
+<tr>
+<td><code>bl-update-mutations</code></td>
+<td>fault-injection</td>
+</tr>
+<tr>
+<td><code>e2e-ref</code></td>
+<td>requirements-analysis</td>
+</tr>
+<tr>
+<td><code>e2e-host</code></td>
+<td>requirements-analysis, equivalence-classes</td>
+</tr>
+<tr>
+<td><code>e2e-mutations</code></td>
+<td>fault-injection</td>
+</tr>
+<tr>
+<td><code>identity</code></td>
+<td>requirements-analysis, boundary-values, fault-injection</td>
+</tr>
+<tr>
+<td><code>debug-halt-guard</code></td>
+<td>requirements-analysis, operational-use-cases</td>
+</tr>
+<tr>
+<td><code>safe-off-equivalence</code></td>
+<td>requirements-analysis, functional-dependencies</td>
+</tr>
+<tr>
+<td><code>safe-off-command-hold</code></td>
+<td>requirements-analysis, equivalence-classes, boundary-values, fault-injection</td>
+</tr>
+<tr>
+<td><code>safe-off-output-tester</code></td>
+<td>requirements-analysis, equivalence-classes, boundary-values, error-guessing</td>
+</tr>
+<tr>
+<td><code>safe-off-hold-command</code></td>
+<td>requirements-analysis, equivalence-classes</td>
+</tr>
+<tr>
+<td><code>safe-off-write-paths</code></td>
+<td>requirements-analysis, fault-injection</td>
+</tr>
+<tr>
+<td><code>safe-off-hold-mutations</code></td>
+<td>fault-injection</td>
+</tr>
+<tr>
+<td><code>short-hold</code></td>
+<td>requirements-analysis, equivalence-classes, fault-injection</td>
+</tr>
+<tr>
+<td><code>short-hold-mutations</code></td>
+<td>fault-injection</td>
+</tr>
+<tr>
+<td><code>bswgen-safe-state</code></td>
+<td>requirements-analysis, equivalence-classes, fault-injection</td>
+</tr>
+<tr>
+<td><code>can-bus-state</code></td>
+<td>requirements-analysis, equivalence-classes</td>
+</tr>
+<tr>
+<td><code>can-phy-gate</code></td>
+<td>requirements-analysis, equivalence-classes</td>
+</tr>
+<tr>
+<td><code>can-console</code></td>
+<td>requirements-analysis, functional-dependencies</td>
+</tr>
+<tr>
+<td><code>hard-fault-dump</code></td>
+<td>requirements-analysis</td>
+</tr>
+<tr>
+<td><code>bsw-providers-sbc</code></td>
+<td>requirements-analysis, equivalence-classes</td>
+</tr>
+<tr>
+<td><code>bsw-providers-nosbc</code></td>
+<td>requirements-analysis, equivalence-classes</td>
+</tr>
+<tr>
+<td><code>bsw-providers-nosbc-nomcu</code></td>
+<td>requirements-analysis, equivalence-classes</td>
+</tr>
+<tr>
+<td><code>rcm-start-line</code></td>
+<td>requirements-analysis, equivalence-classes</td>
+</tr>
+<tr>
+<td><code>safe-outputs-order</code></td>
+<td>requirements-analysis, functional-dependencies</td>
+</tr>
+<tr>
+<td><code>safe-outputs-table</code></td>
+<td>requirements-analysis, equivalence-classes, fault-injection</td>
+</tr>
+<tr>
+<td><code>safe-outputs-table-charge</code></td>
+<td>requirements-analysis, equivalence-classes</td>
+</tr>
+<tr>
+<td><code>safe-outputs-table-bt148</code></td>
+<td>requirements-analysis, boundary-values</td>
+</tr>
+<tr>
+<td><code>safety-context-elf</code></td>
+<td>requirements-analysis</td>
+</tr>
+<tr>
+<td><code>e2e</code></td>
+<td>requirements-analysis</td>
+</tr>
+<tr>
+<td><code>adc-access</code></td>
+<td>requirements-analysis, boundary-values, functional-dependencies</td>
+</tr>
+<tr>
+<td><code>adc-access-averaging</code></td>
+<td>requirements-analysis, equivalence-classes, fault-injection</td>
+</tr>
+<tr>
+<td><code>safe-state</code></td>
+<td>requirements-analysis, equivalence-classes, boundary-values</td>
+</tr>
+<tr>
+<td><code>safe-state-degraded</code></td>
+<td>requirements-analysis, equivalence-classes</td>
+</tr>
+<tr>
+<td><code>safe-state-select</code></td>
+<td>requirements-analysis, equivalence-classes, fault-injection</td>
+</tr>
+<tr>
+<td><code>safe-state-hold</code></td>
+<td>requirements-analysis, error-guessing, functional-dependencies, fault-injection</td>
+</tr>
+<tr>
+<td><code>safe-supervisor</code></td>
+<td>requirements-analysis, equivalence-classes</td>
+</tr>
+<tr>
+<td><code>safe-supervisor-bare</code></td>
+<td>requirements-analysis, equivalence-classes</td>
+</tr>
+<tr>
+<td><code>safe-supervisor-mpu</code></td>
+<td>requirements-analysis, error-guessing, fault-injection</td>
+</tr>
+<tr>
+<td><code>safe-supervisor-degraded</code></td>
+<td>requirements-analysis, equivalence-classes, functional-dependencies, fault-injection</td>
+</tr>
+<tr>
+<td><code>safe-supervisor-degraded-mutations</code></td>
+<td>fault-injection</td>
+</tr>
+<tr>
+<td><code>safe-supervisor-bridge-fault</code></td>
+<td>requirements-analysis, equivalence-classes, fault-injection</td>
+</tr>
+<tr>
+<td><code>safe-supervisor-bridge-fault-mutations</code></td>
+<td>fault-injection</td>
+</tr>
+<tr>
+<td><code>rom-check</code></td>
+<td>requirements-analysis, equivalence-classes, boundary-values, error-guessing, fault-injection</td>
+</tr>
+<tr>
+<td><code>rom-check-mutations</code></td>
+<td>fault-injection</td>
+</tr>
+<tr>
+<td><code>nvm-flash-write-bracket</code></td>
+<td>requirements-analysis, functional-dependencies</td>
+</tr>
+<tr>
+<td><code>rom-check-image</code></td>
+<td>requirements-analysis, boundary-values, fault-injection</td>
+</tr>
+<tr>
+<td><code>safe-system</code></td>
+<td>requirements-analysis, equivalence-classes, fault-injection</td>
+</tr>
+<tr>
+<td><code>demoswc-sil</code></td>
+<td>requirements-analysis, operational-use-cases</td>
+</tr>
+<tr>
+<td><code>target-demo</code></td>
+<td>requirements-analysis</td>
+</tr>
+<tr>
+<td><code>target-calibration</code></td>
+<td>requirements-analysis, equivalence-classes, fault-injection</td>
+</tr>
+<tr>
+<td><code>elfcheck</code></td>
+<td>requirements-analysis, equivalence-classes</td>
+</tr>
+<tr>
+<td><code>elfcheck-fcf</code></td>
+<td>requirements-analysis, equivalence-classes, fault-injection</td>
+</tr>
+<tr>
+<td><code>elfcheck-isr</code></td>
+<td>requirements-analysis, fault-injection</td>
+</tr>
+<tr>
+<td><code>elfcheck-stm32</code></td>
+<td>requirements-analysis, fault-injection</td>
+</tr>
+<tr>
+<td><code>elfcheck-demo</code></td>
+<td>requirements-analysis, fault-injection</td>
+</tr>
+<tr>
+<td><code>elfcheck-bt148</code></td>
+<td>requirements-analysis</td>
+</tr>
+<tr>
+<td><code>elfcheck-s32k116</code></td>
+<td>requirements-analysis, fault-injection</td>
+</tr>
+<tr>
+<td><code>elfcheck-timing</code></td>
+<td>requirements-analysis, equivalence-classes</td>
+</tr>
+<tr>
+<td><code>elfcheck-timing-host</code></td>
+<td>requirements-analysis, equivalence-classes, fault-injection</td>
+</tr>
+<tr>
+<td><code>elfcheck-timing-demo</code></td>
+<td>requirements-analysis, fault-injection</td>
+</tr>
+<tr>
+<td><code>elfcheck-timing-bt148</code></td>
+<td>requirements-analysis</td>
+</tr>
+<tr>
+<td><code>bl-image-start-host</code></td>
+<td>requirements-analysis, fault-injection</td>
+</tr>
+<tr>
+<td><code>progress-checks</code></td>
+<td>requirements-analysis, boundary-values, fault-injection</td>
+</tr>
+<tr>
+<td><code>lpit-deadman-progress</code></td>
+<td>requirements-analysis, boundary-values, fault-injection</td>
+</tr>
+<tr>
+<td><code>safety-progress</code></td>
+<td>requirements-analysis, functional-dependencies, fault-injection</td>
+</tr>
+<tr>
+<td><code>rtegen-age</code></td>
+<td>requirements-analysis, equivalence-classes, fault-injection</td>
+</tr>
+</tbody>
+</table>
+<!-- vp-derivation-examples:end -->
+
+<p>Every entry with <code>requirements:</code> carries the field; the consistency test requires it ("present on every safety
+entry", since SYS-166) besides the rule "known values, only on safety entries" and the equality with this table.</p>
+<hr />
+<h2 id="6-regression-strategy">6. Regression strategy<a class="headerlink" href="#6-regression-strategy" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Ring</th>
+<th>When</th>
+<th>What</th>
+<th>Who</th>
+<th>Gate</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>R-A Task</td>
+<td>before the agent commits</td>
+<td>the entries of the agent's own files, at most one small group (<code>tools/test -k</code>), target build of the touched profile</td>
+<td>agent</td>
+<td>the coordinator does not merge red</td>
+</tr>
+<tr>
+<td>R-B Merge</td>
+<td>after every merge into the integration branch</td>
+<td><code>tools/test --since &lt;merge base&gt; --jobs 4</code>: every entry whose <code>covers</code>, <code>watch</code>, imports or own entry the merge touched, plus the groups the changelog names</td>
+<td>coordinator</td>
+<td>red → fix-up before the next merge</td>
+</tr>
+<tr>
+<td>R-C Integration</td>
+<td>at least once per integration branch before it goes to <code>dev</code>, and after a tool pin changes</td>
+<td>the full list <code>tools/test --clean</code> (all groups, without <code>--slow</code>)</td>
+<td>coordinator</td>
+<td>red → the branch does not go to <code>dev</code></td>
+</tr>
+<tr>
+<td>R-D Baseline</td>
+<td>per release candidate</td>
+<td>pre-flight of section 8, then <code>python -m tools.ci run --strict --clean [--slow]</code> on the frozen candidate; board regression for a safety release (section 9); for Release R1 the strict, slow, bound run and the board points of section 9.1</td>
+<td>coordinator, user for the board</td>
+<td><code>cm-plan.md</code> P2</td>
+</tr>
+</tbody>
+</table>
+<p>A change of a tool pin (CI-06), of <code>pipeline.toml</code> or of <code>coverage.yaml</code> always goes through R-C. The mutation runs
+(<code>--slow</code>) are part of R-D for a safety release and of R-B when the merge touches the unit they mutate (<code>--since</code>
+selects them only with <code>--slow</code>).</p>
+<hr />
+<h2 id="7-the-report-of-a-baseline">7. The report of a baseline<a class="headerlink" href="#7-the-report-of-a-baseline" title="Permanent link">&para;</a></h2>
+<h3 id="71-content-and-provenance-g1">7.1 Content and provenance (G1)<a class="headerlink" href="#71-content-and-provenance-g1" title="Permanent link">&para;</a></h3>
+<p><code>python -m tools.ci run --out &lt;dir&gt;</code> writes <code>ci-result.json</code>, <code>summary.md</code>, <code>tests.json</code>, <code>tests.log</code>, the coverage
+report (<code>coverage.json</code>, <code>coverage.md</code>, <code>coverage.log</code>), the static analysis under <code>misra/</code> and the artefacts with
+sizes. Since this issue <code>ci-result.json</code> also records which state it judged:</p>
+<!-- vp-provenance:start -->
+<table>
+<thead>
+<tr>
+<th>Field of <code>provenance</code></th>
+<th>Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>commit</code></td>
+<td>full commit of <code>HEAD</code> at the start of the run</td>
+</tr>
+<tr>
+<td><code>tree</code></td>
+<td>tree hash of that commit (equal for the candidate on <code>dev</code> and the release merge on <code>master</code>)</td>
+</tr>
+<tr>
+<td><code>describe</code></td>
+<td><code>git describe --tags --always --dirty</code>, for the reader</td>
+</tr>
+<tr>
+<td><code>openbsw</code></td>
+<td>gitlink of the OpenBSW submodule in that commit</td>
+</tr>
+<tr>
+<td><code>version</code></td>
+<td>content of <code>VERSION</code></td>
+</tr>
+<tr>
+<td><code>dirty</code></td>
+<td>whether the working tree had tracked or untracked changes (ignored files such as <code>build/</code> do not count)</td>
+</tr>
+<tr>
+<td><code>changes</code></td>
+<td>the first 20 changed paths, <code>changes_total</code> their number</td>
+</tr>
+<tr>
+<td><code>end</code></td>
+<td><code>commit</code>, <code>tree</code>, <code>dirty</code>, <code>changes_total</code> at the end of the run</td>
+</tr>
+</tbody>
+</table>
+<!-- vp-provenance:end -->
+
+<p><code>workspace_provenance</code> holds the same for a customer workspace run, <code>slow</code> and <code>release</code> the flags of the run. The
+summary prints the line <code>Stand &lt;describe&gt;: Commit …, Baum …</code>. A HEAD that moved during the run is a <code>Herkunft</code>
+finding, <strong>red with <code>--strict</code></strong>: a report of hours must not mix two states. Changes that appear during the run (a
+test writing into the tree, someone working in it) are a warning.</p>
+<h3 id="72-binding-and-archiving-g2">7.2 Binding and archiving (G2)<a class="headerlink" href="#72-binding-and-archiving-g2" title="Permanent link">&para;</a></h3>
+<p>A report is <strong>bound</strong> to a baseline when (<code>tools/ci/release.py: report_binding</code>):</p>
+<ol>
+<li><code>ci-result.json</code> exists, verdict <code>pass</code>, the run was <code>--strict</code>, a run of the tree (not of a workspace);</li>
+<li>it records its provenance (reports written before this issue do not - <code>v0.2.0</code> is such a case);</li>
+<li>the working tree was clean at the start and HEAD did not move;</li>
+<li>its tree hash equals <code>HEAD^{tree}</code> of the checkout that is tagged, and its <code>VERSION</code> the release version.</li>
+</ol>
+<p>Procedure, after step 5 of <code>cm-plan.md</code> 5.2 (merge on <code>master</code>) and before the tag (step 6):</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>python<span class="w"> </span>-m<span class="w"> </span>tools.ci<span class="w"> </span>release<span class="w"> </span>--report-dir<span class="w"> </span>build/ci-out-vX.Y.Z<span class="w"> </span>--strict<span class="w"> </span><span class="o">[</span>--profile<span class="w"> </span>open<span class="w"> </span>--archive<span class="o">]</span>
+</code></pre></div>
+<p>It copies the report to <code>&lt;archive&gt;/vX.Y.Z/</code> (<code>NX_RELEASE_ARCHIVE</code>, else <code>%LOCALAPPDATA%/nextbsw/release-archive</code>),
+writes <code>&lt;archive&gt;/ci-out-vX.Y.Z.zip</code> and <code>ci-out-vX.Y.Z.zip.sha256</code>, and prints in <code>release-plan.md</code> the tag message
+line <code>CI report: sha256 &lt;hash&gt; (ci-out-vX.Y.Z.zip)</code> and the command for the GitHub release asset
+(<code>gh release create vX.Y.Z &lt;zip&gt; &lt;zip&gt;.sha256 …</code>), which the integrator runs after the tag is pushed (step 9). The tool
+never tags and never pushes. <code>--strict</code> stops at an unbound report and names every reason; without <code>--strict</code> the
+plan says "Bound to this tree: no" with the reasons, which a development release may accept and name in its tag
+message.</p>
+<table>
+<thead>
+<tr>
+<th>Copy</th>
+<th>Where</th>
+<th>Retention</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Release asset</td>
+<td>GitHub release <code>vX.Y.Z</code> on <code>origin</code> (zip + <code>.sha256</code>)</td>
+<td>permanent (Q-CM3)</td>
+</tr>
+<tr>
+<td>Local archive</td>
+<td><code>&lt;archive&gt;/vX.Y.Z/</code> and the zip, on the workstation; a second medium is the user's backup</td>
+<td>permanent</td>
+</tr>
+<tr>
+<td>Binding</td>
+<td>SHA-256 in the tag message; <code>tree</code> in the report</td>
+<td>permanent with the tag</td>
+</tr>
+<tr>
+<td>Other CI runs</td>
+<td>GitHub Actions artefacts</td>
+<td>14 days, working records only</td>
+</tr>
+</tbody>
+</table>
+<p>For a safety release the archives of ARM GCC, CMake and Ninja go next to the report (Q-CM3); <code>tools.ci release</code> does
+not copy them yet (open, section 10).</p>
+<hr />
+<h2 id="8-finding-faults-before-the-release-ci">8. Finding faults before the release CI<a class="headerlink" href="#8-finding-faults-before-the-release-ci" title="Permanent link">&para;</a></h2>
+<h3 id="81-what-the-first-release-run-showed">8.1 What the first release run showed<a class="headerlink" href="#81-what-the-first-release-run-showed" title="Permanent link">&para;</a></h3>
+<p>The release procedure for <code>v0.2.0</code> (coordinator, 2026-10-01) needed <strong>three</strong> runs of <code>tools/ci run --strict</code> of
+about <strong>5 h</strong> each. The faults that turned them red were found only there, in <code>calgen</code>, <code>mcudb</code>, <code>stackuse</code>,
+<code>safe-outputs-table</code> and in the classification of the static analysis (files under a <code>build/</code> folder inside the
+tree). The detailed causes are the coordinator's record of the release — <code>CHANGELOG.md</code> section "0.2.0 – 2026-10-01"
+and the entry REL-020-FIX4; the duration of about 5 h per run is the coordinator's account of 2026-10-01, not a
+recorded measurement. This plan uses only their pattern:</p>
+<table>
+<thead>
+<tr>
+<th>Pattern</th>
+<th>Why the earlier rings missed it</th>
+<th>Pre-flight step that finds it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A merge changes an input of an entry that is not in the agent's group (generated reports such as the stack-use report, tables checked against an independent expectation, mcudb data)</td>
+<td>R-A runs only the agent's group, R-B was run per group, not per touched input</td>
+<td>PF-3</td>
+</tr>
+<tr>
+<td>A stage that runs only in the full CI (coverage, static analysis) meets something new</td>
+<td><code>tools/test</code> alone never runs them</td>
+<td>PF-4</td>
+</tr>
+<tr>
+<td>The environment of the run differs (folders inside the tree, a dirty working copy, tools of the workstation)</td>
+<td>the release run was the first strict run in that checkout</td>
+<td>PF-1, PF-2</td>
+</tr>
+<tr>
+<td>A fix-up between two runs breaks something else</td>
+<td>each fix-up was followed by another full run</td>
+<td>PF-3 on the fix-up, then one full run</td>
+</tr>
+</tbody>
+</table>
+<h3 id="82-pre-flight-about-one-hour-then-the-release-ci-once">8.2 Pre-flight (about one hour, then the release CI once)<a class="headerlink" href="#82-pre-flight-about-one-hour-then-the-release-ci-once" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>Command</th>
+<th>Finds</th>
+<th>Time (order)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PF-1 Freeze</td>
+<td>a separate clean worktree of the candidate commit: <code>git worktree add &lt;dir&gt; &lt;commit&gt;</code>; nothing else works in it; build root and output folder outside the tree</td>
+<td>changes during the run, folders in the tree</td>
+<td>minutes</td>
+</tr>
+<tr>
+<td>PF-2 Tools and profiles</td>
+<td><code>python -m tools.ci check --strict</code></td>
+<td>pin deviations, profiles without a decision</td>
+<td>seconds</td>
+</tr>
+<tr>
+<td>PF-3 Increment</td>
+<td><code>python -m tools.test --since v&lt;previous&gt; --list</code>, then the same with <code>--jobs 4</code> (with <code>--slow</code> for a safety release)</td>
+<td>every entry whose inputs changed since the last baseline</td>
+<td>most of the hour</td>
+</tr>
+<tr>
+<td>PF-4 CI-only stages</td>
+<td><code>python -m tools.test -k target-demo</code> (writes the compile database), then <code>python -m tools.misra run --compile-db &lt;build root&gt;/demo/compile_commands.json</code> and <code>python tools/test/coverage.py --jobs 4</code></td>
+<td>new static-analysis findings, classification of generated files, coverage measurement failures</td>
+<td>20-30 min</td>
+</tr>
+<tr>
+<td>PF-5 Document state</td>
+<td><code>tools/test -k safety</code> (document tests, <code>safety-trace</code>) on the candidate after release step 1 (<code>Baseline:</code> lines)</td>
+<td>state lines, tables of the safety documents</td>
+<td>minutes</td>
+</tr>
+</tbody>
+</table>
+<p>Only when PF-1 to PF-5 are green does the release CI start. A fault found by the release CI anyway is recorded with
+the pattern it belongs to, and this section gets a new row; the goal is <strong>one</strong> release CI run per baseline.</p>
+<p><strong>Tool (TOOL-209, in review since 2026-10-02):</strong> <code>python -m tools.ci preflight --since v&lt;previous&gt;</code> runs PF-2 to PF-5
+in this order and writes a short report (task proposal T-VP3 of issue 1). Its first real run on a release candidate is
+the one before the release CI of Release R1 (section 9.1, CM-04 Z3).</p>
+<hr />
+<h2 id="9-what-is-verified-per-baseline">9. What is verified per baseline<a class="headerlink" href="#9-what-is-verified-per-baseline" title="Permanent link">&para;</a></h2>
+<!-- vp-baseline:start -->
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Every merge (R-B)</th>
+<th>Development release</th>
+<th>Safety release</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Entries touched by the change</td>
+<td>yes</td>
+<td>(in the full run)</td>
+<td>(in the full run)</td>
+</tr>
+<tr>
+<td>Full list, <code>--strict</code>, <code>--clean</code></td>
+<td>—</td>
+<td>yes</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>Mutation runs (<code>--slow</code>)</td>
+<td>when touched</td>
+<td>recommended</td>
+<td><strong>required</strong></td>
+</tr>
+<tr>
+<td>Coverage report</td>
+<td>—</td>
+<td>reported</td>
+<td><strong>gate on the safety modules</strong> (VP-1)</td>
+</tr>
+<tr>
+<td>Static analysis gate</td>
+<td>—</td>
+<td>yes</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>Report bound to the tree (7.2)</td>
+<td>—</td>
+<td>recommended; reasons named in the tag message if not</td>
+<td><strong>required</strong> (<code>tools.ci release --strict</code>)</td>
+</tr>
+<tr>
+<td>Report archived (asset + local)</td>
+<td>—</td>
+<td>yes</td>
+<td>yes, plus tool archives</td>
+</tr>
+<tr>
+<td>Requirement coverage (<code>safety-trace</code>)</td>
+<td>when touched</td>
+<td>yes</td>
+<td>yes, every SSR verified or argued</td>
+</tr>
+<tr>
+<td><code>derivation</code> on every safety entry</td>
+<td>—</td>
+<td>—</td>
+<td><strong>required</strong> (VP-7; met since SYS-166, checked by the consistency test)</td>
+</tr>
+<tr>
+<td>Board regression of the tagged image</td>
+<td>—</td>
+<td>—</td>
+<td><strong>required</strong> for every SSR with method "board" (VP-6)</td>
+</tr>
+<tr>
+<td>Host/target bridges of 4.2</td>
+<td>—</td>
+<td>in the full run</td>
+<td>in the full run, remaining items argued (VP-3)</td>
+</tr>
+<tr>
+<td>Inspections and confirmation review CM-04</td>
+<td>—</td>
+<td>—</td>
+<td>closed (P6, safety plan section 5)</td>
+</tr>
+</tbody>
+</table>
+<!-- vp-baseline:end -->
+
+<h3 id="91-release-r1-v100-rc1">9.1 Release R1 (<code>v1.0.0-rc1</code>)<a class="headerlink" href="#91-release-r1-v100-rc1" title="Permanent link">&para;</a></h3>
+<p>Release R1 is the first release the user wants to be releasable (Freigabeumfang R1, user decision 2026-09-30). By the
+safety plan (section 5, deviation for release R1) it is a <strong>development release without a safety claim</strong> (D-01,
+precondition R5 not met). It is not judged against the development column of the matrix alone: the user decided in
+CM-04 (2026-10-04) what it needs on top. <strong>Release R1 = development release plus:</strong></p>
+<ol>
+<li><strong>Release CI as for a safety release</strong> (CM-04 Z3): <code>python -m tools.ci run --strict --clean --slow</code> on the frozen
+   candidate — the mutation runs included — and the report <strong>bound</strong> with <code>python -m tools.ci release --strict</code>
+   (section 7.2); <code>v1.0.0-rc1</code> is the first bound report. Before it the <strong>pre-flight</strong> <code>python -m tools.ci preflight</code>
+   (section 8.2) — its first real run on a candidate, which also completes TOOL-209.</li>
+<li><strong>Board list before the tag</strong> (CM-04 Z4): SYS-167 delivers the board regression list (T-VP2) before the tag is set.
+   The list contains <strong>BT-S1-03</strong> (S1 confirmed by read-back, <code>fmea.md</code> B15; decision BRD a of the re-check of CM-02,
+   2026-10-04).</li>
+<li><strong>Board run on the tagged image</strong> (CM-04 Z4): a suite run of the demo cases of <code>board-test-spec.md</code> with
+   <code>tools/boardtest suite</code> on the tagged rc1 image, plus the restart-time measurement F4 (review BL38-P1 F4 a: at least
+   four runs with the oscilloscope); records with image CRC and the tag. The board state of 2026-10-02 … 2026-10-04
+   (section 2.3) was taken at integration states and does not replace this run.</li>
+<li><strong>Requirement coverage, derivation and the automated rows</strong> as in the development column; <code>safety-trace</code> green;
+   CM-04 performed (record CR-04-1).</li>
+</ol>
+<p><strong>Limits of Release R1</strong> — required for the first safety release, not for Release R1, and named in its release
+record:</p>
+<table>
+<thead>
+<tr>
+<th>Limit</th>
+<th>Decision</th>
+<th>Carrier</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>no coverage gate; shortfalls measured, not argued per module (3.4)</td>
+<td>VP-1 a (2026-10-02), CM-04 Z2</td>
+<td>before the first safety release</td>
+</tr>
+<tr>
+<td>architecture-level coverage argued, not measured</td>
+<td>VP-2 a, CM-04 Z2</td>
+<td>before the first safety release</td>
+</tr>
+<tr>
+<td>HT-2/HT-3 without a bridge on the host (4.2)</td>
+<td>VP-3 a, CM-04 Z2</td>
+<td>SYS-168</td>
+</tr>
+<tr>
+<td>no independence of test authoring: the coordinator only re-runs the tests of an agent; a second agent reviewing every new or changed safety test before the merge is decided (VP-9 b) but not in place</td>
+<td>VP-9 b (2026-10-02), CM-04 Z6</td>
+<td>SYS-181, after Release R1</td>
+</tr>
+<tr>
+<td>board-list run on the tagged image required only for a safety release in general (VP-6); for Release R1 the demo cases and F4 (point 3)</td>
+<td>VP-6 a, CM-04 Z4</td>
+<td>SYS-167</td>
+</tr>
+<tr>
+<td>tool archives not next to the report, reproduction on a second machine not shown, no release-asset workflow; Release R1 is distributed privately and the local archive with SHA-256 suffices</td>
+<td>CM-04 Z9</td>
+<td>TOOL-210, TOOL-211, TOOL-212, after Release R1</td>
+</tr>
+<tr>
+<td>safety entries without a counter-check not sighted (3.5); the list is an upper bound (finding VF-1, section 10.1)</td>
+<td>CM-04 finding F-09, re-check T8 and RN</td>
+<td><strong>TOOL-228</strong> (T-VP8, P2), before the first safety release</td>
+</tr>
+<tr>
+<td>the HR/R ratings of sections 2 and 5 not checked against the licensed standard (VP-10)</td>
+<td>CM-04 re-check Z7</td>
+<td>the user, before the first safety release</td>
+</tr>
+<tr>
+<td>confirmation measures CM-03, CM-08, CM-09, CM-11 after R1</td>
+<td>safety plan section 5</td>
+<td>D-22 of the safety case</td>
+</tr>
+</tbody>
+</table>
+<p>As long as no independent reviewer is named (safety plan O1), every tag is a development release in any case; the plan
+is written so that a safety release needs no further plan work, only the open rows.</p>
+<hr />
+<h2 id="10-gaps-and-tasks">10. Gaps and tasks<a class="headerlink" href="#10-gaps-and-tasks" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Gap</th>
+<th>Task</th>
+<th>Prio</th>
+<th>Release R1</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T-VP1</td>
+<td>~~<code>derivation</code> on 6 of 108 safety entries~~ done</td>
+<td>the field is filled for every safety entry, each read against its test, and the consistency test requires it — <strong>SYS-166</strong> (done)</td>
+<td>P1</td>
+<td>done</td>
+</tr>
+<tr>
+<td>T-VP2</td>
+<td>the board level is per task, not per baseline</td>
+<td>a board regression list per SSR with method "board", run on the tagged image of a safety release, records with image CRC and the tag — <strong>SYS-167</strong> (open)</td>
+<td>P1</td>
+<td>the list before the tag (9.1 point 2)</td>
+</tr>
+<tr>
+<td>T-VP3</td>
+<td>pre-flight is a list of commands</td>
+<td><code>tools.ci preflight</code> (section 8.2) — <strong>TOOL-209</strong> (review)</td>
+<td>P2</td>
+<td>first real run before the release CI (9.1 point 1)</td>
+</tr>
+<tr>
+<td>T-VP4</td>
+<td>tool archives for a safety release (Q-CM3) are copied by hand</td>
+<td><code>tools.ci release</code> copies the cached archives of <code>versions.toml</code> next to the report, with their SHA-256 — <strong>TOOL-210</strong> (open)</td>
+<td>P3</td>
+<td>limit, after R1</td>
+</tr>
+<tr>
+<td>T-VP5</td>
+<td>host tests are built only with the host's <code>char</code> signedness and widths</td>
+<td>an additional host-test variant with <code>-funsigned-char</code> for the safety units, or a static check of HT-2/HT-3 (VP-3) — <strong>SYS-168</strong> (open)</td>
+<td>P2</td>
+<td>limit, after R1</td>
+</tr>
+<tr>
+<td>T-VP6</td>
+<td>the reproduction of a baseline across machines is not proven (cm-plan G8, AN-092)</td>
+<td>one reproduction on the Linux runner and on the workstation, image CRCs compared — <strong>TOOL-211</strong> (open)</td>
+<td>P3</td>
+<td>limit, after R1</td>
+</tr>
+<tr>
+<td>T-VP7</td>
+<td>a release run on GitHub Actions keeps its artefacts 14 days</td>
+<td>a workflow on tag push that attaches the report as asset (touches <code>.github/workflows</code>) — <strong>TOOL-212</strong> (open)</td>
+<td>P3</td>
+<td>limit, after R1</td>
+</tr>
+<tr>
+<td>T-VP8</td>
+<td>39 safety entries without <code>fault-injection</code> and without a counter-check marker (3.5)</td>
+<td>sight each, add a broken copy or a mutation run or argue the independent expectation; update the list; with it the <code>derivation</code> of <code>data-flash-system</code> and the marker search (finding VF-1) — <strong>TOOL-228</strong> (open; CM-04 re-check T8, 2026-10-04)</td>
+<td>P2</td>
+<td>limit, after R1</td>
+</tr>
+<tr>
+<td>—</td>
+<td>independence of test authoring (VP-9 b)</td>
+<td>a second agent reviews every new or changed safety test before the merge — <strong>SYS-181</strong> (open)</td>
+<td>P2</td>
+<td>limit, after R1</td>
+</tr>
+</tbody>
+</table>
+<h3 id="101-findings-after-issue-2">10.1 Findings after issue 2<a class="headerlink" href="#101-findings-after-issue-2" title="Permanent link">&para;</a></h3>
+<p>Findings against this plan found after its release. Each is registered in the anomaly register with the source
+<code>verification-plan.md VF-n</code> (DOC-59: an open finding of the record CR-04-1 would contradict its verdict <code>accepted</code>).</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Finding</th>
+<th>Found by</th>
+<th>Carrier</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>VF-1</td>
+<td>(a) <code>tools/test/tests.yaml</code> gives <code>data-flash-system</code> the <code>derivation</code> <code>requirements-analysis</code> only, although its test runs a built-in mutation check (<code>MutationTest</code>, 15 mutants) - against the rule of 5.3 (<code>fault-injection</code> where the test inserts faults); section 3.5 therefore lists it as "none found", the counts would be 50 and 38 instead of 51 and 39, and 39 is an upper bound; the marker search of 3.5 does not know "Mutant" or "MutationTest". (b) The sentence "a number in the running text is one of these" (header, 3.6) does not hold for 12/39 (3.5), 91/31/3/7 (3.3), 20 mutants (2.2) and "6 … 104" (5.3)</td>
+<td>re-check of CM-04 (record CR-04-1, RN minor, remarks R4 and R9; 2026-10-04)</td>
+<td>TOOL-228, with the next issue of this plan</td>
+<td>open (AN-176)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="11-review-points-and-decisions">11. Review points and decisions<a class="headerlink" href="#11-review-points-and-decisions" title="Permanent link">&para;</a></h2>
+<p>Each point is a statement of issue 1 that the safety manager decided in the safety review of 2026-10-02 (artifact
+of the user, transcribed into <code>doc/todo.yaml</code> SYS-67) or in the confirmation review CM-04 of 2026-10-04 (record
+<code>reviews/records/CR-04-1.md</code> (not published, available on request), decisions Z1 … Z10).</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Title</th>
+<th>Statement</th>
+<th>Options</th>
+<th>Decision</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>VP-1</td>
+<td>Coverage gate</td>
+<td>coverage is measured but not a gate; the safety modules miss the branch proposal in part</td>
+<td>(a) gate on the safety modules before the first safety release, others reported; (b) gate on all modules; (c) stay a report, argue every shortfall</td>
+<td><strong>(a)</strong>, 2026-10-02; a limit of Release R1 (CM-04 Z2, section 3.4)</td>
+</tr>
+<tr>
+<td>VP-2</td>
+<td>Architecture-level structural coverage</td>
+<td>function and call coverage (recommended at B) is not measured</td>
+<td>(a) argue by the requirement coverage of I3/I5 and the call graph of <code>tools/stackuse</code> for the first safety release, measure later; (b) measure now</td>
+<td><strong>(a)</strong>, 2026-10-02; a limit of Release R1 (CM-04 Z2)</td>
+</tr>
+<tr>
+<td>VP-3</td>
+<td>Host/target differences without a bridge</td>
+<td>HT-2 and HT-3 (widths, <code>char</code> signedness) rely on static analysis only</td>
+<td>(a) T-VP5 before the first safety release; (b) accept the static analysis as the bridge, with a deviation record</td>
+<td><strong>(a)</strong>, 2026-10-02, SYS-168; a limit of Release R1 (CM-04 Z2)</td>
+</tr>
+<tr>
+<td>VP-4</td>
+<td>Mutation runs per release</td>
+<td>required for a safety release, recommended for a development release</td>
+<td>(a) as stated; (b) required for every release (longer runs)</td>
+<td><strong>(a)</strong>, 2026-10-02; for Release R1 required anyway (CM-04 Z3, section 9.1)</td>
+</tr>
+<tr>
+<td>VP-5</td>
+<td>Unbound report for a development release</td>
+<td><code>v0.2.0</code> is archived with a report written before the provenance existed; its tag message names that</td>
+<td>(a) accept for development releases, never for a safety release; (b) re-run the release CI for <code>v0.2.0</code></td>
+<td><strong>(a)</strong>, 2026-10-02; Release R1 is bound (CM-04 Z3)</td>
+</tr>
+<tr>
+<td>VP-6</td>
+<td>Board regression per safety release</td>
+<td>today board evidence is per task and image; a safety release needs evidence of its own image</td>
+<td>(a) T-VP2: rerun the board list on the tagged image; (b) accept earlier images when the difference analysis of the image (CRC-relevant changes) shows no change of the mechanism</td>
+<td><strong>(a)</strong>, (b) only for documented exceptions, 2026-10-02, SYS-167; for Release R1 the list before the tag and the demo cases plus F4 on the tagged image (CM-04 Z4)</td>
+</tr>
+<tr>
+<td>VP-7</td>
+<td>Derivation recording</td>
+<td>the field <code>derivation</code> plus the case names in the code are the test specification</td>
+<td>(a) as stated, T-VP1; (b) a test specification document per safety module (StrictDoc)</td>
+<td><strong>(a)</strong>, 2026-10-02; done (SYS-166)</td>
+</tr>
+<tr>
+<td>VP-8</td>
+<td>Test specification per case</td>
+<td>ID = entry plus case name, version = commit, expected result = assertion; no separate document</td>
+<td>(a) accept; (b) require (b) of VP-7</td>
+<td><strong>(a)</strong>, CM-04 Z5 (2026-10-04)</td>
+</tr>
+<tr>
+<td>VP-9</td>
+<td>Independence of test authoring (8-9.4.3.2)</td>
+<td>code and its tests are often written by the same agent; the coordinator re-runs them</td>
+<td>(a) the CM-04 reviewer samples safety tests per release and records it; (b) a second agent reviews every safety test</td>
+<td><strong>(b)</strong>, 2026-10-02 (against the recommendation a) → SYS-181 after Release R1; until then only the re-run by the coordinator, named as a limit (CM-04 Z6, section 9.1)</td>
+</tr>
+<tr>
+<td>VP-10</td>
+<td>Method ratings</td>
+<td>the HR/R ratings of sections 2 and 5 are our reading of part 6</td>
+<td>the reviewer checks them against the licensed standard in CM-04</td>
+<td><strong>open</strong> - check by the user against the licensed standard before the first safety release (CM-04 Z7: the re-check of 2026-10-04 found no record of the check, the decision "checked" rested only on "no finding raised"); not needed for Release R1 without a safety claim</td>
+</tr>
+<tr>
+<td>VP-11</td>
+<td>Strict release run and moved HEAD</td>
+<td>a moved HEAD is red only with <code>--strict</code>; working-tree changes during a run are a warning</td>
+<td>(a) as stated; (b) red for any change during a strict run</td>
+<td><strong>(a)</strong>, 2026-10-02</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="12-clauses-addressed">12. Clauses addressed<a class="headerlink" href="#12-clauses-addressed" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Gap row</th>
+<th>Clause</th>
+<th>Before</th>
+<th>After this issue</th>
+<th>Still missing</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>8-20</td>
+<td>8-9.4.1</td>
+<td>partial</td>
+<td>plan per level with methods, criteria, environment, tools, regression (sections 2-6)</td>
+<td>— (issue 2 released in the re-check of CR-04-1, 2026-10-04)</td>
+</tr>
+<tr>
+<td>8-21</td>
+<td>8-9.4.2</td>
+<td>partial</td>
+<td>test specification rule (5.2)</td>
+<td>— (VP-8 decided in CM-04)</td>
+</tr>
+<tr>
+<td>8-22</td>
+<td>8-9.4.3</td>
+<td>partial</td>
+<td>report bound to the tree and archived per baseline (7); <code>tools/ci</code> records provenance</td>
+<td>first bound report (Release R1, <code>v1.0.0-rc1</code>, section 9.1)</td>
+</tr>
+<tr>
+<td>6-23, 6-28, 6-35</td>
+<td>6-9.4.3, 6-10.4.3, 6-11.4.3</td>
+<td>partial</td>
+<td>methods and recording rule (5)</td>
+<td>— (T-VP1 done)</td>
+</tr>
+<tr>
+<td>6-25, 6-32</td>
+<td>6-9.4.5, 6-10.4.7</td>
+<td>partial</td>
+<td>difference analysis HT-1 … HT-9 (4.2)</td>
+<td>T-VP5 (SYS-168)</td>
+</tr>
+<tr>
+<td>6-26</td>
+<td>6-10.4.1</td>
+<td>missing</td>
+<td>integration steps I1-I6 (2.2)</td>
+<td>—</td>
+</tr>
+<tr>
+<td>6-24, 6-30</td>
+<td>6-9.4.4, 6-10.4.5</td>
+<td>partial / missing</td>
+<td>targets and state (3.4)</td>
+<td>VP-1, VP-2</td>
+</tr>
+<tr>
+<td>6-33, 6-34</td>
+<td>6-11.4.1, 6-11.4.2</td>
+<td>partial</td>
+<td>methods at target level (2.3), per-baseline rule (9), Release R1 (9.1)</td>
+<td>T-VP2 (SYS-167)</td>
+</tr>
+<tr>
+<td>—</td>
+<td>cm-plan G1, G2</td>
+<td>open</td>
+<td>provenance in the report, binding, archive with SHA-256</td>
+<td>tool archives (T-VP4), asset workflow (T-VP7); AN-085/AN-086 are confirmed in CM-06</td>
+</tr>
+</tbody>
+</table>
+<h2 id="13-review-questions-of-the-architecture-section-11">13. Review questions of the architecture (section 11)<a class="headerlink" href="#13-review-questions-of-the-architecture-section-11" title="Permanent link">&para;</a></h2>
+<p>SYS-67 adds one document, one consistency test and two small changes to <code>tools/ci</code> (provenance in the report,
+binding and zip of the archived report). <strong>Board without an SBC, other crystal, other derivative, several CAN buses,
+several tasks:</strong> nothing in the plan or in the tool change depends on a board or a derivative; the levels name the
+build profiles generically, and the profile coverage check of <code>tools/ci</code> keeps every profile in the run. <strong>New values
+in one configuration level:</strong> none. <strong>Host test with its own profile:</strong> the tool changes are tested against
+synthetic git repositories in <code>%TEMP%</code>, not against this repository's state. <strong>Qt-free core, YAML paths:</strong> <code>tools/ci</code>
+stays free of Qt; findings name the field they are about. <strong>Device-driver granularity, platform rule:</strong> not
+applicable. Issue 2 (DOC-54) adds two rules to the consistency test (counts, list of section 3.5) and changes no
+tool; the board run of Release R1 (9.1) is a run on the eval board as the first example and adds nothing that
+depends on it.</p>
+<h2 id="14-sources">14. Sources<a class="headerlink" href="#14-sources" title="Permanent link">&para;</a></h2>
+<ul>
+<li><code>iso26262-gap.md</code> (not published, available on request) rows 6-22 … 6-36, 8-20 … 8-23 and section 6 task 9; ISO 26262-6 and -8 (2018)
+  cited by part and clause only.</li>
+<li><a href="../cm-plan/"><code>cm-plan.md</code></a> sections 5, 7 and 10 (G1, G2, G8); <a href="../safety-plan/"><code>safety-plan.md</code></a> rows P6-14 …
+  P6-20, P8-06, section 5 (deviation for release R1), release preconditions section 6;
+  <a href="../dev-environment/"><code>dev-environment.md</code></a> sections 5 and 7; <code>reviews/checklists.md</code> (not published, available on request) CM-04;
+  <a href="../board-test-spec/"><code>board-test-spec.md</code></a>; <a href="../safety-manual/"><code>safety-manual.md</code></a> sections 1.3 and 7.</li>
+<li>Repository at the working state: <code>tools/test/tests.yaml</code> (counts in section 3.6), <code>tools/test/README.md</code>,
+  <code>tools/test/coverage.yaml</code>, <code>tools/ci/{ci,release,preflight}.py</code>, <code>tools/ci/{pipeline,versions}.toml</code>,
+  <code>doc/safety/traceability.md</code>, <code>doc/safety/fmea.md</code> section 8.</li>
+<li>The coordinator's account of the <code>v0.2.0</code> release runs (2026-10-01; <code>CHANGELOG.md</code> section 0.2.0, REL-020-FIX4):
+  three runs, about 5 h each, the five fault areas of section 8.1.</li>
+<li>The decisions of the safety review of 2026-10-02 (VP-1 … VP-11, <code>doc/todo.yaml</code> SYS-67) and of CM-04
+  (<code>reviews/records/CR-04-1.md</code> (not published, available on request)).</li>
+</ul>
+<h2 id="15-change-history">15. Change history<a class="headerlink" href="#15-change-history" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Issue</th>
+<th>Date</th>
+<th>Task</th>
+<th>Change</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>2026-10-01</td>
+<td>SYS-67</td>
+<td>first issue, written against <code>integ/night11</code> at <code>baa1d837</code> while the coordinator ran the release procedure for <code>v0.2.0</code>; <code>tools/ci</code> records provenance, binds and archives the report</td>
+</tr>
+<tr>
+<td>1 (update)</td>
+<td>2026-10-02</td>
+<td>SYS-166</td>
+<td>the field <code>derivation</code> filled for every safety entry and required by the consistency test; VP-7 and T-VP1 closed</td>
+</tr>
+<tr>
+<td>1 (update)</td>
+<td>2026-10-02</td>
+<td>integration of the wave of 2026-10-02 (<code>c86513c2</code>, <code>c56e50c7</code>), merge of SYS-173/SYS-174 (<code>be29c724</code>)</td>
+<td>derivation table of section 5.3 brought to the merged entries (117, then 119)</td>
+</tr>
+<tr>
+<td>1 (update)</td>
+<td>2026-10-02</td>
+<td>SYS-75</td>
+<td>section 5.2: the board cases per SSR in <code>board-test-spec.md</code>, run with <code>tools/boardtest suite</code>, record <code>suite-run.json</code></td>
+</tr>
+<tr>
+<td>1 (update)</td>
+<td>2026-10-03</td>
+<td>integ/r1 (<code>55bdbe08</code>, after SYS-95)</td>
+<td>derivation table: the entries of SYS-95 (<code>progress-checks</code>, <code>lpit-deadman-progress</code>, <code>safety-progress</code>)</td>
+</tr>
+<tr>
+<td>1 (update)</td>
+<td>2026-10-04</td>
+<td>DOC-51 (<code>7bec5034</code>)</td>
+<td>derivation of <code>rtegen-age</code> (SSR-062 partial, CM-07 ZE)</td>
+</tr>
+<tr>
+<td><strong>2</strong></td>
+<td>2026-10-04</td>
+<td>DOC-54</td>
+<td>corrections after the confirmation review CM-04 (record <code>reviews/records/CR-04-1.md</code>, the user under D-01, baseline <code>dev</code> at aaa22c86, <code>accepted with conditions</code>; Z1 issue 2): header table with title, issue, author, approver, status and this history, state line at the working state (F-01, F-02); decisions of the safety review of 2026-10-02 and of CM-04 in section 11, task IDs in section 10, the release record of <code>v0.2.0</code> with its place (F-03); counts in a test-bound table 3.6 instead of stale numbers in the text (F-04); "Release R1 (<code>v1.0.0-rc1</code>)" and "precondition Rn" kept apart (F-05); the AoU that hand verification to the integrator in section 1 and the vehicle and integration test in the safety manual 1.3 (F-06); board coverage per SSR and the two open SSR in 3.3 (F-07); decision VP-1 a and the missing argument per module in 3.4 (F-08); the list of safety entries without <code>fault-injection</code> in 3.5, test-bound, and proposal T-VP8 (F-09); section 9.1 "Release R1 = development release plus" with the strict, slow, bound release CI, the pre-flight, the SYS-167 list and the board run on the tagged image (Z3, Z4, Z8) and the limits of Release R1 (Z2, Z6, Z9); pre-flight tool TOOL-209 in 8.2; board suite and R1 board state in 2.3</td>
+</tr>
+<tr>
+<td>2 (accepted)</td>
+<td>2026-10-04</td>
+<td>DOC-59</td>
+<td>re-check of CM-04 by the user (D-01, without independence) at <code>dev</code> efc474ea: F-01 … F-09 closed, issue 2 released (record CR-04-1 <code>accepted</code>). After it, as decided there: VP-10 <strong>open</strong>, checked by the user before the first safety release (Z7; header, sections 0, 9.1, 11); T-VP8 is task TOOL-228 (T8; sections 0, 3.5, 9.1, 10); finding RN as VF-1 in the new section 10.1 (AN-176), carried by TOOL-228 - the counts 51/39 and <code>data-flash-system</code> are not corrected here; 9.1 point 2 names BT-S1-03 (CM-02 re-check BRD a); section 12; state line</td>
+</tr>
+<tr>
+<td>2 (update)</td>
+<td>2026-10-07</td>
+<td>TOOL-239</td>
+<td>section 3.6: 414 entries (new entry <code>fahrplan</code>, no safety entry), no other count changed; not part of the review in CM-04</td>
+</tr>
+<tr>
+<td>2 (update)</td>
+<td>2026-10-07</td>
+<td>PLAT-119</td>
+<td>section 3.6: 416 entries (new entries <code>swc-demoswc-substitute</code>, <code>target-demoswc-substitute</code>, no safety entry), no other count changed; not part of the review in CM-04</td>
+</tr>
+</tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Zurück zum Seitenanfang
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Fußzeile" >
+        
+          
+          <a href="../safety-plan/" class="md-footer__link md-footer__link--prev" aria-label="Zurück: neXtBSW safety plan — software SEooC at ASIL B (SYS-60)">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Zurück
+              </span>
+              <div class="md-ellipsis">
+                neXtBSW safety plan — software SEooC at ASIL B (SYS-60)
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../safety-case/" class="md-footer__link md-footer__link--next" aria-label="Weiter: neXtBSW safety case — software SEooC at ASIL B (SYS-64)">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Weiter
+              </span>
+              <div class="md-ellipsis">
+                neXtBSW safety case — software SEooC at ASIL B (SYS-64)
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright 2026 Daniel Simon Reinhardt-Probul - Apache-2.0
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.sections", "navigation.indexes", "navigation.top", "navigation.footer", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "In Zwischenablage kopiert", "clipboard.copy": "In Zwischenablage kopieren", "search.result.more.one": "1 weiteres Suchergebnis auf dieser Seite", "search.result.more.other": "# weitere Suchergebnisse auf dieser Seite", "search.result.none": "Keine Suchergebnisse", "search.result.one": "1 Suchergebnis", "search.result.other": "# Suchergebnisse", "search.result.placeholder": "Suchbegriff eingeben", "search.result.term.missing": "Es fehlt", "select.version": "Version ausw\u00e4hlen"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

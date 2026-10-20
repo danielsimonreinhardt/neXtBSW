@@ -1,0 +1,6046 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Hardware-neutral, configurable basic software for 32-bit automotive MCUs, built on Eclipse OpenBSW">
+      
+      
+      
+      
+        <link rel="prev" href="../hsi-s32k1xx/">
+      
+      
+        <link rel="next" href="../security-interplay/">
+      
+      
+        
+          <link rel="alternate" href="../../../../doc/safety/hardware-mechanisms/" hreflang="de">
+        
+          <link rel="alternate" href="./" hreflang="en">
+        
+      
+      
+      <link rel="icon" href="../../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Hardware safety mechanisms - neXtBSW</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#hardware-safety-mechanisms" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../" title="neXtBSW" class="md-header__button md-logo" aria-label="neXtBSW" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            neXtBSW
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Hardware safety mechanisms
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="indigo"  aria-label="Dunkel"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Dunkel" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="indigo"  aria-label="Hell"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Hell" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Select language">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="../../../../doc/safety/hardware-mechanisms/" hreflang="de" class="md-select__link">
+              Deutsch
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../" title="neXtBSW" class="md-nav__button md-logo" aria-label="neXtBSW" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    neXtBSW
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Start
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Wegweiser
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../guide/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Integrator
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Integrator
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Erste Schritte
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/host-durchlauf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Host-Durchlauf ohne Hardware
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/your-first-board/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Das erste Board
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/the-application/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Die Anwendung
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/build-and-flash/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bauen und Flashen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/customer-project/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Eigenes ECU-Repository
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/new-derivative/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Neues Derivat
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/board-readme-template/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vorlage Board-README
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_10" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../reference/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Konfigurationsreferenz
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3_10" id="__nav_3_10_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Konfigurationsreferenz
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/derivative/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Derivative
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/board/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Board
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/project/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/rte/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rte
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/diag/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diag
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/console/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Console
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_11" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../projects/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Projekte, Komponenten, Boards
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3_11" id="__nav_3_11_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Projekte, Komponenten, Boards
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../swc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Software-Komponenten
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../swc/DemoSwcSubstitute/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    C-Ersatz der DemoSwc
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../ecu/platforms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Board-Ports
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../boards/buildtest_s32k148/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S32K148 build-test board (S32K148 LQFP176)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_12" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_12" id="__nav_3_12_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release Notes
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_12">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Release Notes
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../release-notes/v1.0.0-rc2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.0.0-rc2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../release-notes/v1.0.0-rc1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.0.0-rc1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../start/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Safety-Assessor
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Safety-Assessor
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../safety-manual/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sicherheitshandbuch
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../concept/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sicherheitskonzept
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../figures/concept-figures/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bilder zum Konzept
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../anomaly-register/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Anomalie-Register
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_6" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4_6" id="__nav_4_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Arbeitsprodukte
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Arbeitsprodukte
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../safety-plan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW safety plan — software SEooC at ASIL B (SYS-60)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../verification-plan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW verification plan and archived reports per baseline (SYS-67)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../safety-case/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW safety case — software SEooC at ASIL B (SYS-64)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cm-plan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW configuration management plan and baselines (SYS-68)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sw-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW — software architectural design specification of the safety part (SYS-65)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture-safety-analysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW software architectural safety analysis beyond the mechanisms (SYS-71)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../fmea/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW failure analysis of the base-software safety mechanisms (stage 1)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../figures/fmea-figures/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fmea figures
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dfa/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW dependent failure analysis of the stage-1 mechanisms (SYS-70)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../unit-design/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW — software unit design: watchdog handling, fault handlers, safety task (SYS-92, N2)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../coexistence/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW — coexistence of ASIL B and QM software in one image (SYS-61)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../partner-and-degraded/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Partner MCU supervision, degraded reaction and active short circuit — concept
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../config-range/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW — argument over the admissible configuration range (SYS-92, N3)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../hsi-s32k1xx/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW hardware-software interface of the stage-1 safety mechanisms — s32k1xx (SYS-66)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hardware safety mechanisms
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hardware safety mechanisms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-why-a-hardware-path-is-worth-having" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Why a hardware path is worth having
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-what-the-s32k1xx-offers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. What the S32K1xx offers
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. What the S32K1xx offers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-ftm-fault-inputs--pwm-channels-forced-to-a-safe-level-in-hardware" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 FTM fault inputs — PWM channels forced to a safe level in hardware
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-comparator-cmp0--a-threshold-without-the-core" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Comparator (CMP0) — a threshold without the core
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24-the-comparator-path-as-configured-by-sys-86" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.4 The comparator path as configured by SYS-86
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#25-detection-of-a-lost-or-stuck-comparator-path-sys-128" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.5 Detection of a lost or stuck comparator path (SYS-128)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#26-report-of-the-latched-fault-to-the-supervisor-and-the-application-sys-130" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.6 Report of the latched fault to the supervisor and the application (SYS-130)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#27-start-test-of-the-path-behind-the-comparator-sys-129" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.7 Start test of the path behind the comparator (SYS-129)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-what-is-not-a-hardware-safety-mechanism" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 What is not a hardware safety mechanism
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-where-such-a-mechanism-belongs-in-the-safety-argument" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Where such a mechanism belongs in the safety argument
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-worked-example-the-eval-board-boardsevalboard_s32k144" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Worked example: the eval board (boards/evalboard_s32k144)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-open-points" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Open points
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-sources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Sources
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security-interplay/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW — interplay of functional safety and cybersecurity (SYS-92, N1)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../static-analysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Static analysis and coding guidelines (PLAT-74)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tool-classification/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW tool classification and safeguards of the generated code (PLAT-75)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../component-qualification/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW — route per pre-existing component and qualification plan (SYS-62)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dev-environment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW development environment: languages, guidelines, tools, build and test flow (DOC-22)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../board-test-spec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW board test specification per SSR with operational use cases (SYS-75)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../openbsw-beitraege/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributor
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Contributor
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_1" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../architecture/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architektur
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_1" id="__nav_5_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Architektur
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/openbsw/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Openbsw
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/openbsw-naehe/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Openbsw naehe
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/autosar/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Autosar
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/autosar-standard-set/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Autosar standard set
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/autosar-ecuc-map/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Autosar ecuc map
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/autosar-ecuc-evaluation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Autosar ecuc evaluation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/plattformen/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plattformen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/customer-project/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Customer project
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/versioning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW – Versionierung und Support
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/csec-concept/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CSEc in neXtBSW: keys, message authentication and secure start (SYS-56)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/kalibrierung/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Calibration in neXtBSW: parameters, maps, a versioned calibration database, measurement signals (ARCH-64)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/pin-interrupts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pin interrupts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/signal-qualifier/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Signal qualifiers for received messages (COM-03)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/treiber-granularitaet/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW – granularity of device drivers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/treiber-anbindung-analyse/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW – binding device drivers to the system: analysis of the hand-written integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/openbsw-console-number-arguments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OpenBSW console commands with a number argument - audit (PLAT-110)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_1_19" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_1_19" id="__nav_5_1_19_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Geplant nach R1
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_1_19_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_1_19">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Geplant nach R1
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/planned/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Planned
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/non-cortex-m-audit/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Non cortex m audit
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/rm4x-quellen/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rm4x quellen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/stm32-nucleo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Stm32 nucleo
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../figures/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bilder
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_2" id="__nav_5_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Bilder
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../figures/01-schichten/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    01 schichten
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../figures/02-konfigurationsfluss/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    02 konfigurationsfluss
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../figures/03-startablauf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    03 startablauf
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../figures/04-flash-uds/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    04 flash uds
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../figures/05-ecu-zustaende/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    05 ecu zustaende
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../figures/06-safety-kette/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    06 safety kette
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../figures/07-modulkarte/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    07 modulkarte
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../figures/08-lesepfade/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    08 lesepfade
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../bootloader/doc/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Moduldokumentation
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_3" id="__nav_5_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Moduldokumentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/modules/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modules
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../bootloader/doc/iso14229-1-clause16-conformance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Conformance with ISO 14229-1 clause 16 (non-volatile server memory programming)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/autosarBase/doc/autosarBase/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AUTOSAR base types (autosarBase)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/canPhyPassive/doc/canPhyPassive/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Passive CAN transceiver (canPhyPassive)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/canSystem/doc/canSystem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CAN system, hardware independent parts (canSystem)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/consoleContext/doc/consoleContext/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Console context (consoleContext)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/dem/doc/dem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    dem – fault memory (simplified AUTOSAR DEM)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/e2e/doc/e2e/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    E2E-Bibliothek (e2e)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/ecuState/doc/ecuState/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ECU-Zustandsverwaltung (ecuState)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/gdTmc6200/doc/gdTmc6200/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Gate-Treiber TMC6200 (gdTmc6200)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/hallDecoder/doc/hallDecoder/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hall decoder (hallDecoder)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/highSideSwitch/doc/highSideSwitch/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Smart high-side switch (highSideSwitch)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/mcuLink/doc/mcuLink/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mcuLink
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/nvm/doc/nvm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NvM core (libs/bsw/nvm)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/nvmDataFlash/doc/nvmDataFlash/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nvmDataFlash - data flash areas (NVM-12)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/sbcUja113x/doc/sbcUja113x/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SBC-Treiber UJA113x (sbcUja113x)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsp/bspAdcAccess/doc/bspAdcAccess/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Serialized ADC access (bspAdcAccess)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsp/bspI2c/doc/bspI2c/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    I2C master contract (bspI2c)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsp/bspPinEdge/doc/bspPinEdge/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pin edge contract (bspPinEdge)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsp/bspPinEvent/doc/bspPinEvent/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    bspPinEvent
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsp/bspSampleGroup/doc/bspSampleGroup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sample group (bspSampleGroup)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsp/bspSpi/doc/bspSpi/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SPI device contract (bspSpi)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/common/clockCheck/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Clock start-up check (PLAT-72)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/common/interruptPriority/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interrupt priorities as ranks (PLAT-10, wired up in PLAT-21, per core profile since ARCH-24)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/s32k1xx/bsp/bspCsec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    bspCsec – CSEc of the S32K1 family
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/s32k1xx/bsp/bspMcu/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    bspMcu (Familie s32k1xx) – Derivat-Header und mcu/mcu.h (PLAT-11)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/s32k1xx/startup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Startup templates per core architecture (PLAT-10)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/s32k1xx/port/safety/safeLifecycle/doc/safeLifecycle/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Safety task, s32k1xx (safeLifecycle)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/s32k1xx/port/safety/safeMemory/doc/safeMemory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Memory safety of the s32k1xx family (safeMemory)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/s32k1xx/port/safety/safeSupervisor/doc/safeSupervisor/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Safe supervisor, project values of the s32k1xx port (safeSupervisor)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/s32k1xx/port/safety/safeSystem/doc/safeSystem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference and supply supervision, s32k1xx (safeSystem)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/s32k1xx/port/bspConfiguration/src/bsp/capture/doc/capture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Input capture, s32k1xx (capture)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/s32k1xx/port/bspConfiguration/src/bsp/hall/doc/hall/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hall sensor set, s32k1xx (hall)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../tools/test/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tests und Werkzeuge
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_4" id="__nav_5_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tests und Werkzeuge
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/docgen/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    docgen - generated reference documentation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/docgen/website/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Doku-Website
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/ci/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/ci – provider-neutral CI (TOOL-03)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/setup – the Python environment of a workspace (TOOL-63)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/distcheck/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    distcheck – distribution check and export of the open tree
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/canflash/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/canflash – application and bootloader over CAN (UDS on ISO-TP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/boardtest/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/boardtest – board measurement scripts with host tests (TOOL-05)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/misra/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/misra – static analysis (PLAT-74)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/trace/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/trace — traceability of the safety requirements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/a2lgen/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    a2lgen - A2L for XCP on CAN (TOOL-01)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/calgen/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    calgen – calibration datasets (stage K2)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/csec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    csec – host side of the CSEc way back to the factory state
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/elfcheck/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    elfcheck – linked images against the derivative map and the core
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/nxupdate/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/schedana/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/schedana – analyse processor load, scheduling and data flow (TOOL-09)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/stackuse/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    stackuse – worst-case stack per execution context
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Beitragen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../SECURITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sicherheitsluecken melden
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../mcudb/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ableitung der Chipdaten (mcudb)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-why-a-hardware-path-is-worth-having" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Why a hardware path is worth having
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-what-the-s32k1xx-offers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. What the S32K1xx offers
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. What the S32K1xx offers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-ftm-fault-inputs--pwm-channels-forced-to-a-safe-level-in-hardware" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 FTM fault inputs — PWM channels forced to a safe level in hardware
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-comparator-cmp0--a-threshold-without-the-core" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Comparator (CMP0) — a threshold without the core
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24-the-comparator-path-as-configured-by-sys-86" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.4 The comparator path as configured by SYS-86
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#25-detection-of-a-lost-or-stuck-comparator-path-sys-128" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.5 Detection of a lost or stuck comparator path (SYS-128)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#26-report-of-the-latched-fault-to-the-supervisor-and-the-application-sys-130" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.6 Report of the latched fault to the supervisor and the application (SYS-130)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#27-start-test-of-the-path-behind-the-comparator-sys-129" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.7 Start test of the path behind the comparator (SYS-129)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-what-is-not-a-hardware-safety-mechanism" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 What is not a hardware safety mechanism
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-where-such-a-mechanism-belongs-in-the-safety-argument" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Where such a mechanism belongs in the safety argument
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-worked-example-the-eval-board-boardsevalboard_s32k144" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Worked example: the eval board (boards/evalboard_s32k144)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-open-points" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Open points
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-sources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Sources
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="hardware-safety-mechanisms">Hardware safety mechanisms<a class="headerlink" href="#hardware-safety-mechanisms" title="Permanent link">&para;</a></h1>
+<p>Baseline: v0.2.0</p>
+<p><strong>Standing.</strong> This document describes safety mechanisms that act <strong>without software</strong> — paths inside the MCU (or
+between a device and the MCU) that reach a safe condition even when no instruction is executed. It is a catalogue
+and an analysis, not a specification of what neXtBSW does today: at the time of writing <strong>none of the mechanisms
+below is used</strong>, and the document exists to say what is available, what it would cost and what it would buy.</p>
+<p><strong>Update SYS-86 (2026-09-30).</strong> The comparator path of section 2.2 is now <strong>configurable</strong> (section 2.4): a project
+can name a hardware threshold on a board signal, and the family port routes CMP0 to a fault input of the PWM timer.
+It is optional; <strong>no checked-in project uses it</strong> (the eval board has no meaningful signal at a comparator input,
+section 4), it is verified on the host and in a target build only, and nothing in this document credits it — the
+catalogue entry is SM-58 in <code>concept.md</code> 6.5, analysed in <code>fmea.md</code>, with no coverage claimed. The pin sources of
+section 2.1 (gate driver fault, SBC interrupt) are still SYS-85.</p>
+<p><strong>Update SYS-128 (2026-09-30).</strong> The comparator path detects its own loss (section 2.5): a start test of the
+comparator output before the route exists, and a check of every register of the path plus the consistency of the
+output with the timer's fault latch in the 1 ms poll of the power stage; a finding forces the group inactive. Host
+verified only; still nothing credited.</p>
+<p><strong>Update SYS-125 (2026-09-30).</strong> A second hardware mechanism is now in use, and unlike the comparator path it is not optional: the family port s32k1xx switches the MCU's low-voltage <strong>detect</strong> reset on in every start (<code>PMC_LVDSC1[LVDRE] = 1</code>, decision of the safety responsible, anomaly AN-066). A VDD below VLVD (2.80 … 3.00 V) resets the MCU in hardware and holds it in reset until the supply is back; no instruction is involved. Catalogue entry SM-59 in <code>concept.md</code> 6.4, analysed in <code>fmea.md</code>, <strong>not credited</strong>; the supply margin a 3.3 V board has to keep is AoU-39. Register facts and what is not re-checked: <code>hsi-s32k1xx.md</code> 4.8 and H9.</p>
+<p><strong>Update SYS-130 (2026-09-30).</strong> The latched fault (<code>FMS[FAULTF]</code>) and the findings of section 2.5 reach the safe
+supervisor from the safety task through the narrow interface <code>safeSupervisor/HwShutoff.h</code>; the supervisor holds S1
+until reset (no reset). The reader for the application exists; the RTE signal and the DTC need the generator and the
+application (section 2.6).</p>
+<p><strong>Update SYS-129 (2026-10-01, safety review SYS-86 H6).</strong> The path behind the comparator is no longer untested: once
+per start, with the timer running, every output masked and no pin muxed, the route is selected without its lock, the
+fault is tripped through the comparator forced by its DAC and cleared again (section 2.7). A failure is a finding of
+section 2.5 (group forced, reported as in section 2.6). Host verified only; still nothing credited.</p>
+<p>Why it is separate from <code>concept.md</code> and <code>fmea.md</code>: those two argue the <strong>stage 1</strong> safety element, whose
+mechanisms all share one property — they detect and react <strong>in software</strong>, from the safety task or a fault handler,
+and they therefore all depend on the assumption that code still runs (<code>SM-01</code> covers the case where it does not).
+The mechanisms here break that dependency. They belong to a different argument and mixing them into the stage-1
+tables would blur exactly the line that makes the stage-1 argument honest.</p>
+<p><strong>Board neutrality.</strong> The catalogue is written for the MCU family, not for one board. The eval board appears only
+as a worked example, in its own clearly marked section. A mechanism that exists only because of one board's wiring
+is a board fact, not an architecture decision.</p>
+<hr />
+<h2 id="1-why-a-hardware-path-is-worth-having">1. Why a hardware path is worth having<a class="headerlink" href="#1-why-a-hardware-path-is-worth-having" title="Permanent link">&para;</a></h2>
+<p>Every switch-off path in stage 1 today ends in software:</p>
+<table>
+<thead>
+<tr>
+<th>Path</th>
+<th>Needs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>safe outputs table (<code>SM-23</code>)</td>
+<td>the safety task or a caller of <code>enterSafeState()</code> runs</td>
+</tr>
+<tr>
+<td>fault handlers (<code>SM-17</code>)</td>
+<td>the exception is taken and its handler runs</td>
+</tr>
+<tr>
+<td>halt deadman (<code>SM-06</code>)</td>
+<td>the LPIT interrupt is serviced</td>
+</tr>
+<tr>
+<td>gate driver reaction (<code>SM-40</code>, stage 2)</td>
+<td>the driver's cycle runs and an SPI transfer completes</td>
+</tr>
+</tbody>
+</table>
+<p>All four fail together in the same class of fault: the core stops executing useful instructions (a lock-up, a
+runaway loop with interrupts masked, a clock loss on the core domain, a debugger halt). <code>SM-01</code> — the external
+watchdog — is the only stage-1 answer, and it answers by <strong>resetting</strong>, which takes a reset time plus a restart
+before outputs are defined again.</p>
+<p>A hardware path answers in <strong>nanoseconds</strong>, needs no code, and is unaffected by what the software is doing. It does
+not replace the software paths (it detects nothing by itself — something must assert it) but it removes the shared
+dependency that all of them have.</p>
+<p>Two gaps in <code>concept.md</code> name this directly: <strong>G1</strong> ("nothing reads back that S1 took effect") and the coverage
+note on <strong>ASG-01</strong> ("no base-software mechanism compares what is commanded with what happens").</p>
+<hr />
+<h2 id="2-what-the-s32k1xx-offers">2. What the S32K1xx offers<a class="headerlink" href="#2-what-the-s32k1xx-offers" title="Permanent link">&para;</a></h2>
+<h3 id="21-ftm-fault-inputs--pwm-channels-forced-to-a-safe-level-in-hardware">2.1 FTM fault inputs — PWM channels forced to a safe level in hardware<a class="headerlink" href="#21-ftm-fault-inputs--pwm-channels-forced-to-a-safe-level-in-hardware" title="Permanent link">&para;</a></h3>
+<p><strong>What it does.</strong> Each FlexTimer has fault inputs. An asserted fault input puts the PWM channels of that FTM into
+the state defined by <code>FTM_POL</code> and <code>FTM_OUTINIT</code>, in hardware, within the timer's clock domain. No software runs.
+This is the mechanism <code>AN5303</code> §4.2 describes.</p>
+<p><strong>What it costs.</strong> One pin per fault source, and the pin loses whatever other function it had.</p>
+<p><strong>Configuration, from [RM13]:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Register</th>
+<th>Note</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Which channels react</td>
+<td><code>FTM_FLTCTRL[FAULTM]</code></td>
+<td>all channels, or only the even ones</td>
+</tr>
+<tr>
+<td>Enable per channel pair</td>
+<td><code>FTM_FLTCTRL[FAULTENx]</code></td>
+<td>per pair, not per channel</td>
+</tr>
+<tr>
+<td>Polarity of each input</td>
+<td><code>FTM_FLTPOL</code></td>
+<td>which level means "fault"</td>
+</tr>
+<tr>
+<td>Recovery</td>
+<td><code>FTM_MODE[FAULTM]</code></td>
+<td>automatic (fault gone → PWM returns) or manual (software must clear)</td>
+</tr>
+<tr>
+<td>Filter</td>
+<td><code>FTM_FLTCTRL[FFVAL]</code>, <code>FFLTRxEN</code></td>
+<td>a glitch filter per input</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Source of each fault input</strong> — this is the part that is easy to get wrong. <code>SIM_FTMOPT0.FTMxFLTxSEL</code> selects it,
+and the reference manual is explicit that the choice is <strong>per input</strong>:</p>
+<blockquote>
+<p>"Selects the source of the FTM0 fault. <strong>Every bit means one fault input, respectively.</strong>"
+<code>000b</code> – <code>FTMx_FLTx</code> pin  ·  <code>001b</code> – <code>TRGMUX_FTMx</code> out</p>
+</blockquote>
+<p>So for fault inputs <strong>0, 1 and 2</strong> there are two possible sources, chosen independently per input:</p>
+<ul>
+<li>the dedicated pin (<code>FTMx_FLT0/1/2</code>), or</li>
+<li>the <strong>trigger multiplexer</strong> output (<code>TRGMUX_FTMx SEL1/SEL2/SEL3</code> → fault input 0/1/2).</li>
+</ul>
+<p>Fault input <strong>3</strong> has no bit in <code>FTMxFLTxSEL</code> and therefore <strong>only</strong> the pin route (<code>FTMx_FLT3</code>).</p>
+<p><strong>Why the TRGMUX route matters.</strong> It widens the set of usable pins enormously. A pin that is not a <code>FTMx_FLTx</code> pin
+but <em>is</em> a <code>TRGMUX_INn</code> pin can still reach a fault input. It also allows non-pin sources — a comparator output
+(<code>CMP0_COUT</code>), an LPIT channel, an ADC conversion-complete — to force the bridge off in hardware. The TRGMUX input
+list is in [RM13] ch. 19; every FTM (0–3) has three TRGMUX-driven fault inputs.</p>
+<p><strong>Locking.</strong> <code>TRGMUX_FTMx[LK]</code> locks the register until the next reset. A safety-relevant routing should set it,
+and the register-check mechanism (<code>SM-21</code>/<code>SM-22</code>) should cover the registers involved.</p>
+<h3 id="22-comparator-cmp0--a-threshold-without-the-core">2.2 Comparator (CMP0) — a threshold without the core<a class="headerlink" href="#22-comparator-cmp0--a-threshold-without-the-core" title="Permanent link">&para;</a></h3>
+<p><code>CMP0</code> compares an input against an internal DAC reference and produces <code>CMP0_COUT</code>, which is a TRGMUX input
+(<code>in14</code>). Combined with §2.1 this gives a complete hardware loop: an over-current or over-voltage crosses a
+threshold, and the bridge is off before any interrupt is taken. The comparison itself is analogue and continuous;
+nothing polls it.</p>
+<p>This is the most interesting unused capability on the part, because it turns a <em>measurement</em> into a <em>reaction</em>
+without the ADC, the RTE or the safety task being involved.</p>
+<p>Facts from [RM13] and [DS13], checked for SYS-86: CMP0 has its own 8-bit DAC whose ladder uses either VDDA or the
+internal 1 V bandgap (45.1.3; DAC output = V_in / 256 × (VOSEL + 1), 45.8.2), up to eight inputs from pins (which
+pins per package: pin multiplexing <code>CMP0_IN0..7</code>), and its output is TRGMUX source <code>0x0E</code> (Table 19-1). The fault
+inputs 0..2 of FTM0..FTM3 are <code>TRGMUX_FTMx</code> SEL1..SEL3 (Figure 19-2), each switched from its pin to the TRGMUX
+separately (<code>SIM_FTMOPT0</code>, 11.3.1.3). Data sheet limits (Table 44, -40 … 125 °C, high-speed mode): input offset at
+most 25 mV, DAC non-linearity at most 0.75 LSB, propagation delay at most 500 ns (small overdrive; 300 ns with a
+large one), settling of comparator and DAC at most 30 µs; bandgap 0.97 … 1.03 V (Table 8).</p>
+<h3 id="24-the-comparator-path-as-configured-by-sys-86">2.4 The comparator path as configured by SYS-86<a class="headerlink" href="#24-the-comparator-path-as-configured-by-sys-86" title="Permanent link">&para;</a></h3>
+<p><strong>Configuration, one value per level</strong> (checked by <code>tools/nxconfig/hwthreshold.py</code>, messages with YAML path):</p>
+<table>
+<thead>
+<tr>
+<th>Level</th>
+<th>Value</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>derivative (mcudb)</td>
+<td><code>comparators[]</code>: DAC bits, references, the limits above, which timer fault inputs the output reaches</td>
+<td>S32K142/144/146/148: CMP0, FTM0..3 inputs 0..2. <strong>Not described for the S32K116</strong>: its FTM0 has one fault input and the manual does not say which, so nothing is claimed</td>
+</tr>
+<tr>
+<td>board</td>
+<td><code>comparators.inputs[]</code>: which pin is which comparator input and <strong>which board ADC entry's circuit</strong> is in front of it (<code>signal</code>); <code>comparators.supply</code>: the voltage at VDDA</td>
+<td>a shunt amplifier also wired to CMP0_IN3</td>
+</tr>
+<tr>
+<td>project</td>
+<td><code>hw_thresholds.&lt;name&gt;</code>: threshold <strong>in the unit of the signal</strong> (mA, mV), <code>above</code>/<code>below</code>, reference <code>supply</code>/<code>bandgap</code>, the PWM group, an optional glitch filter in ns</td>
+<td>DC link current above 40 A switches <code>BRIDGE</code> off</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Derived, not configured.</strong> The pin voltage of the threshold comes from the inverse of the signal's characteristic
+(linear characteristics only). The DAC level is rounded <strong>towards the safe side</strong>: an <code>above</code> threshold trips at or
+below the configured value, a <code>below</code> threshold at or above it — never later. A falling characteristic swaps the
+direction at the pin, and the comparator output is inverted where the pin trips below the DAC. The first free fault
+input of the group's timer is used. <code>nxconfig check</code> prints per threshold the DAC level, the realised threshold, its
+band (offset + non-linearity, plus the bandgap tolerance; with the supply reference the supply's own tolerance is
+<strong>not</strong> included and is said so) and the worst-case reaction time.</p>
+<p><strong>Reaction and recovery.</strong> On a fault the FTM forces every channel of the group's pairs to its <code>POL</code> value — the
+inactive level, freewheel (47.5.18; <code>FSTATE</code> = 0, never tri-state). The fault control comes after software output
+control, dead-time insertion and output mask in the FTM's feature order (Figure 47-86), so it <strong>overrides <code>SWOCTRL</code></strong>:
+a group whose safe state is an active short (SYS-116) ends in freewheel on this fault, as <code>partner-and-degraded.md</code>
+5.6 and 5.9 require. Recovery is <strong>manual only</strong> (<code>MODE[FAULTM]</code> = 10b): the outputs stay forced until a reset,
+the latching behaviour of every software path (SM-40). There is no service that clears the fault at run time.</p>
+<p><strong>Time.</strong> Worst case from the crossing at the pin to the forced outputs: comparator propagation (500 ns) plus the
+fault path of the FTM — 3 FTM input clocks without filter, 4 + FFVAL with the filter (Table 47-15, <code>FLTPS</code> = 0).
+At 64 MHz and a 200 ns filter (13 clocks): 766 ns. <strong>Computed, not measured.</strong></p>
+<p><strong>Start-up order</strong> (family code <code>platforms/s32k1xx/bsp/bspHwThreshold</code>, called from the PWM driver's <code>init()</code>):
+comparator and DAC configured and switched on, the fault input switched to the TRGMUX (which still delivers 0), then
+the FTM configuration with fault control, the counter started, <strong>30 µs settling</strong>, then the TRGMUX selection written
+and <strong>locked until reset</strong> (<code>LK</code>), and only then the pins are switched to the FTM. A threshold that is already
+exceeded at that moment reaches the fault input as a rising edge and should latch the fault at once — the manual
+describes fault detection as an edge; this is not verified on a target (section 5, point 6).</p>
+<p><strong>Checked at run time.</strong> The registers of the path join the register list of SafeIo (SM-22, one check per safety
+cycle): the FTM's <code>MODE[FAULTM]</code>, <code>FLTCTRL</code>, <code>FLTPOL</code> and the <code>FAULTEN</code> bits of <code>COMBINE</code>, the TRGMUX selection with
+its lock, the fault source bit of <code>SIM_FTMOPT0</code> and the comparator's <code>C0</code>/<code>C1</code>/<code>C2</code>. This matters because a
+comparator switched off reads as its <code>INVT</code> bit: for an <code>above</code> threshold that is "not exceeded" — a silent loss of
+the path that only the register check sees. A comparator that is on but broken (output stuck) is <strong>not</strong> detected by
+anything; that is point 3 of section 5.</p>
+<p><strong>What the software does not see.</strong> The fault is latched in the FTM (<code>FMS[FAULTF]</code>, readable through
+<code>hwThreshold::faultDetected()</code>), but no module reports it to the supervisor or the application yet. The software
+paths keep commanding duties while the hardware holds the outputs; the drivers do not know why the bridge does not
+respond. <em>SYS-130:</em> the safety task now reports it to the safe supervisor, which holds S1 until reset; the reader for
+the application exists, its RTE signal and DTC are open (section 2.6).</p>
+<h3 id="25-detection-of-a-lost-or-stuck-comparator-path-sys-128">2.5 Detection of a lost or stuck comparator path (SYS-128)<a class="headerlink" href="#25-detection-of-a-lost-or-stuck-comparator-path-sys-128" title="Permanent link">&para;</a></h3>
+<p>Safety review SYS-86, point H5 (user, 2026-09-30): a comparator switched off or stuck is an accepted residual risk of
+SYS-86, its detection a follow-up. <strong>Correction:</strong> a comparator switched off does not trip in either direction - in
+disabled mode <code>CMPO</code>, the signal to the trigger mux, is 0 ([RM13] 45.7.1); only the register bit <code>C0[COUT]</code> reads
+<code>INVT</code>. The loss is silent for <code>above</code> and <code>below</code> thresholds alike.</p>
+<p>Family code <code>hwThreshold/HwThresholdMonitor.h</code> (header only), three parts:</p>
+<table>
+<thead>
+<tr>
+<th>Part</th>
+<th>When</th>
+<th>What</th>
+<th>Finds</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>start test</td>
+<td>once per start, in <code>ComplementaryPwm::init()</code> <strong>before</strong> <code>prepare()</code>: trigger mux still 0, timer not configured, pins not muxed - nothing reaches the fault input, no pulse on a power output</td>
+<td>DAC at VDDA (<code>VOSEL</code> 255, <code>VRSEL</code> 0); pin (+) against VDDA (-) must read 0, VDDA (+) against the pin (-) must read 1; 30 µs settling each; the comparator is left off for <code>prepare()</code></td>
+<td>output stuck at "above" or at "not above"</td>
+</tr>
+<tr>
+<td>register check</td>
+<td>every 1 ms poll of the power stage (<code>integration/HwThresholdWatch.h</code>, after the debug halt guard in <code>DebugHaltGuardSystem</code>)</td>
+<td><code>CMP0</code> <code>C0</code> (configuration bits, not the flags), <code>C1</code>, <code>C2</code> round robin, <code>TRGMUX_FTMx</code> selection and <code>LK</code>, <code>SIM_FTMOPT0</code> bit, <code>MODE[FAULTM]</code>, <code>FLTCTRL</code>, <code>FLTPOL</code>, <code>FAULTEN</code> of the pairs</td>
+<td>switched off or reconfigured - the same registers as SM-22, ten times as often</td>
+</tr>
+<tr>
+<td>consistency</td>
+<td>the same poll</td>
+<td><code>C0[COUT]</code> "above" (comparator on) on two polls in a row while <code>FMS[FAULTF]</code> is clear</td>
+<td>the route or the fault logic after the comparator is broken</td>
+</tr>
+</tbody>
+</table>
+<p>A finding is latched until reset (one word of ordinary RAM: findings and their complement, written in one store; a
+word that fails the check reads as a finding). <strong>Reaction:</strong> the channels of the group are forced inactive through
+the software output control - at once in <code>init()</code> after a failed start test (before the counter runs and before a
+pin is muxed), and in every poll while anything is latched; that is the state the tripped hardware path would leave.
+The route is armed anyway, so a comparator stuck at "above" still trips the timer. What the ECU does about it is the
+safe supervisor's decision (SYS-130, section 2.6). Only a project with a hardware threshold has any of this code.</p>
+<p><strong>Limits.</strong> A comparator output that sticks at "not above" <strong>between</strong> two starts is not detected at run time:
+without a second, independent measurement of the signal a stuck output cannot be told from a quiet signal (that is
+plausibility G2, SYS-31). The start test needs the input further below VDDA than the comparator's offset plus
+hysteresis (data sheet: offset at most 25 mV); a signal at the rail fails it (fail-safe) - an assumption of use of the
+board. It uses the VDDA ladder, not the configured reference: the bandgap reference of a threshold is covered by the
+register check (<code>VRSEL</code>), not by the forced comparisons.</p>
+<h3 id="26-report-of-the-latched-fault-to-the-supervisor-and-the-application-sys-130">2.6 Report of the latched fault to the supervisor and the application (SYS-130)<a class="headerlink" href="#26-report-of-the-latched-fault-to-the-supervisor-and-the-application-sys-130" title="Permanent link">&para;</a></h3>
+<p>Safety review SYS-86, point H7 (user, 2026-09-30): the latched fault (<code>FMS[FAULTF]</code>) was reported to nobody; the
+report is this follow-up. The supervisor is reached through a <strong>new narrow interface</strong> of its own library,
+<code>safeSupervisor/HwShutoff.h</code> (family neutral - a "hardware shut-off path of a PWM group", whatever the family builds it
+from); no class layout, no event number and no existing reaction of the supervisor changes.</p>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>Where</th>
+<th>What</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>detection</td>
+<td>safety task, every cycle (<code>SafetyManager::checkSupervisionPeripherals()</code>, family port, <code>hwThreshold::shutoffContext</code>)</td>
+<td><code>FMS[FAULTF]</code> of the group's timer, the registers of the path read again (independent of the power stage poll, whose task may have stopped), and the findings latch of §2.5 (start test, consistency)</td>
+</tr>
+<tr>
+<td>report</td>
+<td><code>hwShutoff::report(context)</code>, safety context only</td>
+<td>context word: bit 0 = tripped, bits 23..8 = findings of the path, bits 31..24 = timer; only bits not reported before react</td>
+</tr>
+<tr>
+<td>reaction (decided by the supervisor library)</td>
+<td><code>HwShutoff.cpp</code></td>
+<td>log line, <strong>S1 held until reset without a reset</strong>: every safe output off (the gate driver enable with it), the ECU keeps running for the application, the tester and the fault memory. No reset because the hardware path latches until reset (H1: manual recovery only) - a reset would re-arm the bridge by itself. The return path of the register check (<code>CHECK_REGISTER_ERROR</code> "ok") does not leave S1 while a report is latched</td>
+</tr>
+<tr>
+<td>record</td>
+<td>protected RAM of the supervisor, two copies</td>
+<td>a mismatch reads as "everything reported" (fail-safe) and is written back so at the next report</td>
+</tr>
+<tr>
+<td>application</td>
+<td><code>hwShutoff::read(context)</code>, read only from any task</td>
+<td>the bits reported so far and whether the record is plausible - the reader for an RTE signal and a DTC</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Open for the application (outside SYS-130's paths).</strong> The reader exists; the generated RTE does not call it yet
+and no DTC samples it. Needed: an RTE signal <code>safety.hw_shutoff</code> (boolean, 1 while anything is reported or the record
+is implausible) and <code>safety.qlf.hw_shutoff</code> in <code>tools/rtegen</code> (like <code>safety.degraded</code> of SYS-117); a BSW event
+<code>safety.hw_shutoff</code> with a fixed number in the safety block of the numbering plan (<code>tools/nxconfig/bswdtc.py</code>, e.g.
++0x05FE next to +0x05FF, because the report is no event of <code>SafeSupervisor::Event</code>), its entry in
+<code>DEM_BSW_REPORTERS</code> and a logging reporter next to <code>safety.device_fault</code> in <code>ecu/application</code>
+(<code>dem/SafetyFaultReport.h</code>, <code>RteSystem.cpp</code>: FAILED while <code>read()</code> reports anything or is implausible).</p>
+<p><strong>Choice of the reaction</strong> (for the review): S1 held without reset. The alternatives were the existing interface
+<code>DEVICE_FAULT</code> (class <code>OUTPUT</code>: S1 + S2 - a reset re-arms the latched path, against H1; the degraded reaction SD only
+with a mapping of a device instance the hardware path does not have) and <code>DEVICE_REPORT</code> (S3 only: the other outputs
+and the gate driver enable would stay on). A reaction that degrades only the group (SD) would keep the rest of the ECU
+running; it needs the event on the closed list of <code>Degraded.h</code> and a mapping in <code>tools/nxconfig/degraded.py</code>.</p>
+<p><strong>Update SYS-135 (2026-09-30, safety review SYS-128/SYS-130 point C1).</strong> The safety responsible decided for that
+degraded reaction: a project may map the report to SD. <code>HW_SHUTOFF</code> stands on a second closed list of the supervisor,
+<code>NX_SAFE_DEGRADABLE_REPORTS</code> in <code>safeSupervisor/Degraded.h</code> (id <code>0xFE</code> in the event field of a mapping word, above
+every event number), because it is no event of <code>SafeSupervisor::Event</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>Where</th>
+<th>What</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>project</td>
+<td><code>safety.degraded: [{event: HW_SHUTOFF, groups: [&lt;group&gt;]}]</code>, checked by <code>tools/nxconfig/degraded.py</code> with the YAML path</td>
+<td>exactly one group, and it must be the group of a PWM group a hardware threshold switches off; refused as well: thresholds on more than one timer (the report record keeps all paths in one word, so a second path could add no new bit) and a timer without an instance number; derived <code>0xFE &lt;&lt; 24 \| timer &lt;&lt; 16 \| 0xFF &lt;&lt; 8 \| group</code></td>
+</tr>
+<tr>
+<td>decision</td>
+<td><code>SafeSupervisor::degradeHwShutoff(context)</code>, called by <code>hwShutoff::report()</code> in the safety context with the interrupt lock</td>
+<td>degraded only if the context says "tripped" and nothing else (bit 0, no findings in bits 23..8) and the timer of bits 31..24 is mapped; then the ordinary SD sequence of SYS-117 (outputs of the group, latch, record in no-init RAM with <code>0xFE</code> and the context, log), <strong>no reset</strong>, the last group escalates to S1 without a reset</td>
+</tr>
+<tr>
+<td>fail-safe</td>
+<td><code>HwShutoff.cpp</code></td>
+<td>findings of the path, a report without context, an unmapped timer and an implausible record hold S1 as in SYS-130; <code>latched()</code> now means "S1 held by a report", so a degraded report does not keep the register check's return path closed - its group is held by the degraded walk of every safety cycle</td>
+</tr>
+<tr>
+<td>after a reset</td>
+<td><code>Degraded.h</code> record</td>
+<td>the reset re-arms the path, but the group stays degraded until the power cycle (decision B4 (a) of SYS-117)</td>
+</tr>
+</tbody>
+</table>
+<p>A project without the mapping, and every project without a threshold, is unchanged. The start test of the path needs
+the input below VDDA by more than offset plus hysteresis: AoU-37 of the concept (point C3 of the same review).</p>
+<h3 id="27-start-test-of-the-path-behind-the-comparator-sys-129">2.7 Start test of the path behind the comparator (SYS-129)<a class="headerlink" href="#27-start-test-of-the-path-behind-the-comparator-sys-129" title="Permanent link">&para;</a></h3>
+<p>Safety review SYS-86, point H6 (user, 2026-09-30): the path was never exercised - a broken route, a fault input that
+does not see the comparator or a fault logic that does not latch stayed latent until a real over-current; the start
+test is this follow-up. The start test of §2.5 proves only that the comparator output can move. The open point 3 of
+section 5 named the obstacle: asserting the fault input from software costs a pulse on a power output. SYS-129 avoids
+it by <strong>when</strong> it runs, not by what it asserts: the fault is real, but nothing behind the timer is connected yet.</p>
+<p>Family code <code>hwThreshold::pathTest()</code> (<code>HwThresholdMonitor.h</code>), called once by <code>ComplementaryPwm::init()</code> after
+<code>Ftm::start()</code> and <strong>before</strong> the settling wait, <code>route()</code> (selection and <code>LK</code>) and the pin multiplexing:</p>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>State</th>
+<th>What</th>
+<th>Finding</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>precondition</td>
+<td>timer configured with its fault control (<code>MODE[FAULTM]</code> 10b, <code>FLTCTRL</code>, <code>FLTPOL</code> 0, <code>FAULTEN</code>), counter clocked, <code>OUTMASK</code> = every channel, <strong>no pin of the group muxed to the timer</strong>, <code>TRGMUX_FTMx</code> not locked, fault source select on the trigger mux (<code>prepare()</code>); start test of §2.5 passed (otherwise skipped - the group is forced and reported already)</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>A</td>
+<td>comparator forced "not above" (pin (+) against VDDA (-)), then <code>TRGMUX_FTMx</code> <code>SEL(n+1)</code> = <code>CMP0_OUT</code> <strong>without</strong> <code>LK</code>; two waits</td>
+<td><code>FMS[FAULTF]</code>, <code>FAULTFn</code> of the configured input and <code>FAULTIN</code> must be 0</td>
+<td><code>PATH_FAULT_UNFORCED</code> (0x0800): fault input active without the comparator - stuck, or another enabled input already latched</td>
+</tr>
+<tr>
+<td>B</td>
+<td>comparator forced "above" (VDDA (+) against the pin (-)); two waits</td>
+<td><code>FAULTF</code>, <code>FAULTFn</code> and <code>FAULTIN</code> must be 1</td>
+<td><code>PATH_NO_TRIP</code> (0x1000): route, source select, fault input, its enable, the timer clock or the fault logic broken</td>
+</tr>
+<tr>
+<td>C</td>
+<td>comparator forced "not above" again; two waits; <code>FMS</code> read while set, then 0 written to <code>FAULTFn</code> of the configured input only (1 to <code>FAULTF</code> and the other flags - no effect, [RM13] 47.4.3.17); one wait</td>
+<td><code>FAULTF</code>, <code>FAULTFn</code> and <code>FAULTIN</code> must be 0</td>
+<td><code>PATH_NO_CLEAR</code> (0x2000): the input stays asserted, or another input holds <code>FAULTF</code> - its flag is not cleared by the test</td>
+</tr>
+<tr>
+<td>D</td>
+<td><code>SEL(n+1)</code> back to 0 (still unlocked) <strong>before</strong> the comparator changes; comparator configured as <code>prepare()</code> left it</td>
+<td>-</td>
+<td>-</td>
+</tr>
+</tbody>
+</table>
+<p>Every wait is <code>settleUs</code> (30 µs): one for the comparator and its DAC ([DS13] Table 44), one for the synchronizer and
+the filter of the fault input - <code>(4 + FFVAL)</code> FTM input clocks ([RM13] Table 47-15); the driver checks by
+<code>static_assert</code> that this is shorter than one wait at the generated FTM clock, and that the fault input is active
+high (<code>FLTPOL</code> 0, as generated). The test costs seven waits, about 0.21 ms per start. After step D the driver goes on
+exactly as before: settling wait, <code>route()</code> with <code>LK</code>, pins.</p>
+<p><strong>Why there is no pulse on a power output.</strong> The forced fault exists for about 90 µs between steps B and C. During
+that time every channel is masked (<code>OUTMASK</code>, inactive level), the fault control forces the same inactive level, and
+the pins of the group are still in their reset state (not muxed to the timer) - the timer's outputs reach no pad. The
+argument does not rely on the gate driver enable (it rests on the pin multiplexing alone, which <code>ComplementaryPwm</code>
+already relies on for its safe start). After the clearing the outputs
+leave the fault control only at the start of the next PWM cycle ([RM13] 47.5.18.2) and are still masked.</p>
+<p><strong>Findings and reaction.</strong> A finding goes into the findings latch of §2.5 (bits 0x0800/0x1000/0x2000, in the report
+context bits 23..8) and the driver forces the group inactive through the software output control before any pin is
+muxed (freewheel, review SYS-128 C2); the route is still armed and locked. The first 1 ms poll of the power stage logs
+the finding and keeps the group forced, the safety cycle reports it (<code>HW_SHUTOFF</code> with findings: <strong>S1 held</strong>, never
+the degraded reaction of SYS-135, which degrades only "tripped and nothing else"). If the test's fault cannot be
+cleared, <code>FMS[FAULTF]</code> stays set and the hardware keeps the group forced as well (fail-safe).</p>
+<p><strong>Not covered.</strong> The forcing of the channels by the fault control (<code>FAULTEN</code> → <code>POL</code>) is not observed: with every
+channel masked the outputs read inactive with and without the fault (<code>CnSC[CHOV]</code> would show the final value only
+with the mask open - a review point). <code>FAULTEN</code>, <code>FAULTM</code> and the polarity are covered by the register check of §2.5.
+Faults that appear between two starts stay with the register check and the consistency check of §2.5 (latent-fault
+interval = drive cycle). Same assumption of use as the start test (AoU-37): the input lies below VDDA by more than
+offset plus hysteresis.</p>
+<h3 id="23-what-is-not-a-hardware-safety-mechanism">2.3 What is <strong>not</strong> a hardware safety mechanism<a class="headerlink" href="#23-what-is-not-a-hardware-safety-mechanism" title="Permanent link">&para;</a></h3>
+<p>Worth stating, because all three are easy to mistake for one:</p>
+<ul>
+<li><strong>The watchdog (<code>WDOG</code>)</strong> reacts by resetting. It is a hardware supervisor of software, not a hardware path to a
+  safe output state, and it is already <code>SM-01</code>/<code>SM-02</code>.</li>
+<li><strong>The MPU</strong> prevents a write; it does not put an output anywhere.</li>
+<li><strong>A device's own protection</strong> (the TMC6200 switching its bridge off in &lt; 2.2 µs) is a <em>device</em> mechanism, stage 2,
+  <code>SM-40</code> — outside the MCU and outside this document's scope except as a <strong>source</strong> for §2.1.</li>
+</ul>
+<hr />
+<h2 id="3-where-such-a-mechanism-belongs-in-the-safety-argument">3. Where such a mechanism belongs in the safety argument<a class="headerlink" href="#3-where-such-a-mechanism-belongs-in-the-safety-argument" title="Permanent link">&para;</a></h2>
+<p>An honest placement matters, and it is not obvious, so it is written out here rather than assumed.</p>
+<p>A hardware path has two halves, and they can belong to different stages:</p>
+<table>
+<thead>
+<tr>
+<th>Half</th>
+<th>Example</th>
+<th>Belongs to</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>the reaction</strong> — PWM channels forced to a safe level by the FTM</td>
+<td><code>FTM_FLTCTRL</code>, <code>FTM_POL</code></td>
+<td>the <strong>MCU and its configuration</strong> → a stage-1 candidate, same class as <code>SM-23</code></td>
+</tr>
+<tr>
+<td><strong>the detection</strong> — whatever asserts the fault input</td>
+<td>a gate driver's <code>FAULT</code> output</td>
+<td>depends: a comparator on the MCU is stage 1; a device reporting over its own pin is <strong>stage 2</strong> (<code>SM-40</code> …)</td>
+</tr>
+</tbody>
+</table>
+<p>So a mechanism of this kind may be credited for its <em>reaction</em> while its <em>detection</em> is not credited — the same
+split that <code>concept.md</code> §2.2 already applies. Whether it is credited at all is a decision for <strong>SYS-20</strong> (stage-1
+analysis) and <strong>SYS-28</strong> (device packages), not for this document. What this document may state is what the
+hardware does.</p>
+<p><strong>Diagnostic coverage of the mechanism itself is not claimed anywhere here.</strong> A fault path that has never been
+asserted is a latent fault: nothing proves it still works. Any use of §2.1 needs a statement of how the path is
+tested — at start-up, at each power cycle, or never — and that statement is part of the task that introduces it,
+not of this catalogue.</p>
+<hr />
+<h2 id="4-worked-example-the-eval-board-boardsevalboard_s32k144">4. Worked example: the eval board (<code>boards/evalboard_s32k144</code>)<a class="headerlink" href="#4-worked-example-the-eval-board-boardsevalboard_s32k144" title="Permanent link">&para;</a></h2>
+<p><strong>This section is an example, not a requirement.</strong> The facts below were read from <code>board.yaml</code> and the pin
+multiplexing tables of the derivative; the routing has <strong>not</strong> been measured on hardware.</p>
+<p>The motor bridge runs on <strong>FTM0</strong> (<code>pwm[].instance: FTM0</code>, group <code>MOT1</code>, complementary mode). A hardware fault path
+must therefore reach a fault input of <strong>FTM0</strong>.</p>
+<p>Two candidate sources exist on this board, and — because the source is selectable per fault input — <strong>both can be
+used at the same time</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Source</th>
+<th>Pin</th>
+<th>Route to FTM0</th>
+<th>What it costs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Gate driver <code>FAULT</code></strong> (TMC6200)</td>
+<td><code>PTC10</code></td>
+<td><strong>not</strong> an <code>FTM0_FLTx</code> pin. But <code>PTC10</code> alt 6 is <code>TRGMUX_IN11</code> (<code>in13</code>) → <code>TRGMUX_FTM0[SEL1]</code> → <strong>fault input 0</strong>, with <code>FTM0FLTxSEL</code> bit 0 = 1</td>
+<td>the pin stops being a GPIO input — see below</td>
+</tr>
+<tr>
+<td><strong>SBC interrupt 1</strong> (UJA1131)</td>
+<td><code>PTE12</code></td>
+<td><code>PTE12</code> alt 2 <strong>is</strong> <code>FTM0_FLT3</code> → <strong>fault input 3</strong> directly, pin-only route, no <code>SIM</code> bit involved</td>
+<td>the pin stops being a GPIO input</td>
+</tr>
+</tbody>
+</table>
+<p><strong>What the gate driver path costs is close to nothing, and that is a real argument.</strong> <code>IO-44</code> established that the
+TMC6200 <code>FAULT</code> pin is the OR of the <code>GSTAT</code> bits and <strong>carries no information the SPI read does not already
+give</strong> — the driver classifies faults from <code>GSTAT</code>, not from the pin. Giving the pin to the TRGMUX therefore loses
+no diagnostic content while gaining a path that works when software does not. (One caveat from the same task: with
+<code>faultdirect</code> = 0 the pin does <strong>not</strong> follow <code>shortdet</code>, so the configuration of the device decides what the
+hardware path actually sees. That is a device parameter, and it would become safety-relevant the moment this path
+is used.)</p>
+<p><strong>What the SBC path costs</strong> is one console line: <code>SBC_INTERRUPT1</code> is read only for the <code>sbc</code> status display
+(<code>SbcSystem.cpp</code>, <code>SbcConsole.h</code>). No safety function reads it today.</p>
+<p><strong>Not verified, and needed before any of this is designed in:</strong></p>
+<ul>
+<li>that <code>PTC10</code> and <code>PTE12</code> really carry these signals on the built board, and with which polarity and idle level;</li>
+<li>whether the TMC6200 <code>FAULT</code> output is push-pull or open-drain on this board, and whether a pull is fitted —
+  an open-drain output with no pull would make the fault input float;</li>
+<li>what either pin does during reset and before the port is configured, since an asserted fault input at start-up
+  and a floating one are very different failures.</li>
+</ul>
+<p><strong>The comparator path (SYS-86) has no signal on this board.</strong> From <code>board.yaml</code> and the pin multiplexing of the
+S32K144 LQFP100, the eight CMP0 inputs carry: IN0 <code>PTA0</code> = <code>MOTOR_NTC</code> (pull-up R148 not fitted, the pin floats),
+IN1 <code>PTA1</code> = Hall signal <code>HALL_UX</code>, IN2 <code>PTC4</code> = debug clock (JTAG_TCLK/SWD_CLK), IN3 <code>PTE8</code> = <code>PILOT_DUTY</code> (input
+capture), IN4/IN5 <code>PTC3</code>/<code>PTC2</code> = CAN0, IN6/IN7 <code>PTD7</code>/<code>PTD6</code> = UART. None of the bridge's current or voltage
+signals (<code>SENSE_TSCURRENT</code> <code>PTC15</code>, <code>ADC_CURRENT_U/V/W</code>, <code>BEMF_*</code>, <code>SENSE_TSVOLTAGE</code>) reaches a comparator input. So
+the eval board gets no board fact and the demo no threshold. A board proof needs a signal wired to a free comparator
+input — the least intrusive candidate is <code>PTA0</code> through J11 pin 5 (unused while R148 is not fitted), fed from a lab
+source; that is a change to the board setup the user has to decide and make.</p>
+<hr />
+<h2 id="5-open-points">5. Open points<a class="headerlink" href="#5-open-points" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Point</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><strong>The pin sources are not configurable.</strong> Since SYS-86 the FTM fault control of a PWM group is generated when a project has a hardware threshold (comparator source, section 2.4); for everything else <code>tools/bswgen</code> still emits <code>FLTCTRL</code> and <code>FLTPOL</code> as a hard <code>0</code>, and there is no board fact for a fault <strong>pin</strong>, no project value, no check. Task <strong>SYS-85</strong></td>
+</tr>
+<tr>
+<td>2</td>
+<td><strong>Automatic or manual recovery</strong> is a safety decision, not a default. Automatic recovery means the bridge restarts by itself when the fault clears — which is the opposite of the latching behaviour every software path in neXtBSW has (<code>SM-40</code>: a shutdown fault latches, <code>enable()</code> is refused until cleared). Mixing the two silently would be a bad surprise. SYS-86 offers <strong>manual recovery only</strong> for the comparator path (latched until reset) and proposes the same for SYS-85</td>
+</tr>
+<tr>
+<td>3</td>
+<td><strong>Testing the path.</strong> See §3: an untested fault path is a latent fault. A start-up self-test is possible in principle (assert the input from software, observe the channels) but costs a pulse on a power output, which is exactly what must not happen at start-up. <em>SYS-128:</em> the comparator output alone is tested at every start before the route exists (no pulse, §2.5); a comparator output that sticks at "not above" between two starts stays undetected until an independent measurement of the signal exists (plausibility G2, SYS-31). The path behind the comparator (trigger mux, fault latch of the timer) stays untested: SYS-129. <em>SYS-129:</em> tested once per start after the timer runs and before any pin is muxed (§2.7) - a real fault, but no pad connected, so no pulse; the forcing of the channels themselves is not observed (masked), the board proof is open</td>
+</tr>
+<tr>
+<td>4</td>
+<td><strong>Interaction with the safe outputs table.</strong> If hardware forces the channels off and <code>SM-23</code> also walks them, two mechanisms write the same registers. Which one wins, and what the register check (<code>SM-21</code>/<code>SM-22</code>) expects to read, has to be decided rather than discovered. For the comparator path SYS-86 states it (§2.4): the fault control comes after <code>SWOCTRL</code> in the FTM ([RM13] Figure 47-86), so the fault wins; SM-22 expects the configured fault registers, which a fault does not change (<code>FMS</code> is not in the list). For the pin sources it stays with SYS-85</td>
+</tr>
+<tr>
+<td>5</td>
+<td><strong>CMP0 was completely unused</strong> (§2.2). SYS-86 makes it configurable (§2.4), verified on the host (register model, fault path model, mutants) and in a target build; the board proof - approaching the threshold at a board with a signal at a comparator input - is open, and the eval board has no such signal (§4). <em>SYS-128:</em> the detection of §2.5 is host verified as well; its board proof is part of the same run - the two forced comparisons of the start test read back, and a comparator switched off while running (J-Link write <code>CMP0_C0[EN]</code> = 0) forcing the group within one poll, time from the write to the forced pins measured</td>
+</tr>
+<tr>
+<td>6</td>
+<td><strong>Start with the threshold already exceeded.</strong> The route is connected after the FTM runs, so an exceeded threshold reaches the fault input as a rising edge; the manual describes fault detection as an edge ([RM13] 47.5.18) and does not say what an input that is already asserted when fault control is enabled does. Not verified on a target; until then a start into an exceeded threshold is not claimed to be caught (board test with SYS-86)</td>
+</tr>
+<tr>
+<td>7</td>
+<td><strong>Output buffers under fault control.</strong> <code>SIM_MISCTRL0.FTMx_OBE_CTRL</code> (reset 0, [RM13] 11.1.1.2) describes the output buffer of an FTM channel in terms of fault control (<code>FAULTM</code> ≠ 0, <code>FSTATE</code> = 0) and PWM enable; with fault control enabled for the first time, that the channels drive the <code>POL</code> values (and are not tri-stated) has to be confirmed at the pins before the path is relied on (board test with SYS-86)</td>
+</tr>
+<tr>
+<td>8</td>
+<td><strong>SBC watchdog without software development mode (UJA113x SDMS 0).</strong> According to the public UJA113x data sheet (Rev. 2, Tables 7 and 8, 7.2.1) the SBC watchdog of a device without software development mode starts after an SBC reset already in Standby (time-out 128 ms). With <code>bootloader.sbc_watchdog: leave</code> (the default) the bootloader of v1.0.0-rc1 does not touch it: without a valid application the SBC resets the MCU in a loop (outputs de-energised, safe state, but the device cannot be updated), with an application it must trigger within about 256 ms after the SBC start. The eval board (SDMS 1) is not affected. Found by the safety review SBC watchdog of 2026-10-06 (PLAT-117, decision SDMS0-2 a); correction with <strong>BL-41</strong>; until then use <code>bootloader.sbc_watchdog: serve</code>; board proof on the Longboard control unit after its return (SDMS0-3 a)</td>
+</tr>
+<tr>
+<td>---</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2 id="6-sources">6. Sources<a class="headerlink" href="#6-sources" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>[RM13]</strong> S32K1xx Series Reference Manual, Rev. 13, 04/2020 — ch. 11 (<code>SIM_FTMOPT0</code>), ch. 19 (TRGMUX), the
+  FlexTimer chapter (fault inputs).</li>
+<li><strong>[DS13]</strong> S32K1xx Data Sheet, Rev. 13, 04/2020 — Table 44 (comparator with 8-bit DAC), Table 8 (bandgap); the
+  values used by SYS-86 are in <code>mcudb/s32k1xx/S32K14x.yaml</code> <code>comparators</code> with page references.</li>
+<li><strong>[AN5303]</strong> Features and Operation Modes of FlexTimer — §4.2, fault control.</li>
+<li><strong>[AN5426]</strong> Hardware Design Guidelines for S32K1xx Microcontrollers — pin and board rules (task <strong>PLAT-101</strong>).</li>
+<li><code>boards/evalboard_s32k144/board.yaml</code>, <code>mcudb/s32k1xx/S32K144_LQFP100.pinmux.yaml</code> — the board and pin facts of
+  §4.</li>
+<li><code>doc/safety/concept.md</code> §2.2 (the stage-1 / stage-2 separation), §9.5 (gaps G1 and the ASG-01 note),
+  §13.3 (<code>SM-40</code>, the gate driver).</li>
+<li>SYS-86: <code>tools/nxconfig/hwthreshold.py</code> (checks and derivation), <code>tools/bswgen</code> (<code>collect_hw_threshold</code>,
+  <code>templates/hwThresholdConfiguration.h.j2</code>), <code>platforms/s32k1xx/bsp/bspHwThreshold</code>; tests <code>nxconfig-hwthreshold</code>,
+  <code>bswgen-hwthreshold</code>, <code>target-hwthreshold</code>.</li>
+<li>SYS-128: <code>platforms/s32k1xx/bsp/bspHwThreshold/include/hwThreshold/HwThresholdMonitor.h</code> (start test, register
+  check, consistency, findings latch), <code>ComplementaryPwm::init()</code> (start test, forcing),
+  <code>platforms/s32k1xx/port/main/src/integration/HwThresholdWatch.h</code> (1 ms poll); tests <code>hw-threshold-monitor</code>,
+  <code>hw-threshold-monitor-mutations</code>. [RM13] 45.7.1 (disabled mode: <code>CMPO</code> 0), 45.8.1-45.8.3.</li>
+<li>SYS-130: <code>ecu/safety/safeSupervisor/include/safeSupervisor/HwShutoff.h</code>, <code>src/safeSupervisor/HwShutoff.cpp</code></li>
+<li>SYS-135: <code>NX_SAFE_DEGRADABLE_REPORTS</code> in <code>safeSupervisor/Degraded.h</code>, <code>SafeSupervisor::degradeHwShutoff</code>,
+  <code>tools/nxconfig/degraded.py</code> (<code>HW_SHUTOFF</code> mapping)
+  (report, reaction, reader), <code>SafeSupervisor.cpp</code> (S1 not left through the register check while reported),
+  <code>platforms/s32k1xx/port/safety/safeLifecycle/src/safeLifecycle/SafetyManager.cpp</code> (report in the safety cycle);
+  tests <code>safe-supervisor-hw-shutoff</code>, <code>safe-supervisor-hw-shutoff-mutations</code>, <code>hw-threshold-monitor</code>.</li>
+<li>SYS-129: <code>hwThreshold::pathTest()</code> in <code>HwThresholdMonitor.h</code>, its call in <code>ComplementaryPwm::init()</code>; register
+  facts [RM13] 47.4.3.17 (<code>FMS</code>: clearing of <code>FAULTF</code>/<code>FAULTFn</code>, <code>FAULTIN</code>), 47.5.18 and Table 47-15 (fault input
+  filter delay), 47.5.18.2 (manual fault clearing), Figure 19-2 (<code>TRGMUX_FTMx</code> <code>SEL1..3</code>); tests
+  <code>hw-threshold-monitor</code> (step model of the fault logic <code>test/host/FtmFaultModel.h</code>), <code>hw-threshold-monitor-mutations</code>,
+  <code>bswgen-hwthreshold</code>.</li>
+<li><code>doc/todo.yaml</code>: <strong>SYS-85</strong> (make §2.1 configurable), <strong>IO-45</strong> (gate driver ↔ PWM group in the board schema),
+  <strong>PLAT-101</strong> (board rules from AN5426).</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../hsi-s32k1xx/" class="md-footer__link md-footer__link--prev" aria-label="Previous: neXtBSW hardware-software interface of the stage-1 safety mechanisms — s32k1xx (SYS-66)">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                neXtBSW hardware-software interface of the stage-1 safety mechanisms — s32k1xx (SYS-66)
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../security-interplay/" class="md-footer__link md-footer__link--next" aria-label="Next: neXtBSW — interplay of functional safety and cybersecurity (SYS-92, N1)">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                neXtBSW — interplay of functional safety and cybersecurity (SYS-92, N1)
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright 2026 Daniel Simon Reinhardt-Probul - Apache-2.0
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../..", "features": ["navigation.sections", "navigation.indexes", "navigation.top", "navigation.footer", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

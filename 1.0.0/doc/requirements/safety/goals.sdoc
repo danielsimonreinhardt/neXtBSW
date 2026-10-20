@@ -1,0 +1,186 @@
+[DOCUMENT]
+TITLE: Assumed safety goals (ASG)
+OPTIONS:
+  VIEW_STYLE: Table
+
+[GRAMMAR]
+IMPORT_FROM_FILE: @nextbsw
+
+[TEXT]
+STATEMENT: >>>
+Working state: dev at aaa22c86 (after v0.2.0)
+
+The assumed safety goals of the Safety Element out of Context, moved from doc/safety/concept.md section 2.2 by
+DOC-21 step 3 (content unchanged; the short titles are new). How to read them - assumptions about the item, the
+strict separation of stage 1 and stage 2, and what changed against issue 1 - stays in concept.md section 2.2.
+COVERAGE is the lead word of the stage-1 coverage (covered, limited = covered with limits, partial, none = not
+covered), COVERAGE_NOTE the full statement of the concept. Field texts are Markdown as in doc/safety.
+
+Issue 3 (DOC-51, 2026-10-04), together with concept.md issue 3: the state after the corrections of the confirmation
+review CM-07 (record doc/safety/reviews/records/CR-07-1.md, the user under deviation D-01, verdict accepted with
+conditions), released with the re-check in that record on 2026-10-04 (verdict accepted, CM-07 closed;
+DOC-57). Decision ZC: the coverage grades stay as they are (ASG-02
+stays limited); the COVERAGE_NOTE of ASG-01, ASG-02, ASG-06 and ASG-07 is brought to the state of the tree - the
+register lists of SM-21/SM-22 from the configuration (SYS-24, SYS-153; F4 stays open until SYS-55), the board bound of
+the table walk (F8), the read-back of the safe state (G1, SYS-30/SYS-138), the ROM check on the board (B1, B4, B9) -
+and ASG-02 names the residual risk of a lost SIRC (dfa.md DF-05). Before issue 3 this document had no number.
+<<<
+
+[ASG]
+UID: ASG-01
+TITLE: Unintended torque prevented or terminated
+STATEMENT: >>>
+Unintended torque of the electric drive shall be prevented, or terminated within the fault tolerance time
+<<<
+ASIL: B
+COVERAGE: partial
+COVERAGE_NOTE: >>>
+**partial.** The *termination* path is base software and works for every fault the MCU itself detects. Not covered:
+detecting unintended torque whose cause the MCU does not see — an enable that does not reach the part, a bridge that
+keeps conducting. No base-software mechanism compares what is commanded with what happens (gap **G2**, open).
+*State issue 3 (CM-07 ZC/ZJ):* a changed PWM or pin configuration is seen by the register lock and check from the
+configuration (SM-21/SM-22: classes `PIN_FUNCTION`, `GPIO_DIRECTION`, `CLOCK_GATE`, `PWM_TIMER` since SYS-24, board
+2026-09-22; `SUPERVISION` since SYS-153); the class `SYSTEM_CLOCK` is still missing (finding **F4** open until
+SYS-55). Whether S1 took effect is read back on the host for S1, S1 held, SD and the S1 + S2 sequence (gap **G1**,
+SYS-30/SYS-138); not yet in the fault handlers, the watchdog handler and the halt deadman, and not on the board
+(fmea.md B15, B16)
+<<<
+STAGE1_CONTRIBUTION: >>>
+safe outputs table with PWM groups and the gate driver's `safe_off` enable (SM-23 … SM-25), fault handlers (SM-17),
+halt deadman (SM-06), program flow and memory supervision (sections 6.1, 6.2) as triggers of S1
+<<<
+LATER_CONTRIBUTION: >>>
+TMC6200 fault bits, short detection, DRV_EN read-back through `IOIN` (SM-40)
+<<<
+STATUS: assumed
+
+[ASG]
+UID: ASG-02
+TITLE: Switch-off path of the power stage available
+STATEMENT: >>>
+The path that switches the power stage off shall itself be available when it is needed
+<<<
+ASIL: B
+COVERAGE: limited
+COVERAGE_NOTE: >>>
+**covered with limits.** *State issue 3 (CM-07 ZC/ZJ; issue 2 said: register lock/check at demo scope, walk
+duration computed not measured, nothing reads back):* register lock and check from the configuration since SYS-24 and
+SYS-153, class `SYSTEM_CLOCK` open (**F4**, SYS-55); the walk from the timer to the gate-driver enable bounded on the
+board at ≤ 21 µs (**F8**, fmea.md 8.1 B3; the computed < 1 µs is not resolved by it); read-back of the safe state on
+the host for S1, S1 held, SD and S1 + S2 (**G1**, SYS-30/SYS-138), open for the fault handlers, the watchdog handler
+and the halt deadman and on the board (B15, B16). **Residual risk DF-05** ([`dfa.md`](../../safety/dfa.md)): when the
+SIRC, the clock of the halt deadman SM-06, is lost while the core runs, the outputs are not shown to be de-energised
+until the hardware reset of the MCU watchdog after at most about 283 ms (board 2026-10-03/04; investigation SYS-195,
+after release R1). These limits and the open read-back paths are why the grade stays *limited* (decision ZC)
+<<<
+STAGE1_CONTRIBUTION: >>>
+the one safe outputs table used by every path (SM-23), the `safe_off` + adapter rule enforced at build time (SM-24),
+de-energise before reset (SM-25), register lock and check (SM-21/SM-22), fault handlers and halt deadman as
+independent callers (SM-17, SM-06)
+<<<
+STATUS: assumed
+
+[ASG]
+UID: ASG-03
+TITLE: Battery values outside the safe operating area detected
+STATEMENT: >>>
+Cell voltage, cell temperature and pack current outside the safe operating area shall be detected and made known
+within the fault tolerance time
+<<<
+ASIL: B
+COVERAGE: none
+COVERAGE_NOTE: >>>
+**not covered.** The cell voltages and temperatures are measured only by the cell controller; the base software has
+no measurement of its own, no supervision of how old a value is, and no plausibility against an independent source
+(gaps **G2**, **G3**, **G5**). SM-30/SM-31 protect a path that carries no base-software detection. See AoU-23
+<<<
+STAGE1_CONTRIBUTION: >>>
+ADC reference and internal supply supervision (SM-18 … SM-20) and the signal qualifier (SM-30) for values measured
+by the MCU itself; E2E on the reporting path (SM-31)
+<<<
+LATER_CONTRIBUTION: >>>
+cell-monitor diagnostics, supervision cycle, message counter and CRC of the device protocol (SM-41)
+<<<
+STATUS: assumed
+
+[ASG]
+UID: ASG-04
+TITLE: No unintended cell balancing
+STATEMENT: >>>
+Cell balancing shall not run unintentionally
+<<<
+ASIL: B
+COVERAGE: none
+COVERAGE_NOTE: >>>
+**not covered.** Balancing is switched by a command over SPI, not by an MCU output; the safe state S1 does not reach
+it (the safe outputs table holds port registers only), and nothing in the base software knows whether balancing is
+on (gap **G4**). See AoU-23
+<<<
+LATER_CONTRIBUTION: >>>
+driver rule "balancing is never switched on by itself", blocking fault set (SM-41); part-side communication time-out
+`tCOM_LOSS`
+<<<
+STATUS: assumed
+
+[ASG]
+UID: ASG-05
+TITLE: No use of corrupted, stale or repeated data
+STATEMENT: >>>
+Corrupted, stale or repeated safety-related data shall not be used as if it were valid
+<<<
+ASIL: B
+COVERAGE: limited
+COVERAGE_NOTE: >>>
+**covered for CAN data**, together with the application (AoU-11, AoU-12). "Stale" is covered where E2E counters are
+configured; for values from on-board devices there is no age supervision (gap **G3**)
+<<<
+STAGE1_CONTRIBUTION: >>>
+E2E P01/P02/P11 (SM-31), signal qualifier (SM-30), CAN bus state and transmit gate (SM-32)
+<<<
+LATER_CONTRIBUTION: >>>
+transceiver status through the SBC (SM-33)
+<<<
+STATUS: assumed
+
+[ASG]
+UID: ASG-06
+TITLE: Control software failure leads to a defined safe state
+STATEMENT: >>>
+A failure of the control software (program flow, timing, memory, register configuration) shall lead to a defined
+safe state and not to arbitrary output behaviour
+<<<
+ASIL: B
+COVERAGE: limited
+COVERAGE_NOTE: >>>
+**covered with limits:** SM-05 reports only (S3, by decision; the reaction within the FTTI is the application's,
+AoU-18); task activation is not supervised (F10, SYS-21); ROM check active since SYS-38, repeated with a period since
+SYS-44 (F3; not sliced, runs at idle priority without a lock). *State issue 3 (CM-07 ZC/ZJ; issue 2 said "register
+configuration at demo scope"):* register configuration from the configuration since SYS-24/SYS-153, class
+`SYSTEM_CLOCK` open (**F4**, SYS-55); on the board one ROM pass takes at most 5 574 µs (fmea.md 8.1 B1) and the
+repetition every 60 s was observed during B4; the suspension during flash writes (B9) is not recorded on the board
+<<<
+STAGE1_CONTRIBUTION: >>>
+sections 6.1 to 6.5
+<<<
+STATUS: assumed
+
+[ASG]
+UID: ASG-07
+TITLE: Only the intended image starts and runs
+STATEMENT: >>>
+The ECU shall not start, or shall not run, with an image that is not the intended one
+<<<
+ASIL: B
+COVERAGE: partial
+COVERAGE_NOTE: >>>
+**partial.** *Start:* covered for projects with the neXtBSW bootloader. *Run:* SM-14 active since SYS-38 (first pass
+board-proven 2026-09-21), **repeated since SYS-44** with the period `modules.safeMemory.rom_check_period_ms`
+(default 60 s; 0 = once per start, then a corruption after the check is found at the next start); the re-check is
+host verified (section 6.2, gap **G6** / F3). *State issue 3 (CM-07 ZC):* on the board one pass takes at most
+5 574 µs (fmea.md 8.1 B1) and the repetition was observed during B4; the suspension during flash writes (B9) is not
+recorded on the board; the integrity of the bootloader itself is not checked (fmea.md N4, SYS-127)
+<<<
+STAGE1_CONTRIBUTION: >>>
+bootloader image check with CRC over the image and validity record (SM-51); ROM check at run time (SM-14)
+<<<
+STATUS: assumed

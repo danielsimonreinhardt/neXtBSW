@@ -1,0 +1,6322 @@
+
+<!doctype html>
+<html lang="de" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Hardware-neutral, configurable basic software for 32-bit automotive MCUs, built on Eclipse OpenBSW">
+      
+      
+      
+      
+        <link rel="prev" href="../versioning/">
+      
+      
+        <link rel="next" href="../kalibrierung/">
+      
+      
+        
+          <link rel="alternate" href="./" hreflang="de">
+        
+          <link rel="alternate" href="../../../en/doc/architecture/csec-concept/" hreflang="en">
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>CSEc in neXtBSW: keys, message authentication and secure start (SYS-56) - neXtBSW</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#csec-in-nextbsw-keys-message-authentication-and-secure-start-sys-56" class="md-skip">
+          Zum Inhalt
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Kopfzeile">
+    <a href="../../.." title="neXtBSW" class="md-header__button md-logo" aria-label="neXtBSW" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            neXtBSW
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              CSEc in neXtBSW: keys, message authentication and secure start (SYS-56)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="indigo"  aria-label="Dunkel"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Dunkel" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="indigo"  aria-label="Hell"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Hell" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Sprache wechseln">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="de" class="md-select__link">
+              Deutsch
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../../../en/doc/architecture/csec-concept/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Suche" placeholder="Suche" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Suche">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Zurücksetzen" aria-label="Zurücksetzen" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Suche wird initialisiert
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="neXtBSW" class="md-nav__button md-logo" aria-label="neXtBSW" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    neXtBSW
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Start
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Wegweiser
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../guide/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Integrator
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Integrator
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Erste Schritte
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/host-durchlauf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Host-Durchlauf ohne Hardware
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/your-first-board/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Das erste Board
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/the-application/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Die Anwendung
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/build-and-flash/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bauen und Flashen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/customer-project/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Eigenes ECU-Repository
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/new-derivative/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Neues Derivat
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/board-readme-template/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vorlage Board-README
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_10" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../reference/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Konfigurationsreferenz
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3_10" id="__nav_3_10_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Konfigurationsreferenz
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/derivative/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Derivative
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/board/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Board
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/project/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/rte/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rte
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/diag/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diag
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/console/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Console
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_11" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../projects/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Projekte, Komponenten, Boards
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3_11" id="__nav_3_11_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Projekte, Komponenten, Boards
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../swc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Software-Komponenten
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../swc/DemoSwcSubstitute/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    C-Ersatz der DemoSwc
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../ecu/platforms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Board-Ports
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../boards/buildtest_s32k148/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S32K148 build-test board (S32K148 LQFP176)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_12" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_12" id="__nav_3_12_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release Notes
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_12">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Release Notes
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../release-notes/v1.0.0-rc2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.0.0-rc2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../release-notes/v1.0.0-rc1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.0.0-rc1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../safety/start/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Safety-Assessor
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Safety-Assessor
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../safety/safety-manual/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sicherheitshandbuch
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../safety/concept/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sicherheitskonzept
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../safety/figures/concept-figures/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bilder zum Konzept
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../safety/anomaly-register/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Anomalie-Register
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_6" id="__nav_4_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Arbeitsprodukte
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Arbeitsprodukte
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../safety/safety-plan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW safety plan — software SEooC at ASIL B (SYS-60)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../safety/verification-plan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW verification plan and archived reports per baseline (SYS-67)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../safety/safety-case/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW safety case — software SEooC at ASIL B (SYS-64)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../safety/cm-plan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW configuration management plan and baselines (SYS-68)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../safety/sw-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW — software architectural design specification of the safety part (SYS-65)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../safety/architecture-safety-analysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW software architectural safety analysis beyond the mechanisms (SYS-71)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../safety/fmea/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW failure analysis of the base-software safety mechanisms (stage 1)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../safety/figures/fmea-figures/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fmea figures
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../safety/dfa/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW dependent failure analysis of the stage-1 mechanisms (SYS-70)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../safety/unit-design/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW — software unit design: watchdog handling, fault handlers, safety task (SYS-92, N2)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../safety/coexistence/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW — coexistence of ASIL B and QM software in one image (SYS-61)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../safety/partner-and-degraded/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Partner MCU supervision, degraded reaction and active short circuit — concept
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../safety/config-range/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW — argument over the admissible configuration range (SYS-92, N3)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../safety/hsi-s32k1xx/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW hardware-software interface of the stage-1 safety mechanisms — s32k1xx (SYS-66)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../safety/hardware-mechanisms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hardware safety mechanisms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../safety/security-interplay/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW — interplay of functional safety and cybersecurity (SYS-92, N1)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../safety/static-analysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Static analysis and coding guidelines (PLAT-74)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../safety/tool-classification/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW tool classification and safeguards of the generated code (PLAT-75)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../safety/component-qualification/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW — route per pre-existing component and qualification plan (SYS-62)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../safety/dev-environment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW development environment: languages, guidelines, tools, build and test flow (DOC-22)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../safety/board-test-spec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW board test specification per SSR with operational use cases (SYS-75)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../openbsw-beitraege/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributor
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Contributor
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_1" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architektur
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_1" id="__nav_5_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_1_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Architektur
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../openbsw/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Openbsw
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../openbsw-naehe/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Openbsw naehe
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../autosar/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Autosar
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../autosar-standard-set/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Autosar standard set
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../autosar-ecuc-map/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Autosar ecuc map
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../autosar-ecuc-evaluation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Autosar ecuc evaluation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../plattformen/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plattformen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../customer-project/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Customer project
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../versioning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW – Versionierung und Support
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CSEc in neXtBSW: keys, message authentication and secure start (SYS-56)
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CSEc in neXtBSW: keys, message authentication and secure start (SYS-56)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Inhaltsverzeichnis">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Inhaltsverzeichnis
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-sources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Sources
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-what-csec-is-on-this-part-in-facts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. What CSEc is on this part, in facts
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-what-csec-should-be-used-for" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. What CSEc should be used for
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-how-many-key-slots-and-what-each-one-is-for" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. How many key slots, and what each one is for
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-interaction-with-the-partition-the-table-for-nvm-11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Interaction with the partition: the table for NVM-11
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Interaction with the partition: the table for NVM-11">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-what-the-commands-cost-an5401-tables-9-and-10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 What the commands cost ([AN5401] Tables 9 and 10)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-lifecycle-of-the-keys" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Lifecycle of the keys
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Lifecycle of the keys">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-who-generates-them-and-when-are-they-written" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 Who generates them, and when are they written
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63-how-a-development-board-gets-back-to-a-blank-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.3 How a development board gets back to a blank state
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#64-what-it-means-for-the-bootloader-and-for-canflash" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.4 What it means for the bootloader and for canflash
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#65-the-master_ecu_key-of-development-boards-and-the-lock-on-write_protection-nvm-14" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.5 The MASTER_ECU_KEY of development boards, and the lock on WRITE_PROTECTION (NVM-14)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-what-it-means-for-the-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. What it means for the architecture
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. What it means for the architecture">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#71-where-a-csec-driver-sits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.1 Where a CSEc driver sits
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#72-which-configuration-level-holds-which-value" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.2 Which configuration level holds which value
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#73-what-is-board--and-family-neutral" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.3 What is board- and family-neutral
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-what-this-does-not-decide" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. What this does not decide
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-open-gaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Open gaps
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-decision-proposal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Decision proposal
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../kalibrierung/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Calibration in neXtBSW: parameters, maps, a versioned calibration database, measurement signals (ARCH-64)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pin-interrupts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pin interrupts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../signal-qualifier/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Signal qualifiers for received messages (COM-03)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../treiber-granularitaet/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW – granularity of device drivers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../treiber-anbindung-analyse/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW – binding device drivers to the system: analysis of the hand-written integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../openbsw-console-number-arguments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OpenBSW console commands with a number argument - audit (PLAT-110)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_1_19" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_1_19" id="__nav_5_1_19_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Geplant nach R1
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_1_19_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_1_19">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Geplant nach R1
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../planned/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Planned
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../non-cortex-m-audit/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Non cortex m audit
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../rm4x-quellen/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rm4x quellen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../stm32-nucleo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Stm32 nucleo
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../figures/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bilder
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_2" id="__nav_5_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Bilder
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../figures/01-schichten/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    01 schichten
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../figures/02-konfigurationsfluss/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    02 konfigurationsfluss
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../figures/03-startablauf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    03 startablauf
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../figures/04-flash-uds/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    04 flash uds
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../figures/05-ecu-zustaende/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    05 ecu zustaende
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../figures/06-safety-kette/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    06 safety kette
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../figures/07-modulkarte/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    07 modulkarte
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../figures/08-lesepfade/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    08 lesepfade
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../bootloader/doc/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Moduldokumentation
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_3" id="__nav_5_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Moduldokumentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/modules/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modules
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../bootloader/doc/iso14229-1-clause16-conformance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Conformance with ISO 14229-1 clause 16 (non-volatile server memory programming)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/autosarBase/doc/autosarBase/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AUTOSAR base types (autosarBase)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/canPhyPassive/doc/canPhyPassive/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Passive CAN transceiver (canPhyPassive)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/canSystem/doc/canSystem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CAN system, hardware independent parts (canSystem)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/consoleContext/doc/consoleContext/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Console context (consoleContext)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/dem/doc/dem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    dem – fault memory (simplified AUTOSAR DEM)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/e2e/doc/e2e/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    E2E-Bibliothek (e2e)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/ecuState/doc/ecuState/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ECU-Zustandsverwaltung (ecuState)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/gdTmc6200/doc/gdTmc6200/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Gate-Treiber TMC6200 (gdTmc6200)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/hallDecoder/doc/hallDecoder/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hall decoder (hallDecoder)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/highSideSwitch/doc/highSideSwitch/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Smart high-side switch (highSideSwitch)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/mcuLink/doc/mcuLink/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mcuLink
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/nvm/doc/nvm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NvM core (libs/bsw/nvm)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/nvmDataFlash/doc/nvmDataFlash/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nvmDataFlash - data flash areas (NVM-12)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/sbcUja113x/doc/sbcUja113x/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SBC-Treiber UJA113x (sbcUja113x)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsp/bspAdcAccess/doc/bspAdcAccess/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Serialized ADC access (bspAdcAccess)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsp/bspI2c/doc/bspI2c/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    I2C master contract (bspI2c)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsp/bspPinEdge/doc/bspPinEdge/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pin edge contract (bspPinEdge)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsp/bspPinEvent/doc/bspPinEvent/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    bspPinEvent
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsp/bspSampleGroup/doc/bspSampleGroup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sample group (bspSampleGroup)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsp/bspSpi/doc/bspSpi/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SPI device contract (bspSpi)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/common/clockCheck/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Clock start-up check (PLAT-72)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/common/interruptPriority/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interrupt priorities as ranks (PLAT-10, wired up in PLAT-21, per core profile since ARCH-24)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/s32k1xx/bsp/bspCsec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    bspCsec – CSEc of the S32K1 family
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/s32k1xx/bsp/bspMcu/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    bspMcu (Familie s32k1xx) – Derivat-Header und mcu/mcu.h (PLAT-11)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/s32k1xx/startup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Startup templates per core architecture (PLAT-10)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/s32k1xx/port/safety/safeLifecycle/doc/safeLifecycle/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Safety task, s32k1xx (safeLifecycle)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/s32k1xx/port/safety/safeMemory/doc/safeMemory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Memory safety of the s32k1xx family (safeMemory)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/s32k1xx/port/safety/safeSupervisor/doc/safeSupervisor/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Safe supervisor, project values of the s32k1xx port (safeSupervisor)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/s32k1xx/port/safety/safeSystem/doc/safeSystem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference and supply supervision, s32k1xx (safeSystem)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/s32k1xx/port/bspConfiguration/src/bsp/capture/doc/capture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Input capture, s32k1xx (capture)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/s32k1xx/port/bspConfiguration/src/bsp/hall/doc/hall/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hall sensor set, s32k1xx (hall)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../tools/test/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tests und Werkzeuge
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_4" id="__nav_5_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tests und Werkzeuge
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/docgen/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    docgen - generated reference documentation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/docgen/website/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Doku-Website
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/ci/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/ci – provider-neutral CI (TOOL-03)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/setup – the Python environment of a workspace (TOOL-63)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/distcheck/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    distcheck – distribution check and export of the open tree
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/canflash/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/canflash – application and bootloader over CAN (UDS on ISO-TP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/boardtest/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/boardtest – board measurement scripts with host tests (TOOL-05)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/misra/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/misra – static analysis (PLAT-74)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/trace/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/trace — traceability of the safety requirements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/a2lgen/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    a2lgen - A2L for XCP on CAN (TOOL-01)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/calgen/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    calgen – calibration datasets (stage K2)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/csec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    csec – host side of the CSEc way back to the factory state
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/elfcheck/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    elfcheck – linked images against the derivative map and the core
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/nxupdate/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/schedana/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/schedana – analyse processor load, scheduling and data flow (TOOL-09)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/stackuse/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    stackuse – worst-case stack per execution context
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Beitragen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../SECURITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sicherheitsluecken melden
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../mcudb/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ableitung der Chipdaten (mcudb)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Inhaltsverzeichnis">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Inhaltsverzeichnis
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-sources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Sources
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-what-csec-is-on-this-part-in-facts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. What CSEc is on this part, in facts
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-what-csec-should-be-used-for" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. What CSEc should be used for
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-how-many-key-slots-and-what-each-one-is-for" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. How many key slots, and what each one is for
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-interaction-with-the-partition-the-table-for-nvm-11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Interaction with the partition: the table for NVM-11
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Interaction with the partition: the table for NVM-11">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-what-the-commands-cost-an5401-tables-9-and-10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 What the commands cost ([AN5401] Tables 9 and 10)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-lifecycle-of-the-keys" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Lifecycle of the keys
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Lifecycle of the keys">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-who-generates-them-and-when-are-they-written" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 Who generates them, and when are they written
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63-how-a-development-board-gets-back-to-a-blank-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.3 How a development board gets back to a blank state
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#64-what-it-means-for-the-bootloader-and-for-canflash" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.4 What it means for the bootloader and for canflash
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#65-the-master_ecu_key-of-development-boards-and-the-lock-on-write_protection-nvm-14" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.5 The MASTER_ECU_KEY of development boards, and the lock on WRITE_PROTECTION (NVM-14)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-what-it-means-for-the-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. What it means for the architecture
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. What it means for the architecture">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#71-where-a-csec-driver-sits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.1 Where a CSEc driver sits
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#72-which-configuration-level-holds-which-value" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.2 Which configuration level holds which value
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#73-what-is-board--and-family-neutral" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.3 What is board- and family-neutral
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-what-this-does-not-decide" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. What this does not decide
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-open-gaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Open gaps
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-decision-proposal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Decision proposal
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="csec-in-nextbsw-keys-message-authentication-and-secure-start-sys-56">CSEc in neXtBSW: keys, message authentication and secure start (SYS-56)<a class="headerlink" href="#csec-in-nextbsw-keys-message-authentication-and-secure-start-sys-56" title="Permanent link">&para;</a></h1>
+<p>Status: 2026-09-23, <strong>proposal</strong>, am 2026-10-04 (DOC-75) gekürzt; die Abwägungen je Kandidat, die Review-Fragen, die
+Folgen für andere Aufgaben und die Langfassung der Fragen Q1 bis Q7 stehen in der Versionshistorie dieser Datei
+(Commit vor DOC-75). Der Nutzer entschied am 2026-09-23, dass <strong>CSEc auf diesem Board gebraucht wird</strong>; das Dokument
+klärt, <em>wofür</em>, <em>wie viele Schlüsselplätze</em> und <em>was das mit der FlexNVM-Partition macht</em>. Es ist die Grundlage für
+<strong>NVM-11</strong> (PGMPART mit Schlüsselraum statt festem <code>FCCOB1/2 = 0</code>).</p>
+<p>Reference: <a href="../">architecture target picture</a>, FlexNVM partition state (not published, available on request)
+(NVM-10), <a href="../../safety/concept/">safety concept</a>.</p>
+<p><strong>Why this is worth care.</strong> The number of key slots is written into the chip <strong>once</strong>, together with the partition.
+Raising it later needs the CSEc debug authentication with a key that has to exist at that moment, or the device is
+finished. The eval board is a <code>FS32K144UAVLL</code>, a CSEc part (SDID <code>0x144F14EA</code>, FEATURES bit 7 set), and it is <strong>not
+partitioned</strong>; nothing has been written.</p>
+<pre class="mermaid"><code>%%{init: {'theme':'base','flowchart':{'curve':'basis'},'themeVariables':{'fontFamily':'Segoe UI, Helvetica, Arial, sans-serif','fontSize':'14px','background':'#ffffff','primaryColor':'#ffffff','primaryBorderColor':'#64748b','primaryTextColor':'#0f172a','lineColor':'#475569','edgeLabelBackground':'#ffffff','tertiaryColor':'#f8fafc','clusterBkg':'#f8fafc','clusterBorder':'#cbd5e1'}}}%%
+flowchart LR
+    subgraph FTFC["FTFC flash module"]
+        PART("PGMPART&lt;br/&gt;EEESIZE, DEPART, key size") --&gt; EEE("emulated EEPROM&lt;br/&gt;(EEERAM)")
+        EEE --&gt; KEYS("key space&lt;br/&gt;subtracted from the end of EEERAM")
+        KEYS --&gt; CMD("CSEc commands&lt;br/&gt;CMAC, AES, RNG")
+        KEYS --&gt; BOOT("secure boot&lt;br/&gt;BOOT_MAC over the bootloader")
+    end
+    KEYS -- "only way back" --&gt; DBG("DBG_CHAL / DBG_AUTH&lt;br/&gt;needs MASTER_ECU_KEY")
+
+    classDef third fill:#e2e8f0,stroke:#64748b,stroke-width:1.5px,color:#0f172a
+    classDef grp fill:#f8fafc,stroke:#cbd5e1,rx:8,ry:8
+    class PART,EEE,KEYS,CMD,BOOT,DBG third
+    class FTFC grp</code></pre>
+<h2 id="1-sources">1. Sources<a class="headerlink" href="#1-sources" title="Permanent link">&para;</a></h2>
+<p>Public, on this machine: [RM13] <code>doc/hardware/s32k1xx/S32K-RM.pdf</code> (S32K1xx Reference Manual Rev. 13: ch. 5, 36.1.2.4,
+36.5.11.11, 36.5.11.14, 36.5.13), [DS13] the data sheet (Table 38 NVM reliability), [AN11983] <em>Using the S32K1xx EEPROM
+Functionality</em> Rev. 2 (§2.2.2.1, §3.1, §7, §8.2), [MAP] <code>S32K1xx_Memory_Map.xlsx</code> (attachment of [RM13]: FlexRAM and
+<code>CSE_PRAM</code> per derivative), [AN5401] <em>Getting Started with CSEc Security module</em> (§4, Tables 9 and 10, Appendix A).
+A vendor safety document under <code>doc/confidential/</code> was searched for CSEc content and contains nothing; no statement
+here rests on it. The HIS SHE specification 1.0.1 is not available here; [RM13] 36.5.13 does not repeat it.</p>
+<h2 id="2-what-csec-is-on-this-part-in-facts">2. What CSEc is on this part, in facts<a class="headerlink" href="#2-what-csec-is-on-this-part-in-facts" title="Permanent link">&para;</a></h2>
+<ul>
+<li>CSEc is a feature set <strong>of the flash module (FTFC)</strong>, not a separate peripheral: AES-128 (ECB, CBC), CMAC,
+  TRNG and PRNG, secure boot, and a key store in flash ([RM13] 5.2.2, 36.5.13). It follows the SHE specification.</li>
+<li><strong>It only exists when the FlexNVM is configured for emulated EEPROM.</strong> "To access the command feature set, the
+  part must be configured for EEE operation, using the PGMPART command" ([RM13] 36.5.13). On a non-CSEc part, and
+  on a CSEc part with key size 0, access to the CSEc parameter RAM is not even guaranteed ([RM13] 5.2).
+  <strong>CSEc and the emulated EEPROM are one decision, not two.</strong></li>
+<li><strong>The keys live in the EEPROM RAM.</strong> The key space is subtracted from the end of the EEERAM address range and
+  becomes unaddressable ([RM13] 5.2, 36.5.13). It is backed up in the EEPROM backup inside the FlexNVM.</li>
+<li><strong>No concurrency.</strong> EEPROM operations, ordinary flash commands and CSEc commands cannot run at the same time;
+  one operation of any kind at a time ([RM13] 36.5.13, [AN11983] §8.1).</li>
+<li><strong>Not in HSRUN.</strong> Flash writes/erases, EEPROM writes and CSEc commands are not supported above RUN mode; in
+  HSRUN (112 MHz) they raise error flags ([DS13] Table 38 notes 2 and 5; [RM13] introduction, footnote 1 to the
+  S32K14x feature list: switch back to RUN at 80 MHz to execute CSEc or EEPROM writes). The demo project runs
+  at 80 MHz (<code>projects/evalboard_s32k144_demo/project.yaml</code>, <code>clock.system_hz</code>), so this is a check to add, not a
+  problem today.</li>
+<li><strong>The parameter RAM lies behind the FlexRAM, not in it — and moves with the FlexRAM size</strong> (NVM-21). <code>CSE_PRAM</code>
+  (128 bytes) is at <code>0x1400_1000</code> on the S32K14x/S32K14xW (4 KB FlexRAM) and at <code>0x1400_0800</code> on the S32K11x (2 KB)
+  ([MAP] <code>S32K1xx_Memory_Map.xlsx</code>, file attachment of [RM13], sheet "Overview Memory Map"). No device header of the
+  family has it. On an S32K14x, <code>0x1400_0800</code> is FlexRAM offset <code>0x800</code>, i.e. the <strong>emulated EEPROM</strong>: a write there
+  is an EEPROM record, and a second write before <code>CCIF</code> returns ends in a transfer error ([RM13] 36.5.2.3). That is
+  what NVM-13 did on the board on 2026-09-30 with the address of the S32K116 SVD; <code>bspCsec</code> now picks the address
+  from <code>SIM_SDID</code> SUBSERIES at run time (<code>csec/CsecPramAddress.h</code>) and refuses an unknown sub-series.</li>
+<li><strong>Key slots are fixed by SHE, not by us.</strong> Slot 1 <code>MASTER_ECU_KEY</code>, slot 2 <code>BOOT_MAC_KEY</code>, slot 3 <code>BOOT_MAC</code>,
+  then <code>KEY_1</code>…<code>KEY_17</code> ([RM13] Table 36-75). If any key at all is allocated, those first three slots are assumed
+  to be taken, so of 20 slots 17 are free for our own use ([RM13] 36.5.11.14).</li>
+</ul>
+<h2 id="3-what-csec-should-be-used-for">3. What CSEc should be used for<a class="headerlink" href="#3-what-csec-should-be-used-for" title="Permanent link">&para;</a></h2>
+<p>Test applied to each candidate: <em>does CSEc do something here that software on this MCU cannot do as well, and is the
+gain worth a permanent decision?</em></p>
+<table>
+<thead>
+<tr>
+<th>Candidate</th>
+<th>CSEc the right means?</th>
+<th>Slots needed now</th>
+<th>Reason</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SecOC CMAC on CAN (3.1)</td>
+<td>yes, later</td>
+<td>1</td>
+<td>AES-128 CMAC is the SecOC primitive and the key stays unreadable; but no freshness manager, PDU configuration or key distribution exists (<code>libs/bsw/e2e</code> protects against faults, not attackers); a SecOC concept is its own task</td>
+</tr>
+<tr>
+<td>Secure boot of the bootloader (3.2)</td>
+<td><strong>yes, only CSEc can do it</strong></td>
+<td><code>BOOT_MAC_KEY</code> + <code>BOOT_MAC</code> (slots 2, 3)</td>
+<td>the flash module checks a CMAC over the program flash from address 0 at every reset; no software can check its own first instruction</td>
+</tr>
+<tr>
+<td>Application Security Access 0x27 (3.3)</td>
+<td>no, software path stays; CSEc as a later option of <code>security[].method</code></td>
+<td>1</td>
+<td>HMAC-SHA256 with a per-device key (COM-30) is proven, family-neutral and works without CSEc; the gain would be defence in depth only</td>
+</tr>
+<tr>
+<td>Bootloader Security Access (3.4)</td>
+<td>no, but <code>hal_random()</code> via <code>CMD_RND</code> is a free win</td>
+<td>0</td>
+<td>the bootloader must keep the software path anyway, so CSEc would add code; the weak seed (UID and timers) gets a real hardware random source</td>
+</tr>
+<tr>
+<td>Device key / identity (3.5)</td>
+<td>yes in principle, no partner today</td>
+<td>1</td>
+<td>component protection needs a partner that challenges</td>
+</tr>
+<tr>
+<td>Signed application image (BL-12)</td>
+<td><strong>no, Ed25519 stays</strong></td>
+<td>0</td>
+<td>a symmetric CMAC would put a forging key on every device and the build machine</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Secure-boot flavours</strong> ([RM13] 36.5.13.2, 5.2.3):</p>
+<table>
+<thead>
+<tr>
+<th>Flavour</th>
+<th>Behaviour on a MAC mismatch</th>
+<th>Suitable here</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Sequential</td>
+<td>core starts only after the check; keys with the boot-protection attribute stay locked</td>
+<td>possible</td>
+</tr>
+<tr>
+<td>Parallel</td>
+<td>core starts immediately, the check runs beside it; keys stay locked on failure</td>
+<td><strong>recommended</strong></td>
+</tr>
+<tr>
+<td>Strict</td>
+<td><strong>the part stays in reset</strong></td>
+<td><strong>never</strong> – "Strict" is one-time and cannot be undone ([RM13] 36.5.13.25); a single mismatch, e.g. an interrupted bootloader update, bricks the device permanently</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Relation to BL-12.</strong> Two links of one chain, not alternatives:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>CSEc secure boot</th>
+<th>BL-12 Ed25519</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Protects</td>
+<td>the <strong>bootloader</strong> (0x0…0x7FFF today)</td>
+<td>the <strong>application image</strong></td>
+</tr>
+<tr>
+<td>Checked by</td>
+<td>the flash module, at every reset</td>
+<td>the bootloader, before it starts the application</td>
+</tr>
+<tr>
+<td>Key on the device</td>
+<td>symmetric <code>BOOT_MAC_KEY</code> – whoever can verify can also forge</td>
+<td>only the <strong>public</strong> key – a stolen device yields no signing key</td>
+</tr>
+<tr>
+<td>Answers</td>
+<td>"is the root of trust still the one we installed?"</td>
+<td>"did this image come from us?"</td>
+</tr>
+</tbody>
+</table>
+<p>Constraints for NVM-11 and a later bootloader task: <code>BOOT_SIZE</code> covers the <strong>bootloader area only</strong>
+(<code>memory.bootloader.size</code>), never the application; the flash configuration field at 0x400 lies inside that area; with
+secure boot active <code>canflash blupdate</code> writes the new <code>BOOT_MAC</code> in the same operation, before the reset (second reason
+against Strict); the boot MAC is checked by hardware, so the bootloader core needs no code for it.</p>
+<h2 id="4-how-many-key-slots-and-what-each-one-is-for">4. How many key slots, and what each one is for<a class="headerlink" href="#4-how-many-key-slots-and-what-each-one-is-for" title="Permanent link">&para;</a></h2>
+<p>The part's ceiling is <strong>20 slots</strong>, of which 3 are taken by SHE itself, leaving <strong>17 of our own</strong> ([RM13]
+Table 36-62 and the text after it). Slots cannot be bought singly: <code>FCCOB1[1:0]</code> selects one of four steps, and each
+step costs a fixed number of bytes out of the EEERAM.</p>
+<table>
+<thead>
+<tr>
+<th><code>FCCOB1[1:0]</code></th>
+<th>Slots</th>
+<th>Of those, free for us</th>
+<th>Cost from the EEERAM</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>00</code></td>
+<td>none (CSEc off)</td>
+<td>–</td>
+<td>0 bytes</td>
+</tr>
+<tr>
+<td><code>01</code></td>
+<td>1 to 5</td>
+<td>2</td>
+<td>128 bytes</td>
+</tr>
+<tr>
+<td><code>10</code></td>
+<td>1 to 10</td>
+<td>7</td>
+<td>256 bytes</td>
+</tr>
+<tr>
+<td><code>11</code></td>
+<td>1 to 20</td>
+<td><strong>17</strong></td>
+<td>512 bytes</td>
+</tr>
+</tbody>
+</table>
+<p>Source: [RM13] Table 36-62 "CSEc/SHE key size" (p. 865). The byte figures are larger than 16 bytes per key because
+the store holds each key's attributes as well; the RM gives only the totals and so does this table.</p>
+<p><strong>Proposed allocation (17 free slots, <code>FCCOB1 = 11</code>):</strong></p>
+<table>
+<thead>
+<tr>
+<th>Slot</th>
+<th>SHE name</th>
+<th>Purpose</th>
+<th>Needed when</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><code>MASTER_ECU_KEY</code></td>
+<td>authorises loading every other key, and the debug authentication that is <strong>the only way back</strong></td>
+<td>at once, in production, as the first key</td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>BOOT_MAC_KEY</code></td>
+<td>key of the secure-boot CMAC over the bootloader (3.2)</td>
+<td>with secure boot</td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>BOOT_MAC</code></td>
+<td>the expected CMAC of the boot area (a slot, though it is a MAC)</td>
+<td>with secure boot</td>
+</tr>
+<tr>
+<td><code>KEY_1</code></td>
+<td></td>
+<td>CAN message authentication (SecOC) – one bus (3.1)</td>
+<td>later</td>
+</tr>
+<tr>
+<td><code>KEY_2</code></td>
+<td></td>
+<td>bootloader Security Access, if it ever moves to CSEc (3.4)</td>
+<td>probably never</td>
+</tr>
+<tr>
+<td><code>KEY_3</code></td>
+<td></td>
+<td>application Security Access 0x27, as an option (3.3)</td>
+<td>later</td>
+</tr>
+<tr>
+<td><code>KEY_4</code></td>
+<td></td>
+<td>ECU identity / component protection (3.5)</td>
+<td>later</td>
+</tr>
+<tr>
+<td><code>KEY_5</code>…<code>KEY_17</code></td>
+<td></td>
+<td>reserve: second bus, key rotation, application keys</td>
+<td>unknown</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Why the largest step and not <code>10</code>.</strong> The difference between <code>10</code> and <code>11</code> is <strong>256 bytes</strong> of emulated EEPROM out
+of 4096 — 6 %. The difference in what it buys is 7 usable slots against 17. The project has no NvM blocks defined at
+all yet (<code>nvm.blocks</code> is absent from <code>project.yaml</code>), so nothing is known to be short of those 256 bytes, while the
+cost of finding out later that 7 slots were not enough is a device that has to go through the debug authentication
+and be re-partitioned (the way back in stages is in 6.3; the partition step alone is reversible). Buy the headroom.</p>
+<h2 id="5-interaction-with-the-partition-the-table-for-nvm-11">5. Interaction with the partition: the table for NVM-11<a class="headerlink" href="#5-interaction-with-the-partition-the-table-for-nvm-11" title="Permanent link">&para;</a></h2>
+<p>Three values go into one <code>PGMPART</code> command and can never be separated afterwards
+([RM13] Table 36-61): <code>FCCOB1</code> key size, <code>FCCOB2</code> SFE, <code>FCCOB3</code> load-on-reset, <code>FCCOB4</code> EEESIZE, <code>FCCOB5</code> DEPART.</p>
+<p><strong>Fixed by the part, not a choice.</strong> On a CSEc part with 4 KB FlexRAM the EEPROM size <strong>must</strong> be <code>0010b</code> = 4096
+bytes ([RM13] 36.1.2.4.1, Table 36-15 note 2, pp. 793-794). <code>1111b</code> (0 bytes) is only allowed when DEPART says "no
+EEPROM", and that
+in turn switches CSEc off. On the S32K11x family with 2 KB FlexRAM the corresponding value is <code>0011b</code> = 2048 bytes
+([RM13] Table 36-3 note 2) — which is why this belongs in <code>mcudb</code>, per derivative, and not in the code.</p>
+<p><strong>Usable EEPROM per key-size code</strong> (S32K144, EEESIZE <code>0x2</code> = 4096 bytes; the key space is subtracted from the end
+of the EEERAM, [RM13] 5.2 and 36.5.13):</p>
+<table>
+<thead>
+<tr>
+<th><code>FCCOB1</code></th>
+<th>Key space</th>
+<th>Usable emulated EEPROM</th>
+<th>Against 4096 bytes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>00</code> (CSEc off)</td>
+<td>0</td>
+<td><strong>4096 bytes</strong></td>
+<td>–</td>
+</tr>
+<tr>
+<td><code>01</code> (5 slots)</td>
+<td>128</td>
+<td><strong>3968 bytes</strong></td>
+<td>−3 %</td>
+</tr>
+<tr>
+<td><code>10</code> (10 slots)</td>
+<td>256</td>
+<td><strong>3840 bytes</strong></td>
+<td>−6 %</td>
+</tr>
+<tr>
+<td><code>11</code> (20 slots)</td>
+<td>512</td>
+<td><strong>3584 bytes</strong></td>
+<td>−12,5 %</td>
+</tr>
+</tbody>
+</table>
+<p>[AN11983] §8.2 states the same result for the family in one line: with CSEc enabled up to 512 B go to key storage,
+leaving 3.5 kB on S32K14x and 1.5 kB on S32K11x. So <strong>nobody may plan with 4 KB</strong>: with the recommended code the
+application gets <strong>3584 bytes</strong>, and <code>tools/nxconfig</code> and the display before writing must say so (NVM-11).</p>
+<p>Concretely for NVM-11: <code>tools/nxconfig/nvm.py</code>, <code>check()</code> sets <code>usable = partition.eeprom_bytes</code> today. That is the
+one line where the key bytes have to be subtracted, so that every NvM block placement downstream counts with the
+real size instead of the programmed one. <code>NvmPartitionPlan.describe()</code> is where the two extra lines of the display
+belong (key slots and usable bytes).
+<strong>The second effect, and the one that surprises: the partition split.</strong> The key space is backed up inside the
+EEPROM backup, and the endurance of the emulated EEPROM depends on the ratio of backup to FlexRAM:</p>
+<ul>
+<li>[DS13] Table 38 "NVM reliability specifications": write endurance <strong>100 K writes at an EEPROM-backup-to-FlexRAM
+  ratio of 16</strong>, and 1.6 M writes at a ratio of 256. Below a ratio of 16 the data sheet specifies <strong>no</strong> figure.</li>
+<li>[AN11983] §7: to reach the data sheet endurance the backup must be at least 16 times the EEERAM size; the whole
+  FlexNVM as E-flash (64 KB on S32K14x) with the maximum EEERAM (4 KB) is exactly that ratio.</li>
+<li>[AN11983] §2.2.2.1: if EEE is used at all, <strong>at least 32 KB</strong> of the FlexNVM must be E-flash on S32K14x.</li>
+<li>[AN11983] §8.2, for the CSEc case explicitly: "Program partition command must use the maximum available E-Flash
+  size (64 kB for S32K14x devices)".</li>
+</ul>
+<p>Applied to the codes the S32K144 offers ([RM13] Table 36-17, already in <code>mcudb/s32k1xx/S32K144.yaml</code>):</p>
+<table>
+<thead>
+<tr>
+<th>DEPART</th>
+<th>Data flash</th>
+<th>EEPROM backup</th>
+<th>Backup : 4 KB FlexRAM</th>
+<th>Data sheet endurance figure</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>0x0</code> / <code>0xC</code></td>
+<td>64 KB</td>
+<td>0 KB</td>
+<td>–</td>
+<td><strong>not possible with CSEc</strong> (no EEPROM → no CSEc)</td>
+</tr>
+<tr>
+<td><code>0xA</code></td>
+<td>16 KB</td>
+<td>48 KB</td>
+<td>12</td>
+<td>below 16 – no specified figure</td>
+</tr>
+<tr>
+<td><code>0x3</code> / <code>0xB</code></td>
+<td>32 KB</td>
+<td>32 KB</td>
+<td><strong>8</strong></td>
+<td>below 16 – no specified figure</td>
+</tr>
+<tr>
+<td><code>0x4</code> / <code>0x8</code></td>
+<td>0 KB</td>
+<td><strong>64 KB</strong></td>
+<td><strong>16</strong></td>
+<td><strong>100 K writes</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Finding.</strong> The value in the project today is <code>partition_code: 0xB</code> — 32 KB data flash, 32 KB backup, ratio 8. That
+is the bare minimum [AN11983] allows for EEE at all, and it is <strong>half</strong> the ratio at which the data sheet gives an
+endurance figure. It was chosen before CSEc was on the table and while it was assumed that data flash would be
+wanted; no project value uses data flash today (<code>nvm.blocks</code> does not exist, <code>data_flash_bytes</code> is used by nothing
+but the partition check). With CSEc, both NXP notes point the same way: give the FlexNVM entirely to the backup.</p>
+<p><strong>Recommendation for NVM-11:</strong> <code>EEESIZE = 0x2</code>, <code>DEPART = 0x4</code> (0 KB data flash, 64 KB backup), <code>FCCOB1 = 0b11</code>,
+<code>FCCOB2 = 0x00</code>, <code>FCCOB3 = 0</code> (load on reset — with CSEc the FlexRAM is loaded at reset anyway, [RM13] Table 36-15).
+Result: <strong>3584 bytes of usable emulated EEPROM at the data sheet's 100 K write endurance</strong>, and 17 free key slots.
+If data flash is wanted after all, <code>0xA</code> (16 KB data flash, 48 KB backup, ratio 12) is the compromise — but then the
+100 K figure is gone and the concept must say so out loud.</p>
+<p><code>FCCOB2</code> (SFE) stays <code>0x00</code>: it only enables the non-SHE "verify only" key attribute ([RM13] Table 36-63), we have
+no use for it, and <code>FCCOB1 &gt; 0</code> together with <code>SFE = 1</code> is an error condition in the command ([RM13] Table 36-69).</p>
+<h3 id="51-what-the-commands-cost-an5401-tables-9-and-10">5.1 What the commands cost ([AN5401] Tables 9 and 10)<a class="headerlink" href="#51-what-the-commands-cost-an5401-tables-9-and-10" title="Permanent link">&para;</a></h3>
+<p>NXP's nominal figures (Cortex-M4 at 80 MHz, 112 bytes of data per command), not our measurements. <code>GENERATE_MAC</code>
+0.0229 ms, <code>VERIFY_MAC</code> 0.0363 ms; an 8-byte CAN frame is far below the 112 bytes, so about 23 µs per generated and 36 µs
+per verified MAC are upper bounds (0.23 % of a 10 ms task per protected frame). The command interface is serial and a
+<code>CCOB</code> command cancels a running one, so the <strong>queue</strong> needs designing, not the arithmetic. Secure boot, which matters
+for start-up time:</p>
+<table>
+<thead>
+<tr>
+<th>Flavour</th>
+<th>Size</th>
+<th>Clock</th>
+<th>Time</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Sequential (and strict sequential)</td>
+<td>128 KB</td>
+<td>25 MHz <strong>and</strong> 12.5 MHz IPG</td>
+<td><strong>5.09 ms</strong> — identical</td>
+</tr>
+<tr>
+<td>Parallel</td>
+<td>32 KB</td>
+<td><code>LPBOOT</code> = 1 (48 MHz)</td>
+<td>2.06 ms</td>
+</tr>
+<tr>
+<td>Parallel</td>
+<td>128 KB</td>
+<td><code>LPBOOT</code> = 1 (48 MHz)</td>
+<td>8.33 ms</td>
+</tr>
+<tr>
+<td>Parallel</td>
+<td>32 KB</td>
+<td><code>LPBOOT</code> = 0 (24 MHz)</td>
+<td>4.17 ms</td>
+</tr>
+<tr>
+<td>Parallel</td>
+<td>128 KB</td>
+<td><code>LPBOOT</code> = 0 (24 MHz)</td>
+<td>16.60 ms</td>
+</tr>
+</tbody>
+</table>
+<p>The sequential figure does not depend on the IPG clock (the FTFC uses its own 50 MHz source); the parallel flavour takes
+the MCU clock. Sequential is the predictable one; for a bootloader-sized region it is both simpler to argue and, at
+<code>LPBOOT</code> = 0, the faster one.</p>
+<h2 id="6-lifecycle-of-the-keys">6. Lifecycle of the keys<a class="headerlink" href="#6-lifecycle-of-the-keys" title="Permanent link">&para;</a></h2>
+<h3 id="61-who-generates-them-and-when-are-they-written">6.1 Who generates them, and when are they written<a class="headerlink" href="#61-who-generates-them-and-when-are-they-written" title="Permanent link">&para;</a></h3>
+<p>The scheme that exists stays: a project master key outside the repository (<code>%LOCALAPPDATA%/neXtBSW/keys/&lt;name&gt;.key</code>,
+BL-03), per-device keys derived from it and the chip UID; CSEc only changes <em>where</em> the derived key ends up (a key slot,
+loaded with the SHE <code>LOAD_KEY</code> protocol). Production order ([AN11983] §3.1, [RM13] 36.5.11.14):</p>
+<ol>
+<li><code>PGMPART</code> with the values of section 5, <strong>once per device, at the very beginning</strong>.</li>
+<li>Reset (the codes take effect at the next reset).</li>
+<li><code>LOAD_KEY(MASTER_ECU_KEY)</code> with the per-device value, before anything else.</li>
+<li>Bootloader and application over the debugger, key record of the software path as today.</li>
+<li>The remaining keys as needed: <code>BOOT_MAC_KEY</code>, then <code>CMD_BOOT_DEFINE</code> with flavour and <code>BOOT_SIZE</code>, then the boot MAC.</li>
+</ol>
+<p>Never provision at first power-up in the field. <strong>No key may get the <code>WRITE_PROTECTION</code> attribute</strong>: it makes the debug
+authentication impossible, with it the mass erase and NXP's failure analysis; there is no way back. A replacement
+device has a different UID and therefore different derived keys; whatever holds the counterpart (partner ECU, backend)
+has to learn the new device, which is an integrator duty.</p>
+<h3 id="63-how-a-development-board-gets-back-to-a-blank-state">6.3 How a development board gets back to a blank state<a class="headerlink" href="#63-how-a-development-board-gets-back-to-a-blank-state" title="Permanent link">&para;</a></h3>
+<p>The block on the ordinary mass erase hangs on the <strong>presence of keys</strong> ([RM13] 36.5.11.11 and 36.5.11.13, [AN5401]
+§4.2.2.3). Sector erase and programming of the program flash are not affected, so flashing an application or a
+bootloader keeps working in every case. State of 2026-09-23:</p>
+<table>
+<thead>
+<tr>
+<th>State</th>
+<th>Way back</th>
+<th>Costs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PGMPART</code> run, key space reserved, <strong>no key loaded</strong></td>
+<td>the <strong>ordinary mass erase</strong> (<code>Erase All Blocks</code>, the J-Link unlock, the external erase-all request of 36.5.11.11.1) — it is not blocked, because no key is present</td>
+<td>nothing but the flash content</td>
+</tr>
+<tr>
+<td>at least one key loaded, <strong>none write protected</strong></td>
+<td><code>CMD_DBG_CHAL</code> → <code>CMD_DBG_AUTH</code> → reset. [AN5401] §4.5 states the result: all keys erased, <strong>FlexRAM back to ordinary RAM</strong> (<code>RAMRDY</code> = 1) and <strong>FlexNVM back to all data flash</strong> (<code>EEERDY</code> = 0). The partition itself is undone, not only the keys</td>
+<td>the <code>MASTER_ECU_KEY</code> must be <strong>known</strong>; <code>INIT_RNG</code> first</td>
+</tr>
+<tr>
+<td>any key with <code>WRITE_PROTECTION</code></td>
+<td><strong>none, ever</strong> — for us and for NXP's own failure analysis</td>
+<td>the part stays as it is</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Superseded in part on 2026-09-29 (decision <code>csec-pgmpart-rueckweg</code>, CLAUDE.md):</strong> already a <code>PGMPART</code> <em>with key space</em>
+blocks the mass erase, with or without a loaded key; the table above is kept as the record of 2026-09-23. The way back
+is therefore needed in every stage except "write protected", and it is implemented (NVM-13, host-verified only): device
+side <a href="../../../platforms/s32k1xx/bsp/bspCsec/"><code>platforms/s32k1xx/bsp/bspCsec</code></a> (<code>LOAD_KEY</code> of the
+<code>MASTER_ECU_KEY</code> into its empty slot, <code>INIT_RNG</code>, <code>GET_ID</code>, <code>DBG_CHAL</code>, <code>DBG_AUTH</code>, from RAM, typed confirmations, no key
+flag can pass), host side <a href="../../../tools/csec/"><code>tools/csec</code></a> (SHE KDF, M1..M5, debug authorisation). The proof on
+the board is part of NVM-07.</p>
+<p>The documented way back ([RM13] 36.5.13.26/27): <code>CMD_DBG_CHAL</code> returns a 128-bit challenge; the workstation computes the
+authorisation from <code>MASTER_ECU_KEY</code>, challenge and UID; <code>CMD_DBG_AUTH</code> erases all keys and the user IFR (factory
+status); after a reset <code>EEERDY</code> is 0, <code>RAMRDY</code> is 1 and <code>PGMPART</code> may be issued again. <strong>The master key must be kept</strong>:
+losing it leaves every provisioned device re-flashable but never re-partitionable. Operational risks: interrupting a
+<code>PGMPART</code> can leave the partition codes indeterminate and the command runs from RAM, not from flash ([RM13]
+36.5.11.14); the data flash IFR must be erased before <code>PGMPART</code> ([AN5401] §4.1); re-partitioning loses the stored data
+and the endurance guarantee ([AN11983] §3.1). Prove the way back <strong>once, on a sample</strong>.</p>
+<h3 id="64-what-it-means-for-the-bootloader-and-for-canflash">6.4 What it means for the bootloader and for <code>canflash</code><a class="headerlink" href="#64-what-it-means-for-the-bootloader-and-for-canflash" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>With key space allocated</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>canflash</code> erase/program of the application</td>
+<td>unchanged — program flash sectors are not blocked</td>
+</tr>
+<tr>
+<td><code>canflash blupdate</code></td>
+<td>unchanged today; <strong>with secure boot active</strong> it has to rewrite <code>BOOT_MAC</code> in the same operation, before the reset</td>
+</tr>
+<tr>
+<td>J-Link flashing of the bootloader</td>
+<td>unchanged</td>
+</tr>
+<tr>
+<td>J-Link "unlock" / mass erase as a rescue path</td>
+<td><strong>unchanged while no key is loaded</strong>; <strong>gone once a key exists</strong>, and then replaced by <code>DBG_CHAL</code>/<code>DBG_AUTH</code> with the master key (6.3). The rule in <code>CLAUDE.md</code> is reworded accordingly, not deleted</td>
+</tr>
+<tr>
+<td>Bootloader security access</td>
+<td>unchanged (software path stays, 3.4)</td>
+</tr>
+<tr>
+<td>Bootloader seed quality</td>
+<td><strong>better</strong> – <code>hal_random()</code> can be implemented with <code>CMD_RND</code> (3.4)</td>
+</tr>
+<tr>
+<td>Emulated EEPROM of the application</td>
+<td><strong>3584 bytes instead of 4096</strong> (section 5)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="65-the-master_ecu_key-of-development-boards-and-the-lock-on-write_protection-nvm-14">6.5 The <code>MASTER_ECU_KEY</code> of development boards, and the lock on <code>WRITE_PROTECTION</code> (NVM-14)<a class="headerlink" href="#65-the-master_ecu_key-of-development-boards-and-the-lock-on-write_protection-nvm-14" title="Permanent link">&para;</a></h3>
+<p>On a development board the <code>MASTER_ECU_KEY</code> is a project secret shared by every board of the project, known by
+construction, so the debug authentication of 6.3 can bring any of them back. It never stands in the repository; it lives
+in the key store of the workstation (a folder in the per-user application data: outside every worktree, protected by the
+user account, one folder to back up; an environment variable would leak into child processes and logs):</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Folder</td>
+<td><code>%LOCALAPPDATA%/neXtBSW/keys/csec/</code> (elsewhere <code>~/.local/share/neXtBSW/keys/csec/</code>); <code>NX_CSEC_KEY_DIR</code> moves it (tests, CI)</td>
+</tr>
+<tr>
+<td>File</td>
+<td><code>&lt;name&gt;.key</code>, UTF-8; lines starting with <code>#</code> are comments, the rest is 32 hex digits = the 16 key bytes, most significant byte first</td>
+</tr>
+<tr>
+<td>Name</td>
+<td><code>project.yaml security.master_ecu_key</code>; left out: the board name (one key for every project of a board, as for the bootloader master key of BL-03)</td>
+</tr>
+<tr>
+<td>Refused</td>
+<td>all-zero, all-one (the empty slot) and the public SHE/AES test values; a project value that looks like key material</td>
+</tr>
+<tr>
+<td>Created</td>
+<td><code>python tools/nxconfig csec-key new &lt;project&gt;</code> — random, never overwrites an existing file; <code>csec-key where &lt;project&gt;</code> shows the path and a fingerprint, never the key</td>
+</tr>
+</tbody>
+</table>
+<p>Host interface (<code>tools/nxconfig/keystore.py</code>, standard library only): <code>security.master_ecu_key_name(cfg)</code>,
+<code>keystore.load_master_ecu_key(name)</code>, <code>keystore.checked_flags([...])</code> (raises <code>WriteProtectionRefused</code>). <code>tools/csec</code>
+uses it: <code>python -m tools.csec load-master --project &lt;project&gt;</code> (or <code>--key-name</code>, <code>--key-file</code>; a file inside the
+repository is refused). <code>*.key</code> is in <code>.gitignore</code>; <code>python tools/nxconfig csec-key scan</code> searches every file git would
+commit for every key of the store (hex in any spelling, spread over lines, or raw bytes) and names file and key name,
+never the key; the host test <code>nxconfig-security</code> runs the same scan.</p>
+<p><strong>The lock.</strong> The project describes keys and flags in <code>security.keys</code> (SHE names, checked against
+<code>nvm.partition.key_slots</code>). The schema offers <code>boot_protection</code>, <code>debugger_protection</code>, <code>key_usage</code>, <code>wildcard</code> and
+<code>verify_only</code>; <code>WRITE_PROTECTION</code> is deliberately not offered and is refused three times, each with the YAML path: by the
+schema validators, by <code>tools/nxconfig/security.py</code> on the loaded project, and by <code>keystore.checked_flags</code> in the tool
+that builds the <code>LOAD_KEY</code> message. Stage <code>production</code> is refused as a whole until per-device keys are designed.</p>
+<h2 id="7-what-it-means-for-the-architecture">7. What it means for the architecture<a class="headerlink" href="#7-what-it-means-for-the-architecture" title="Permanent link">&para;</a></h2>
+<h3 id="71-where-a-csec-driver-sits">7.1 Where a CSEc driver sits<a class="headerlink" href="#71-where-a-csec-driver-sits" title="Permanent link">&para;</a></h3>
+<p>CSEc is a feature of the FTFC, i.e. MCU hardware of one family. The platform rule (README section 6, P1 to P3) puts it
+per family in the OpenBSW layout: <code>platforms/s32k1xx/bsp/bspCsec</code>, beside <code>bspFlexNvm</code>, not in <code>platforms/common</code>.
+Above it a <strong>neutral contract</strong> <code>libs/bsp/bspCrypto</code> (CMAC over a buffer and a flash range with a key <strong>handle</strong>, random
+bytes, key load, secure-boot state, "key not available" as an ordinary result) with a contract test, in the shape of
+<code>IFlashDriver</code>/<code>IEepromDriver</code>. Services in <code>libs/bsw/&lt;module&gt;</code> ask for a <strong>role</strong> (<code>crypto_cmac</code>); a board without CSEc
+fills it with a software module built from the bootloader's SHA-256/HMAC code. The bootloader keeps its own way: C
+without OpenBSW, the CSEc access in <code>bootloader/platforms/s32k1xx</code>, <code>hal_random()</code> as the existing hook.</p>
+<h3 id="72-which-configuration-level-holds-which-value">7.2 Which configuration level holds which value<a class="headerlink" href="#72-which-configuration-level-holds-which-value" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Value</th>
+<th>Level</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Does the family/derivative offer CSEc at all; the <code>FCCOB1</code> codes with their slot counts and byte cost; the EEESIZE the derivative forces on a CSEc part (4096 on 4 KB FlexRAM, 2048 on 2 KB)</td>
+<td><strong>Derivative</strong> (<code>mcudb/&lt;family&gt;/&lt;derivative&gt;.yaml</code>, beside <code>eeprom_emulation</code>)</td>
+<td>manufacturer fact, the same for every board</td>
+</tr>
+<tr>
+<td>Address of the parameter RAM <code>CSE_PRAM</code> (NVM-21)</td>
+<td><strong>Family code</strong>, chosen at run time from <code>SIM_SDID</code> SUBSERIES (<code>bspCsec</code> <code>csec/CsecPramAddress.h</code>); <code>test_csec.py</code> checks it against the FlexRAM region of every derivative in <code>mcudb</code></td>
+<td>manufacturer fact of the sub-series; the silicon says which one it is, the S32K144 builds with the S32K148 header. A <code>cse_pram</code> region in <code>mcudb</code> with a generated constant is the alternative (open point of NVM-21)</td>
+</tr>
+<tr>
+<td>Whether the <strong>fitted</strong> chip is a security part — the ordering part number (<code>FS32K144U**A**VLL</code>)</td>
+<td><strong>Board</strong> (<code>boards/&lt;board&gt;/board.yaml</code>, a new <code>mcu_part</code> beside <code>mcu</code>/<code>package</code>)</td>
+<td>a property of this PCB; the derivative name S32K144 covers both variants</td>
+</tr>
+<tr>
+<td>Number of key slots (<code>FCCOB1</code>), <code>SFE</code>, which slot serves which purpose, secure-boot flavour and <code>BOOT_SIZE</code>, whether the Security Access uses the hardware key</td>
+<td><strong>Project</strong> (<code>project.yaml</code>, <code>nvm.partition</code> and a new <code>security:</code> section)</td>
+<td>a decision of this ECU software</td>
+</tr>
+<tr>
+<td>The usable EEPROM that results, the endurance ratio, the register encoding of the command</td>
+<td><strong>derived</strong> by <code>tools/nxconfig</code> and shown by <code>bswgen</code> / <code>flexnvm show</code> before writing</td>
+<td>README section 4: the generator derives what is derived</td>
+</tr>
+</tbody>
+</table>
+<p>Run time keeps its own check: <code>SIM_SDID</code> FEATURES bit 7 says whether the chip has CSEc
+(<code>platforms/s32k1xx/bsp/bspFlexNvm/include/flexnvm/FlexNvmChip.h</code>). Key slots on a board whose part number says "no
+security" are an <code>nxconfig</code> error with a YAML path, a mismatch at start-up a reported fault.</p>
+<h3 id="73-what-is-board--and-family-neutral">7.3 What is board- and family-neutral<a class="headerlink" href="#73-what-is-board--and-family-neutral" title="Permanent link">&para;</a></h3>
+<p>Neutral: the contract <code>bspCrypto</code>, the role <code>crypto_cmac</code>, the software fallback, the project values "how many slots,
+what for", addressing a key by a handle. Family-specific, never reaching the neutral contract: that the key space comes
+out of the EEERAM, the four steps, the common write with the FlexNVM partition, that CSEc needs EEE operation (on the S32K3
+the counterpart is the HSE firmware with its own key store; STM32 and rm4x have none in the current scope). Board-specific:
+only "is a security part fitted".</p>
+<h2 id="8-what-this-does-not-decide">8. What this does not decide<a class="headerlink" href="#8-what-this-does-not-decide" title="Permanent link">&para;</a></h2>
+<p>No SecOC profile, no freshness-value handling, no key distribution; no general provisioning tool (the <code>LOAD_KEY</code>
+protocol is implemented for the first <code>MASTER_ECU_KEY</code>, NVM-13); <code>PGMPART</code> stays blocked until NVM-11 and the decision
+on Q1 to Q7 are in.</p>
+<h2 id="9-open-gaps">9. Open gaps<a class="headerlink" href="#9-open-gaps" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Gap</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>G4</td>
+<td>Whether the <em>external</em>, debugger-triggered erase-all is also refused when keys are allocated but none is write-protected ([RM13] 36.5.11.11.1 says that path ignores <code>ACCERR</code>)</td>
+<td>the remaining rescue path of a development board is uncertain; Q6 treats it as blocked</td>
+</tr>
+<tr>
+<td>G5</td>
+<td>Which S32K1 part numbers carry the security option is not in [RM13]; for this board settled (<code>FS32K144UAVLL</code>)</td>
+<td><code>mcudb</code>/<code>board.yaml</code> need the part number as a source</td>
+</tr>
+<tr>
+<td>G6</td>
+<td>Nothing here has been run on hardware</td>
+<td>verification stays <code>mock</code> until NVM-11 and a board run</td>
+</tr>
+</tbody>
+</table>
+<p>Closed: G1 (command times, [AN5401] Tables 9 and 10), G2 (the mass erase is blocked by the presence of keys, not by the
+key space), G3 (<code>LOAD_KEY</code> M1..M5 implemented in <code>tools/csec</code>, NVM-13).</p>
+<h2 id="10-decision-proposal">10. Decision proposal<a class="headerlink" href="#10-decision-proposal" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Question</th>
+<th>Recommendation</th>
+<th>Reason</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Q1 <em>(irreversible)</em></td>
+<td>Allocate key space, how much?</td>
+<td>yes, <code>FCCOB1 = 0b11</code>: 20 slots, 17 free, 512 bytes of EEERAM</td>
+<td>cannot be raised later without debug authentication and re-partition; the largest step costs 256 bytes (6 %) more than the next</td>
+</tr>
+<tr>
+<td>Q2 <em>(irreversible)</em></td>
+<td>Which FlexNVM split?</td>
+<td><code>DEPART = 0x4</code> (0 KB data flash, 64 KB backup) instead of today's <code>0xB</code>; <code>EEESIZE 0x2</code>, <code>FCCOB2 = 0</code>, <code>FCCOB3 = 0</code>; if data flash is wanted, <code>0xA</code> (ratio 12, no 100 K figure)</td>
+<td>only at ratio 16 does [DS13] Table 38 give an endurance figure; no project value uses data flash</td>
+</tr>
+<tr>
+<td>Q3</td>
+<td>Secure boot?</td>
+<td>yes as a target, <code>BOOT_SIZE</code> = bootloader only, flavour <strong>parallel</strong>, never Strict; reserve the slots now, secure boot later (<code>csec-q3-secureboot</code>)</td>
+<td>only CSEc can check the first code; Strict cannot be undone</td>
+</tr>
+<tr>
+<td>Q4</td>
+<td>Security Access 0x27 to CSEc?</td>
+<td>no; keep HMAC-SHA256 with the per-device key, reserve one slot, CSEc later as an option</td>
+<td>proven, works without CSEc</td>
+</tr>
+<tr>
+<td>Q5</td>
+<td>Does BL-12 (Ed25519) stay?</td>
+<td>yes, unchanged</td>
+<td>different protection goals (3.2)</td>
+</tr>
+<tr>
+<td>Q6 <em>(risky)</em></td>
+<td>Way back before the first <code>PGMPART</code> with key space</td>
+<td>master key recorded outside the repository and the chip's <code>MASTER_ECU_KEY</code> computed beforehand; the first session stops after <code>PGMPART</code>; <code>DBG_CHAL</code>/<code>DBG_AUTH</code> proven before the first key is loaded for good; <strong>never <code>WRITE_PROTECTION</code></strong> (answered <code>csec-q6-rueckweg</code>: no second eval board, S32K146 boards exist, they confirm the procedure, not the numbers)</td>
+<td>the only truly irreversible act is a write-protected key</td>
+</tr>
+<tr>
+<td>Q7</td>
+<td>Checks <code>nxconfig</code> refuses (NVM-11)</td>
+<td>key slots on a non-security part; key slots with an <code>EEESIZE</code> other than the derivative's CSEc value; key slots with a <code>DEPART</code> without EEPROM backup (errors); backup ratio below 16 and <code>clock.system_hz</code> above the RUN limit with EEPROM or CSEc use (warnings); the display before writing names usable EEPROM, slot count, ratio and that the mass erase will be refused</td>
+<td>each with a YAML path</td>
+</tr>
+</tbody>
+</table>
+<p><em>Written for SYS-56 on 2026-09-23. No code changed, nothing written to any chip, no board touched.</em></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Zurück zum Seitenanfang
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Fußzeile" >
+        
+          
+          <a href="../versioning/" class="md-footer__link md-footer__link--prev" aria-label="Zurück: neXtBSW – Versionierung und Support">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Zurück
+              </span>
+              <div class="md-ellipsis">
+                neXtBSW – Versionierung und Support
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../kalibrierung/" class="md-footer__link md-footer__link--next" aria-label="Weiter: Calibration in neXtBSW: parameters, maps, a versioned calibration database, measurement signals (ARCH-64)">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Weiter
+              </span>
+              <div class="md-ellipsis">
+                Calibration in neXtBSW: parameters, maps, a versioned calibration database, measurement signals (ARCH-64)
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright 2026 Daniel Simon Reinhardt-Probul - Apache-2.0
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.sections", "navigation.indexes", "navigation.top", "navigation.footer", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "In Zwischenablage kopiert", "clipboard.copy": "In Zwischenablage kopieren", "search.result.more.one": "1 weiteres Suchergebnis auf dieser Seite", "search.result.more.other": "# weitere Suchergebnisse auf dieser Seite", "search.result.none": "Keine Suchergebnisse", "search.result.one": "1 Suchergebnis", "search.result.other": "# Suchergebnisse", "search.result.placeholder": "Suchbegriff eingeben", "search.result.term.missing": "Es fehlt", "select.version": "Version ausw\u00e4hlen"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

@@ -1,0 +1,6288 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Hardware-neutral, configurable basic software for 32-bit automotive MCUs, built on Eclipse OpenBSW">
+      
+      
+      
+      
+        <link rel="prev" href="overview/">
+      
+      
+        <link rel="next" href="openbsw/">
+      
+      
+        
+          <link rel="alternate" href="../../../doc/architecture/" hreflang="de">
+        
+          <link rel="alternate" href="./" hreflang="en">
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>neXtBSW – architecture target picture - neXtBSW</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#nextbsw--architecture-target-picture" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../" title="neXtBSW" class="md-header__button md-logo" aria-label="neXtBSW" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            neXtBSW
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              neXtBSW – architecture target picture
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="indigo"  aria-label="Dunkel"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Dunkel" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="indigo"  aria-label="Hell"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Hell" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Select language">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="../../../doc/architecture/" hreflang="de" class="md-select__link">
+              Deutsch
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../" title="neXtBSW" class="md-nav__button md-logo" aria-label="neXtBSW" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    neXtBSW
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Start
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Wegweiser
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../guide/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Integrator
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Integrator
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Erste Schritte
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/host-durchlauf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Host-Durchlauf ohne Hardware
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/your-first-board/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Das erste Board
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/the-application/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Die Anwendung
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/build-and-flash/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bauen und Flashen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/customer-project/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Eigenes ECU-Repository
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/new-derivative/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Neues Derivat
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/board-readme-template/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vorlage Board-README
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_10" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../reference/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Konfigurationsreferenz
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3_10" id="__nav_3_10_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Konfigurationsreferenz
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/derivative/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Derivative
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/board/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Board
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/project/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/rte/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rte
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/diag/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diag
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/console/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Console
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_11" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../projects/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Projekte, Komponenten, Boards
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3_11" id="__nav_3_11_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Projekte, Komponenten, Boards
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../swc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Software-Komponenten
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../swc/DemoSwcSubstitute/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    C-Ersatz der DemoSwc
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ecu/platforms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Board-Ports
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../boards/buildtest_s32k148/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S32K148 build-test board (S32K148 LQFP176)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_12" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_12" id="__nav_3_12_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release Notes
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_12">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Release Notes
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../release-notes/v1.0.0-rc2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.0.0-rc2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../release-notes/v1.0.0-rc1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.0.0-rc1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../safety/start/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Safety-Assessor
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Safety-Assessor
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../safety/safety-manual/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sicherheitshandbuch
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../safety/concept/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sicherheitskonzept
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../safety/figures/concept-figures/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bilder zum Konzept
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../safety/anomaly-register/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Anomalie-Register
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_6" id="__nav_4_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Arbeitsprodukte
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Arbeitsprodukte
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../safety/safety-plan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW safety plan — software SEooC at ASIL B (SYS-60)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../safety/verification-plan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW verification plan and archived reports per baseline (SYS-67)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../safety/safety-case/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW safety case — software SEooC at ASIL B (SYS-64)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../safety/cm-plan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW configuration management plan and baselines (SYS-68)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../safety/sw-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW — software architectural design specification of the safety part (SYS-65)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../safety/architecture-safety-analysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW software architectural safety analysis beyond the mechanisms (SYS-71)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../safety/fmea/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW failure analysis of the base-software safety mechanisms (stage 1)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../safety/figures/fmea-figures/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fmea figures
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../safety/dfa/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW dependent failure analysis of the stage-1 mechanisms (SYS-70)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../safety/unit-design/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW — software unit design: watchdog handling, fault handlers, safety task (SYS-92, N2)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../safety/coexistence/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW — coexistence of ASIL B and QM software in one image (SYS-61)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../safety/partner-and-degraded/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Partner MCU supervision, degraded reaction and active short circuit — concept
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../safety/config-range/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW — argument over the admissible configuration range (SYS-92, N3)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../safety/hsi-s32k1xx/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW hardware-software interface of the stage-1 safety mechanisms — s32k1xx (SYS-66)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../safety/hardware-mechanisms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hardware safety mechanisms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../safety/security-interplay/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW — interplay of functional safety and cybersecurity (SYS-92, N1)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../safety/static-analysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Static analysis and coding guidelines (PLAT-74)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../safety/tool-classification/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW tool classification and safeguards of the generated code (PLAT-75)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../safety/component-qualification/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW — route per pre-existing component and qualification plan (SYS-62)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../safety/dev-environment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW development environment: languages, guidelines, tools, build and test flow (DOC-22)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../safety/board-test-spec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW board test specification per SSR with operational use cases (SYS-75)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../openbsw-beitraege/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributor
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Contributor
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_1" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="./" class="md-nav__link md-nav__link--active">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architektur
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link md-nav__link--active" for="__nav_5_1" id="__nav_5_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_1_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Architektur
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="openbsw/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Openbsw
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="openbsw-naehe/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Openbsw naehe
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="autosar/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Autosar
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="autosar-standard-set/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Autosar standard set
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="autosar-ecuc-map/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Autosar ecuc map
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="autosar-ecuc-evaluation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Autosar ecuc evaluation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="plattformen/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plattformen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="customer-project/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Customer project
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="versioning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW – Versionierung und Support
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="csec-concept/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CSEc in neXtBSW: keys, message authentication and secure start (SYS-56)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="kalibrierung/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Calibration in neXtBSW: parameters, maps, a versioned calibration database, measurement signals (ARCH-64)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="pin-interrupts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pin interrupts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="signal-qualifier/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Signal qualifiers for received messages (COM-03)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="treiber-granularitaet/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW – granularity of device drivers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="treiber-anbindung-analyse/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW – binding device drivers to the system: analysis of the hand-written integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="openbsw-console-number-arguments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OpenBSW console commands with a number argument - audit (PLAT-110)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_1_19" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_1_19" id="__nav_5_1_19_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Geplant nach R1
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_1_19_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_1_19">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Geplant nach R1
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="planned/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Planned
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="non-cortex-m-audit/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Non cortex m audit
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="rm4x-quellen/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rm4x quellen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="stm32-nucleo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Stm32 nucleo
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../figures/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bilder
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_2" id="__nav_5_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Bilder
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../figures/01-schichten/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    01 schichten
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../figures/02-konfigurationsfluss/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    02 konfigurationsfluss
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../figures/03-startablauf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    03 startablauf
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../figures/04-flash-uds/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    04 flash uds
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../figures/05-ecu-zustaende/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    05 ecu zustaende
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../figures/06-safety-kette/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    06 safety kette
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../figures/07-modulkarte/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    07 modulkarte
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../figures/08-lesepfade/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    08 lesepfade
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../bootloader/doc/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Moduldokumentation
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_3" id="__nav_5_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Moduldokumentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/modules/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modules
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../bootloader/doc/iso14229-1-clause16-conformance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Conformance with ISO 14229-1 clause 16 (non-volatile server memory programming)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../libs/bsw/autosarBase/doc/autosarBase/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AUTOSAR base types (autosarBase)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../libs/bsw/canPhyPassive/doc/canPhyPassive/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Passive CAN transceiver (canPhyPassive)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../libs/bsw/canSystem/doc/canSystem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CAN system, hardware independent parts (canSystem)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../libs/bsw/consoleContext/doc/consoleContext/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Console context (consoleContext)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../libs/bsw/dem/doc/dem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    dem – fault memory (simplified AUTOSAR DEM)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../libs/bsw/e2e/doc/e2e/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    E2E-Bibliothek (e2e)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../libs/bsw/ecuState/doc/ecuState/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ECU-Zustandsverwaltung (ecuState)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../libs/bsw/gdTmc6200/doc/gdTmc6200/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Gate-Treiber TMC6200 (gdTmc6200)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../libs/bsw/hallDecoder/doc/hallDecoder/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hall decoder (hallDecoder)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../libs/bsw/highSideSwitch/doc/highSideSwitch/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Smart high-side switch (highSideSwitch)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../libs/bsw/mcuLink/doc/mcuLink/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mcuLink
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../libs/bsw/nvm/doc/nvm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NvM core (libs/bsw/nvm)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../libs/bsw/nvmDataFlash/doc/nvmDataFlash/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nvmDataFlash - data flash areas (NVM-12)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../libs/bsw/sbcUja113x/doc/sbcUja113x/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SBC-Treiber UJA113x (sbcUja113x)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../libs/bsp/bspAdcAccess/doc/bspAdcAccess/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Serialized ADC access (bspAdcAccess)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../libs/bsp/bspI2c/doc/bspI2c/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    I2C master contract (bspI2c)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../libs/bsp/bspPinEdge/doc/bspPinEdge/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pin edge contract (bspPinEdge)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../libs/bsp/bspPinEvent/doc/bspPinEvent/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    bspPinEvent
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../libs/bsp/bspSampleGroup/doc/bspSampleGroup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sample group (bspSampleGroup)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../libs/bsp/bspSpi/doc/bspSpi/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SPI device contract (bspSpi)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../platforms/common/clockCheck/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Clock start-up check (PLAT-72)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../platforms/common/interruptPriority/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interrupt priorities as ranks (PLAT-10, wired up in PLAT-21, per core profile since ARCH-24)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../platforms/s32k1xx/bsp/bspCsec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    bspCsec – CSEc of the S32K1 family
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../platforms/s32k1xx/bsp/bspMcu/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    bspMcu (Familie s32k1xx) – Derivat-Header und mcu/mcu.h (PLAT-11)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../platforms/s32k1xx/startup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Startup templates per core architecture (PLAT-10)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../platforms/s32k1xx/port/safety/safeLifecycle/doc/safeLifecycle/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Safety task, s32k1xx (safeLifecycle)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../platforms/s32k1xx/port/safety/safeMemory/doc/safeMemory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Memory safety of the s32k1xx family (safeMemory)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../platforms/s32k1xx/port/safety/safeSupervisor/doc/safeSupervisor/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Safe supervisor, project values of the s32k1xx port (safeSupervisor)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../platforms/s32k1xx/port/safety/safeSystem/doc/safeSystem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference and supply supervision, s32k1xx (safeSystem)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../platforms/s32k1xx/port/bspConfiguration/src/bsp/capture/doc/capture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Input capture, s32k1xx (capture)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../platforms/s32k1xx/port/bspConfiguration/src/bsp/hall/doc/hall/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hall sensor set, s32k1xx (hall)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../tools/test/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tests und Werkzeuge
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_4" id="__nav_5_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tests und Werkzeuge
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tools/docgen/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    docgen - generated reference documentation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tools/docgen/website/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Doku-Website
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tools/ci/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/ci – provider-neutral CI (TOOL-03)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tools/setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/setup – the Python environment of a workspace (TOOL-63)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tools/distcheck/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    distcheck – distribution check and export of the open tree
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tools/canflash/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/canflash – application and bootloader over CAN (UDS on ISO-TP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tools/boardtest/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/boardtest – board measurement scripts with host tests (TOOL-05)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tools/misra/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/misra – static analysis (PLAT-74)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tools/trace/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/trace — traceability of the safety requirements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tools/a2lgen/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    a2lgen - A2L for XCP on CAN (TOOL-01)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tools/calgen/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    calgen – calibration datasets (stage K2)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tools/csec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    csec – host side of the CSEc way back to the factory state
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tools/elfcheck/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    elfcheck – linked images against the derivative map and the core
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tools/nxupdate/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tools/schedana/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/schedana – analyse processor load, scheduling and data flow (TOOL-09)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tools/stackuse/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    stackuse – worst-case stack per execution context
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Beitragen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../SECURITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sicherheitsluecken melden
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../mcudb/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ableitung der Chipdaten (mcudb)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-goal-and-guiding-principle" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Goal and guiding principle
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-starting-point-what-openbsw-delivers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Starting point: what OpenBSW delivers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-layer-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Layer model
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Layer model">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#l1-contracts-target" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        L1 contracts (target)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-configuration-levels" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Configuration levels
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Configuration levels">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#responsibility-per-value" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Responsibility per value
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#power-stage-facts-and-minimum-dead-time-io-24-user-2026-09-16" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Power-stage facts and minimum dead time (IO-24, user 2026-09-16)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sensor-characteristics-on-adc-channels-io-18-user-2026-09-16" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sensor characteristics on ADC channels (IO-18, user 2026-09-16)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#validation-minimum-scope" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Validation (minimum scope)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-modules-roles-and-generated-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Modules, roles and generated integration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Modules, roles and generated integration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#generated-binding-of-a-device-driver-arch-52-arch-66" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Generated binding of a device driver (ARCH-52, ARCH-66)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-platforms-and-families" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Platforms and families
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Platforms and families">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#platform-rule-openbsw-layout-per-family-binding-user-2026-09-17" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Platform rule: OpenBSW layout per family (binding, user 2026-09-17)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-bootloader" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Bootloader
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-repository-layout-target" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Repository layout (target)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-todays-board-couplings-and-target-location" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Today's board couplings and target location
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-decisions-for-acceptance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Decisions for acceptance
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-review-questions-for-reviews-and-agent-tasks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Review questions for reviews and agent tasks
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="nextbsw--architecture-target-picture">neXtBSW – architecture target picture<a class="headerlink" href="#nextbsw--architecture-target-picture" title="Permanent link">&para;</a></h1>
+<p>Status: 2026-09-15, <strong>ARCH-01</strong>, accepted by the user on 2026-09-15 (all proposals D1–D10 in section 10).
+Readers: the user as architect, the coordinator and agents. <strong>Binding</strong> for all tasks; deviations only after
+consulting the user and with an entry in section 10.
+Reading versions for outsiders (English, DOC-07, 2026-09-18): <a href="overview/"><code>overview.md</code></a> (structure),
+<a href="openbsw/"><code>openbsw.md</code></a> (relationship to Eclipse OpenBSW), <a href="autosar/"><code>autosar.md</code></a> (where AUTOSAR fits in). They
+explain the current state and refer back here; this document remains the binding one.
+Amended 2026-09-17 (decisions of the user, history in <code>CHANGELOG.md</code>): <strong>ARCH-28</strong> core profile Cortex-R and D11–D14
+(audit <a href="non-cortex-m-audit/"><code>non-cortex-m-audit.md</code></a>); <strong>ARCH-31</strong> platform rule (section 6), family port at
+application level (section 8), D7 amended, D15 added (analysis <a href="openbsw-naehe/"><code>openbsw-naehe.md</code></a>).</p>
+<h2 id="1-goal-and-guiding-principle">1. Goal and guiding principle<a class="headerlink" href="#1-goal-and-guiding-principle" title="Permanent link">&para;</a></h2>
+<p>neXtBSW is a universally usable basic software for ARM-based automotive MCUs, put together by configuration (later
+neXtBSW Studio). Applications are added as Simulink models (AUTOSAR Classic SWC) through a generated RTE.</p>
+<ul>
+<li>Core profiles: <strong>ARM Cortex-M and Cortex-R, 32 bit, little endian</strong> (D11). Big-endian derivatives (e.g. TI TMS570)
+  are not part of the target picture; the little-endian assumption (record format, <code>Platform_Types.h</code>, <code>canflash</code>)
+  stays valid.</li>
+<li>Target families: <strong>focus S32K1</strong>, specifically also <strong>S32K3</strong>, <strong>STM32</strong> and <strong>rm4x</strong> (TI Hercules RM4x, Cortex-R4F;
+  proof target LAUNCHXL2-RM46, D13), in principle any automotive MCU with these core profiles.</li>
+<li>Core and architecture are configuration, just like the board: code distinguishes profiles through the generated
+  architecture (<code>NX_CORE_ARCHITECTURE</code>), never through core names or compiler macros such as <code>__ARM_ARCH</code> (equal to 7
+  for both Cortex-R4F and Cortex-M4F, ARCH-19; implementation ARCH-23/24).</li>
+<li>A board is a use case of the architecture, never its yardstick. The S32K144 eval board is the first example and
+  must not trigger any architecture-relevant decisions.</li>
+<li>One repository: reusable code (drivers, services, generators, bootloader) stays here, even when it is developed on
+  the eval board. What is separated is <strong>data</strong>: derivative, board, project.</li>
+</ul>
+<p>Terms:</p>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Family</td>
+<td>MCU series with shared driver code</td>
+<td>s32k1xx, s32k3xx, stm32, rm4x</td>
+</tr>
+<tr>
+<td>Derivative</td>
+<td>specific chip with package</td>
+<td>S32K144 LQFP100, STM32G474RE, RM46L852</td>
+</tr>
+<tr>
+<td>Board</td>
+<td>assembled PCB: derivative, crystal, parts, wiring</td>
+<td>evalboard_s32k144, nucleo_g474re</td>
+</tr>
+<tr>
+<td>Project</td>
+<td>one ECU software on one board: functions used, buses, tasks, SWCs</td>
+<td>evalboard_motor, evalboard_charger</td>
+</tr>
+<tr>
+<td>Module</td>
+<td>reusable building block with a manifest (driver, service)</td>
+<td>sbcUja113x, highSideSwitch, canSystem</td>
+</tr>
+<tr>
+<td>Role</td>
+<td>capability that a module provides or needs</td>
+<td>can_phy, power_supply, watchdog_trigger</td>
+</tr>
+</tbody>
+</table>
+<h2 id="2-starting-point-what-openbsw-delivers">2. Starting point: what OpenBSW delivers<a class="headerlink" href="#2-starting-point-what-openbsw-delivers" title="Permanent link">&para;</a></h2>
+<p>The foundation is Eclipse OpenBSW as an unchanged submodule (version <code>v0.1.0-677-g00e3cab1</code>, 2026-08-13).</p>
+<p><strong>Carries weight and is used</strong> (details in <a href="openbsw/"><code>openbsw.md</code></a> section 2): the platforms <code>posix</code>, <code>s32k1xx</code>
+(reference S32K148-EVB) and <strong><code>stm32</code></strong> (Nucleo F413ZH with bxCAN, Nucleo G474RE with FDCAN, so STM32 is not new ground),
+FreeRTOS or ThreadX, the hardware-independent middleware (<code>async</code>, <code>lifecycle</code>, <code>cpp2can</code>, <code>docan</code>, <code>transport</code>, <code>uds</code>,
+<code>logger</code>, console, <code>time</code>, <code>util</code>, <code>storage</code>, safety libraries, Ethernet/DoIP/SOME/IP) and a few neutral BSP interfaces
+(<code>CanPhy</code>, <code>SystemTimer</code>, <code>IFlashDriver</code>, <code>IEepromDriver</code>, <code>IEcuPowerStateController</code>, <code>UartConcept</code>,
+<code>DigitalInput</code>/<code>Output</code>/<code>OutputPwm</code>, <code>charInputOutput</code>).</p>
+<p><strong>Gaps that neXtBSW has to close</strong></p>
+<table>
+<thead>
+<tr>
+<th>Gap in OpenBSW</th>
+<th>Consequence today</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>No neutral ADC, SPI, I2C, input capture; watchdog and clock only as same-named headers per platform</td>
+<td>ADC code (<code>AnalogInput</code>) sits in the board configuration, SPI we added ourselves</td>
+</tr>
+<tr>
+<td>Pin level differs per family (<code>bios::Io</code> on S32K1, <code>Gpio</code> on STM32)</td>
+<td>Generated pin configuration is family-specific</td>
+</tr>
+<tr>
+<td>Integration per board by hand: <code>main.cpp</code>, <code>StaticBsp</code>, <code>CanSystem</code>, ISRs, linker script, startup are copied per board (the STM32 port even writes LED and UART registers directly in <code>SystemInit</code>)</td>
+<td>A second board means copying; board peculiarities creep into the start-up sequence</td>
+</tr>
+<tr>
+<td>No configuration description, no generators</td>
+<td>all values in hand-written headers</td>
+</tr>
+<tr>
+<td>Implementation can only be swapped via same-named headers and CMake targets (static)</td>
+<td>no checkable contract between interface and implementation</td>
+</tr>
+</tbody>
+</table>
+<p>neXtBSW therefore adds: complete MCU interface contracts, device drivers, a configuration model with generators,
+generated integration, an RTE with Simulink connection, a bootloader and the Studio.</p>
+<h2 id="3-layer-model">3. Layer model<a class="headerlink" href="#3-layer-model" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a> +------------------------------------------------------------------------------------+
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a> | L5  Application: SWCs from Simulink (swc/, projects/&lt;p&gt;/swc)                       |
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a> +------------------------------------------------------------------------------------+
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a> | L4  RTE (generated): ports, runnables, tasks, data consistency, BSW service ports  |
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a> +------------------------------------------------------------------------------------+
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a> | L3  ECU services (systems): communication (CAN, DoCAN, UDS), state/supply,         |
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a> |     watchdog manager, NvM, fault memory, console, measurement/calibration          |
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a> +--------------------------------------------+---------------------------------------+
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a> | L2  Device drivers/CDD (libs/bsw/&lt;module&gt;) |  Integration (generated per project): |
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a> |     SBC, gate driver, cell monitoring,     |  main, start-up order, lifecycle      |
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a> |     smart high-side switch, ...            |  levels, ISR table, role wiring,      |
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a> +--------------------------------------------+  memory layout                        |
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a> | L1  MCU abstraction: contracts libs/bsp/&lt;class&gt;,                                   |
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a> |     implementation platforms/&lt;family&gt;/bsp (OpenBSW or neXtBSW)                     |
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a> +------------------------------------------------------------------------------------+
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a> | L0  Hardware: derivative + board                                                   |
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a> +------------------------------------------------------------------------------------+
+<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a> Cross-cutting: async/RTOS, lifecycle, logger, safety (family-specific parts in platforms/&lt;family&gt;/safety)
+<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a> Separate:      bootloader (C, without OpenBSW), own HAL per family, same configuration source
+</code></pre></div>
+<p>Rules:</p>
+<ol>
+<li><strong>Dependencies only point downwards.</strong> L2 knows only L1 contracts, L3 only L1/L2 contracts and roles, L5 only the
+   RTE.</li>
+<li><strong>No layer knows a board.</strong> Board knowledge lives exclusively in configuration data and in the integration code
+   generated from it. Hand-written code under a board name is only permitted for justified exceptions (e.g. working
+   around a PCB defect), as a module of its own with a manifest.</li>
+<li><strong>Exchange mechanism:</strong></li>
+<li>L1: one implementation per build, selected via the family (static, like OpenBSW). Every contract has a header
+     in <code>libs/bsp/&lt;class&gt;</code> and a <strong>contract test</strong> (host) that every family implementation must pass.</li>
+<li>Above L1: narrow virtual interfaces where several implementations in one build or mocks are needed (models:
+     <code>ISpiDevice</code> in the SBC driver, <code>CanPhy</code> from OpenBSW).</li>
+<li><strong>Roles instead of part names.</strong> Services request roles, modules provide them. <code>CanSystem</code> needs the role
+   <code>can_phy</code> for a bus; whether a UJA1131, a TJA1044 with STB pin or a dummy fills it is decided by the configuration
+   (section 5).</li>
+<li><strong>Hardware-independent code gets host tests</strong> with a register model or mock; tests run against their own test
+   profiles.</li>
+</ol>
+<h3 id="l1-contracts-target">L1 contracts (target)<a class="headerlink" href="#l1-contracts-target" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Class</th>
+<th>Contract</th>
+<th>Today</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Digital inputs/outputs</td>
+<td><code>DigitalInput</code>/<code>Output</code> (OpenBSW)</td>
+<td>present, pin level family-specific</td>
+</tr>
+<tr>
+<td>PWM</td>
+<td><code>OutputPwm</code> (OpenBSW) + complementary pairs with dead time</td>
+<td>pairs as <code>ComplementaryPwm</code> in the board configuration → family</td>
+</tr>
+<tr>
+<td>ADC</td>
+<td>new <code>libs/bsp/bspAdc</code> (raw value, conversion, internal channels, resolution from the derivative)</td>
+<td>only a board copy of the OpenBSW example</td>
+</tr>
+<tr>
+<td>Input capture</td>
+<td>new</td>
+<td>missing (IO-03)</td>
+</tr>
+<tr>
+<td>SPI</td>
+<td><code>ISpiDevice</code> (neXtBSW)</td>
+<td>present, master only LPSPI</td>
+</tr>
+<tr>
+<td>I2C</td>
+<td>new</td>
+<td>missing (IO-09)</td>
+</tr>
+<tr>
+<td>CAN controller</td>
+<td><code>ICanTransceiver</code> (OpenBSW)</td>
+<td>FlexCAN, bxCAN, FDCAN present</td>
+</tr>
+<tr>
+<td>CAN transceiver</td>
+<td><code>CanPhy</code> (OpenBSW), readiness via <code>getPhyErrorStatus</code></td>
+<td><code>sbc::Uja113xCanPhy</code> and <code>can::PassiveCanPhy</code> implement it (ARCH-05)</td>
+</tr>
+<tr>
+<td>UART</td>
+<td><code>UartConcept</code> (OpenBSW)</td>
+<td>present</td>
+</tr>
+<tr>
+<td>Flash, EEPROM</td>
+<td><code>IFlashDriver</code>, <code>IEepromDriver</code> (OpenBSW)</td>
+<td>present, FlexNVM only S32K1</td>
+</tr>
+<tr>
+<td>Watchdog, reset reason, clock</td>
+<td>new as a contract (today same-named headers per platform)</td>
+<td>family-specific</td>
+</tr>
+<tr>
+<td>System time</td>
+<td><code>SystemTimer</code> (OpenBSW)</td>
+<td>present</td>
+</tr>
+</tbody>
+</table>
+<h2 id="4-configuration-levels">4. Configuration levels<a class="headerlink" href="#4-configuration-levels" title="Permanent link">&para;</a></h2>
+<p>Three levels, each with its own schema (<code>schema_version</code>), YAML files, and one shared loader without Qt
+(<code>tools/nxconfig</code>) used alike by the generators, the command line and the Studio. Values are set exactly once;
+everything derived is computed by the generator.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a> Derivative database        Board                         Project
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a> (manufacturer facts,       (what is fitted/wired)        (what the ECU uses)
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>  read-only)                boards/&lt;board&gt;/board.yaml     projects/&lt;p&gt;/project.yaml
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a> mcudb/&lt;family&gt;/...               |                        + rte.yaml, *.dbc, swc
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>        \_________________________|___________________________/
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>                                  v
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>                    nxconfig: load, link levels, validate
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>                     (conflicts, limits, missing roles, messages with YAML path)
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>                                  v
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>        bswgen (L1 configuration per family) · intgen (integration, memory layout)
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>        rtegen (RTE, tasks) · dbcgen · blgen (bootloader board part) · a2lgen (later)
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>                                  v
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>                build/&lt;project&gt;/generated/...  (not checked in)
+</code></pre></div>
+<h3 id="responsibility-per-value">Responsibility per value<a class="headerlink" href="#responsibility-per-value" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Value</th>
+<th>Level</th>
+<th>Reason</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Flash/RAM size, sector size, peripheral instances, pin mux options, ADC resolution, PLL limits, core (e.g. Cortex-M0+/M4F/M7/M33, Cortex-R4F), interrupt controller (NVIC with priority bits, VIM with channel count and fixed channels)</td>
+<td>Derivative</td>
+<td>datasheet, the same for all boards</td>
+</tr>
+<tr>
+<td><strong>Possible</strong> clock sources and asynchronous outputs per peripheral instance, their maximum frequency (s32k1xx <code>PCCn.PCS</code>, <code>instances.&lt;x&gt;.clock</code> with <code>sources</code>, <code>divider</code>, <code>max_hz</code>)</td>
+<td>Derivative</td>
+<td>datasheet (manufacturer fact)</td>
+</tr>
+<tr>
+<td><strong>Chosen</strong> clock source per used peripheral instance (<code>peripheral_clocks.&lt;instance&gt;</code>)</td>
+<td>Project</td>
+<td>usage decision; without an entry the derivative's <code>default</code> applies (ARCH-18)</td>
+</tr>
+<tr>
+<td>Derivative and package, crystal frequency, pin assignment, voltage dividers, ADC reference voltage, fitted parts and their connection (SPI, CS, INT pins), transceiver per CAN connection, pull-ups, debug interface</td>
+<td>Board</td>
+<td>property of the PCB</td>
+</tr>
+<tr>
+<td>Sensor circuit in front of an ADC pin (shunt, gain, reference, pull-up, diode, k_ILIS/R_IS), supply rails, fitted yes/no (<code>adc[].sensor</code>, <code>rails</code>, <code>adc[].fitted</code>, IO-18)</td>
+<td>Board</td>
+<td>property of the PCB; the connected load (NTC characteristic, breakpoint table, <code>adc_loads</code>) is decided by the project</td>
+</tr>
+<tr>
+<td>Hardware peculiarities of a part that cannot be changed (e.g. MTPNV state of the SBC, missing pull-ups)</td>
+<td>Board</td>
+<td>belongs to the assembled PCB</td>
+</tr>
+<tr>
+<td>Power stage per PWM group: switching times, gate charge, R_DS(on), gate resistors of the PCB, driver propagation delays, V_DS short-circuit threshold (<code>pwm[].power_stage</code>, IO-24)</td>
+<td>Board</td>
+<td>property of the fitted power stage; dead time and dead-time margin (<code>deadtime_margin_ns</code>) are decided by the project</td>
+</tr>
+<tr>
+<td>Short-circuit detection settings of a gate driver that are chosen over SPI (V_DS thresholds, filter, delay: <code>modules.&lt;device&gt;.short_*</code>, IO-35)</td>
+<td>Project</td>
+<td>a choice of the project like the dead time; the board keeps only what the circuit fixes (R_DS(on), a hard-wired detector in <code>power_stage.short_circuit</code>); nxconfig derives the resulting short-circuit current from both</td>
+</tr>
+<tr>
+<td>Which peripherals are used, system clock, PWM frequency and dead time, bit rates, CAN IDs, UDS addresses, buses and roles per bus, tasks (number, priority, period, stack), stack sizes per exception mode (Cortex-R), SWCs and connections, monitoring thresholds, memory split bootloader/app/NvM, FlexNVM partitioning, safety outputs, test and expert functions</td>
+<td>Project</td>
+<td>decision of the respective ECU software</td>
+</tr>
+<tr>
+<td>Toolchain path, CAN adapter, serial port, debugger serial number</td>
+<td>Workstation (local, not checked in)</td>
+<td>belongs to the computer, not to the project</td>
+</tr>
+</tbody>
+</table>
+<p>Consequences for today's entries: <code>pwm.clock_hz</code> is dropped (derived), <code>pwm.frequency_hz</code>/<code>deadtime_ns</code> and <code>safety</code>
+move into the project, <code>exclusive_groups</code> is dropped in favour of the general conflict check,
+<code>adc_reference.resolution_bits</code> comes from the derivative.</p>
+<p><strong>Separate fact and decision, even within one value (ARCH-18, user 2026-09-16).</strong> The peripheral clock shows the
+pattern: which sources and asynchronous outputs a clock switch offers and how fast the output may run is a
+manufacturer fact and lives in the derivative; <em>which</em> of them is used is decided by the project. So that a project
+does not have to fill in every value, the derivative names a <strong>default</strong> (<code>default</code>) that applies as long as the
+project chooses nothing – backed by evidence like any other derivative value. If there is no evidence for a default,
+it is left out: a used instance without a project choice is then an error with file, line and YAML path, instead of
+entering a guessed value. The same pattern applies to future values of this kind (pin pull, filter times, conversion
+times).</p>
+<h3 id="power-stage-facts-and-minimum-dead-time-io-24-user-2026-09-16">Power-stage facts and minimum dead time (IO-24, user 2026-09-16)<a class="headerlink" href="#power-stage-facts-and-minimum-dead-time-io-24-user-2026-09-16" title="Permanent link">&para;</a></h3>
+<p>A complementary PWM group describes its power stage in the board under <code>pwm[].power_stage</code> (<code>switch</code>, <code>driver</code>, <code>gate</code>,
+<code>short_circuit</code>; int32 in fixed units ns, nC, mΩ, mV, each group with <code>source</code>/<code>verify</code>; fields in
+<a href="../reference/board/"><code>board.md</code></a>). The project decides <code>pwm.&lt;group&gt;.deadtime_ns</code> and the margin <code>deadtime_margin_ns</code>.
+<code>tools/nxconfig</code> (<code>powerstage.py</code>) derives:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>k_on  = (R_G,int + R_on,board)  / (R_G,int + R_G,test)        R_G,int missing -&gt; 0 (conservative)
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>k_off = (R_G,int + R_off,board) / (R_G,int + R_G,test)        without resistor data: k = 1
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>t_off  = (t_d(off) + t_f) * max(1, k_off)                     switch still conducts after the turn-off command
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>t_on   =  t_d(on)         * min(1, k_on)                      opposite switch starts conducting
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>t_dead,min = max(0, t_off - t_on)                             switches
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>           + max(0, t_drv,off - t_drv,on)                     driver propagation delays
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>           + deadtime_margin_ns                               safety margin (project)
+</code></pre></div>
+<p>Switching times are entered as the datasheet states them (maximum, otherwise typical); the spread belongs in the margin;
+scaling to the PCB gate resistance only lengthens the dead time. If <code>deadtime_ns</code> is below the minimum, nxconfig reports
+it at the YAML path <code>pwm.&lt;group&gt;.deadtime_ns</code>: an error if all facts used have a source and are not <code>verify: true</code>,
+otherwise a warning; missing facts give a warning with the path, never an assumption. The same facts yield the
+short-circuit current <code>V_DS,threshold / R_DS(on)</code>, the minimum blanking time <code>(t_d(on) + t_r) * max(1, k_on)</code> and the
+average gate current <code>Q_G * f_PWM</code>.</p>
+<h3 id="sensor-characteristics-on-adc-channels-io-18-user-2026-09-16">Sensor characteristics on ADC channels (IO-18, user 2026-09-16)<a class="headerlink" href="#sensor-characteristics-on-adc-channels-io-18-user-2026-09-16" title="Permanent link">&para;</a></h3>
+<p>Decisions of the user (all recommendations adopted; fields in <a href="../reference/board/"><code>board.md</code></a> and
+<a href="../reference/project/"><code>project.md</code></a>):</p>
+<ol>
+<li><strong>Board = circuit, project = load.</strong> The board describes the circuit in front of the pin (shunt, amplifier, divider,
+   pull-up) and delivers the quantity at the connector; the project describes the connected load (NTC characteristic,
+   breakpoint table).</li>
+<li><strong>Signed integer in fixed units</strong> (mV, mA, Ω, 0.1 °C, ‰), no float, at run time too (S32K116 has no FPU).</li>
+<li><strong>Kinds.</strong> Board <code>adc[].sensor.kind</code>: <code>linear</code>, <code>shunt_amplifier</code>, <code>divider</code>, <code>pullup</code>, <code>highside_is</code>; rails under
+   <code>board.rails</code>. Project <code>adc_loads.&lt;channel&gt;.kind</code>: <code>ntc_beta</code> and <code>table</code>.</li>
+<li><strong>Zero-point calibration in operation</strong> stays a matter for the application; a BSW service follows later.</li>
+<li><strong>Quality at the ADC limits:</strong> raw value 0 or full scale, amplifier outside its output range, open pull-up or a board
+   value outside the breakpoints give <code>QLF_ERROR_RANGE</code> (value 32, <a href="signal-qualifier/">signal-qualifier.md</a>); a failed
+   conversion <code>QLF_ERROR</code>; otherwise <code>QLF_OK</code>.</li>
+<li><strong>No assembly variants in the schema:</strong> the board carries the fitted variant; circuits not fitted are marked
+   <code>adc[].fitted: false</code>. <code>scale</code> and <code>sensor</code> both non-trivial is an error (the circuit is stated once); part facts with
+   several users (<code>k_ILIS</code>/<code>R_IS</code> of a high-side switch) are stated once, at the sensor of its IS channel.</li>
+</ol>
+<p><code>tools/nxconfig</code> (<code>sensor.py</code>) derives a rational integer conversion for each used, fitted channel (U = raw · V_REFH /
+(2^bits − 1), exact as a fraction, then reduced):</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>x      = min(raw, calc_high)
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>board  = round((a * x + b) / (c * x + d))       int64, rounds half away from zero; c * x + d &gt; 0 up to calc_high
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>value  = board | interpolate(points, board)     load: breakpoints ascending in board value, ends held
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>scale            U * factor + offset_mv                             mV
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>linear           U * gain_num / gain_den + offset                   unit
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>divider          U * (r_top + r_bottom) / r_bottom                  mV
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>shunt_amplifier  (U - U_ref) * 10^6 * gain_den / (gain * R_shunt)    mA   (R_shunt in µΩ)
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>pullup           R_pu * U / (U_supply - U_diode - U)                 Ω    (calc_high: last code with denominator &gt; 0)
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>highside_is      k_ILIS * U / R_IS                                  mA
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>ntc_beta         table from R(T) = R_n * exp(B * (1/T - 1/T_n)) from t_min to t_max in steps of step_ddegc
+</code></pre></div>
+<p>Checks run over <strong>every</strong> raw value (int64 intermediates, int32 result, strictly ascending breakpoints, the largest NTC
+error against <code>max_error_ddegc</code> as a warning); every message with file, line and YAML path. <code>tools/bswgen</code> generates
+<code>bsp/adc/analogSensorConfiguration.h</code> (<code>nxAdcPhys_&lt;NAME&gt;(raw, &amp;quality)</code>, comment with formula and range, "UNCONFIRMED"
+if a source or <code>verify</code> is missing) and <code>tools/rtegen</code> the targets <code>adc.phys.&lt;NAME&gt;</code> (sint32) and <code>adc.qlf.&lt;NAME&gt;</code>;
+<code>adc.phys</code> without <code>adc.qlf</code> gives a warning.</p>
+<h3 id="validation-minimum-scope">Validation (minimum scope)<a class="headerlink" href="#validation-minimum-scope" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Pin, timer channel, peripheral instance used at most once; pin function possible according to the derivative.</li>
+<li>Every requested role filled exactly once (e.g. <code>can_phy</code> for every bus used).</li>
+<li>Clocks and timings reachable (PLL, bit timing, baud rate, PWM resolution, dead time).</li>
+<li>Chosen peripheral clocks permitted by the derivative (source, output) and within the output's limit; the instance
+  is actually used by the project (ARCH-18).</li>
+<li>Memory split fits into the derivative; bootloader and app do not overlap.</li>
+<li>Messages with severity, text and YAML path (basis for Studio live checking, TOOL-07).</li>
+</ul>
+<h2 id="5-modules-roles-and-generated-integration">5. Modules, roles and generated integration<a class="headerlink" href="#5-modules-roles-and-generated-integration" title="Permanent link">&para;</a></h2>
+<p>Every reusable module in <code>libs/bsw/&lt;module&gt;</code> (and every L1 implementation) gets a manifest <code>module.yaml</code>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nt">module</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sbcUja113x</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">device_driver</span><span class="w">                 </span><span class="c1"># mcu_driver | device_driver | service | library | contract (DOC-14)</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="nt">requires</span><span class="p">:</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">  </span><span class="nt">spi_device</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span><span class="w">                     </span><span class="c1"># L1 contract</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="nt">provides</span><span class="p">:</span><span class="w">                           </span><span class="c1"># roles that a board part of this type can fill</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">can_phy</span><span class="w">                         </span><span class="c1"># per integrated transceiver</span>
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">power_supply</span><span class="w">                    </span><span class="c1"># V1/V2, sleep, wake-up sources</span>
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">watchdog_trigger</span><span class="w">                </span><span class="c1"># external watchdog</span>
+<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">early_init</span><span class="w">                      </span><span class="c1"># optional hook before the MCU watchdog test (RCC compensation)</span>
+<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="nt">config_schema</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">schema.yaml</span><span class="w">          </span><span class="c1"># project parameters (watchdog mode, V2, interrupts, ...)</span>
+<a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="nt">lifecycle</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> level</span><span class="p">:</span><span class="w"> </span><span class="nv">1</span><span class="p p-Indicator">,</span><span class="nt"> task</span><span class="p">:</span><span class="w"> </span><span class="nv">bsp</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a><span class="nt">cmake_target</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sbcUja113x</span>
+<a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a><span class="nt">console</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sbc</span><span class="w">                        </span><span class="c1"># optional, expert functions marked</span>
+<a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a><span class="nt">verification</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hardware</span><span class="w">              </span><span class="c1"># none | mock | hardware, with verification_note (DOC-14)</span>
+</code></pre></div>
+<p><code>library</code> (for example <code>e2e</code>, <code>autosarBase</code>) and <code>contract</code> (an L1 interface such as <code>bspSpi</code>) carry only the catalogue
+fields (<code>module</code>, <code>kind</code>, <code>description</code>, <code>cmake_target</code>, <code>verification</code>); nxconfig and bswgen never treat them as
+device drivers. The module catalogue <a href="../reference/modules/"><code>doc/reference/modules.md</code></a> is generated from these
+manifests.</p>
+<p>A module that gives the application readable values declares them in <code>rte</code> (RTE-18), so a new driver becomes
+connectable through a target <code>&lt;prefix&gt;.&lt;Instance&gt;.&lt;value&gt;</code> without a change to the generator or the Studio:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1"># libs/bsw/gdTmc6200/module.yaml (excerpt)</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="nt">rte</span><span class="p">:</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">  </span><span class="nt">prefix</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">gd</span><span class="w">                        </span><span class="c1"># target gd.&lt;Device&gt;.&lt;value&gt;; left out: the module name in lower case</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">  </span><span class="nt">access</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">gate_driver</span><span class="w">               </span><span class="c1"># generic "reading" contract (below), or the access code of an existing module</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="w">  </span><span class="nt">instance</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Device</span>
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="w">  </span><span class="nt">values</span><span class="p">:</span>
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="w">    </span><span class="nt">faults</span><span class="p">:</span><span class="w">  </span><span class="p p-Indicator">{</span><span class="nt"> types</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">uint16</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">uint32</span><span class="p p-Indicator">],</span><span class="nt"> unit</span><span class="p">:</span><span class="w"> </span><span class="s">"gd::fault</span><span class="nv"> </span><span class="s">bits,</span><span class="nv"> </span><span class="s">latched</span><span class="nv"> </span><span class="s">until</span><span class="nv"> </span><span class="s">the</span><span class="nv"> </span><span class="s">driver's</span><span class="nv"> </span><span class="s">clearFaults()"</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> types</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">boolean</span><span class="p p-Indicator">],</span><span class="nt"> unit</span><span class="p">:</span><span class="w"> </span><span class="nv">DRV_EN switched on by the driver</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="w">    </span><span class="nt">qlf</span><span class="p">:</span><span class="w">     </span><span class="p p-Indicator">{</span><span class="nt"> types</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">uint8</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">uint16</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">uint32</span><span class="p p-Indicator">],</span><span class="nt"> field</span><span class="p">:</span><span class="w"> </span><span class="nv">quality</span><span class="p p-Indicator">,</span><span class="nt"> unit</span><span class="p">:</span><span class="w"> </span><span class="s">"QLF_*</span><span class="nv"> </span><span class="s">of</span><span class="nv"> </span><span class="s">Rte_Qlf.h"</span><span class="p p-Indicator">,</span><span class="nt"> qualifier</span><span class="p">:</span><span class="w"> </span><span class="nv">true</span><span class="w"> </span><span class="p p-Indicator">}</span>
+</code></pre></div>
+<p>A new driver uses the generic contract <code>access: reading</code>: the manifest names a header (<code>include</code>), a reading struct
+(<code>reading</code>) and a reader function (<code>read</code>); the module's family integration defines <code>void
+::integration::rte::&lt;read&gt;_&lt;Instance&gt;(&lt;reading&gt;&amp; reading)</code> once per instance (it takes a consistent snapshot itself), and
+the generated RTE calls it once per task and cycle that reads the instance. Three older access kinds (<code>gate_driver</code>,
+<code>hall</code>, <code>input_capture</code>) stay code of <code>tools/rtegen</code>; their manifest only states which fields are connectable. <code>instances</code>
+(default <code>devices</code>) picks the board devices of the module or the board <code>input_capture</code> entries the project uses. At most
+one value per module may be the <strong>qualifier</strong> (COM-03 <code>QLF_*</code>). <code>rte</code> targets are inputs only: nothing switches a device
+on through them.</p>
+<p>The board says which part sits where and which roles it fills there; the project says which of that is used:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="c1"># boards/evalboard_s32k144/board.yaml (excerpt, sketch)</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="nt">devices</span><span class="p">:</span>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SBC</span>
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="w">    </span><span class="nt">module</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sbcUja113x</span>
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="w">    </span><span class="nt">part</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">UJA1131HW/FD/5V/4</span>
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="w">    </span><span class="nt">connect</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> spi</span><span class="p">:</span><span class="w"> </span><span class="nv">LPSPI1</span><span class="p p-Indicator">,</span><span class="nt"> pcs</span><span class="p">:</span><span class="w"> </span><span class="nv">PTE1</span><span class="p p-Indicator">,</span><span class="nt"> int1</span><span class="p">:</span><span class="w"> </span><span class="nv">PTE12</span><span class="p p-Indicator">,</span><span class="nt"> int2</span><span class="p">:</span><span class="w"> </span><span class="nv">PTE3</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="w">    </span><span class="nt">roles</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> can_phy</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">CAN0</span><span class="p p-Indicator">],</span><span class="nt"> power_supply</span><span class="p">:</span><span class="w"> </span><span class="nv">true</span><span class="p p-Indicator">,</span><span class="nt"> watchdog_trigger</span><span class="p">:</span><span class="w"> </span><span class="nv">true</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="nt">can</span><span class="p">:</span>
+<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> name</span><span class="p">:</span><span class="w"> </span><span class="nv">CAN0</span><span class="p p-Indicator">,</span><span class="nt"> controller</span><span class="p">:</span><span class="w"> </span><span class="nv">FlexCAN0</span><span class="p p-Indicator">,</span><span class="nt"> rx</span><span class="p">:</span><span class="w"> </span><span class="nv">PTC2</span><span class="p p-Indicator">,</span><span class="nt"> tx</span><span class="p">:</span><span class="w"> </span><span class="nv">PTC3</span><span class="p p-Indicator">,</span><span class="nt"> phy</span><span class="p">:</span><span class="w"> </span><span class="nv">SBC</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> name</span><span class="p">:</span><span class="w"> </span><span class="nv">CAN1</span><span class="p p-Indicator">,</span><span class="nt"> controller</span><span class="p">:</span><span class="w"> </span><span class="nv">FlexCAN2</span><span class="p p-Indicator">,</span><span class="nt"> rx</span><span class="p">:</span><span class="w"> </span><span class="nv">PTC16</span><span class="p p-Indicator">,</span><span class="nt"> tx</span><span class="p">:</span><span class="w"> </span><span class="nv">PTC17</span><span class="p p-Indicator">,</span><span class="nt"> phy</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> part</span><span class="p">:</span><span class="w"> </span><span class="nv">SN65HVD1050</span><span class="p p-Indicator">,</span><span class="nt"> module</span><span class="p">:</span><span class="w"> </span><span class="nv">canPhyPassive</span><span class="w"> </span><span class="p p-Indicator">}</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a>
+<a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a><span class="c1"># projects/evalboard_motor/project.yaml (excerpt, sketch)</span>
+<a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a><span class="nt">board</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">evalboard_s32k144</span>
+<a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a><span class="nt">buses</span><span class="p">:</span>
+<a id="__codelineno-6-15" name="__codelineno-6-15" href="#__codelineno-6-15"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> name</span><span class="p">:</span><span class="w"> </span><span class="nv">VEH</span><span class="p p-Indicator">,</span><span class="nt"> can</span><span class="p">:</span><span class="w"> </span><span class="nv">CAN0</span><span class="p p-Indicator">,</span><span class="nt"> bitrate</span><span class="p">:</span><span class="w"> </span><span class="nv">500000</span><span class="p p-Indicator">,</span><span class="nt"> dbc</span><span class="p">:</span><span class="w"> </span><span class="nv">EvalBoard.dbc</span><span class="p p-Indicator">,</span><span class="nt"> node</span><span class="p">:</span><span class="w"> </span><span class="nv">EVB</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<a id="__codelineno-6-16" name="__codelineno-6-16" href="#__codelineno-6-16"></a><span class="nt">diagnostics</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> uds</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> bus</span><span class="p">:</span><span class="w"> </span><span class="nv">VEH</span><span class="p p-Indicator">,</span><span class="nt"> request</span><span class="p">:</span><span class="w"> </span><span class="nv">0x7E0</span><span class="p p-Indicator">,</span><span class="nt"> response</span><span class="p">:</span><span class="w"> </span><span class="nv">0x7E8</span><span class="w"> </span><span class="p p-Indicator">}</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<a id="__codelineno-6-17" name="__codelineno-6-17" href="#__codelineno-6-17"></a><span class="nt">modules</span><span class="p">:</span>
+<a id="__codelineno-6-18" name="__codelineno-6-18" href="#__codelineno-6-18"></a><span class="w">  </span><span class="nt">SBC</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> watchdog</span><span class="p">:</span><span class="w"> </span><span class="nv">autonomous</span><span class="p p-Indicator">,</span><span class="nt"> v2</span><span class="p">:</span><span class="w"> </span><span class="nv">on_normal_standby_reset</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<a id="__codelineno-6-19" name="__codelineno-6-19" href="#__codelineno-6-19"></a><span class="nt">tasks</span><span class="p">:</span>
+<a id="__codelineno-6-20" name="__codelineno-6-20" href="#__codelineno-6-20"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> name</span><span class="p">:</span><span class="w"> </span><span class="nv">app10ms</span><span class="p p-Indicator">,</span><span class="nt"> priority</span><span class="p">:</span><span class="w"> </span><span class="nv">5</span><span class="p p-Indicator">,</span><span class="nt"> period_ms</span><span class="p">:</span><span class="w"> </span><span class="nv">10</span><span class="p p-Indicator">,</span><span class="nt"> stack</span><span class="p">:</span><span class="w"> </span><span class="nv">2048</span><span class="w"> </span><span class="p p-Indicator">}</span>
+</code></pre></div>
+<p>From this the integration generator (<code>intgen</code>) produces <code>main</code>, <code>platformLifecycleAdd</code>, instances of the systems, the
+wiring of the roles, ISR binding and priorities as well as the task list. A board without an SBC declares a passive
+transceiver or one with an STB pin for its CAN connection; <code>power_supply</code> is then filled by an MCU-internal module
+(low-power modes) or stays empty; no service changes.</p>
+<p>Principle: what is generated is <strong>wiring</strong>, not logic. Logic lives in modules with host tests.</p>
+<h3 id="generated-binding-of-a-device-driver-arch-52-arch-66">Generated binding of a device driver (ARCH-52, ARCH-66)<a class="headerlink" href="#generated-binding-of-a-device-driver-arch-52-arch-66" title="Permanent link">&para;</a></h3>
+<p>How a device driver is bound to the system - pins and SPI device, system object, lifecycle registration, safe_off
+adapter, RTE reader - is generated from its manifest as well (decision <code>arch52-vorschlag</code>, analysis in
+<a href="treiber-anbindung-analyse/"><code>treiber-anbindung-analyse.md</code></a>). The manifest describes the wiring, a small <strong>trait</strong>
+next to the driver holds the few C++-specific lines, the <strong>family</strong> provides one binder per connection kind and
+contract, and <code>tools/bswgen</code> writes the block per instance (<code>integration/moduleBinding.h</code>, family neutral):</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="c1"># libs/bsw/highSideSwitch/module.yaml (excerpt)</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="nt">connect</span><span class="p">:</span>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="w">  </span><span class="nt">in</span><span class="p">:</span><span class="w">  </span><span class="p p-Indicator">{</span><span class="nt"> kind</span><span class="p">:</span><span class="w"> </span><span class="nv">digital_output</span><span class="p p-Indicator">,</span><span class="nt"> safe_off</span><span class="p">:</span><span class="w"> </span><span class="nv">true</span><span class="w"> </span><span class="p p-Indicator">}</span><span class="w">   </span><span class="c1"># safe_off: switched off by the fault handlers, the halt deadman, S1</span>
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="w">  </span><span class="nt">den</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> kind</span><span class="p">:</span><span class="w"> </span><span class="nv">digital_output</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="w">  </span><span class="nt">is</span><span class="p">:</span><span class="w">  </span><span class="p p-Indicator">{</span><span class="nt"> kind</span><span class="p">:</span><span class="w"> </span><span class="nv">analog_input</span><span class="w"> </span><span class="p p-Indicator">}</span><span class="w">                      </span><span class="c1"># converted with the board channel's characteristic (IO-21)</span>
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="nt">lifecycle</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> level</span><span class="p">:</span><span class="w"> </span><span class="nv">1</span><span class="p p-Indicator">,</span><span class="nt"> task</span><span class="p">:</span><span class="w"> </span><span class="nv">bsp</span><span class="w"> </span><span class="p p-Indicator">}</span><span class="w">                 </span><span class="c1"># read: the instance is registered in this level and task</span>
+<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="nt">console</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">instance</span><span class="w">                                  </span><span class="c1"># component name = console group of the instance</span>
+<a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a><span class="nt">binding</span><span class="p">:</span>
+<a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a><span class="w">  </span><span class="nt">include</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">highSideSwitch/HighSideSwitchBinding.h</span><span class="w">  </span><span class="c1"># the trait, in the module's include directory</span>
+<a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a><span class="w">  </span><span class="nt">trait</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">::highside::HighSideSwitchBinding</span>
+</code></pre></div>
+<p>Further manifest fields of the binding: <code>connect.&lt;x&gt;.optional: true</code> (the board may leave the connection open; the
+trait sees <code>Connect::&lt;X&gt;_WIRED</code>; never together with <code>safe_off</code>) and <code>max_instances</code> (checked at the project entry
+that brings in one instance too many). nxconfig checks every field with a YAML path: a binding needs a device
+driver with <code>lifecycle</code> in level 1 or 2 and a BSW task, only the contracts the family binders offer (<code>spi_device</code>),
+RTE access only through the generic <code>reading</code> contract, and the trait header must exist.</p>
+<table>
+<thead>
+<tr>
+<th>Part</th>
+<th>Where</th>
+<th>Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Trait</td>
+<td><code>libs/bsw/&lt;module&gt;/include/...</code> (the module)</td>
+<td><code>System</code>, <code>config&lt;I&gt;()</code>/<code>valid()</code> from the generated instance description <code>I</code> (<code>Param::</code>, <code>Connect::</code>, <code>NAME</code>, <code>PART</code>, <code>COMPONENT</code>, <code>LABEL</code>, <code>PWM_BOUND</code>), <code>Parts&lt;I, B&gt;</code> (pins on the binders <code>B</code>, SPI device), <code>create()</code>, one access struct <code>SafeOff_&lt;connection&gt;</code> per safe_off connection (<code>off</code>, <code>enables</code>, <code>setLock</code>, <code>updateLock</code>), <code>rte()</code> with <code>access: reading</code>, SPI device facts (<code>SPI_FRAME_BITS</code>, <code>SPI_CPOL</code>, <code>SPI_CPHA</code>, <code>SPI_MAX_HZ</code>, <code>SPI_TIMEOUT_US</code>). Contract: <code>tools/bswgen/modules.py</code>, section "binding (ARCH-52)"</td>
+</tr>
+<tr>
+<td>Family binders</td>
+<td><code>platforms/&lt;family&gt;/port/main/src/integration/ModuleBinders.h</code></td>
+<td>digital output/input, ADC channel with characteristic, SPI device on a board bus - one per connection kind and contract, never one per driver</td>
+</tr>
+<tr>
+<td>Framework</td>
+<td><code>.../integration/ModuleBinding.h</code></td>
+<td><strong>one</strong> generic safe_off adapter <code>SafeOffOutput&lt;Access&gt;</code> for the debug halt guard and the hold of S1, the lock <code>safeOffLock()</code> (S1 latch, and for a PWM-bound instance the degraded group)</td>
+</tr>
+<tr>
+<td>Generat</td>
+<td><code>integration/moduleBinding.h</code>, <code>moduleBindingConfiguration.h</code>, <code>modules.cmake</code></td>
+<td>per instance the description, the <code>static_assert</code> on <code>valid()</code> with the YAML path, <code>Parts</code>, storage, the safe_off adapters, <code>addComponents(manager, level)</code>; <code>NX_BINDING_TARGETS</code>, <code>NX_BINDING_MODULE_DIRS</code></td>
+</tr>
+</tbody>
+</table>
+<p>The family port includes the generat once (<code>Integration.cpp</code>), calls <code>addComponents()</code> in level 1 (right after <code>bsp</code>)
+and level 2 (after CAN), puts the generated safe_off adapters into the list of the debug halt guard and the safe
+state hold (checked against the safe outputs table, <code>NX_SAFE_OFF_OUTPUT_COUNT</code>) and links <code>${NX_BINDING_TARGETS}</code>;
+the LPSPI master of the family is linked with the signal kind SPI (<code>NX_USE_SPI</code>), not with the SBC. A new driver with
+a binding therefore needs <strong>no line in the family port</strong> (proof: the synthetic fourth driver of
+<code>tools/bswgen/test/binding</code>).</p>
+<p>State (2026-09-30): <code>highSideSwitch</code> is bound this way (ARCH-66; lockstep comparison with its former hand-written adapter
+in <code>test/host/SafeOffEquivalenceHostTest.cpp</code>). Still written by hand in the family port: <code>sbcUja113x</code> (roles <code>can_phy</code>,
+<code>power_supply</code>, <code>early_init</code>, ARCH-53) and <code>gdTmc6200</code> (a per-instance lock and "keep enable" in an active short, SYS-139;
+the PWM group as duty source, IO-45; RTE values with the supervisor's bus verdict, SYS-29). The <code>add_subdirectory</code> of the
+module directories from <code>NX_BINDING_MODULE_DIRS</code> belongs into the root <code>CMakeLists.txt</code> (today a fixed list there).</p>
+<h2 id="6-platforms-and-families">6. Platforms and families<a class="headerlink" href="#6-platforms-and-families" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Family</th>
+<th>Foundation</th>
+<th>neXtBSW addition</th>
+<th>State</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>s32k1xx</td>
+<td>OpenBSW <code>platforms/s32k1xx</code></td>
+<td>LPSPI, ADC contract, complementary PWM, input capture, FlexIO I2C, derivatives 142/144/146/148</td>
+<td>in progress (eval board)</td>
+</tr>
+<tr>
+<td>stm32</td>
+<td>OpenBSW <code>platforms/stm32</code> (F4 bxCAN, G4 FDCAN)</td>
+<td>missing contracts (ADC, SPI, PWM, watchdog), further derivatives</td>
+<td>after ARCH-10</td>
+</tr>
+<tr>
+<td>s32k3xx</td>
+<td>no OpenBSW platform yet</td>
+<td>own <code>platforms/s32k3xx</code> (Cortex-M7), driver source open</td>
+<td>after ARCH-10</td>
+</tr>
+<tr>
+<td>rm4x</td>
+<td>no OpenBSW platform</td>
+<td>own, <strong>OpenBSW-conformant</strong> platform <code>platforms/rm4x/{3rdparty,bsp,etlImpl,hardFaultHandler,safety,unitTest,CMakeLists.txt}</code> (Cortex-R4F): startup in ARM state with mode stacks, VIM dispatch, RTI tick, DCAN, F021 flash from RAM; sources open until PLAT-44 (D14)</td>
+<td>audit ARCH-19; preparation ARCH-23–27, BL-08, RTE-13; family PLAT-35–39, BL-09; board PLAT-40–43</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>Own family extensions live in <code>platforms/&lt;family&gt;/bsp/&lt;module&gt;</code> in the OpenBSW layout; same-named OpenBSW modules
+  are used, not duplicated. A family without an OpenBSW platform (rm4x) brings its complete platform in
+  <code>platforms/&lt;family&gt;</code> (ARCH-25). Binding for this is the <strong>platform rule</strong> at the end of this section.</li>
+<li>Vendor libraries and sources (NXP RTD, STM32 HAL/LL, TI HALCoGen register headers, TI F021 flash API) only behind
+  L1 contracts and only after a licence check (ARCH-10, for rm4x PLAT-44, D14).</li>
+<li>Toolchain: generic <code>arm-none-eabi-gcc</code> for all core profiles; core options (<code>-mcpu</code>, FPU) from the derivative
+  database.</li>
+<li>Startup, vector table or <strong>interrupt controller table</strong>, linker script (for Cortex-R with stacks per exception
+  mode) and MPU regions are family templates, filled from derivative and project:</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Core profile</th>
+<th>Controller</th>
+<th>Table</th>
+<th>Priority, RTOS boundary</th>
+<th>Jump from the bootloader</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cortex-M</td>
+<td>NVIC</td>
+<td>vector table (word 0 stack pointer, then Thumb addresses), switchable via VTOR</td>
+<td>rank → NVIC level; boundary BASEPRI (ARMv6-M: global lock)</td>
+<td>VTOR to the application entry</td>
+</tr>
+<tr>
+<td>Cortex-R</td>
+<td>VIM</td>
+<td>eight instruction vectors at 0 (ARM state, no VTOR) + VIM channel table (handler per channel)</td>
+<td>rank → channel order (priority = channel number); boundary: IRQ may call the RTOS, FIQ never</td>
+<td>fixed forwarding table at the application entry (D12, section 7)</td>
+</tr>
+</tbody>
+</table>
+<p>The rank remains a project term (section 4); the mapping onto the controller is derived by <code>nxconfig</code> and the
+  family generator (ARCH-23/24).</p>
+<h3 id="platform-rule-openbsw-layout-per-family-binding-user-2026-09-17">Platform rule: OpenBSW layout per family (binding, user 2026-09-17)<a class="headerlink" href="#platform-rule-openbsw-layout-per-family-binding-user-2026-09-17" title="Permanent link">&para;</a></h3>
+<p>Decision of the user of 2026-09-17 (decision board: ARCH-30 F1/F3, RM46 option A) based on
+<a href="openbsw-naehe/"><code>openbsw-naehe.md</code></a> section 3. Yardstick: OpenBSW has <strong>no</strong> cross-family platform level – what
+several platforms need either lives neutrally in <code>libs/</code> or is kept per platform.</p>
+<p><strong>P1 – Layout.</strong> Every family is an OpenBSW platform. <code>platforms/&lt;family&gt;</code> has the layout of
+<code>external/openbsw/platforms/{s32k1xx,stm32}</code>: <code>bsp/&lt;module&gt;</code>, <code>3rdparty/&lt;rtos-port&gt;</code>, <code>etlImpl</code>, <code>hardFaultHandler</code>,
+<code>safety</code>, <code>unitTest</code>, <code>CMakeLists.txt</code>; integrated through the hook <code>OPENBSW_PLATFORM</code>.</p>
+<p><strong>P2 – Self-containment.</strong> <code>platforms/&lt;family&gt;</code> plus <code>libs/</code> is sufficient. No platform module includes a module of
+another platform, and none depends on <code>platforms/common</code>. What OpenBSW places per platform (RTOS port,
+<code>hardFaultHandler</code>, startup, <code>etlImpl</code>, <code>safety</code>, <code>bsp/*</code>) stays per family – even if it then exists more than once.</p>
+<p><strong>P3 – <code>platforms/common</code> (the checkable rule).</strong> <code>platforms/common</code> contains <strong>only modules that have no counterpart
+in OpenBSW</strong>. Check per directory <code>platforms/common/&lt;module&gt;</code>, without discretion:</p>
+<ol>
+<li>Is there a module with the same purpose in <code>external/openbsw/platforms/&lt;family&gt;/</code>? → The module belongs <strong>per
+   family</strong> in <code>platforms/&lt;family&gt;/&lt;module&gt;</code>, not in <code>common</code>.</li>
+<li>Is there a module with the same purpose in <code>external/openbsw/libs/</code> (including <code>libs/3rdparty/</code>)? → It belongs
+   <strong>neutrally</strong> in <code>libs/bsp</code> or <code>libs/bsw</code>, not in <code>common</code>.</li>
+<li>Neither, and the part is neXtBSW's own (bound to the generator or the core profile)? → <code>platforms/common</code> is right.</li>
+<li>Every deviation from 1–3 is an <strong>exception</strong> and is listed with reason and end condition in the list P4. Without
+   an entry there it counts as an error.</li>
+</ol>
+<p><strong>P4 – Inventory of <code>platforms/common</code> (list from <a href="openbsw-naehe/"><code>openbsw-naehe.md</code></a> section 3, as of
+2026-09-17):</strong></p>
+<table>
+<thead>
+<tr>
+<th>Part under <code>platforms/common</code></th>
+<th>OpenBSW counterpart</th>
+<th>Verdict according to P3</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>cmake/NxCoreArchitecture.cmake</code> – architecture (<code>NX_CORE_ARCHITECTURE</code>) from nxconfig</td>
+<td>none (OpenBSW's CMake helpers live in the repository root <code>cmake/</code>)</td>
+<td>stays (ARCH-25, C1); moving it to the root <code>cmake/</code> would be closer to OpenBSW, but is not a must</td>
+</tr>
+<tr>
+<td><code>interruptPriority</code>, <code>cortex-m/interruptPriority</code>, <code>cortex-r/interruptPriority</code> – ranks from the project mapped to NVIC levels or VIM channels</td>
+<td>none (OpenBSW writes the levels as numbers in <code>main.cpp</code>)</td>
+<td>stays (ARCH-24/26, C4)</td>
+</tr>
+<tr>
+<td><code>test/</code> – build tests per core profile without a board (<code>cortexm0plus</code>, <code>cortexr4f</code>)</td>
+<td><code>platforms/&lt;family&gt;/unitTest</code> has a different purpose (module tests of the platform)</td>
+<td>stays (PLAT-10/35, C5)</td>
+</tr>
+<tr>
+<td><code>newlib</code> stubs (<code>_close/_lseek/_read/_write</code>) under <code>platforms/common/newlib</code></td>
+<td>none</td>
+<td>stays; moved there with PLAT-66 (PLAT-45, T14)</td>
+</tr>
+<tr>
+<td><code>clockCheck</code> – start-up report of the clock check (<code>nxClockCheckReport</code>: one console line, text of the fault codes)</td>
+<td>none (the OpenBSW clock drivers report nothing; the check <code>nxClockCheck()</code> and its contract <code>clock/nxClockCheck.h</code> are family code and live per family in <code>platforms/&lt;family&gt;/bsp/bspClock</code>, the contract byte-identical in every family)</td>
+<td>stays (rule 3; PLAT-72, placed with PLAT-85). Only the family-neutral formatting lives here; no family module depends on it (P2) – the integration (<code>port/main</code>, the stm32 build test) links both</td>
+</tr>
+<tr>
+<td><code>3rdparty/freertosPort</code> – <strong>selection</strong> of the port by architecture</td>
+<td>yes: OpenBSW selects in <code>platforms/&lt;family&gt;/CMakeLists.txt</code></td>
+<td><strong>exception (permanent):</strong> only the switch stays central, because it depends on the generated output. The <strong>ports themselves</strong> live per family: <code>platforms/s32k1xx/3rdparty/freertos_cm0_sysTick</code>, <code>platforms/rm4x/3rdparty/freertos_crx</code> (ARCH-25, PLAT-35)</td>
+</tr>
+<tr>
+<td><code>3rdparty/cmsis/core_cm0plus.h</code></td>
+<td>yes: <code>external/openbsw/libs/3rdparty/cmsis</code> (contains only <code>core_cm4.h</code>)</td>
+<td><strong>exception (temporary):</strong> until the header is upstream (PLAT-53, C2); after that the copy is dropped</td>
+</tr>
+<tr>
+<td>Hard fault handler (originally planned for <code>common</code> in ARCH-27)</td>
+<td>yes: <code>platforms/&lt;family&gt;/hardFaultHandler</code> (separate for <code>s32k1xx</code> and <code>stm32</code> in OpenBSW)</td>
+<td><strong>not into <code>common</code>:</strong> assembler handlers stay per family; only the architecture-neutral dump layout with architecture ID and the reader become neutral <code>libs/bsw/faultDump</code> (ARCH-27, re-scoped)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>P5 – Family port at application level.</strong> The hand-written port (so far <code>platforms/&lt;family&gt;/port</code>, PLAT-23) lives at
+application level as in OpenBSW: <code>ecu/platforms/&lt;family&gt;</code> – modelled on <code>referenceApp/platforms/&lt;board&gt;</code>.
+<code>platforms/&lt;family&gt;</code> thus contains only the MCU level (ARCH-30 F1; implementation PLAT-54, then PLAT-55;
+D7 in section 10 amended accordingly).</p>
+<p><strong>P6 – rm4x as proof (RM46 option A).</strong> <code>rm4x</code> is built in this layout from the start; the neXtBSW connection
+(generated output, configuration, RTE) stays separate from it:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>platforms/rm4x/
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>  CMakeLists.txt         integration via OPENBSW_PLATFORM, derivative options from mcudb
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>  3rdparty/freertos_crx  FreeRTOS port ARM_CRx_No_GIC (PLAT-35) - here, not under platforms/common
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>  bsp/&lt;module&gt;           bspMcu, bspClock, bspVim, bspRti, bspGio, bspSci, bspDcan, bspF021 (PLAT-36-38)
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>  etlImpl/               ETL profile of the platform
+<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>  hardFaultHandler/      Data Abort, Prefetch Abort, Undefined (ARMv7-R); dump layout from libs/bsw/faultDump
+<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>  safety/                MPU, watchdog (DWD/DWWD) and ESM parts of the family
+<a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a>  unitTest/              platform module tests in the OpenBSW way
+</code></pre></div>
+<p>Additional acceptance criterion of the family: the <strong>OpenBSW <code>referenceApp</code> or its <code>unitTest</code> builds for RM46</strong>
+(PLAT-36/37/38, BL-09). The build tests <code>platforms/common/test/cortexr4f</code> may include the port from
+<code>platforms/rm4x/3rdparty</code>; conversely, <code>platforms/rm4x</code> must not need anything from <code>platforms/common/test</code>.</p>
+<h2 id="7-bootloader">7. Bootloader<a class="headerlink" href="#7-bootloader" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Stays lean in C without OpenBSW: core (<code>bootloader/core</code>: UDS, ISO-TP, image check) + HAL per family
+  (<code>bootloader/platforms/&lt;family&gt;</code>: flash, CAN, clock, jump) + optional part hooks
+  (<code>bootloader/devices/&lt;part&gt;</code>, e.g. switching on the SBC) + generated board/project part (CAN connection, pins,
+  bit timing, IDs).</li>
+<li><strong>One source for the memory layout</strong> (derivative + project): bootloader linker, app linker, validity record,
+  boot request address, updater and <code>canflash</code> read the same generated values.</li>
+<li>Family-specific items such as the Flash Configuration Field (S32K1 at 0x400) belong in the family HAL, not in the
+  core.</li>
+<li>The interface to the application is the <strong>application entry</strong>, not a vector table. What stands there and how an
+  image is checked for plausibility is decided by the family (hooks in bootloader, updater and <code>canflash</code>, BL-08):
+  Cortex-M sets VTOR; Cortex-R has no VTOR – the bootloader vectors forward <strong>Undefined, SVC, Prefetch Abort and
+  Data Abort</strong> through a <strong>fixed forwarding table at the application entry</strong> (convention versioned like the record
+  format), <strong>IRQ/FIQ</strong> go through the vector registers of the VIM and need no forwarding. The bootloader itself uses
+  neither SVC nor aborts as long as the table is not in effect (D12, implementation BL-09).</li>
+<li>Compatibility: identifier and record format with a version field; a bootloader already flashed remains updatable.</li>
+</ul>
+<h2 id="8-repository-layout-target">8. Repository layout (target)<a class="headerlink" href="#8-repository-layout-target" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>external/openbsw/             unchanged (submodule)
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>platforms/&lt;family&gt;/           MCU level in the layout of an OpenBSW platform (platform rule P1/P2, section 6):
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>  bsp/&lt;module&gt;                L1 additions and MCU drivers of the family
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>  3rdparty/&lt;rtos-port&gt;        RTOS port of the family (freertos_cm0_sysTick, freertos_crx) - never under common
+<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>  hardFaultHandler/           fault/abort handlers per family; layout and reader neutral in libs/bsw/faultDump
+<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>  etlImpl/ safety/ unitTest/  as in external/openbsw/platforms/&lt;family&gt;, plus CMakeLists.txt (OPENBSW_PLATFORM)
+<a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a>platforms/common/             ONLY neXtBSW's own parts without an OpenBSW counterpart (platform rule P3/P4):
+<a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a>  cmake/                      profile-neutral: architecture from nxconfig (NX_CORE_ARCHITECTURE)
+<a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a>  3rdparty/freertosPort/      only the port selection by architecture (armv6m, armv7m, armv7r);
+<a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a>                              the ports themselves live under platforms/&lt;family&gt;/3rdparty
+<a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a>  test/                       build tests per core without a board (cortexm0plus, Cortex-R4F: PLAT-35)
+<a id="__codelineno-9-12" name="__codelineno-9-12" href="#__codelineno-9-12"></a>  cortex-m/                   NVIC interrupt ranks; CMSIS core header as a temporary exception (PLAT-53)
+<a id="__codelineno-9-13" name="__codelineno-9-13" href="#__codelineno-9-13"></a>  cortex-r/                   CP15 accesses, VIM channel ranks
+<a id="__codelineno-9-14" name="__codelineno-9-14" href="#__codelineno-9-14"></a>libs/bsp/&lt;class&gt;/             L1 contracts (neutral) + contract tests
+<a id="__codelineno-9-15" name="__codelineno-9-15" href="#__codelineno-9-15"></a>libs/bsw/&lt;module&gt;/            device drivers and services with module.yaml, host tests (including faultDump)
+<a id="__codelineno-9-16" name="__codelineno-9-16" href="#__codelineno-9-16"></a>ecu/                          neutral ECU framework: application, systems, uds, consoleCommands
+<a id="__codelineno-9-17" name="__codelineno-9-17" href="#__codelineno-9-17"></a>ecu/platforms/&lt;family&gt;/       port template of the family at the OpenBSW location (PLAT-54, modelled on
+<a id="__codelineno-9-18" name="__codelineno-9-18" href="#__codelineno-9-18"></a>                              referenceApp/platforms/&lt;board&gt;): bspConfiguration, safety, main (startUp.S,
+<a id="__codelineno-9-19" name="__codelineno-9-19" href="#__codelineno-9-19"></a>                              bootHeader.S, linker script, ISRs, StaticBsp, BspSystem),
+<a id="__codelineno-9-20" name="__codelineno-9-20" href="#__codelineno-9-20"></a>                              freeRtosCoreConfiguration - no board value and no derivative value in it
+<a id="__codelineno-9-21" name="__codelineno-9-21" href="#__codelineno-9-21"></a>ecu/platforms/&lt;board&gt;/        board port: Options.cmake + board peculiarities and justified exceptions
+<a id="__codelineno-9-22" name="__codelineno-9-22" href="#__codelineno-9-22"></a>                              (no port points to another, ecu/platforms/README.md)
+<a id="__codelineno-9-23" name="__codelineno-9-23" href="#__codelineno-9-23"></a>bootloader/                   core/, platforms/&lt;family&gt;/, devices/&lt;part&gt;/, updater/
+<a id="__codelineno-9-24" name="__codelineno-9-24" href="#__codelineno-9-24"></a>mcudb/&lt;family&gt;/               derivative database (manufacturer facts)
+<a id="__codelineno-9-25" name="__codelineno-9-25" href="#__codelineno-9-25"></a>boards/&lt;board&gt;/               board.yaml, documentation, board notes (e.g. safety rules for the board)
+<a id="__codelineno-9-26" name="__codelineno-9-26" href="#__codelineno-9-26"></a>projects/&lt;project&gt;/           project.yaml, rte.yaml, DBC, project-specific SWCs
+<a id="__codelineno-9-27" name="__codelineno-9-27" href="#__codelineno-9-27"></a>swc/&lt;component&gt;/              reusable components and examples (DemoSwc)
+<a id="__codelineno-9-28" name="__codelineno-9-28" href="#__codelineno-9-28"></a>tools/                        nxconfig, bswgen, intgen, rtegen, dbcgen, blgen, canflash, studio, todo
+<a id="__codelineno-9-29" name="__codelineno-9-29" href="#__codelineno-9-29"></a>doc/architecture/             this document, decisions
+</code></pre></div>
+<p>Build: <code>cmake --preset &lt;project&gt;</code> (presets generated from the projects, or generic with
+<code>-DNX_PROJECT=projects/&lt;p&gt;</code>); board, derivative and family follow from the project configuration. The Studio opens a
+project through its folder.</p>
+<p>On <code>ecu/platforms/</code> (<strong>D7 amended 2026-09-17</strong>, ARCH-30 F1; previously "<code>ecu/</code> without <code>platforms/</code>"): <code>ecu/platforms/</code>
+stays and is the OpenBSW location for <strong>both</strong> port levels, like <code>referenceApp/platforms/&lt;board&gt;</code> in OpenBSW.</p>
+<ul>
+<li><code>ecu/platforms/&lt;family&gt;/</code> is the <strong>port template of the family</strong> (today <code>platforms/&lt;family&gt;/port</code>, PLAT-23;
+  move in PLAT-54, startup templates after that in PLAT-55). It contains no board value and no derivative value.</li>
+<li><code>ecu/platforms/&lt;board&gt;/</code> contains only the <strong>feature switches</strong> (<code>Options.cmake</code>, whose target location according
+  to section 9 row 2 is the project) and justified board exceptions. This board folder disappears once the switches
+  are in the project (ARCH-04/05) and the integration is generated; until then it is the only place with a board name
+  in the code.</li>
+<li>After the move, <code>platforms/&lt;family&gt;/</code> contains only the MCU level – exactly like <code>external/openbsw/platforms/*</code>.</li>
+<li>Module manifests are found in both port levels (<code>tools/nxconfig/config.py</code>, <code>port_module_dirs</code>).</li>
+</ul>
+<p>The layout under <code>platforms/</code> is thus no longer a neXtBSW invention, but checkably the OpenBSW layout: platform rule
+P1–P6 in section 6, review question 10 in section 11.</p>
+<h2 id="9-todays-board-couplings-and-target-location">9. Today's board couplings and target location<a class="headerlink" href="#9-todays-board-couplings-and-target-location" title="Permanent link">&para;</a></h2>
+<p>Where the repository still deviates from the target picture (read the paths <code>…</code> as <code>platforms/&lt;family&gt;/port</code>, the family
+template since <strong>PLAT-23</strong>; the couplings are family code now, but hand-written instead of generated):</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Area</th>
+<th>Today</th>
+<th>Target</th>
+<th>Task</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Build selection</td>
+<td><code>CMakeLists.txt</code>, <code>CMakePresets.json</code>: one board, one <code>ecu/rte.yaml</code>, NXP GCC path</td>
+<td>project selection, generic toolchain</td>
+<td>ARCH-04</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Feature switches</td>
+<td><code>ecu/platforms/evalboard_s32k144/Options.cmake</code></td>
+<td><code>project.yaml</code> (features)</td>
+<td>ARCH-04/05</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Integration</td>
+<td><code>…/main/src/main.cpp</code>, <code>systems/{CanSystem,SbcSystem,Kl30bSystem}</code>, <code>lifecycle/StaticBsp</code>, <code>BspSystem</code>, <code>os/isr/*</code>: SBC, KL30B, CAN0 ISR built in, one FlexCAN</td>
+<td>generated integration, <code>early_init</code> role, <code>libs/bsw/canSystem</code> with the <code>can_phy</code> role and N buses, <code>libs/bsw/highSideSwitch</code></td>
+<td>ARCH-05/07</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Clock, timing, SBC values</td>
+<td><code>…/bsp/clock/boardClock.h</code> (40/80 MHz fixed), <code>bsp/can/canBitTiming.h</code>, <code>bsp/sbc/sbcConfiguration.h</code> by hand</td>
+<td>from crystal (board) and system clock (project); computed bit timing; board (connection, MTPNV) plus project (modes)</td>
+<td>ARCH-05/06/07</td>
+</tr>
+<tr>
+<td>5</td>
+<td>MCU drivers in the board configuration</td>
+<td><code>bsp/io/outputPwm/ComplementaryPwm.h</code> (FTM), <code>bsp/adc/AnalogInput.*</code> (OpenBSW example, 12 bit), <code>mcu/mcu.h</code> (S32K148 with <code>#undef</code>), UART/<code>stdIo</code>/<code>SystemTimer</code> instances</td>
+<td><code>platforms/s32k1xx/bsp</code> with contract <code>OutputPwm</code>, <code>libs/bsp/bspAdc</code>, selection per derivative from <code>mcudb</code>, family template plus generation</td>
+<td>ARCH-03/05</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Tasks</td>
+<td><code>freeRtosCoreConfiguration</code>, <code>ecu/asyncCoreConfiguration/Config.h</code>, tasks in <code>app.cpp</code>: fixed BSP/CAN/SWC</td>
+<td>tasks from the project</td>
+<td>RTE-02, ARCH-05</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Start-up, memory, safety</td>
+<td><code>main/linkerscript</code>, <code>startUp.S</code>, <code>bootHeader.S</code> (memory fixed); <code>safety/*</code> (MPU, <code>SafeIo</code> with LED pins, ADC reference check)</td>
+<td>family template plus memory layout; family plus project (safety outputs)</td>
+<td>ARCH-08, ARCH-05, SYS-06</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Bootloader</td>
+<td><code>bootloader/include/bl_config.h</code> (layout generated; diagnostic IDs still fixed), <code>src/target/*</code>, <code>updater/*</code> (FCF 0x400, 0x8000 fixed)</td>
+<td>derivative plus project; <code>platforms/s32k1xx</code> plus <code>devices/uja113x</code> plus generated; family HAL plus memory layout</td>
+<td>ARCH-08, COM-11</td>
+</tr>
+<tr>
+<td>9</td>
+<td><code>tools/canflash</code></td>
+<td>reads the generated layout (ARCH-08); identifier from the project (COM-11), default <code>nextbsw-bl</code>, former <code>S32K14x-BL</code> accepted (PLAT-08); status frame ID of the updater still fixed</td>
+<td>reads generated project values</td>
+<td>COM-11, PLAT-08</td>
+</tr>
+<tr>
+<td>10</td>
+<td>Generators</td>
+<td><code>tools/bswgen</code> only S32K144, <code>FTM_INSTANCES = 4</code>, pin table LQFP100; <code>tools/rtegen</code> only <code>CAN_0</code>, one task; <code>ecu/configuration/busid/BusId.h</code> <code>CAN_0</code>; <code>ecu/uds</code> times coupled to <code>bl_config.h</code></td>
+<td><code>mcudb</code> plus family output; buses and tasks from the project; generated</td>
+<td>ARCH-03/04/07/08, RTE-02</td>
+</tr>
+<tr>
+<td>11</td>
+<td>ECU = repository</td>
+<td><code>ecu/rte.yaml</code>, <code>ecu/rte/EvalBoard.dbc</code>; <code>boards/evalboard_s32k144/board.yaml</code> mixes hardware and usage (<code>exclusive_groups</code>)</td>
+<td><code>projects/evalboard_*</code>; board plus projects</td>
+<td>ARCH-02/04, IO-04</td>
+</tr>
+<tr>
+<td>12</td>
+<td>Tests, console, scripts</td>
+<td><code>test_bswgen.py</code>, <code>test_rtegen.py</code>, build paths <code>build/evalboard-s32k144</code> (eval board profile only); console <code>sbc failstart</code>, <code>kl30b on</code> in the normal image; J-Link scripts <code>device S32K144</code>; <code>CLAUDE.md</code> eval board rules global</td>
+<td>synthetic profiles, build folder variable; expert functions switchable per project; from derivative/board; <code>boards/evalboard_s32k144/README.md</code></td>
+<td>ARCH-02/04/05, PLAT-07, TOOL-12</td>
+</tr>
+</tbody>
+</table>
+<p>Stays as it is: <code>libs/bsw/sbcUja113x</code> (depends only on <code>ISpiDevice</code>, board values only as test data), <code>libs/bsp/bspSpi</code>,
+bootloader core, <code>dbcgen</code>, <code>swc_build.m</code>.</p>
+<h2 id="10-decisions-for-acceptance">10. Decisions for acceptance<a class="headerlink" href="#10-decisions-for-acceptance" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Question</th>
+<th>Proposal</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>D1</td>
+<td>Exchange of the MCU drivers</td>
+<td>static per family (like OpenBSW) + contract tests; virtual interfaces only from L2 upwards</td>
+</tr>
+<tr>
+<td>D2</td>
+<td>Integration</td>
+<td>generated from module manifests and configuration (section 5)</td>
+</tr>
+<tr>
+<td>D3</td>
+<td>Role model</td>
+<td>roles (<code>can_phy</code>, <code>power_supply</code>, <code>watchdog_trigger</code>, <code>early_init</code>, …) as the coupling between services and parts</td>
+</tr>
+<tr>
+<td>D4</td>
+<td>Configuration</td>
+<td>three levels in YAML (ruamel.yaml), schema with pydantic, shared loader <code>tools/nxconfig</code></td>
+</tr>
+<tr>
+<td>D5</td>
+<td>Derivative database</td>
+<td>own <code>mcudb</code> from open sources (Zephyr hal_nxp/hal_stm32, CMSIS-SVD), only the fields needed</td>
+</tr>
+<tr>
+<td>D6</td>
+<td>Bootloader</td>
+<td>C without OpenBSW, HAL per family, same configuration source</td>
+</tr>
+<tr>
+<td>D7</td>
+<td>Repository layout</td>
+<td>section 8 (including <code>projects/</code>, <code>mcudb/</code>); <strong>amended 2026-09-17:</strong> <code>ecu/platforms/</code> stays and carries both port levels – <code>ecu/platforms/&lt;family&gt;</code> (family template, OpenBSW location) and <code>ecu/platforms/&lt;board&gt;</code> (feature switches). The original version "<code>ecu/</code> without <code>platforms/</code>" no longer applies</td>
+</tr>
+<tr>
+<td>D8</td>
+<td>Language level</td>
+<td>C++17 as today (GCC 11, OpenBSW-compatible); contracts via <code>static_assert</code>/contract test</td>
+</tr>
+<tr>
+<td>D9</td>
+<td>OpenBSW</td>
+<td>submodule unchanged; offer neutral contracts (ADC, SPI, watchdog) upstream later (PLAT-03)</td>
+</tr>
+<tr>
+<td>D10</td>
+<td>Order</td>
+<td>ARCH-02 → ARCH-03/04 → ARCH-05/06 → ARCH-07/08 → ARCH-09; the eval board runs after every step (regression test on the board)</td>
+</tr>
+<tr>
+<td>D11</td>
+<td>Core profiles (target picture section 1)</td>
+<td><strong>ARM Cortex-M and Cortex-R, 32 bit, little endian</strong>; big endian (TMS570) explicitly not; the code distinguishes cores through the generated architecture, not through <code>__ARM_ARCH</code></td>
+</tr>
+<tr>
+<td>D12</td>
+<td>Bootloader ↔ application without VTOR (Cortex-R)</td>
+<td>bootloader vectors forward Undefined, SVC, Prefetch Abort and Data Abort through a <strong>fixed forwarding table at the application entry</strong> (convention versioned); IRQ/FIQ through the VIM vector registers (section 7)</td>
+</tr>
+<tr>
+<td>D13</td>
+<td>Family name of the TI Cortex-R derivatives</td>
+<td><code>rm4x</code> (TI Hercules RM4x, little endian)</td>
+</tr>
+<tr>
+<td>D14</td>
+<td>Sources for rm4x: derivative headers, flash library, FreeRTOS port</td>
+<td><strong>open until the licence and source review PLAT-44</strong>; candidates according to ARCH-19: HALCoGen register headers, TI F021 flash API (possibly as a workstation dependency), FreeRTOS <code>GCC/ARM_CRx_No_GIC</code>. None of these sources is used or checked in before the review result is released</td>
+</tr>
+<tr>
+<td>D15</td>
+<td>Platform rule (section 6, P1–P6)</td>
+<td><strong>Every family in the OpenBSW layout and self-contained; <code>platforms/common</code> only for parts without an OpenBSW counterpart, exceptions only with an entry in P4; family port at application level <code>ecu/platforms/&lt;family&gt;</code>; <code>rm4x</code> OpenBSW-conformant with the acceptance criterion "referenceApp/unitTest builds for RM46"</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Acceptance: D1–D10 on 2026-09-15; D11–D13 as proposed and D14 (procedure only; which sources are used is decided after
+PLAT-44) on 2026-09-17 (audit ARCH-19); D15 and the amendment of D7 on 2026-09-17 (decision board, ARCH-30 F1/F3, RM46
+option A, <strong>ARCH-31</strong>). Implementation: PLAT-54 (move of the family port), PLAT-55 (startup in one place), ARCH-27 (hard
+fault handler per family, <code>libs/bsw/faultDump</code>), PLAT-35 (CRx port under <code>platforms/rm4x</code>), PLAT-53 (CMSIS header
+upstream). Until these are done the repository deviates from the rule at the places named in P4 and P5; the rule applies
+to every new placement from now on. The rejected alternatives are in the history of this file.</p>
+<h2 id="11-review-questions-for-reviews-and-agent-tasks">11. Review questions for reviews and agent tasks<a class="headerlink" href="#11-review-questions-for-reviews-and-agent-tasks" title="Permanent link">&para;</a></h2>
+<p>Every change to reusable code, generators or the bootloader must answer these questions with "yes, without a code
+change" or justify the exception:</p>
+<ol>
+<li>Does it work on a board <strong>without an SBC</strong> (different or passive CAN transceiver, MCU's own watchdog)?</li>
+<li>Does it work with a <strong>different crystal</strong> and a different system clock?</li>
+<li>Does it work with a <strong>different derivative</strong> of the same family (flash, RAM, instances, package) – and is the way
+   to <strong>S32K3/STM32</strong> and to <strong>Cortex-R (rm4x)</strong> not blocked?</li>
+<li>Does it work with <strong>two or more CAN buses</strong> and different IDs?</li>
+<li>Does it work with <strong>several tasks</strong> and freely chosen priorities?</li>
+<li>Is every new value in <strong>exactly one configuration level</strong> (section 4), and does the generator derive what is
+   derived?</li>
+<li>Is there a <strong>host test with its own test profile</strong>, not just against the eval board?</li>
+<li>Does the <strong>core logic of the tools stay free of Qt</strong> (Studio requirement), and does validation deliver messages
+   with a YAML path?</li>
+<li>For device drivers: is the granularity chosen according to <a href="treiber-granularitaet/"><code>treiber-granularitaet.md</code></a>
+   (generic behaviour or hardware-near per protocol), and are the project parameters in physical units of the
+   function?</li>
+<li>For new files under <code>platforms/</code>: does the placement follow the <strong>platform rule</strong> (section 6) – does platform code
+   live per family in the OpenBSW layout, can <code>platforms/&lt;family&gt;</code> be built with <code>libs/</code> alone, and does
+   <code>platforms/common</code> contain only parts that have no counterpart in OpenBSW (otherwise an entry in P4)?</li>
+</ol>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="overview/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Overview">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Overview
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="openbsw/" class="md-footer__link md-footer__link--next" aria-label="Next: Openbsw">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Openbsw
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright 2026 Daniel Simon Reinhardt-Probul - Apache-2.0
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.sections", "navigation.indexes", "navigation.top", "navigation.footer", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

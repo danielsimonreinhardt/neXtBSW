@@ -1,0 +1,7696 @@
+
+<!doctype html>
+<html lang="de" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Hardware-neutral, configurable basic software for 32-bit automotive MCUs, built on Eclipse OpenBSW">
+      
+      
+      
+      
+        <link rel="prev" href="../../../nvmDataFlash/doc/nvmDataFlash/">
+      
+      
+        <link rel="next" href="../../../../bsp/bspAdcAccess/doc/bspAdcAccess/">
+      
+      
+        
+          <link rel="alternate" href="./" hreflang="de">
+        
+          <link rel="alternate" href="../../../../../en/libs/bsw/sbcUja113x/doc/sbcUja113x/" hreflang="en">
+        
+      
+      
+      <link rel="icon" href="../../../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>SBC-Treiber UJA113x (sbcUja113x) - neXtBSW</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#sbc-treiber-uja113x-sbcuja113x" class="md-skip">
+          Zum Inhalt
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Kopfzeile">
+    <a href="../../../../.." title="neXtBSW" class="md-header__button md-logo" aria-label="neXtBSW" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            neXtBSW
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              SBC-Treiber UJA113x (sbcUja113x)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="indigo"  aria-label="Dunkel"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Dunkel" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="indigo"  aria-label="Hell"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Hell" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Sprache wechseln">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="de" class="md-select__link">
+              Deutsch
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../../../../../en/libs/bsw/sbcUja113x/doc/sbcUja113x/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Suche" placeholder="Suche" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Suche">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Zurücksetzen" aria-label="Zurücksetzen" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Suche wird initialisiert
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../../.." title="neXtBSW" class="md-nav__button md-logo" aria-label="neXtBSW" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    neXtBSW
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Start
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../doc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Wegweiser
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../../../doc/guide/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Integrator
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Integrator
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../doc/guide/getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Erste Schritte
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../doc/guide/host-durchlauf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Host-Durchlauf ohne Hardware
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../doc/guide/your-first-board/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Das erste Board
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../doc/guide/the-application/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Die Anwendung
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../doc/guide/build-and-flash/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bauen und Flashen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../doc/guide/customer-project/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Eigenes ECU-Repository
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../doc/guide/new-derivative/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Neues Derivat
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../doc/guide/board-readme-template/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vorlage Board-README
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_10" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../../../doc/reference/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Konfigurationsreferenz
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3_10" id="__nav_3_10_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Konfigurationsreferenz
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../doc/reference/derivative/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Derivative
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../doc/reference/board/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Board
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../doc/reference/project/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../doc/reference/rte/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rte
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../doc/reference/diag/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diag
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../doc/reference/console/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Console
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_11" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../../../projects/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Projekte, Komponenten, Boards
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3_11" id="__nav_3_11_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Projekte, Komponenten, Boards
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../swc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Software-Komponenten
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../swc/DemoSwcSubstitute/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    C-Ersatz der DemoSwc
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../ecu/platforms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Board-Ports
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../boards/buildtest_s32k148/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S32K148 build-test board (S32K148 LQFP176)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_12" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_12" id="__nav_3_12_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release Notes
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_12">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Release Notes
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../doc/release-notes/v1.0.0-rc2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.0.0-rc2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../doc/release-notes/v1.0.0-rc1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.0.0-rc1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../../../doc/safety/start/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Safety-Assessor
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Safety-Assessor
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../doc/safety/safety-manual/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sicherheitshandbuch
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../doc/safety/concept/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sicherheitskonzept
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../doc/safety/figures/concept-figures/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bilder zum Konzept
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../doc/safety/anomaly-register/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Anomalie-Register
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_6" id="__nav_4_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Arbeitsprodukte
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Arbeitsprodukte
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../doc/safety/safety-plan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW safety plan — software SEooC at ASIL B (SYS-60)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../doc/safety/verification-plan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW verification plan and archived reports per baseline (SYS-67)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../doc/safety/safety-case/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW safety case — software SEooC at ASIL B (SYS-64)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../doc/safety/cm-plan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW configuration management plan and baselines (SYS-68)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../doc/safety/sw-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW — software architectural design specification of the safety part (SYS-65)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../doc/safety/architecture-safety-analysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW software architectural safety analysis beyond the mechanisms (SYS-71)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../doc/safety/fmea/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW failure analysis of the base-software safety mechanisms (stage 1)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../doc/safety/figures/fmea-figures/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fmea figures
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../doc/safety/dfa/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW dependent failure analysis of the stage-1 mechanisms (SYS-70)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../doc/safety/unit-design/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW — software unit design: watchdog handling, fault handlers, safety task (SYS-92, N2)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../doc/safety/coexistence/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW — coexistence of ASIL B and QM software in one image (SYS-61)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../doc/safety/partner-and-degraded/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Partner MCU supervision, degraded reaction and active short circuit — concept
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../doc/safety/config-range/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW — argument over the admissible configuration range (SYS-92, N3)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../doc/safety/hsi-s32k1xx/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW hardware-software interface of the stage-1 safety mechanisms — s32k1xx (SYS-66)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../doc/safety/hardware-mechanisms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hardware safety mechanisms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../doc/safety/security-interplay/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW — interplay of functional safety and cybersecurity (SYS-92, N1)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../doc/safety/static-analysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Static analysis and coding guidelines (PLAT-74)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../doc/safety/tool-classification/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW tool classification and safeguards of the generated code (PLAT-75)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../doc/safety/component-qualification/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW — route per pre-existing component and qualification plan (SYS-62)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../doc/safety/dev-environment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW development environment: languages, guidelines, tools, build and test flow (DOC-22)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../doc/safety/board-test-spec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW board test specification per SSR with operational use cases (SYS-75)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../../../doc/openbsw-beitraege/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributor
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Contributor
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_1" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../../../doc/architecture/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architektur
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_1" id="__nav_5_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Architektur
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../doc/architecture/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../doc/architecture/openbsw/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Openbsw
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../doc/architecture/openbsw-naehe/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Openbsw naehe
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../doc/architecture/autosar/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Autosar
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../doc/architecture/autosar-standard-set/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Autosar standard set
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../doc/architecture/autosar-ecuc-map/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Autosar ecuc map
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../doc/architecture/autosar-ecuc-evaluation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Autosar ecuc evaluation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../doc/architecture/plattformen/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plattformen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../doc/architecture/customer-project/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Customer project
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../doc/architecture/versioning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW – Versionierung und Support
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../doc/architecture/csec-concept/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CSEc in neXtBSW: keys, message authentication and secure start (SYS-56)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../doc/architecture/kalibrierung/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Calibration in neXtBSW: parameters, maps, a versioned calibration database, measurement signals (ARCH-64)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../doc/architecture/pin-interrupts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pin interrupts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../doc/architecture/signal-qualifier/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Signal qualifiers for received messages (COM-03)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../doc/architecture/treiber-granularitaet/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW – granularity of device drivers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../doc/architecture/treiber-anbindung-analyse/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW – binding device drivers to the system: analysis of the hand-written integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../doc/architecture/openbsw-console-number-arguments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OpenBSW console commands with a number argument - audit (PLAT-110)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_1_19" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_1_19" id="__nav_5_1_19_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Geplant nach R1
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_1_19_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_1_19">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Geplant nach R1
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../doc/architecture/planned/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Planned
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../doc/architecture/non-cortex-m-audit/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Non cortex m audit
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../doc/architecture/rm4x-quellen/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rm4x quellen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../doc/architecture/stm32-nucleo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Stm32 nucleo
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../../../doc/figures/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bilder
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_2" id="__nav_5_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Bilder
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../doc/figures/01-schichten/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    01 schichten
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../doc/figures/02-konfigurationsfluss/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    02 konfigurationsfluss
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../doc/figures/03-startablauf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    03 startablauf
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../doc/figures/04-flash-uds/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    04 flash uds
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../doc/figures/05-ecu-zustaende/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    05 ecu zustaende
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../doc/figures/06-safety-kette/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    06 safety kette
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../doc/figures/07-modulkarte/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    07 modulkarte
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../doc/figures/08-lesepfade/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    08 lesepfade
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_3" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../../../bootloader/doc/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Moduldokumentation
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_3" id="__nav_5_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Moduldokumentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../doc/reference/modules/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modules
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../bootloader/doc/iso14229-1-clause16-conformance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Conformance with ISO 14229-1 clause 16 (non-volatile server memory programming)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../autosarBase/doc/autosarBase/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AUTOSAR base types (autosarBase)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../canPhyPassive/doc/canPhyPassive/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Passive CAN transceiver (canPhyPassive)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../canSystem/doc/canSystem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CAN system, hardware independent parts (canSystem)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../consoleContext/doc/consoleContext/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Console context (consoleContext)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dem/doc/dem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    dem – fault memory (simplified AUTOSAR DEM)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../e2e/doc/e2e/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    E2E-Bibliothek (e2e)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../ecuState/doc/ecuState/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ECU-Zustandsverwaltung (ecuState)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../gdTmc6200/doc/gdTmc6200/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Gate-Treiber TMC6200 (gdTmc6200)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../hallDecoder/doc/hallDecoder/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hall decoder (hallDecoder)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../highSideSwitch/doc/highSideSwitch/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Smart high-side switch (highSideSwitch)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../mcuLink/doc/mcuLink/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mcuLink
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../nvm/doc/nvm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NvM core (libs/bsw/nvm)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../nvmDataFlash/doc/nvmDataFlash/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nvmDataFlash - data flash areas (NVM-12)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SBC-Treiber UJA113x (sbcUja113x)
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SBC-Treiber UJA113x (sbcUja113x)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Inhaltsverzeichnis">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Inhaltsverzeichnis
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#bilder" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bilder
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Bilder">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#modi-des-sbc-und-zustand-des-treibers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Modi des SBC und Zustand des Treibers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#watchdog-ablauf" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Watchdog-Ablauf
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#aufbau" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Aufbau
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#einbindung-auf-einem-board" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Einbindung auf einem Board
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#konfiguration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Konfiguration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Konfiguration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#spi-bspspilpspiconfig" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SPI (bsp::spi::LpspiConfig)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sbc-sbcuja113xconfig" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SBC (sbc::Uja113xConfig)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#startablauf" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Startablauf
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#zyklischer-betrieb" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Zyklischer Betrieb
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#watchdog" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Watchdog
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Watchdog">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#verhalten-des-sbc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verhalten des SBC
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#regeln-die-der-treiber-einhält" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Regeln, die der Treiber einhält
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#interrupts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Interrupts
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Interrupts">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#intn1-and-standby-io-68" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        INTN1 and Standby (IO-68)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reset-zähler-und-limp-home" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reset-Zähler und Limp Home
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Reset-Zähler und Limp Home">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#kompensation-der-mcu-watchdog-testresets-sys-07" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Kompensation der MCU-Watchdog-Testresets (SYS-07)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#hvio-en-pin-und-batterieüberwachung" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HVIO, EN-Pin und Batterieüberwachung
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="HVIO, EN-Pin und Batterieüberwachung">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#was-in-welcher-einheit-konfiguriert-wird" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Was in welcher Einheit konfiguriert wird
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#batterieüberwachung" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Batterieüberwachung
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#project-values-and-board-wiring-io-33" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Project values and board wiring (IO-33)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hvio" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HVIO
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#en-pin-und-limp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        EN-Pin und LIMP
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sleep" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sleep
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Sleep">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#selektives-wecken-per-can-partial-networking-com-07" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Selektives Wecken per CAN (Partial Networking, COM-07)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        API
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="API">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#status" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Status
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reset-quellen-rss" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reset-Quellen (RSS)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#konsole" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Konsole
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#diagnose-und-fehlersuche" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Diagnose und Fehlersuche
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Diagnose und Fehlersuche">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#log-meldungen-sbcsystem-komponente-bsp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Log-Meldungen (SbcSystem, Komponente BSP)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#zähler-counters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Zähler (Counters)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#typische-fehlerbilder" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Typische Fehlerbilder
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sicherheitsregeln-des-treibers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sicherheitsregeln des Treibers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tests
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#verifikation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verifikation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#grenzen-und-offene-punkte" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Grenzen und offene Punkte
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quellen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quellen
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../bsp/bspAdcAccess/doc/bspAdcAccess/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Serialized ADC access (bspAdcAccess)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../bsp/bspI2c/doc/bspI2c/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    I2C master contract (bspI2c)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../bsp/bspPinEdge/doc/bspPinEdge/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pin edge contract (bspPinEdge)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../bsp/bspPinEvent/doc/bspPinEvent/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    bspPinEvent
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../bsp/bspSampleGroup/doc/bspSampleGroup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sample group (bspSampleGroup)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../bsp/bspSpi/doc/bspSpi/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SPI device contract (bspSpi)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../platforms/common/clockCheck/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Clock start-up check (PLAT-72)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../platforms/common/interruptPriority/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interrupt priorities as ranks (PLAT-10, wired up in PLAT-21, per core profile since ARCH-24)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../platforms/s32k1xx/bsp/bspCsec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    bspCsec – CSEc of the S32K1 family
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../platforms/s32k1xx/bsp/bspMcu/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    bspMcu (Familie s32k1xx) – Derivat-Header und mcu/mcu.h (PLAT-11)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../platforms/s32k1xx/startup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Startup templates per core architecture (PLAT-10)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../platforms/s32k1xx/port/safety/safeLifecycle/doc/safeLifecycle/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Safety task, s32k1xx (safeLifecycle)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../platforms/s32k1xx/port/safety/safeMemory/doc/safeMemory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Memory safety of the s32k1xx family (safeMemory)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../platforms/s32k1xx/port/safety/safeSupervisor/doc/safeSupervisor/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Safe supervisor, project values of the s32k1xx port (safeSupervisor)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../platforms/s32k1xx/port/safety/safeSystem/doc/safeSystem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference and supply supervision, s32k1xx (safeSystem)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../platforms/s32k1xx/port/bspConfiguration/src/bsp/capture/doc/capture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Input capture, s32k1xx (capture)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../platforms/s32k1xx/port/bspConfiguration/src/bsp/hall/doc/hall/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hall sensor set, s32k1xx (hall)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../../../tools/test/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tests und Werkzeuge
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_4" id="__nav_5_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tests und Werkzeuge
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../tools/docgen/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    docgen - generated reference documentation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../tools/docgen/website/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Doku-Website
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../tools/ci/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/ci – provider-neutral CI (TOOL-03)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../tools/setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/setup – the Python environment of a workspace (TOOL-63)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../tools/distcheck/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    distcheck – distribution check and export of the open tree
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../tools/canflash/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/canflash – application and bootloader over CAN (UDS on ISO-TP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../tools/boardtest/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/boardtest – board measurement scripts with host tests (TOOL-05)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../tools/misra/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/misra – static analysis (PLAT-74)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../tools/trace/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/trace — traceability of the safety requirements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../tools/a2lgen/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    a2lgen - A2L for XCP on CAN (TOOL-01)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../tools/calgen/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    calgen – calibration datasets (stage K2)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../tools/csec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    csec – host side of the CSEc way back to the factory state
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../tools/elfcheck/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    elfcheck – linked images against the derivative map and the core
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../tools/nxupdate/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../tools/schedana/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/schedana – analyse processor load, scheduling and data flow (TOOL-09)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../tools/stackuse/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    stackuse – worst-case stack per execution context
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Beitragen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../SECURITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sicherheitsluecken melden
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../mcudb/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ableitung der Chipdaten (mcudb)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Inhaltsverzeichnis">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Inhaltsverzeichnis
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#bilder" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bilder
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Bilder">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#modi-des-sbc-und-zustand-des-treibers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Modi des SBC und Zustand des Treibers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#watchdog-ablauf" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Watchdog-Ablauf
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#aufbau" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Aufbau
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#einbindung-auf-einem-board" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Einbindung auf einem Board
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#konfiguration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Konfiguration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Konfiguration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#spi-bspspilpspiconfig" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SPI (bsp::spi::LpspiConfig)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sbc-sbcuja113xconfig" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SBC (sbc::Uja113xConfig)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#startablauf" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Startablauf
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#zyklischer-betrieb" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Zyklischer Betrieb
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#watchdog" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Watchdog
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Watchdog">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#verhalten-des-sbc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verhalten des SBC
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#regeln-die-der-treiber-einhält" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Regeln, die der Treiber einhält
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#interrupts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Interrupts
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Interrupts">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#intn1-and-standby-io-68" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        INTN1 and Standby (IO-68)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reset-zähler-und-limp-home" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reset-Zähler und Limp Home
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Reset-Zähler und Limp Home">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#kompensation-der-mcu-watchdog-testresets-sys-07" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Kompensation der MCU-Watchdog-Testresets (SYS-07)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#hvio-en-pin-und-batterieüberwachung" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HVIO, EN-Pin und Batterieüberwachung
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="HVIO, EN-Pin und Batterieüberwachung">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#was-in-welcher-einheit-konfiguriert-wird" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Was in welcher Einheit konfiguriert wird
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#batterieüberwachung" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Batterieüberwachung
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#project-values-and-board-wiring-io-33" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Project values and board wiring (IO-33)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hvio" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HVIO
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#en-pin-und-limp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        EN-Pin und LIMP
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sleep" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sleep
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Sleep">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#selektives-wecken-per-can-partial-networking-com-07" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Selektives Wecken per CAN (Partial Networking, COM-07)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        API
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="API">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#status" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Status
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reset-quellen-rss" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reset-Quellen (RSS)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#konsole" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Konsole
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#diagnose-und-fehlersuche" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Diagnose und Fehlersuche
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Diagnose und Fehlersuche">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#log-meldungen-sbcsystem-komponente-bsp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Log-Meldungen (SbcSystem, Komponente BSP)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#zähler-counters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Zähler (Counters)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#typische-fehlerbilder" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Typische Fehlerbilder
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sicherheitsregeln-des-treibers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sicherheitsregeln des Treibers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tests
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#verifikation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verifikation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#grenzen-und-offene-punkte" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Grenzen und offene Punkte
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quellen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quellen
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="sbc-treiber-uja113x-sbcuja113x">SBC-Treiber UJA113x (<code>sbcUja113x</code>)<a class="headerlink" href="#sbc-treiber-uja113x-sbcuja113x" title="Permanent link">&para;</a></h1>
+<h2 id="bilder">Bilder<a class="headerlink" href="#bilder" title="Permanent link">&para;</a></h2>
+<h3 id="modi-des-sbc-und-zustand-des-treibers">Modi des SBC und Zustand des Treibers<a class="headerlink" href="#modi-des-sbc-und-zustand-des-treibers" title="Permanent link">&para;</a></h3>
+<pre class="mermaid"><code>%%{init: {'theme':'base','flowchart':{'curve':'basis'},'themeVariables':{'fontFamily':'Segoe UI, Helvetica, Arial, sans-serif','fontSize':'14px','background':'#ffffff','primaryColor':'#ffffff','primaryBorderColor':'#64748b','primaryTextColor':'#0f172a','lineColor':'#475569','edgeLabelBackground':'#ffffff','tertiaryColor':'#f8fafc','clusterBkg':'#f8fafc','clusterBorder':'#cbd5e1'}}}%%
+stateDiagram-v2
+    [*] --&gt; UNINITIALIZED
+    UNINITIALIZED --&gt; NORMAL: startup() ok
+    UNINITIALIZED --&gt; FAILED: startup() failed
+    FAILED --&gt; NORMAL: retry every 1 s
+    NORMAL --&gt; NORMAL: cyclic() 10 ms
+    NORMAL --&gt; NORMAL: mode lost, full startup at once
+    NORMAL --&gt; STANDBY: enterStandby(), V1 stays on
+    STANDBY --&gt; NORMAL: leaveStandby()
+    STANDBY --&gt; FAILED: SBC no longer in Standby
+    NORMAL --&gt; SLEEP: enterSleep()
+    SLEEP --&gt; RESET: wake-up, V1 back
+    RESET --&gt; [*]: MCU restarts, startup()
+    NORMAL --&gt; FSP: reset with RCC = 3
+    FSP --&gt; SLEEP: LHC set, if MTPNV allows</code></pre>
+<p><strong>Legende</strong></p>
+<ul>
+<li><code>UNINITIALIZED</code>, <code>NORMAL</code>, <code>FAILED</code>, <code>STANDBY</code> sind die Werte von <code>Uja113x::State</code>. <code>SLEEP</code>, <code>RESET</code> und <code>FSP</code>
+  (Forced Sleep Preparation) sind Modi des SBC, in denen der Treiber nicht läuft: die MCU ist dann ohne Versorgung
+  oder im Reset. Startablauf: <a href="#startablauf">Startablauf</a>, Sleep: <a href="#sleep">Sleep</a>, Reset-Zähler:
+  <a href="#reset-zähler-und-limp-home">Reset-Zähler und Limp Home</a>, Standby: <a href="#intn1-and-standby-io-68">INTN1 and Standby</a>.</li>
+<li>Ein Rücksetzen von RCC nach jedem erfolgreichen Start verhindert FSP; der Treiber schreibt es als letzten Schritt
+  vor Normal Mode.</li>
+</ul>
+<h3 id="watchdog-ablauf">Watchdog-Ablauf<a class="headerlink" href="#watchdog-ablauf" title="Permanent link">&para;</a></h3>
+<pre class="mermaid"><code>%%{init: {'theme':'base','flowchart':{'curve':'basis'},'themeVariables':{'fontFamily':'Segoe UI, Helvetica, Arial, sans-serif','fontSize':'14px','background':'#ffffff','primaryColor':'#ffffff','primaryBorderColor':'#64748b','primaryTextColor':'#0f172a','lineColor':'#475569','edgeLabelBackground':'#ffffff','tertiaryColor':'#f8fafc','clusterBkg':'#f8fafc','clusterBorder':'#cbd5e1'}}}%%
+flowchart TD
+    CFG(("watchdog active?"))
+    CFG -- "FNMC = 1, or SDMC = 1 with autonomous" --&gt; OFF("off, no write to 0x00")
+    CFG -- otherwise --&gt; SYNC("startup: synchronize in Standby&lt;br/&gt;write configuration twice, acknowledge WDI")
+    SYNC --&gt; MODE(("WMC"))
+    MODE -- timeout --&gt; T("trigger at 50 % of the period&lt;br/&gt;twice, one may be lost at 50 %")
+    MODE -- window --&gt; W("trigger at 70 % of the period&lt;br/&gt;once, open from 50 % + 10 % to 100 % - 10 %")
+    T --&gt; CYC("repeat with every cyclic() call")
+    W --&gt; CYC</code></pre>
+<p><strong>Legende</strong></p>
+<ul>
+<li>Konfigurationsänderungen von WMC oder NWP nur in Standby: im Normal Mode lösen sie einen System-Reset aus. Der
+  Treiber triggert aus seinem eigenen Zyklus und prüft damit nur den Task <code>bsp</code> (Abschnitt <a href="#watchdog">Watchdog</a>).</li>
+<li>Eval Board: SDMC = 1 und <code>AUTONOMOUS</code>, der Watchdog ist aus. Mit 10-ms-Zyklus ist Window erst ab 64 ms Periode
+  sinnvoll.</li>
+</ul>
+<p>Complex Device Driver für die System Basis Chips der NXP-Familie UJA113x (UJA1131/1132/1135/1136,
+auch /FD-Varianten). Auf dem Eval Board sitzt ein <strong>UJA1131HW/FD/5V/4Y</strong>.</p>
+<p>Der Treiber kümmert sich um alles, was der SBC von der Software erwartet: Start und Initialisierung,
+Watchdog, Interrupts, Überwachung des CAN-Transceivers, Reset-Zähler und den Übergang in Sleep. Der Ablauf
+folgt dem öffentlichen UJA113x-Datenblatt (Rev. 2; Watchdog Abschnitt 7.2) und der NXP Application Hint AH1501
+(Software Flow).</p>
+<p><strong>Stand:</strong> Start, zyklischer Betrieb, Sleep und Wake-up per CAN und die RCC-Rücksetzung sind am Eval Board bestätigt.
+Alles Übrige ist nur im Registermodell geprüft: Watchdog im Timeout-/Window-Modus, RCC-Kompensation (SYS-07), wählbare
+Aufweckquellen (SYS-02), Partial Networking (COM-07), HVIO, EN-Pin, LIMP und Batterieüberwachung (IO-10), INTN1 und
+Standby (IO-68). Einzelheiten: <a href="#verifikation">Verifikation</a>.</p>
+<hr />
+<h2 id="aufbau">Aufbau<a class="headerlink" href="#aufbau" title="Permanent link">&para;</a></h2>
+<pre class="mermaid"><code>%%{init: {'theme':'base','flowchart':{'curve':'basis'},'themeVariables':{'fontFamily':'Segoe UI, Helvetica, Arial, sans-serif','fontSize':'14px','background':'#ffffff','primaryColor':'#ffffff','primaryBorderColor':'#64748b','primaryTextColor':'#0f172a','lineColor':'#475569','edgeLabelBackground':'#ffffff','tertiaryColor':'#f8fafc','clusterBkg':'#f8fafc','clusterBorder':'#cbd5e1'}}}%%
+flowchart TD
+    APP("SbcSystem&lt;br/&gt;(Board-Port, Task bsp, 10 ms)&lt;br/&gt;Logging, Konsole 'sbc'")
+    CFG(["sbcConfiguration.h&lt;br/&gt;(Board-Konfiguration)"])
+    DRV("sbc::Uja113x&lt;br/&gt;libs/bsw/sbcUja113x&lt;br/&gt;hardwareunabhängig")
+    REG("uja113xRegisters.h&lt;br/&gt;(C/C++, auch Bootloader)")
+    IF("bsp::spi::ISpiDevice&lt;br/&gt;libs/bsp/bspSpi")
+    SPI("bsp::spi::Lpspi&lt;br/&gt;platforms/s32k1xx/bsp/bspLpspi")
+    HW("LPSPI1 → UJA1131")
+
+    APP --&gt; DRV
+    CFG --&gt; APP
+    DRV --&gt; REG
+    DRV --&gt; IF
+    SPI -.implementiert.-&gt; IF
+    SPI --&gt; HW
+
+    classDef own fill:#ccfbf1,stroke:#0f766e,stroke-width:1.5px,color:#0f172a
+    classDef third fill:#e2e8f0,stroke:#64748b,stroke-width:1.5px,color:#0f172a
+    classDef gen fill:#fef3c7,stroke:#b45309,stroke-width:1.5px,color:#0f172a
+    class APP,DRV,REG,IF,SPI own
+    class HW third
+    class CFG gen</code></pre>
+<table>
+<thead>
+<tr>
+<th>Datei</th>
+<th>Inhalt</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>libs/bsw/sbcUja113x/include/sbc/uja113xRegisters.h</code></td>
+<td>Registeradressen und Bitmasken (C-kompatibel, auch vom Bootloader genutzt)</td>
+</tr>
+<tr>
+<td><code>libs/bsw/sbcUja113x/include/sbc/Uja113x.h</code></td>
+<td>Treiberklasse, Konfigurationsstruktur, Enums</td>
+</tr>
+<tr>
+<td><code>libs/bsw/sbcUja113x/include/sbc/Uja113xResetCounter.h</code></td>
+<td>RCC-Kompensation der MCU-Watchdog-Testresets (SYS-07), Implementierung in <code>Uja113x.cpp</code></td>
+</tr>
+<tr>
+<td><code>libs/bsw/sbcUja113x/src/sbc/Uja113x.cpp</code></td>
+<td>Implementierung</td>
+</tr>
+<tr>
+<td><code>libs/bsw/sbcUja113x/include/sbc/Uja113xCanPhy.h</code></td>
+<td>Rolle <code>can_phy</code>: Bereitschaft des integrierten Transceivers als <code>::bios::CanPhy</code> (ARCH-05)</td>
+</tr>
+<tr>
+<td><code>libs/bsw/sbcUja113x/include/sbc/Uja113xPowerSupply.h</code></td>
+<td>Rolle <code>power_supply</code>: Startgründe, angebotene Aufweckquellen und Sleep für die ECU-Zustandsverwaltung (<code>ecustate::IPowerSupply</code>, SYS-01/SYS-02, <a href="../../../ecuState/doc/ecuState/">ecuState.md</a>)</td>
+</tr>
+<tr>
+<td><code>libs/bsw/sbcUja113x/test/host/Uja113xPowerSupplyHostTest.cpp</code></td>
+<td>Host-Test der Rolle <code>power_supply</code> (läuft über <code>libs/bsw/ecuState/test/test_ecustate_host.py</code>)</td>
+</tr>
+<tr>
+<td><code>libs/bsw/sbcUja113x/module.yaml</code></td>
+<td>Modul-Manifest: Bausteine UJA1131/1132/1135/1136, Rollen, Lifecycle (ARCH-05)</td>
+</tr>
+<tr>
+<td><code>libs/bsw/sbcUja113x/test/host/Uja113xHostTest.cpp</code></td>
+<td>Host-Tests gegen ein Registermodell</td>
+</tr>
+<tr>
+<td><code>libs/bsp/bspSpi/include/spi/ISpiDevice.h</code></td>
+<td>SPI-Schnittstelle für Gerätetreiber</td>
+</tr>
+<tr>
+<td><code>platforms/s32k1xx/bsp/bspLpspi/</code></td>
+<td>LPSPI-Master-Treiber (Polling) und Teilerberechnung</td>
+</tr>
+<tr>
+<td><code>platforms/s32k1xx/port/bspConfiguration/include/bsp/sbc/sbcConfiguration.h</code></td>
+<td>Konfiguration für das Eval Board</td>
+</tr>
+<tr>
+<td><code>platforms/s32k1xx/port/main/src/systems/SbcSystem.cpp</code></td>
+<td>Lifecycle-Komponente, Logging, Konsolenbefehl</td>
+</tr>
+<tr>
+<td><code>platforms/s32k1xx/port/main/src/sbc/SbcEarlyStart.cpp</code></td>
+<td>früher SBC-Zugriff als Early-Init-Hook: RCC-Kompensation, Board-Test <code>sbc failstart</code></td>
+</tr>
+<tr>
+<td><code>platforms/s32k1xx/port/main/src/integration/Integration.cpp</code></td>
+<td>Einbindung: <code>SbcSystem</code>, Hooks und CAN-Rolle nur, wenn das Projekt den SBC nutzt</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Designprinzipien</strong></p>
+<ul>
+<li><strong>Hardwareunabhängig:</strong> Der Treiber kennt nur <code>ISpiDevice</code> und bekommt die Zeit als Parameter (<code>nowMs</code>).
+  Er läuft deshalb unverändert auf dem Target und im Host-Test.</li>
+<li><strong>INTN1 where the board wires it, polling otherwise (IO-68):</strong> the driver has no ISR; the port tells <code>cyclic()</code> the
+  state of the line, see <a href="#intn1-and-standby-io-68">INTN1 and Standby</a>.</li>
+<li><strong>Ein Kontext:</strong> Nicht thread-safe, alle Aufrufe (inklusive Konsole) laufen im Task <code>bsp</code>.</li>
+<li><strong>Keine dynamischen Ressourcen:</strong> kein Heap, keine Callbacks. Ereignisse werden gesammelt und von der
+  Anwendung abgeholt.</li>
+</ul>
+<hr />
+<h2 id="einbindung-auf-einem-board">Einbindung auf einem Board<a class="headerlink" href="#einbindung-auf-einem-board" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong>Pins</strong> im Board-Profil (<code>boards/&lt;board&gt;/board.yaml</code>) unter <code>spi:</code> eintragen und im Projekt
+   (<code>projects/&lt;projekt&gt;/project.yaml</code>, <code>use: spi</code>) auswählen. Der Generator konfiguriert
+   den Pinmux. Die INTN-Pins als DIO-Eingänge mit <code>pull: up</code> anlegen, falls die Platine keine Pull-ups hat
+   (INTN ist Open-Drain).</li>
+<li><strong>Takt</strong> des LPSPI-Moduls im Clock-Setup des Boards festlegen (<code>CLOCK_SOURCE_LPSPIx</code> in <code>boardClock.h</code>).</li>
+<li><strong>Konfiguration</strong> analog zu <code>sbcConfiguration.h</code> anlegen: <code>LpspiConfig</code> und <code>Uja113xConfig</code>, siehe unten.</li>
+<li><strong>Baustein</strong> im Board-Profil unter <code>devices:</code> mit seiner Teilenummer eintragen (<code>part: UJA1131...</code>), beim SPI-Bus
+   <code>device:</code> und beim CAN-Anschluss <code>phy:</code> auf ihn verweisen. bswgen ordnet ihn über <code>module.yaml</code> diesem Modul zu
+   und erzeugt <code>integration/moduleConfiguration.h</code> (<code>NX_MODULE_SBCUJA113X_COUNT</code>, <code>NX_CAN_&lt;bus&gt;_PHY_MODULE_SBCUJA113X</code>)
+   sowie <code>NX_MODULES</code> für CMake. Nutzt das Projekt den CAN-Anschluss, aber nicht den SPI-Bus des SBC, meldet bswgen
+   einen Fehler mit YAML-Pfad.</li>
+<li><strong>CMake/Lifecycle:</strong> <code>main</code> bindet <code>SbcSystem</code>, <code>SbcEarlyStart</code>, <code>bspLpspi</code>, <code>sbcUja113x</code> und <code>sbcUja113xCanPhy</code>
+   nur ein, wenn <code>sbcUja113x</code> in <code>NX_MODULES</code> steht. <code>Integration.cpp</code> registriert <code>SbcSystem</code> im Level 1 vor dem
+   BSP, damit V2 und der CAN-Transceiver konfiguriert sind, bevor ADC und CAN starten, übergibt dem <code>CanSystem</code>
+   <code>SbcSystem::getCanPhy()</code> als Transceiver und trägt die Early-Init-Hooks ein (ARCH-05).</li>
+</ol>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">lifecycleManager</span><span class="p">.</span><span class="n">addComponent</span><span class="p">(</span><span class="s">"sbc"</span><span class="p">,</span><span class="w"> </span><span class="n">sbcSystem</span><span class="p">.</span><span class="n">create</span><span class="p">(</span><span class="n">TASK_BSP</span><span class="p">),</span><span class="w"> </span><span class="n">level</span><span class="p">);</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="n">lifecycleManager</span><span class="p">.</span><span class="n">addComponent</span><span class="p">(</span><span class="s">"bsp"</span><span class="p">,</span><span class="w"> </span><span class="n">bspSystem</span><span class="p">.</span><span class="n">create</span><span class="p">(</span><span class="n">TASK_BSP</span><span class="p">,</span><span class="w"> </span><span class="n">staticBsp</span><span class="p">),</span><span class="w"> </span><span class="n">level</span><span class="p">);</span>
+</code></pre></div>
+<p>Ohne <code>SbcSystem</code> lässt sich der Treiber direkt nutzen:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="o">::</span><span class="n">bsp</span><span class="o">::</span><span class="n">spi</span><span class="o">::</span><span class="n">Lpspi</span><span class="w"> </span><span class="nf">spi</span><span class="p">(</span><span class="n">SPI_CONFIG</span><span class="p">);</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="o">::</span><span class="n">sbc</span><span class="o">::</span><span class="n">Uja113x</span><span class="w"> </span><span class="nf">sbc</span><span class="p">(</span><span class="n">spi</span><span class="p">,</span><span class="w"> </span><span class="n">SBC_CONFIG</span><span class="p">);</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="n">spi</span><span class="p">.</span><span class="n">init</span><span class="p">();</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">sbc</span><span class="p">.</span><span class="n">startup</span><span class="p">(</span><span class="n">getSystemTimeMs32Bit</span><span class="p">())</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="o">::</span><span class="n">sbc</span><span class="o">::</span><span class="n">Uja113x</span><span class="o">::</span><span class="n">Status</span><span class="o">::</span><span class="n">OK</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="cm">/* melden */</span><span class="w"> </span><span class="p">}</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="c1">// alle 10 ms:</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="n">sbc</span><span class="p">.</span><span class="n">cyclic</span><span class="p">(</span><span class="n">getSystemTimeMs32Bit</span><span class="p">());</span>
+</code></pre></div>
+<p><code>SPI_CONFIG</code> und <code>SBC_CONFIG</code> werden per Referenz gehalten und müssen statisch leben.</p>
+<hr />
+<h2 id="konfiguration">Konfiguration<a class="headerlink" href="#konfiguration" title="Permanent link">&para;</a></h2>
+<h3 id="spi-bspspilpspiconfig">SPI (<code>bsp::spi::LpspiConfig</code>)<a class="headerlink" href="#spi-bspspilpspiconfig" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Feld</th>
+<th>Eval Board</th>
+<th>Bedeutung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>base</code></td>
+<td><code>IP_LPSPI1</code></td>
+<td>LPSPI-Instanz</td>
+</tr>
+<tr>
+<td><code>functionalClockHz</code></td>
+<td>48 000 000</td>
+<td>Takt nach DIV2-Teiler (hier FIRCDIV2)</td>
+</tr>
+<tr>
+<td><code>baudrateHz</code></td>
+<td>500 000</td>
+<td>Obergrenze. Genutzt wird die schnellste erreichbare Rate darunter (hier genau 500 kHz).</td>
+</tr>
+<tr>
+<td><code>pcs</code></td>
+<td>0</td>
+<td>Chip-Select-Index</td>
+</tr>
+<tr>
+<td><code>frameBits</code></td>
+<td>16</td>
+<td>Rahmenlänge</td>
+</tr>
+<tr>
+<td><code>cpol</code> / <code>cpha</code></td>
+<td>false / true</td>
+<td>SBC schiebt Daten mit steigender, tastet mit fallender SCK-Flanke</td>
+</tr>
+<tr>
+<td><code>timeoutUs</code></td>
+<td>5000</td>
+<td>Timeout je Frame</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Where the values come from (ARCH-41).</strong> <code>base</code>, <code>functionalClockHz</code> and <code>pcs</code> are project values (generat from
+<code>board.yaml</code>, <code>use.spi</code> and the clock plan). Rate, frame length, clock polarity/phase and timeout are the same on every
+board: <code>sbc::Uja113xSpi</code> in <code>sbc/Uja113x.h</code>, derived from the data-sheet values in <code>sbc/uja113xRegisters.h</code>
+(<code>UJA113X_SPI_MAX_SCK_HZ</code> = 4 MHz, a <code>static_assert</code> keeps <code>BAUDRATE_HZ</code> below it).</p>
+<p>SPI-Rahmen des UJA113x (16 Bit, MSB zuerst):</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>Byte 1: [A6 A5 A4 A3 A2 A1 A0 RO]   RO = 1: nur lesen
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>Byte 2: [D7 .. D0]                   Daten zum SBC / Registerinhalt vom SBC
+</code></pre></div>
+<p>Während des ersten Bytes gibt der SBC die Adresse auf SDO zurück. Der Treiber prüft das bei jedem Lesezugriff.</p>
+<h3 id="sbc-sbcuja113xconfig">SBC (<code>sbc::Uja113xConfig</code>)<a class="headerlink" href="#sbc-sbcuja113xconfig" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Feld</th>
+<th>Eval Board</th>
+<th>Bedeutung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>identification</code></td>
+<td><code>0x51</code></td>
+<td>Erwarteter Inhalt von Register 0x7E. Bei Abweichung schreibt der Treiber nichts.</td>
+</tr>
+<tr>
+<td><code>startupControl</code></td>
+<td><code>0x00</code></td>
+<td>Erwartete MTPNV 0x73 (nur Vergleich)</td>
+</tr>
+<tr>
+<td><code>sbcConfig</code></td>
+<td><code>0x06</code></td>
+<td>Erwartete MTPNV 0x74 (nur Vergleich)</td>
+</tr>
+<tr>
+<td><code>watchdogMode</code></td>
+<td><code>AUTONOMOUS</code></td>
+<td><code>AUTONOMOUS</code>, <code>TIMEOUT</code> oder <code>WINDOW</code></td>
+</tr>
+<tr>
+<td><code>watchdogPeriod</code></td>
+<td><code>MS_128</code></td>
+<td>8, 16, 32, 64, 128, 256, 1024 oder 4096 ms</td>
+</tr>
+<tr>
+<td><code>v2</code></td>
+<td><code>ON_NORMAL_STANDBY_RESET</code></td>
+<td>V2/VEXT: <code>OFF</code>, <code>ON_NORMAL</code>, <code>ON_NORMAL_STANDBY_RESET</code>, <code>ON_ALWAYS</code></td>
+</tr>
+<tr>
+<td><code>can</code></td>
+<td><code>ACTIVE</code></td>
+<td><code>OFFLINE</code>, <code>ACTIVE</code>, <code>ACTIVE_NO_UV</code> (VCAN-Unterspannung ignoriert), <code>LISTEN_ONLY</code></td>
+</tr>
+<tr>
+<td><code>systemIrqEnable</code></td>
+<td><code>OTWIE \| SPIFIE</code></td>
+<td>Register 0x04: Übertemperatur-Warnung, SPI-Fehler</td>
+</tr>
+<tr>
+<td><code>supplyIrqEnable</code></td>
+<td><code>SMPSSI \| VEXTOI \| VEXTUI \| V1UI</code></td>
+<td>Register 0x1C</td>
+</tr>
+<tr>
+<td><code>transceiverIrqEnable</code></td>
+<td><code>CFI</code></td>
+<td>Register 0x23. CAN-Wake-up (CWI) setzt der Treiber nur für Sleep.</td>
+</tr>
+<tr>
+<td><code>resetCounter</code></td>
+<td><code>0</code></td>
+<td>RCC-Wert nach jedem erfolgreichen Start (0–3)</td>
+</tr>
+<tr>
+<td><code>limpHomeAtStartup</code></td>
+<td><code>false</code></td>
+<td>LIMP nach dem Start: <code>false</code> gibt den Pin frei (LHC = 0), <code>true</code> zieht ihn low</td>
+</tr>
+<tr>
+<td><code>enPin</code></td>
+<td>siehe unten</td>
+<td>EN-Ausgang (IO-10), <code>configure: false</code> lässt ENSC/ENDC/ENC wie vorgefunden</td>
+</tr>
+<tr>
+<td><code>battery</code></td>
+<td>siehe unten</td>
+<td>Batterieüberwachung (IO-10), <code>configure: false</code> schreibt die Register 0x11–0x14 nicht</td>
+</tr>
+<tr>
+<td><code>hvio[0..1]</code></td>
+<td>beide <code>configure: false</code></td>
+<td>HVIO-Bänke (IO-10), Bank 0 = HVIO1–4, Bank 1 = HVIO5–8</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Hinweise zum Eval Board</strong></p>
+<ul>
+<li><strong>MTPNV</strong> (aus dem früheren MBDT-Projekt): 0x73 = 0x00 bedeutet V2 nach dem Einschalten aus.
+  0x74 = 0x06 bedeutet Software-Entwicklungsmodus (SDMC = 1), V2 als Versorgung auf der Platine, Sleep erlaubt.</li>
+<li><strong>V2:</strong> versorgt +5VD und damit die Referenz VREFH (LM4132, 4,096 V). V2 bleibt deshalb auch in Standby und
+  Reset an, sonst würde jeder Umweg über Standby die ADC-Referenz abschalten und die Safety-Prüfung auslösen.</li>
+<li><strong>Battery monitor, EN pin, HVIO:</strong> project values <code>modules.SBC</code> of the demo (9000 / 18000 mV on BAT, 500 mV
+  windows, nothing switched off, see <a href="#project-values-and-board-wiring-io-33">Project values and board wiring</a>); the net
+  <code>SBC_ENABLE</code> is not wired (<code>pins.EN: none</code>, EN stays low); the part has HVIO1-HVIO4 only, <code>board.yaml</code>: HVIO2 WAKE
+  button, HVIO3 wake input at J2, HVIO4 CP_WAKE, these three are the local wake-up sources LOCAL1..LOCAL3.</li>
+</ul>
+<hr />
+<h2 id="startablauf">Startablauf<a class="headerlink" href="#startablauf" title="Permanent link">&para;</a></h2>
+<p><code>startup(nowMs)</code> setzt AH1501 Kapitel 2.1 um. Jeder Schreibzugriff (außer Interrupt-Quittierung und
+Watchdog-Trigger) wird zurückgelesen. Eine Abweichung bricht den Start mit <code>VERIFY_ERROR</code> ab.</p>
+<pre class="mermaid"><code>%%{init: {'theme':'base','flowchart':{'curve':'basis'},'themeVariables':{'fontFamily':'Segoe UI, Helvetica, Arial, sans-serif','fontSize':'14px','background':'#ffffff','primaryColor':'#ffffff','primaryBorderColor':'#64748b','primaryTextColor':'#0f172a','lineColor':'#475569','edgeLabelBackground':'#ffffff','tertiaryColor':'#f8fafc','clusterBkg':'#f8fafc','clusterBorder':'#cbd5e1'}}}%%
+flowchart TD
+    A("ID lesen 0x7E") --&gt;|SPI-Fehler| F1("SPI_ERROR")
+    A --&gt;|≠ Konfiguration| F2("WRONG_DEVICE&lt;br/&gt;kein Schreibzugriff")
+    A --&gt; B("Lesen: MTPNV 0x70/0x73/0x74,&lt;br/&gt;Watchdog-Status, Reset-Quelle,&lt;br/&gt;Modus, Fail-Safe, globale Interrupts")
+    B --&gt; C(("Watchdog läuft?"))
+    C --&gt;|ja, keine Window-Unsicherheit| C1("sofort triggern")
+    C --&gt; D
+    C1 --&gt; D("alle anstehenden Interrupts&lt;br/&gt;lesen und quittieren")
+    D --&gt; E("Regler: V2C und V2SC setzen")
+    E --&gt; E1("Batterieüberwachung:&lt;br/&gt;Schwellen, Hysterese, Quelle")
+    E1 --&gt; G("CAN: CMC und CSC setzen, PN/FD aus")
+    G --&gt; H("Interrupt-Freigaben&lt;br/&gt;System, Versorgung, Transceiver ohne CWI")
+    H --&gt; H1("HVIO je vorhandener Bank:&lt;br/&gt;Schwellen, Pins, Fehler- und Wake-Interrupts")
+    H1 --&gt; I("Watchdog konfigurieren&lt;br/&gt;ggf. über Standby")
+    I --&gt; J("Fail-Safe: RCC = Startwert,&lt;br/&gt;EN-Pin, LIMP nach Konfiguration")
+    J --&gt; K("Normal Mode, zurücklesen")
+    K --&gt; OK("State NORMAL")</code></pre>
+<p>Einzelheiten:</p>
+<table>
+<thead>
+<tr>
+<th>Schritt</th>
+<th>Verhalten</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ID</td>
+<td>Nur bei passender ID geht es weiter, denn alle Schreibzugriffe setzen die Registerbelegung voraus.</td>
+</tr>
+<tr>
+<td>MTPNV</td>
+<td>Wird <strong>nur verglichen</strong>. Abweichung oder Werkszustand (NVMPS = 1) setzt <code>mtpnvMismatch</code>, der Start läuft trotzdem weiter.</td>
+</tr>
+<tr>
+<td>Watchdog</td>
+<td><code>_watchdogActive</code> = kein Forced Normal Mode und (Modus ≠ autonomous oder kein Entwicklungsmodus). Siehe <a href="#watchdog">Watchdog</a>.</td>
+</tr>
+<tr>
+<td>Interrupts</td>
+<td>Werden vor der Initialisierung quittiert, z. B. POSI (Power-on) nach dem Einschalten. Das Ergebnis steht in <code>StartupInfo::interrupts</code>.</td>
+</tr>
+<tr>
+<td>Regler zuerst</td>
+<td>Damit V2 an bleibt, falls die Watchdog-Konfiguration über Standby führt.</td>
+</tr>
+<tr>
+<td>Batterie</td>
+<td>Schwellen vor allem, was auf sie reagiert (IO-10). Ohne <code>battery.configure</code> wird nichts geschrieben.</td>
+</tr>
+<tr>
+<td>CAN</td>
+<td>Partial Networking und CAN-FD-Toleranz aus. Die Shutdown-Steuerung CSC kommt aus der Konfiguration, sobald die Batterieüberwachung konfiguriert ist – sonst bleibt sie erhalten (IO-10).</td>
+</tr>
+<tr>
+<td>HVIO</td>
+<td>Nur Bänke, die der Baustein laut Identifikation hat. Ohne <code>hvio[b].configure</code> bleibt die Funktion unberührt und nur die Wake-Freigabe wird auf 0 gesetzt (AH1501 2.2.3).</td>
+</tr>
+<tr>
+<td>RCC/EN/LHC</td>
+<td>Ein Schreibzugriff: Reset-Zähler, EN-Pin und LIMP nach Konfiguration. Ohne <code>enPin.configure</code> bleiben ENSC/ENDC/ENC wie vorgefunden.</td>
+</tr>
+</tbody>
+</table>
+<p>Schlägt der Start fehl, geht der Treiber in <code>FAILED</code> und <code>cyclic()</code> versucht es jede Sekunde erneut
+(<code>STARTUP_RETRY_MS</code>).</p>
+<hr />
+<h2 id="zyklischer-betrieb">Zyklischer Betrieb<a class="headerlink" href="#zyklischer-betrieb" title="Permanent link">&para;</a></h2>
+<p><code>cyclic(nowMs)</code> ist für einen 10-ms-Takt ausgelegt.</p>
+<table>
+<thead>
+<tr>
+<th>Aufgabe</th>
+<th>Takt</th>
+<th>SPI-Frames</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Watchdog bedienen (falls aktiv)</td>
+<td>Timeout: 50 %, Window: 70 % der Periode</td>
+<td>1–2</td>
+</tr>
+<tr>
+<td>Globales Interrupt-Register 0x60 lesen</td>
+<td>jeder Aufruf</td>
+<td>1</td>
+</tr>
+<tr>
+<td>Anstehende Interrupts lesen und quittieren</td>
+<td>bei Bedarf</td>
+<td>2 je Register</td>
+</tr>
+<tr>
+<td>CAN-Transceiver-Status 0x22</td>
+<td>bei CAN aktiv jeder Aufruf, sonst 100 ms; sofort bei Transceiver-Interrupt</td>
+<td>1</td>
+</tr>
+<tr>
+<td>Modus prüfen</td>
+<td>1 s</td>
+<td>1</td>
+</tr>
+<tr>
+<td>Neuer Startversuch (State <code>FAILED</code>)</td>
+<td>1 s</td>
+<td>Start</td>
+</tr>
+</tbody>
+</table>
+<p><strong>CAN bereit</strong> (<code>isCanTransceiverReady()</code>) heißt: CTS = 1 (Sender aktiv), VCS = 0 (keine VCAN-Unterspannung)
+und CFS = 0 (kein TXD-Dominant-Fehler). Die Anwendung soll nur senden, wenn das erfüllt ist (AH1501 Abb. 16/17).</p>
+<p><strong>Latenz des Transceiver-Status (COM-08):</strong> Bei aktivem CAN-Modus (<code>ACTIVE</code>, <code>ACTIVE_NO_UV</code>) liest der Treiber Register
+0x22 in jedem <code>cyclic()</code>-Aufruf (ein SPI-Rahmen), nicht nur alle 100 ms; ein Wegfall von VCAN oder ein abgeschalteter
+Sender fällt nach einem Zyklus auf (Eval Board: 10 ms). Bei <code>OFFLINE</code> und <code>LISTEN_ONLY</code> bleibt der 100-ms-Takt.</p>
+<p><strong>Meldung an das CAN-System (COM-23):</strong> <code>SbcSystem</code> meldet jede Änderung von <code>isCanTransceiverReady()</code> über
+<code>::can::CanPhyReadiness</code> (libs/bsw/canSystem), das CAN-System schaltet sofort stumm oder wieder aktiv. Ein Schreibzugriff
+auf 0x20 über <code>writeRegister()</code> liest 0x22 direkt danach und meldet im selben Aufruf, damit ein abgeschalteter Sender
+stumm ist, bevor die Anwendung einen weiteren Rahmen schreibt.</p>
+<p><strong>Modusverlust:</strong> Steht der SBC nicht mehr in Normal, hat er einen eigenen Reset gemacht, während die MCU
+weiterlief (z. B. bei offenem JP1). Die Register stehen dann auf Default, V2 ist womöglich aus. Der Treiber
+zählt <code>modeLost</code> und führt sofort einen kompletten Start durch.</p>
+<p>Am Board gemessen: Task <code>bsp</code> einschließlich SBC im Mittel 65 µs pro Zyklus (0,65 % CPU).</p>
+<hr />
+<h2 id="watchdog">Watchdog<a class="headerlink" href="#watchdog" title="Permanent link">&para;</a></h2>
+<h3 id="verhalten-des-sbc">Verhalten des SBC<a class="headerlink" href="#verhalten-des-sbc" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>MTPNV</th>
+<th>WMC</th>
+<th>Normal</th>
+<th>Standby (INTN1 high)</th>
+<th>Sleep</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FNMC = 1 (Forced Normal)</td>
+<td>–</td>
+<td>aus</td>
+<td>aus</td>
+<td>aus</td>
+</tr>
+<tr>
+<td>SDMC = 1 (Entwicklungsmodus)</td>
+<td>autonomous</td>
+<td>aus</td>
+<td>aus</td>
+<td>aus</td>
+</tr>
+<tr>
+<td>SDMC = 1</td>
+<td>timeout / window</td>
+<td>Timeout / Window</td>
+<td>Timeout</td>
+<td>Timeout</td>
+</tr>
+<tr>
+<td>SDMC = 0</td>
+<td>autonomous</td>
+<td><strong>Timeout</strong></td>
+<td>aus</td>
+<td>aus</td>
+</tr>
+<tr>
+<td>SDMC = 0</td>
+<td>timeout / window</td>
+<td>Timeout / Window</td>
+<td>Timeout</td>
+<td>Timeout</td>
+</tr>
+</tbody>
+</table>
+<p>(Vereinfacht nach Datenblatt Tabelle 8 und Abschnitt 7.2.4. In Standby mit anstehendem Interrupt (INTN1 low) läuft
+der Watchdog bei SDMC = 0 auch mit autonomous als Timeout-Watchdog. Nach einem SBC-Reset steht WMC laut Tabelle 7 und
+7.2.1 auf timeout (SDMC = 0) bzw. autonomous (SDMC = 1), NWP auf 128 ms.)</p>
+<h3 id="regeln-die-der-treiber-einhält">Regeln, die der Treiber einhält<a class="headerlink" href="#regeln-die-der-treiber-einhält" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Konfigurationsänderungen nur in Standby.</strong> Eine Änderung von WMC oder NWP im Normal Mode löst sofort einen
+  System-Reset aus (Datenblatt 7.2, 7.3.3). <code>configureWatchdog()</code> wechselt deshalb bei Bedarf nach Standby,
+  schreibt die Konfiguration zweimal (Pflicht bei kürzerer Periode, Datenblatt 7.2.5 Fall A), quittiert ein dabei
+  entstehendes WDI und liest zurück.</li>
+<li><strong>Synchronisation über Standby:</strong> Ist der Watchdog aktiv, synchronisiert der Treiber beim Start immer in Standby
+  (dort gilt Timeout-Verhalten). Nach einem reinen MCU-Reset ist die Phase eines Window-Watchdogs unbekannt, ein
+  sofortiger Trigger könnte ins geschlossene Fenster fallen.</li>
+<li><strong>Timeout-Trigger zweimal</strong>, weil ein einzelner Trigger genau bei 50 % wie ein ignorierter wirken kann
+  (Datenblatt 7.2.5 Fall B).</li>
+<li><strong>Window-Trigger einmal</strong>, sonst landet der zweite im geschlossenen Fenster.</li>
+<li><strong>Triggerzeitpunkt Window:</strong> Das Fenster ist offen von 50 % (+10 % Oszillatortoleranz) bis 100 % (−10 %).
+  (Datenblatt Tabelle 91, t_trig(wd)1/t_trig(wd)2.) Der Treiber zielt auf 70 %. Mit 10-ms-Zyklus ist Window erst
+  ab 64 ms Periode sinnvoll.</li>
+<li><strong>Entwicklungsmodus mit autonomous:</strong> kein einziger Schreibzugriff auf Register 0x00.</li>
+</ul>
+<p><strong>Eval Board:</strong> SDMC = 1 und <code>AUTONOMOUS</code>, der Watchdog ist also aus (am Board gelesen: Status 0x04).</p>
+<blockquote>
+<p><strong>Hinweis zum Watchdog-Trigger:</strong> Der Treiber triggert aus seinem eigenen Zyklus. Er prüft damit nur, ob der
+Task <code>bsp</code> läuft, nicht die ganze Anwendung. Für echte Programmflusskontrolle sollte der Trigger später an
+Lebenszeichen der übrigen Tasks gekoppelt werden (AH1501 2.2.2).</p>
+</blockquote>
+<hr />
+<h2 id="interrupts">Interrupts<a class="headerlink" href="#interrupts" title="Permanent link">&para;</a></h2>
+<p>Der SBC signalisiert Ereignisse in den Statusregistern 0x61–0x67. Register 0x60 fasst zusammen, welche
+davon etwas melden. Quittiert wird durch Schreiben einer 1 auf das jeweilige Bit.</p>
+<table>
+<thead>
+<tr>
+<th>Feld in <code>InterruptFlags</code></th>
+<th>Register</th>
+<th>Bits (Auswahl)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>system</code></td>
+<td>0x61</td>
+<td>OVSDI 0x20, POSI 0x10 (Power-on), OTWI 0x04, SPIFI 0x02, WDI 0x01</td>
+</tr>
+<tr>
+<td><code>supply</code></td>
+<td>0x62</td>
+<td>SMPSSI 0x20, BMOI 0x10, BMUI 0x08, VEXTOI 0x04, VEXTUI 0x02, V1UI 0x01</td>
+</tr>
+<tr>
+<td><code>transceiver</code></td>
+<td>0x63</td>
+<td>PNFDEI 0x20, CBSI 0x10, LWI2 0x08, LWI1 0x04, CFI 0x02, CWI 0x01</td>
+</tr>
+<tr>
+<td><code>wake</code></td>
+<td>0x64</td>
+<td>HVIO1–4-Flanken, <strong>zwei Bit je HVIO</strong>: Bit 2·i steigend (IOnREI), Bit 2·i+1 fallend (IOnFEI)</td>
+</tr>
+<tr>
+<td><code>failure</code></td>
+<td>0x65</td>
+<td>HVIO1–4: Bit 2·i Leerlauf (IOnOLI), Bit 2·i+1 Kurzschluss (IOnSCI)</td>
+</tr>
+<tr>
+<td><code>wakeBank1</code></td>
+<td>0x66</td>
+<td>dieselben Bits für HVIO5–8 (nur Bausteine mit zwei Bänken)</td>
+</tr>
+<tr>
+<td><code>failureBank1</code></td>
+<td>0x67</td>
+<td>dieselben Bits für HVIO5–8</td>
+</tr>
+</tbody>
+</table>
+<p>Vor IO-10 wurden Bank 0 und Bank 1 in dasselbe Feld geodert; ein Ereignis an HVIO5 sah damit aus wie eines an
+HVIO1. Die Felder sind deshalb getrennt.</p>
+<ul>
+<li><strong>Beim Start</strong> landen die gefundenen Interrupts in <code>getStartupInfo().interrupts</code>.</li>
+<li><strong>Im Betrieb</strong> sammelt der Treiber sie. <code>takeInterruptEvents()</code> gibt sie zurück und setzt die Sammlung zurück.
+  <code>SbcSystem</code> loggt sie als Warnung.</li>
+<li>WDI, POSI, OVSDI und PNFDEI haben keine Freigabebits und sind immer aktiv.</li>
+</ul>
+<p><strong>INTN-Pins:</strong> INTN1/INTN2 sind Open-Drain und brauchen Pull-ups nach V1. Auf dem Eval Board fehlen sie im
+Schaltplan. Das Board-Profil nutzt deshalb den internen Pull-up der MCU (<code>pull: up</code>). Am Board bestätigt: ohne
+Pull-up dauerhaft low, mit Pull-up und quittierten Interrupts inaktiv. <code>sbc status</code> zeigt ihren Pegel zur Kontrolle;
+seit IO-68 nutzt der Treiber INTN1, wenn das Board es verdrahtet (nächster Abschnitt).</p>
+<h3 id="intn1-and-standby-io-68">INTN1 and Standby (IO-68)<a class="headerlink" href="#intn1-and-standby-io-68" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Pin</th>
+<th>Driven low by</th>
+<th>Release</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>INTN1</td>
+<td><strong>every</strong> enabled interrupt (WDI, POSI, OVSDI, PNFDEI always)</td>
+<td>high when all status bits are cleared, then held high for 0.9..1.1 ms (data sheet 7.12.1)</td>
+</tr>
+<tr>
+<td>INTN2</td>
+<td>only OTWI, V1UI, BMUI, BMOI, OVSDI, SMPSSI</td>
+<td>no delay timer</td>
+</tr>
+</tbody>
+</table>
+<p>Both are open drain with pull-ups to V1. A wake-up event is an interrupt as well: in Standby it pulls INTN1 low, in Sleep
+it wakes the SBC. The driver uses INTN1 only (it carries every event, and boards such as the BCU V3.3 wire only INTN1);
+INTN2 would only shorten the reaction to its subset, which the 10 ms service already covers (decision D6, 2026-10-01).</p>
+<p>INTN1 is the optional module connection <code>intn1</code> (<code>module.yaml connect</code>, ARCH-52): the board names the digital input
+(<code>devices[].connect: { intn1: SBC_INTERRUPT1 }</code>, <code>pull: up</code> if the board has no pull-up); the project decides with a pin
+event on the same input (<code>pin_events.&lt;input&gt;</code>, see <a href="../../../../bsp/bspPinEvent/doc/bspPinEvent/">bspPinEvent</a>) whether
+the line also raises a pin interrupt.</p>
+<table>
+<thead>
+<tr>
+<th>Board / project</th>
+<th>What the service does every 10 ms</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>intn1</code> not wired</td>
+<td>reads 0x60, <code>cyclic(now)</code> = <code>cyclic(now, InterruptLine::UNKNOWN)</code></td>
+</tr>
+<tr>
+<td>wired, no pin event</td>
+<td>samples the input; reads 0x60 only if INTN1 is low, else every 100 ms as fallback</td>
+</tr>
+<tr>
+<td>wired, pin event</td>
+<td>as above, an edge since the previous cycle counts as low; the pin interrupt is the wake-up source of the MCU from a stop mode (<code>SbcSystem::isMcuWakeLineArmed()</code>)</td>
+</tr>
+</tbody>
+</table>
+<p>The reaction time stays one service cycle; what changes is one SPI frame per 100 ms instead of per 10 ms while nothing
+happens. <strong>Line supervision:</strong> a fallback read that finds a pending interrupt the line did not show (more than
+<code>INTERRUPT_RELEASE_MS</code> = 2 ms after the last clear) is a miss; <code>INTERRUPT_LINE_MISS_LIMIT</code> (2) misses in a row latch the
+line as faulty (<code>isInterruptLineFaulty()</code>, log <code>SBC INTN1 faulty</code>) and the driver reads 0x60 in every call again until
+the next MCU reset. A line stuck low with nothing pending costs one read per call and is counted (<code>interruptLineIdle</code>).</p>
+<p><strong>Standby with V1 on.</strong> <code>enterStandby(now, wakeup)</code> puts the SBC into Standby without switching V1 off, so the MCU can
+enter a stop mode of its own (S32K1 VLPS, PLAT-108). Wake-up sources are those of <code>enterSleep()</code> (<code>SleepWakeup</code>): CAN
+wake-up (any bus activity, no partial networking), HVIO wake inputs of both banks, and with <code>cyclic</code> the watchdog as
+timeout watchdog. Every wake-up event raises its interrupt and pulls INTN1 low.</p>
+<ul>
+<li>Refused: <code>NOT_READY</code> outside Normal, <code>NOT_ALLOWED</code> without a source or with an input of a missing bank (nothing
+  written), <code>INTERRUPT_PENDING</code> if an interrupt is pending before or after the mode change (back in Normal).</li>
+<li>In Standby (<code>State::STANDBY</code>) the CAN transceiver is offline, the battery monitor is off, Sleep is refused. <code>cyclic()</code>
+  triggers the watchdog with the Standby value, collects the wake-up interrupts and supervises the SBC every second; a
+  lost source counts as mode loss and runs a new startup.</li>
+<li><code>leaveStandby(now)</code>: watchdog as configured, Normal mode, sources removed, transceiver status read. If the SBC is in
+  neither Standby nor Normal, the driver goes to <code>FAILED</code> and starts again. Board test: <code>sbc standby &lt;ms&gt;</code>.</li>
+</ul>
+<hr />
+<h2 id="reset-zähler-und-limp-home">Reset-Zähler und Limp Home<a class="headerlink" href="#reset-zähler-und-limp-home" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Zählen:</strong> Der SBC zählt jeden Reset im Reset-Zähler RCC (Register 0x02, Bits 1:0).</li>
+<li><strong>Überlauf:</strong> Steht RCC auf 3, wechselt der SBC beim nächsten Reset in <strong>Forced Sleep Preparation (FSP)</strong>. Dort
+  setzt er LHC (LIMP-Pin low) und geht, falls die MTPNV Sleep erlaubt (SLPC = 0), in <strong>Sleep</strong>. Die MCU verliert dann
+  ihre Versorgung, bis ein Wake-up (z. B. CAN) kommt.</li>
+<li><strong>Rücksetzen:</strong> Die Software muss RCC nach jedem erfolgreichen Start zurücksetzen. Der Treiber schreibt
+  <code>resetCounter</code> als letzten Schritt vor Normal Mode und löscht dabei ein aktives LHC
+  (<code>StartupInfo::limpHomeWasActive</code>).</li>
+</ul>
+<p><strong>Wirkung auf dem Eval Board:</strong> JP1 verbindet RSTN des SBC mit dem Reset der MCU. Ist JP1 geschlossen, zählt jeder
+MCU- oder JTAG-Reset mit. Ohne Rücksetzen schaltete der SBC nach wenigen Resets die Versorgung ab. Mit dem
+Treiber setzt jede erfolgreich gestartete Anwendung RCC auf 0 (am Board bestätigt, VER-03: 6 Neustarts mit
+<code>lc reboot</code>, jedes Mal RCC 0 und kein Forced Sleep).</p>
+<p><strong>Bewusst nicht im Bootloader:</strong> Setzte auch der Bootloader RCC zurück, würde der SBC eine Anwendung, die
+dauerhaft vor dem Start abstürzt, nicht mehr erkennen.</p>
+<h3 id="kompensation-der-mcu-watchdog-testresets-sys-07">Kompensation der MCU-Watchdog-Testresets (SYS-07)<a class="headerlink" href="#kompensation-der-mcu-watchdog-testresets-sys-07" title="Permanent link">&para;</a></h3>
+<p><code>main()</code> ruft den OpenBSW-Selbsttest <code>safety::bsp::Watchdog::executeFastTest</code> auf; er löst bei jedem Start zwei
+Watchdog-Resets der MCU aus (<code>WDOG_CS.TST</code> = 2 und 3). Bei geschlossenem JP1 zieht jeder Reset RSTN und zählt im RCC:
+nach Power-on stand RCC beim SBC-Start auf 2, nach einem MCU-Reset auf 3, ein einziger Fehlstart führte in Forced Sleep.</p>
+<p><code>SbcEarlyStart::compensateResetCounter()</code> (Hook der Rolle <code>early_init</code>, ganz am Anfang von <code>main()</code>, nur wenn das Projekt
+den SBC nutzt) verringert RCC um 1 (nie unter 0), wenn der letzte Reset ein Watchdog-Reset war (<code>RCM_SRS.WDOG</code>) <strong>und</strong>
+<code>WDOG_CS.TST</code> = 2 oder 3. Sonst wird der SBC nicht angesprochen. Die Logik ist hardwareunabhängig
+(<code>sbc::compensateWatchdogTestReset()</code>): ID 0x7E prüfen, 0x02 lesen, nur die RCC-Bits ändern, zurücklesen; bei SPI-Fehler,
+falschem Echo oder falscher ID wird nichts geschrieben, der Start läuft weiter. Die MTPNV wird nie geschrieben. Der
+Zugriff ändert weder Takt noch Pins (Standardkonfiguration aus <code>board.yaml</code>) und nur RCC im SBC.</p>
+<table>
+<thead>
+<tr>
+<th>Folge (JP1 geschlossen)</th>
+<th>RCC beim SBC-Start vorher</th>
+<th>mit Kompensation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Power-on</td>
+<td>2</td>
+<td>0</td>
+</tr>
+<tr>
+<td>MCU-Reset (<code>lc reboot</code>, Absturz, JTAG)</td>
+<td>3</td>
+<td>1</td>
+</tr>
+<tr>
+<td>echter Watchdog-Reset der MCU</td>
+<td>3</td>
+<td>1 (zählt weiter)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Reserve:</strong> Die Kompensation wirkt erst im Start nach dem Testreset. Tolerierte Fehlstarts vor dem SBC-Start: nach
+Power-on 2 (vorher 0), nach MCU-Reset 1 (vorher 0); danach endet der nächste Start im Forced Sleep.</p>
+<p><strong>Board-Test <code>sbc failstart &lt;n&gt;</code></strong> (nur mit Nutzer vor Ort, JP1 geschlossen): legt einen Zähler im No-Init-RAM
+(<code>BL_BOOT_REQUEST_ADDR</code> − 8) an, löst nach 300 ms einen Software-Reset aus und danach in n Starts je einen Reset vor
+dem SBC-Start. Der Zähler wird nur mit Magic und invertierter Kopie akzeptiert und nur gelesen, wenn POR/LVD in
+<code>RCM_SSRS</code> seit dem Einschalten gelöscht wurden.</p>
+<hr />
+<h2 id="hvio-en-pin-und-batterieüberwachung">HVIO, EN-Pin und Batterieüberwachung<a class="headerlink" href="#hvio-en-pin-und-batterieüberwachung" title="Permanent link">&para;</a></h2>
+<p>Seit <strong>IO-10</strong> konfiguriert der Treiber die drei Funktionsblöcke, die der UJA113x neben Versorgung, Watchdog
+und Transceiver anbietet. Leitlinie ist Abschnitt 5 von
+<a href="../../../../../doc/architecture/treiber-granularitaet/"><code>treiber-granularitaet.md</code></a>: <strong>An der Modulgrenze
+stehen physikalische Größen der Funktion, keine Registercodes.</strong> Der Treiber ist die Stelle, die umrechnet.</p>
+<h3 id="was-in-welcher-einheit-konfiguriert-wird">Was in welcher Einheit konfiguriert wird<a class="headerlink" href="#was-in-welcher-einheit-konfiguriert-wird" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Größe</th>
+<th>Einheit im Projekt</th>
+<th>Raster des SBC</th>
+<th>Umrechnung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Unter-/Überspannungsschwelle der Batterie</td>
+<td>mV am überwachten Pin</td>
+<td>256 Stufen über 20 V, 78,4 mV</td>
+<td><code>batteryThresholdCode()</code></td>
+</tr>
+<tr>
+<td>Rückfallfenster (Hysterese)</td>
+<td>mV</td>
+<td>16 Stufen zu je 313,7 mV</td>
+<td><code>batteryHysteresisCode()</code></td>
+</tr>
+<tr>
+<td>Messwert der Batterieüberwachung</td>
+<td>mV</td>
+<td>10 Bit über 20 V, Genauigkeit ±300 mV</td>
+<td><code>batteryAdcMv()</code></td>
+</tr>
+<tr>
+<td>Kurzschlussschwelle eines HVIO</td>
+<td>mA Laststrom</td>
+<td>30 / 45 / 60 / 90 mA (typisch)</td>
+<td><code>shortCircuitThresholdCode()</code></td>
+</tr>
+<tr>
+<td>Leerlaufschwelle eines HVIO</td>
+<td>mA Laststrom</td>
+<td>2 / 5 / 10 / 20 mA (typisch)</td>
+<td><code>openLoadThresholdCode()</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Gerundet wird immer zur sicheren Seite</strong>, damit die Reaktion nie später kommt als verlangt: die
+Unterspannungsschwelle aufwärts, die Überspannungsschwelle abwärts, die Stromschwellen auf den nächsten
+Rasterwert ≤ Wunsch (unterhalb des kleinsten Rasterwerts bleibt der empfindlichste). <code>getBatteryThresholds()</code>
+meldet zurück, womit der SBC tatsächlich vergleicht – das gehört ins Log und in eine spätere
+nxconfig-Prüfung, weil zwischen Wunsch und Raster bis zu 78 mV bzw. 30 mA liegen.</p>
+<h3 id="batterieüberwachung">Batterieüberwachung<a class="headerlink" href="#batterieüberwachung" title="Permanent link">&para;</a></h3>
+<p>Der SBC misst mit einem 10-Bit-Wandler die Spannung an <strong>BAT</strong> und an <strong>BATSENSE</strong> und vergleicht <strong>eine</strong>
+davon (<code>source</code>) gegen die beiden Schwellen. Sie läuft <strong>nur im Normal Mode</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Feld von <code>BatteryMonitorConfig</code></th>
+<th>Register</th>
+<th>Bedeutung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>configure</code></td>
+<td>–</td>
+<td><code>false</code>: 0x11–0x14 bleiben unberührt, es gibt keine Ereignisse (Zustand vor IO-10)</td>
+</tr>
+<tr>
+<td><code>source</code></td>
+<td>0x11 BMSC</td>
+<td><code>BAT</code> oder <code>BATSENSE</code></td>
+</tr>
+<tr>
+<td><code>undervoltageMv</code> / <code>overvoltageMv</code></td>
+<td>0x12 / 0x13</td>
+<td>Schwellen in mV</td>
+</tr>
+<tr>
+<td><code>undervoltageHysteresisMv</code> / <code>overvoltageHysteresisMv</code></td>
+<td>0x14</td>
+<td>Rückfallfenster in mV</td>
+</tr>
+<tr>
+<td><code>canShutdown</code></td>
+<td>0x20 CSC</td>
+<td>Transceiver bei Unter-/Überspannung abschalten</td>
+</tr>
+<tr>
+<td><code>v2Shutdown</code></td>
+<td>0x10 V2SC</td>
+<td>V2/VEXT bei Unter-/Überspannung abschalten</td>
+</tr>
+</tbody>
+</table>
+<p><code>readBatteryVoltages()</code> liefert beide Messwerte in mV und den Status BMUVS/BMOVS; die Ereignisse selbst
+kommen als Interrupts BMUI/BMOI über <code>takeInterruptEvents()</code> (Freigabe in <code>supplyIrqEnable</code>).</p>
+<blockquote>
+<p><strong>Wichtig:</strong> Der Einschaltwert von <strong>CSC ist 01</strong>, also „CAN-Transceiver aus bei Unterspannung". Vor IO-10
+hat der Treiber CSC unverändert übernommen – das fiel nicht auf, weil BMUTC = 0x00 nie ausgelöst hat.
+Sobald eine Schwelle gesetzt ist, würde der Bus bei jedem Spannungseinbruch still verstummen. Deshalb
+schreibt der Treiber CSC und V2SC jetzt aus der Konfiguration, sobald <code>battery.configure</code> gesetzt ist.</p>
+</blockquote>
+<h3 id="project-values-and-board-wiring-io-33">Project values and board wiring (IO-33)<a class="headerlink" href="#project-values-and-board-wiring-io-33" title="Permanent link">&para;</a></h3>
+<p>The port builds <code>SBC_CONFIG</code> from the generat <code>integration/sbcUja113xConfiguration.h</code> (tools/bswgen):</p>
+<table>
+<thead>
+<tr>
+<th>Input</th>
+<th>Level</th>
+<th>Where</th>
+<th>Becomes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>battery_source</code> (<code>bat</code>|<code>batsense</code>), <code>undervoltage_mv</code>, <code>overvoltage_mv</code>, <code>undervoltage_hysteresis_mv</code>, <code>overvoltage_hysteresis_mv</code></td>
+<td>project</td>
+<td><code>project.yaml</code> <code>modules.&lt;sbc&gt;</code></td>
+<td><code>BatteryMonitorConfig</code> source, thresholds, windows</td>
+</tr>
+<tr>
+<td><code>can_shutdown</code>, <code>v2_shutdown</code> (<code>none</code>|<code>undervoltage</code>|<code>overvoltage</code>|<code>both</code>)</td>
+<td>project</td>
+<td><code>modules.&lt;sbc&gt;</code></td>
+<td><code>canShutdown</code>, <code>v2Shutdown</code></td>
+</tr>
+<tr>
+<td><code>shutdown_delay_ms</code></td>
+<td>project</td>
+<td><code>modules.&lt;sbc&gt;</code></td>
+<td><code>shutdownDelayMs</code></td>
+</tr>
+<tr>
+<td><code>pins.HVIO1..8: none</code>|<code>wake_input</code>, <code>pins.EN: none</code></td>
+<td>board</td>
+<td><code>board.yaml</code> <code>devices[&lt;sbc&gt;].pins</code></td>
+<td>HVIO banks, wake-up sources</td>
+</tr>
+</tbody>
+</table>
+<p>Defaults (<code>module.yaml</code>): BAT, 9000/18000 mV, 500 mV windows, nothing switched off, no delay. <code>nxconfig check</code> checks
+the data-sheet limits and prints the values on the SBC grid.</p>
+<p><strong>Switch-off delay.</strong> The SBC has no filter on its monitor, and switching on a load at the same supply pulls BAT below
+9 V for a moment (IO-13). With <code>shutdown_delay_ms: 0</code> CSC/V2SC are written as configured and the SBC switches by
+itself. With a delay &gt; 0 they stay 00 and <code>cyclic()</code> reads the supply status (BMUVS/BMOVS): CAN goes offline and V2 off
+once the event has lasted the delay, and both come back when the SBC has ended the event. <code>isCanShutOffByBattery()</code>,
+<code>isV2ShutOffByBattery()</code> and <code>Counters::supplyShutdowns</code> show the state.</p>
+<p><strong>Wake-up inputs.</strong> A pin wired as <code>wake_input</code> is sampled permanently (IOnCC = 011, IOnAC = 001); nothing is armed in
+Normal mode, a Sleep arms both edges of the selected inputs. <code>Uja113x::configuredWakeInputs()</code> returns them and
+<code>Uja113xPowerSupply</code> offers exactly them as <code>LOCAL&lt;n&gt;</code> (n = HVIO number − 1).</p>
+<h3 id="hvio">HVIO<a class="headerlink" href="#hvio" title="Permanent link">&para;</a></h3>
+<p>Jeder HVIO ist wahlweise High-Side-Treiber, Low-Side-Treiber, Wake-up-Eingang oder High-Side-Treiber <strong>und</strong>
+Eingang (vorgespannter Schalter). Die Bänke zu je vier Pins sind eine Eigenschaft des Bausteins: der Treiber
+leitet ihre Zahl aus der Identifikation ab (<code>hvioBankCount()</code>, zwei Bänke bei den HW-Varianten, eine bei
+/FD/4, keine bei /FD/0) und <strong>fasst eine Bank, die der Baustein nicht hat, nie an</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Feld von <code>HvioConfig</code></th>
+<th>Register</th>
+<th>Bedeutung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>function</code></td>
+<td>IOnCC</td>
+<td><code>OFF</code>, <code>HIGH_SIDE</code>, <code>LOW_SIDE</code>, <code>WAKE_INPUT</code>, <code>HIGH_SIDE_AND_WAKE</code></td>
+</tr>
+<tr>
+<td><code>slopeControl</code></td>
+<td>IOnCC</td>
+<td>begrenzt dU/dt des Treibers (EMV)</td>
+</tr>
+<tr>
+<td><code>activation</code></td>
+<td>IOnAC</td>
+<td>aus, ein, über Timer 1–4 oder direkt von HVIO(n+4) gesteuert (nur Bank 0)</td>
+</tr>
+<tr>
+<td><code>shutdown</code></td>
+<td>IOnSC</td>
+<td>automatisches Lastabwerfen bei Unter-/Überspannung der Batterie</td>
+</tr>
+<tr>
+<td><code>wakeOnRisingEdge</code> / <code>wakeOnFallingEdge</code></td>
+<td>0x37 / 0x47</td>
+<td>Wake-Fähigkeit je Flanke</td>
+</tr>
+<tr>
+<td><code>shortCircuitInterrupt</code> / <code>openLoadInterrupt</code></td>
+<td>0x38 / 0x48</td>
+<td>Diagnose-Interrupts des Treibers</td>
+</tr>
+<tr>
+<td><code>shortCircuitThresholdMa</code> / <code>openLoadThresholdMa</code></td>
+<td>0x39 / 0x3A</td>
+<td>Schwellen als Laststrom</td>
+</tr>
+<tr>
+<td><code>HvioBankConfig::wakeThreshold</code></td>
+<td>0x34 / 0x44</td>
+<td>ganze Bank: absolut (2,4–4,1 V) oder ratiometrisch zu BATHSx</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Es gibt keinen eigenen Pull-Parameter.</strong> Ein Pull-up an einem HVIO ist der High-Side-Treiber
+(<code>HIGH_SIDE_AND_WAKE</code> für einen vorgespannten Schalter), ein Pull-down der Low-Side-Treiber. Wer einen
+„Pull" konfigurieren will, konfiguriert also eine Funktion – das ist die Begriffswelt des Bausteins und
+nicht durch einen zusätzlichen Parameter zu verbessern.</p>
+<p>Reihenfolge beim Start: erst Bank-Schwelle, Kurzschluss- und Leerlaufschwellen, <strong>dann</strong> die Pins selbst,
+zuletzt Fehler- und Wake-Interrupts. Sonst könnte ein Treiber mit den Schwellen der vorigen Konfiguration
+einschalten.</p>
+<p>Diagnose im Betrieb:</p>
+<ul>
+<li><code>readHvioStatus(bank, status)</code> liefert die Eingangspegel (0x35/0x45) und den Treiberstatus (0x36/0x46,
+  zwei Bit je Pin: ok, Leerlauf, Kurzschluss, aus – <code>hvioDriverStatus()</code> schneidet sie heraus).</li>
+<li>Ein <strong>Kurzschluss rastet ein</strong>: der SBC schaltet den Treiber ab und gibt ihn erst wieder frei, wenn IOnAC
+  auf 000 stand. <code>clearHvioFailure(index)</code> macht genau das und stellt danach die konfigurierte Aktivierung
+  wieder her. <code>setHvioActivation()</code> schaltet einen Ausgang im Betrieb, ohne Funktion, Flankenwahl oder
+  Schwellen zu verlieren; ein nicht konfigurierter HVIO lässt sich damit nicht versehentlich einschalten.</li>
+</ul>
+<h3 id="en-pin-und-limp">EN-Pin und LIMP<a class="headerlink" href="#en-pin-und-limp" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Feld von <code>EnPinConfig</code></th>
+<th>Register</th>
+<th>Bedeutung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>configure</code></td>
+<td>–</td>
+<td><code>false</code>: ENSC/ENDC/ENC bleiben wie vorgefunden (Zustand vor IO-10)</td>
+</tr>
+<tr>
+<td><code>mode</code></td>
+<td>ENC</td>
+<td><code>LOW</code>, <code>HIGH_NORMAL_RESET_STANDBY</code>, <code>HIGH_NORMAL</code>, <code>TIMER2</code></td>
+</tr>
+<tr>
+<td><code>driver</code></td>
+<td>ENDC</td>
+<td>Push-Pull oder Open-Drain (dann externer Pull-up nach V1 nötig)</td>
+</tr>
+<tr>
+<td><code>shutdown</code></td>
+<td>ENSC</td>
+<td>EN bei Unter-/Überspannung der Batterie low, überstimmt <code>mode</code></td>
+</tr>
+</tbody>
+</table>
+<p><code>setEnMode()</code> ändert nur ENC und lässt ENDC, ENSC und den Reset-Zähler stehen. Das ist die vorgesehene Art,
+sicherheitsrelevante Hardware freizugeben: Bei jedem Reset geht EN von selbst auf low.</p>
+<p>Der <strong>LIMP-Pin</strong> (Open-Drain, aktiv low) folgt LHC im selben Register. <code>limpHomeAtStartup</code> sagt, wie der
+Start ihn hinterlässt – normal <code>false</code>, also freigegeben, denn ein LHC aus der Forced Sleep Preparation soll
+verschwinden. <code>setLimpHome(true)</code> zieht ihn im Betrieb low, <code>isLimpHomeActive()</code> meldet den Stand.
+Die erweiterte Limp-Home-Funktion über HVIO2–HVIO4 (statischer Ausgang, 100-Hz- und 1,25-Hz-PWM) hängt an
+MTPNV-Bits im Start-up-Control-Register und ist damit eine Platinen-Eigenschaft, keine Laufzeitentscheidung;
+der Treiber schreibt die MTPNV nie. Auf dem Eval Board sind diese Bits 0.</p>
+<hr />
+<h2 id="sleep">Sleep<a class="headerlink" href="#sleep" title="Permanent link">&para;</a></h2>
+<p><code>enterSleep(nowMs, wakeup)</code> nach AH1501 Abb. 37 (Variante ohne Partial Networking; selektives Wecken siehe
+<a href="#selektives-wecken-per-can-partial-networking-com-07">unten</a>). Die Aufweckquellen kommen vom
+Aufrufer (<code>sbc::SleepWakeup</code>, SYS-02):</p>
+<table>
+<thead>
+<tr>
+<th>Feld</th>
+<th>Register</th>
+<th>Bedeutung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>can</code></td>
+<td>0x23 CWIE</td>
+<td>CAN-Wake-up des integrierten Transceivers</td>
+</tr>
+<tr>
+<td><code>wakeInputs</code></td>
+<td>0x37 / 0x47</td>
+<td><strong>Eingangsmaske</strong>, Bit i = HVIO(i+1) über beide Bänke. Der Treiber setzt daraus die beiden Freigabebits je HVIO nach den konfigurierten Flanken; nennt die Konfiguration keine Flanke, werden beide freigegeben. Ein Eingang einer Bank, die der Baustein nicht hat, führt zu <code>NOT_ALLOWED</code> statt zu einem Schreibzugriff auf ein reserviertes Register.</td>
+</tr>
+<tr>
+<td><code>cyclic</code>, <code>cyclicPeriod</code></td>
+<td>0x00 WMC/NWP</td>
+<td>zyklisches Wecken: Der Watchdog läuft in Sleep als Timeout-Watchdog weiter (Datenblatt 7.2.3, Tabelle 8) und weckt den SBC mit seinem Überlauf (Reset-Quelle RSS 12).</td>
+</tr>
+</tbody>
+</table>
+<p><code>enterSleep(nowMs)</code> ohne zweites Argument bleibt als Kurzform mit CAN-Wake-up (Board-Test <code>sbc sleep</code>).
+<strong>Ohne eine einzige Quelle gibt der Treiber <code>NOT_ALLOWED</code> zurück und schreibt nichts</strong>, denn der SBC würde sonst
+einen Reset statt Sleep machen.</p>
+<h3 id="selektives-wecken-per-can-partial-networking-com-07">Selektives Wecken per CAN (Partial Networking, COM-07)<a class="headerlink" href="#selektives-wecken-per-can-partial-networking-com-07" title="Permanent link">&para;</a></h3>
+<p>Nur die /FD-Varianten (Identifikation 0x40/0x41/0x50/0x51/0x60/0x61/0x70/0x71, auf dem Eval Board 0x51) können statt auf
+jede Busaktivität nur auf einen <strong>Wake-up-Frame</strong> aufwachen (ISO 11898-2/-6). Der Treiber hält dafür keine eigenen Werte:
+Bitrate, ID, Maske, DLC, Datenmaske und FD-passiv sind Projektdaten (<code>sbc::CanWakeupFrame</code> über
+<code>setCanWakeupFrame(&amp;frame)</code>, <code>nullptr</code> = Standard-Wake-up).</p>
+<table>
+<thead>
+<tr>
+<th>Feld</th>
+<th>Register</th>
+<th>Bedeutung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>bitrate</code></td>
+<td>0x26 CDR</td>
+<td>50 000, 100 000, 125 000, 250 000, 500 000, 1 000 000 bit/s</td>
+</tr>
+<tr>
+<td><code>id</code>, <code>extendedId</code></td>
+<td>0x27–0x2A, 0x2F IDE</td>
+<td>Identifier; 11 Bit stehen in ID28..ID18</td>
+</tr>
+<tr>
+<td><code>idCompareMask</code></td>
+<td>0x2B–0x2E</td>
+<td>Bit = 1: muss übereinstimmen (der Treiber invertiert für den SBC)</td>
+</tr>
+<tr>
+<td><code>evaluateData</code>, <code>dlc</code></td>
+<td>0x2F PNDM, DLC</td>
+<td>mit DLC und Datenfeld vergleichen (dann keine Remote-Frames)</td>
+</tr>
+<tr>
+<td><code>dataMask[i]</code></td>
+<td>0x68–0x6F</td>
+<td>weckt bei gemeinsamem 1-Bit von Frame und Maske; rechtsbündig (DLC n: Byte 0 gehört zu Maske 8 − n)</td>
+</tr>
+<tr>
+<td><code>fdPassive</code></td>
+<td>0x20 CFDC</td>
+<td>CAN-FD-Frames werden übergangen statt als Fehler gezählt</td>
+</tr>
+</tbody>
+</table>
+<p><code>setCanWakeupFrame()</code> lehnt Unmögliches ab (<code>NOT_ALLOWED</code>, alte Einstellung bleibt). Geschrieben wird erst in
+<code>enterSleep()</code> mit <code>can = true</code>, in dieser Reihenfolge (COM-39): (1) Device ohne PN oder Eingang einer fehlenden Bank:
+<code>NOT_ALLOWED</code> ohne Schreibzugriff; (2) 0x23 CWIE vor der PN-Konfiguration; (3) 0x26–0x2F, 0x68–0x6F schreiben und
+zurücklesen (jeder Schreibzugriff löscht PNCOK); (4) 0x20 zuletzt: CPNC = 1, PNCOK = 1, CFDC, CSC wie konfiguriert und
+<strong>CMC = 00 (Offline)</strong>, denn das Auswerten von Wake-up-Frames ist an CAN Offline gekoppelt (Datenblatt 7.9.1.3; mit
+CMC = 01 weckte am Board nichts); (5) 0x22: CPNS = 1 bestätigt, sonst <code>VERIFY_ERROR</code>; (6) HVIO-Freigaben, Interrupts
+prüfen, Standby, Watchdog, und unmittelbar vor dem Sleep-Befehl 0x22 erneut lesen (CPNS = 0: Abbruch). Beim Abbruch
+nimmt der Treiber PN zurück und stellt CMC wieder her.</p>
+<p><strong>Board-Diagnose ohne Sleep:</strong> <code>armPartialNetworking()</code> (Konsole <code>sbc pn arm</code>, danach <code>sbc dump</code>) schreibt Schritt 3–5,
+bleibt in Normal und behält den CAN-Modus. Erwartung für ID 0x123, 500 kbit/s, DLC 0, Maske 0x7FF: 0x26 = 0x05,
+0x27 = 0x00, 0x28 = 0x00, 0x29 = 0x8C, 0x2A = 0x04, 0x2F = 0x40, 0x20 = CSC | 0x30 | CMC (Eval Board 0x31), 0x22 mit
+CPNS = 1. Als Startgrund meldet <code>uja113xWakeupSources()</code> neben CWI auch PNFDEI.</p>
+<p><strong>Bitzeit des Weckrahmens (COM-39/COM-40):</strong> Der PN-Dekoder tastet den Rahmen unabhängig vom FlexCAN selbst ab; ein
+Sender mit anderer Bitzeit als der Bus wird verworfen (am Board: Vector-Standardbitzeit weckte nicht, die Projektbitzeit
+sofort). Jeden Weck-Test daher mit der Bitzeit <strong>dieses</strong> Busses senden; <code>tools/boardtest wake</code> nimmt sie aus dem
+Projekt und öffnet den CAN-Kanal vor jedem Versuch neu.</p>
+<pre class="mermaid"><code>%%{init: {'theme':'base','flowchart':{'curve':'basis'},'themeVariables':{'fontFamily':'Segoe UI, Helvetica, Arial, sans-serif','fontSize':'14px','background':'#ffffff','primaryColor':'#ffffff','primaryBorderColor':'#64748b','primaryTextColor':'#0f172a','lineColor':'#475569','edgeLabelBackground':'#ffffff','tertiaryColor':'#f8fafc','clusterBkg':'#f8fafc','clusterBorder':'#cbd5e1'}}}%%
+sequenceDiagram
+    participant D as Uja113x
+    participant S as SBC
+    Note over D: keine Quelle gewählt → NOT_ALLOWED, kein Schreibzugriff
+    opt wakeup.can
+        D-&gt;&gt;S: 0x23 |= CWIE (CAN-Wake-up freigeben), zurücklesen
+        opt Filter gesetzt (COM-07/COM-39)
+            D-&gt;&gt;S: 0x26–0x2F, 0x68–0x6F schreiben, zurücklesen
+            D-&gt;&gt;S: 0x20 = CPNC | PNCOK | CFDC | CSC, CMC = 00; 0x22 CPNS prüfen
+        end
+    end
+    opt wakeup.wakeInputs
+        D-&gt;&gt;S: 0x37 = wakeInputs (WAKE/HVIO freigeben), zurücklesen
+    end
+    D-&gt;&gt;S: 0x60 lesen
+    alt Interrupt anstehend
+        D-&gt;&gt;S: CWIE und 0x37 wieder entfernen
+        Note over D: INTERRUPT_PENDING, bleibt Normal
+    else nichts anstehend
+        D-&gt;&gt;S: Modus Standby
+        opt zyklisch oder Watchdog nicht autonomous
+            D-&gt;&gt;S: Watchdog setzen (2x): zyklisch = timeout + Periode, sonst autonomous
+            D-&gt;&gt;S: 0x61 WDI quittieren
+        end
+        opt Filter gesetzt
+            D-&gt;&gt;S: 0x22 CPNS erneut prüfen (sonst Abbruch)
+        end
+        D-&gt;&gt;S: 0x60 erneut lesen
+        alt Interrupt anstehend
+            D-&gt;&gt;S: Watchdog laut Konfiguration zurück, Normal, Quellen entfernen
+            Note over D: INTERRUPT_PENDING
+        else
+            D-&gt;&gt;S: Modus Sleep
+            Note over S: V1 aus → MCU stromlos
+            Note over S: Wake-up per CAN / WAKE / Watchdog-Überlauf → Reset → Neustart
+        end
+    end</code></pre>
+<ul>
+<li><strong>Voraussetzungen:</strong> State <code>NORMAL</code>, keine anstehenden Interrupts, mindestens eine Wake-up-Quelle; sonst macht der SBC
+  einen Reset statt Sleep.</li>
+<li><strong>Zyklisches Wecken:</strong> WMC/NWP werden nur im Standby geschrieben; beim Abbruch stellt <code>configureWatchdog()</code> die
+  Konfiguration wieder her. Bei Forced Normal Mode (FNMC = 1) gibt es kein zyklisches Wecken und <code>TIMER</code> wird nicht
+  angeboten.</li>
+<li><strong>Rückgabe:</strong> Normalerweise ist die MCU wenige Millisekunden nach dem Aufruf stromlos; läuft sie eine Sekunde später
+  noch (z. B. SLPC = 1), initialisiert <code>cyclic()</code> den SBC neu. <strong>Nach dem Wake-up:</strong> MCU-Kaltstart, Reset-Quelle
+  <code>CAN wake-up</code> (RSS 1), RCC um 1 gestiegen.</li>
+<li><strong>Vorher:</strong> CAN-Kommunikation beenden; das macht der Nachlauf-Schritt <code>CAN_STOP</code> der ECU-Zustandsverwaltung, siehe
+  <a href="../../../ecuState/doc/ecuState/#nachlauf-vor-dem-sleep">ecuState.md</a>. Beim direkten Board-Test <code>sbc sleep</code> ist es
+  Aufgabe des Bedieners.</li>
+<li><strong>Aus der ECU-Zustandsverwaltung:</strong> <code>Uja113xPowerSupply::powerDown(nowMs, selection)</code> ruft <code>enterSleep()</code> erst nach
+  dem Nachlauf und dem Herunterfahren bis Level 1. <code>OK</code> → <code>STARTED</code>, <code>INTERRUPT_PENDING</code> → <code>WAKEUP_PENDING</code>, nicht in
+  Normal, SLPC = 1 oder keine Quelle → <code>NOT_SUPPORTED</code>. Die Rolle übersetzt die Auswahl in <code>SleepWakeup</code>:</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th><code>ecustate::wakeup</code>-Bit</th>
+<th>Umsetzung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>canBus(&lt;Index des integrierten Transceivers&gt;)</code></td>
+<td><code>can = true</code> (CWIE)</td>
+</tr>
+<tr>
+<td><code>local(i)</code>, sofern das Board den Eingang verdrahtet</td>
+<td>Bit i in <code>wakeInputs</code> (0x37)</td>
+</tr>
+<tr>
+<td><code>TIMER</code> mit Periode</td>
+<td><code>cyclic</code> mit der kürzesten Watchdog-Periode ≥ Wunsch (<code>watchdogPeriodFor()</code>)</td>
+</tr>
+</tbody>
+</table>
+<p><code>getSupportedWakeupSources()</code> bietet nur an, was die Platine hat (Bus des Transceivers, verdrahtete WAKE-Eingänge,
+  <code>TIMER</code> solange der Watchdog nutzbar ist; vor einem erfolgreichen Start nichts). Die Startgründe bildet
+  <code>uja113xWakeupSources()</code> aus RSS und den beim Start quittierten Interrupts, siehe
+  <a href="../../../ecuState/doc/ecuState/#aufweckquellen">ecuState.md</a>; <code>uja113xRestartedForThisStart()</code> erkennt einen reinen
+  MCU-Start (RCC auf dem Startwert, kein Start-Interrupt, NVM-34).</p>
+<hr />
+<h2 id="api">API<a class="headerlink" href="#api" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="k">namespace</span><span class="w"> </span><span class="nn">sbc</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="k">class</span><span class="w"> </span><span class="nc">Uja113x</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="k">public</span><span class="o">:</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">    </span><span class="n">Uja113x</span><span class="p">(</span><span class="o">::</span><span class="n">bsp</span><span class="o">::</span><span class="n">spi</span><span class="o">::</span><span class="n">ISpiDevice</span><span class="o">&amp;</span><span class="w"> </span><span class="n">spi</span><span class="p">,</span><span class="w"> </span><span class="n">Uja113xConfig</span><span class="w"> </span><span class="k">const</span><span class="o">&amp;</span><span class="w"> </span><span class="n">config</span><span class="p">);</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="w">    </span><span class="n">Status</span><span class="w"> </span><span class="nf">startup</span><span class="p">(</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">nowMs</span><span class="p">);</span><span class="w">          </span><span class="c1">// Startablauf, setzt State NORMAL oder FAILED</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="w">    </span><span class="kt">void</span><span class="w">   </span><span class="nf">cyclic</span><span class="p">(</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">nowMs</span><span class="p">);</span><span class="w">           </span><span class="c1">// alle 10 ms</span>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="w">    </span><span class="n">Status</span><span class="w"> </span><span class="nf">enterSleep</span><span class="p">(</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">nowMs</span><span class="p">,</span><span class="w"> </span><span class="n">SleepWakeup</span><span class="w"> </span><span class="k">const</span><span class="o">&amp;</span><span class="w"> </span><span class="n">wakeup</span><span class="p">);</span><span class="w"> </span><span class="c1">// kehrt bei Erfolg praktisch nicht zurück</span>
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="w">    </span><span class="n">Status</span><span class="w"> </span><span class="nf">enterSleep</span><span class="p">(</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">nowMs</span><span class="p">);</span><span class="w">       </span><span class="c1">// Kurzform: nur CAN-Wake-up</span>
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="w">    </span><span class="n">Status</span><span class="w"> </span><span class="nf">setCanWakeupFrame</span><span class="p">(</span><span class="n">CanWakeupFrame</span><span class="w"> </span><span class="k">const</span><span class="o">*</span><span class="w"> </span><span class="n">frame</span><span class="p">);</span><span class="w"> </span><span class="c1">// selektives Wecken (COM-07), nullptr = Standard</span>
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="w">    </span><span class="n">Status</span><span class="w"> </span><span class="nf">armPartialNetworking</span><span class="p">();</span><span class="w">                         </span><span class="c1">// PN-Register ohne Sleep schreiben (COM-39, sbc pn arm)</span>
+<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a><span class="w">    </span><span class="n">CanWakeupFrame</span><span class="w"> </span><span class="k">const</span><span class="o">*</span><span class="w"> </span><span class="n">getCanWakeupFrame</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+<a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a><span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="nf">isValidCanWakeupFrame</span><span class="p">(</span><span class="n">CanWakeupFrame</span><span class="w"> </span><span class="k">const</span><span class="o">&amp;</span><span class="w"> </span><span class="n">frame</span><span class="p">);</span>
+<a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a><span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="nf">supportsPartialNetworking</span><span class="p">(</span><span class="kt">uint8_t</span><span class="w"> </span><span class="n">identification</span><span class="p">);</span><span class="w"> </span><span class="c1">// /FD-Variante</span>
+<a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a>
+<a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a><span class="w">    </span><span class="n">Status</span><span class="w"> </span><span class="nf">readRegister</span><span class="p">(</span><span class="kt">uint8_t</span><span class="w"> </span><span class="n">address</span><span class="p">,</span><span class="w"> </span><span class="kt">uint8_t</span><span class="o">&amp;</span><span class="w"> </span><span class="n">value</span><span class="p">);</span><span class="w">   </span><span class="c1">// 0x00..0x7F</span>
+<a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a><span class="w">    </span><span class="n">Status</span><span class="w"> </span><span class="nf">writeRegister</span><span class="p">(</span><span class="kt">uint8_t</span><span class="w"> </span><span class="n">address</span><span class="p">,</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="n">value</span><span class="p">);</span><span class="w">   </span><span class="c1">// gesperrt: 0x00, 0x01, ab 0x70; 0x20 liest 0x22 nach (COM-23)</span>
+<a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a>
+<a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a><span class="w">    </span><span class="n">State</span><span class="w">  </span><span class="nf">getState</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span><span class="w">                 </span><span class="c1">// UNINITIALIZED, NORMAL, FAILED</span>
+<a id="__codelineno-3-20" name="__codelineno-3-20" href="#__codelineno-3-20"></a><span class="w">    </span><span class="kt">bool</span><span class="w">   </span><span class="nf">isCanTransceiverReady</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+<a id="__codelineno-3-21" name="__codelineno-3-21" href="#__codelineno-3-21"></a><span class="w">    </span><span class="kt">uint8_t</span><span class="w"> </span><span class="nf">getTransceiverStatus</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span><span class="w">    </span><span class="c1">// letzter Wert von 0x22</span>
+<a id="__codelineno-3-22" name="__codelineno-3-22" href="#__codelineno-3-22"></a><span class="w">    </span><span class="kt">uint8_t</span><span class="w"> </span><span class="nf">getResetSource</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span><span class="w">          </span><span class="c1">// RSS aus 0x03 beim letzten Start</span>
+<a id="__codelineno-3-23" name="__codelineno-3-23" href="#__codelineno-3-23"></a><span class="w">    </span><span class="n">StartupInfo</span><span class="w"> </span><span class="k">const</span><span class="o">&amp;</span><span class="w"> </span><span class="n">getStartupInfo</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+<a id="__codelineno-3-24" name="__codelineno-3-24" href="#__codelineno-3-24"></a><span class="w">    </span><span class="n">Counters</span><span class="w"> </span><span class="k">const</span><span class="o">&amp;</span><span class="w"> </span><span class="n">getCounters</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+<a id="__codelineno-3-25" name="__codelineno-3-25" href="#__codelineno-3-25"></a><span class="w">    </span><span class="n">InterruptFlags</span><span class="w"> </span><span class="nf">takeInterruptEvents</span><span class="p">();</span><span class="w">    </span><span class="c1">// seit dem letzten Aufruf</span>
+<a id="__codelineno-3-26" name="__codelineno-3-26" href="#__codelineno-3-26"></a>
+<a id="__codelineno-3-27" name="__codelineno-3-27" href="#__codelineno-3-27"></a><span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="nf">watchdogPeriodMs</span><span class="p">(</span><span class="n">WatchdogPeriod</span><span class="w"> </span><span class="n">period</span><span class="p">);</span>
+<a id="__codelineno-3-28" name="__codelineno-3-28" href="#__codelineno-3-28"></a><span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="n">WatchdogPeriod</span><span class="w"> </span><span class="nf">watchdogPeriodFor</span><span class="p">(</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">ms</span><span class="p">);</span><span class="w"> </span><span class="c1">// kürzeste Periode &gt;= ms (SYS-02)</span>
+<a id="__codelineno-3-29" name="__codelineno-3-29" href="#__codelineno-3-29"></a><span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="k">const</span><span class="o">*</span><span class="w"> </span><span class="n">resetSourceName</span><span class="p">(</span><span class="kt">uint8_t</span><span class="w"> </span><span class="n">rss</span><span class="p">);</span>
+<a id="__codelineno-3-30" name="__codelineno-3-30" href="#__codelineno-3-30"></a>
+<a id="__codelineno-3-31" name="__codelineno-3-31" href="#__codelineno-3-31"></a><span class="w">    </span><span class="c1">// IO-10: Batterieüberwachung, HVIO, EN und LIMP</span>
+<a id="__codelineno-3-32" name="__codelineno-3-32" href="#__codelineno-3-32"></a><span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w">  </span><span class="nf">hvioBankCount</span><span class="p">(</span><span class="kt">uint8_t</span><span class="w"> </span><span class="n">identification</span><span class="p">);</span><span class="w">   </span><span class="c1">// 0, 1 oder 2 Bänke zu je vier HVIO</span>
+<a id="__codelineno-3-33" name="__codelineno-3-33" href="#__codelineno-3-33"></a><span class="w">    </span><span class="kt">uint8_t</span><span class="w"> </span><span class="nf">getHvioBanks</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span><span class="w">                            </span><span class="c1">// was beim Start gefunden wurde</span>
+<a id="__codelineno-3-34" name="__codelineno-3-34" href="#__codelineno-3-34"></a><span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w">  </span><span class="nf">batteryThresholdCode</span><span class="p">(</span><span class="kt">uint16_t</span><span class="w"> </span><span class="n">mv</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">roundUp</span><span class="p">);</span>
+<a id="__codelineno-3-35" name="__codelineno-3-35" href="#__codelineno-3-35"></a><span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="kt">uint16_t</span><span class="w"> </span><span class="nf">batteryThresholdMv</span><span class="p">(</span><span class="kt">uint8_t</span><span class="w"> </span><span class="n">code</span><span class="p">);</span>
+<a id="__codelineno-3-36" name="__codelineno-3-36" href="#__codelineno-3-36"></a><span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w">  </span><span class="nf">batteryHysteresisCode</span><span class="p">(</span><span class="kt">uint16_t</span><span class="w"> </span><span class="n">mv</span><span class="p">);</span>
+<a id="__codelineno-3-37" name="__codelineno-3-37" href="#__codelineno-3-37"></a><span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="kt">uint16_t</span><span class="w"> </span><span class="nf">batteryHysteresisMv</span><span class="p">(</span><span class="kt">uint8_t</span><span class="w"> </span><span class="n">code</span><span class="p">);</span>
+<a id="__codelineno-3-38" name="__codelineno-3-38" href="#__codelineno-3-38"></a><span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="kt">uint16_t</span><span class="w"> </span><span class="nf">batteryAdcMv</span><span class="p">(</span><span class="kt">uint16_t</span><span class="w"> </span><span class="n">code</span><span class="p">);</span>
+<a id="__codelineno-3-39" name="__codelineno-3-39" href="#__codelineno-3-39"></a><span class="w">    </span><span class="n">BatteryThresholds</span><span class="w"> </span><span class="nf">getBatteryThresholds</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span><span class="w">          </span><span class="c1">// Schwellen nach der Rasterung</span>
+<a id="__codelineno-3-40" name="__codelineno-3-40" href="#__codelineno-3-40"></a><span class="w">    </span><span class="n">Status</span><span class="w"> </span><span class="nf">readBatteryVoltages</span><span class="p">(</span><span class="n">BatteryVoltages</span><span class="o">&amp;</span><span class="w"> </span><span class="n">voltages</span><span class="p">);</span><span class="w">    </span><span class="c1">// BAT und BATSENSE in mV, BMUVS/BMOVS</span>
+<a id="__codelineno-3-41" name="__codelineno-3-41" href="#__codelineno-3-41"></a><span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w">  </span><span class="nf">shortCircuitThresholdCode</span><span class="p">(</span><span class="kt">uint16_t</span><span class="w"> </span><span class="n">ma</span><span class="p">);</span>
+<a id="__codelineno-3-42" name="__codelineno-3-42" href="#__codelineno-3-42"></a><span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="kt">uint16_t</span><span class="w"> </span><span class="nf">shortCircuitThresholdMa</span><span class="p">(</span><span class="kt">uint8_t</span><span class="w"> </span><span class="n">code</span><span class="p">);</span>
+<a id="__codelineno-3-43" name="__codelineno-3-43" href="#__codelineno-3-43"></a><span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w">  </span><span class="nf">openLoadThresholdCode</span><span class="p">(</span><span class="kt">uint16_t</span><span class="w"> </span><span class="n">ma</span><span class="p">);</span>
+<a id="__codelineno-3-44" name="__codelineno-3-44" href="#__codelineno-3-44"></a><span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="kt">uint16_t</span><span class="w"> </span><span class="nf">openLoadThresholdMa</span><span class="p">(</span><span class="kt">uint8_t</span><span class="w"> </span><span class="n">code</span><span class="p">);</span>
+<a id="__codelineno-3-45" name="__codelineno-3-45" href="#__codelineno-3-45"></a><span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w">  </span><span class="nf">hvioDriverStatus</span><span class="p">(</span><span class="kt">uint8_t</span><span class="w"> </span><span class="n">bankStatus</span><span class="p">,</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="n">indexInBank</span><span class="p">);</span>
+<a id="__codelineno-3-46" name="__codelineno-3-46" href="#__codelineno-3-46"></a><span class="w">    </span><span class="n">Status</span><span class="w"> </span><span class="nf">readHvioStatus</span><span class="p">(</span><span class="kt">uint8_t</span><span class="w"> </span><span class="n">bank</span><span class="p">,</span><span class="w"> </span><span class="n">HvioBankStatus</span><span class="o">&amp;</span><span class="w"> </span><span class="n">status</span><span class="p">);</span>
+<a id="__codelineno-3-47" name="__codelineno-3-47" href="#__codelineno-3-47"></a><span class="w">    </span><span class="n">Status</span><span class="w"> </span><span class="nf">setHvioActivation</span><span class="p">(</span><span class="kt">uint8_t</span><span class="w"> </span><span class="n">index</span><span class="p">,</span><span class="w"> </span><span class="n">HvioActivation</span><span class="w"> </span><span class="n">activation</span><span class="p">);</span>
+<a id="__codelineno-3-48" name="__codelineno-3-48" href="#__codelineno-3-48"></a><span class="w">    </span><span class="n">Status</span><span class="w"> </span><span class="nf">clearHvioFailure</span><span class="p">(</span><span class="kt">uint8_t</span><span class="w"> </span><span class="n">index</span><span class="p">);</span><span class="w">                  </span><span class="c1">// Kurzschluss-Latch lösen und neu starten</span>
+<a id="__codelineno-3-49" name="__codelineno-3-49" href="#__codelineno-3-49"></a><span class="w">    </span><span class="n">Status</span><span class="w"> </span><span class="nf">setLimpHome</span><span class="p">(</span><span class="kt">bool</span><span class="w"> </span><span class="n">active</span><span class="p">);</span>
+<a id="__codelineno-3-50" name="__codelineno-3-50" href="#__codelineno-3-50"></a><span class="w">    </span><span class="kt">bool</span><span class="w">   </span><span class="nf">isLimpHomeActive</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+<a id="__codelineno-3-51" name="__codelineno-3-51" href="#__codelineno-3-51"></a><span class="w">    </span><span class="n">Status</span><span class="w"> </span><span class="nf">setEnMode</span><span class="p">(</span><span class="n">EnMode</span><span class="w"> </span><span class="n">mode</span><span class="p">);</span>
+<a id="__codelineno-3-52" name="__codelineno-3-52" href="#__codelineno-3-52"></a><span class="p">};</span>
+<a id="__codelineno-3-53" name="__codelineno-3-53" href="#__codelineno-3-53"></a><span class="p">}</span>
+</code></pre></div>
+<h3 id="status">Status<a class="headerlink" href="#status" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Wert</th>
+<th>Bedeutung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>OK</code></td>
+<td>erfolgreich</td>
+</tr>
+<tr>
+<td><code>SPI_ERROR</code></td>
+<td>SPI-Timeout oder falsches Adress-Echo (kein SBC, SDO hängt, falscher Chip-Select)</td>
+</tr>
+<tr>
+<td><code>WRONG_DEVICE</code></td>
+<td>ID passt nicht zur Konfiguration</td>
+</tr>
+<tr>
+<td><code>VERIFY_ERROR</code></td>
+<td>zurückgelesener Wert weicht ab</td>
+</tr>
+<tr>
+<td><code>NOT_ALLOWED</code></td>
+<td>geschütztes Register</td>
+</tr>
+<tr>
+<td><code>INTERRUPT_PENDING</code></td>
+<td>Sleep abgebrochen, Interrupt steht an</td>
+</tr>
+<tr>
+<td><code>NOT_READY</code></td>
+<td>Treiber nicht in <code>NORMAL</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="reset-quellen-rss">Reset-Quellen (RSS)<a class="headerlink" href="#reset-quellen-rss" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>RSS</th>
+<th>Bedeutung</th>
+<th>RSS</th>
+<th>Bedeutung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>Power-on</td>
+<td>14</td>
+<td>Watchdog zu früh getriggert</td>
+</tr>
+<tr>
+<td>1</td>
+<td>CAN-Wake-up</td>
+<td>15</td>
+<td>Watchdog-Überlauf</td>
+</tr>
+<tr>
+<td>2–3</td>
+<td>LIN-Wake-up</td>
+<td>16</td>
+<td>unzulässige Watchdog-Änderung</td>
+</tr>
+<tr>
+<td>4–11</td>
+<td>HVIO1–8-Wake-up</td>
+<td>17</td>
+<td>RSTN extern low (z. B. MCU-/JTAG-Reset)</td>
+</tr>
+<tr>
+<td>12</td>
+<td>Watchdog-Überlauf in Sleep</td>
+<td>18</td>
+<td>Überlast verlassen</td>
+</tr>
+<tr>
+<td>13</td>
+<td>Diagnose-Wake-up</td>
+<td>19</td>
+<td>V1-Unterspannung</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>20</td>
+<td>unzulässiges Sleep</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>21</td>
+<td>Wake-up nach FSP</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="konsole">Konsole<a class="headerlink" href="#konsole" title="Permanent link">&para;</a></h2>
+<p>Befehle <code>sbc status</code>, <code>sbc dump</code>, <code>sbc read &lt;adr&gt;</code>, <code>sbc write &lt;adr&gt; &lt;wert&gt;</code> (nicht 0x00, 0x01, MTPNV), <code>sbc sleep</code>,
+<code>sbc failstart &lt;n&gt;</code>, <code>sbc standby &lt;ms&gt;</code> und <code>sbc pn arm</code>; vollständig in der
+<a href="../../../../../doc/reference/console/">Konsolenreferenz</a>. Mit Nutzer vor Ort: <code>sbc sleep</code> (MCU-Versorgung aus, Wake-up
+nur durch CAN-Aktivität oder Stromausfall) und <code>sbc failstart</code> (kann in Forced Sleep führen). <code>sbc status</code> zeigt Zustand,
+Reset-Quelle, Modus, Watchdog-Status, RCC, Versorgung, CAN, RCC-Kompensation, Zähler und die Pegel von INTN1/INTN2 sowie
+die Lesegründe von 0x60.</p>
+<hr />
+<h2 id="diagnose-und-fehlersuche">Diagnose und Fehlersuche<a class="headerlink" href="#diagnose-und-fehlersuche" title="Permanent link">&para;</a></h2>
+<h3 id="log-meldungen-sbcsystem-komponente-bsp">Log-Meldungen (<code>SbcSystem</code>, Komponente BSP)<a class="headerlink" href="#log-meldungen-sbcsystem-komponente-bsp" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Meldung</th>
+<th>Bedeutung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SBC RCC compensated: was …, now …, SRS 0x…, TST …</code></td>
+<td>RCC nach einem Watchdog-Testreset um 1 verringert (vor dem Selbsttest dieses Starts)</td>
+</tr>
+<tr>
+<td><code>SBC RCC compensation: no test reset / RCC already 0, SRS 0x…, TST …</code></td>
+<td>keine Kompensation nötig</td>
+</tr>
+<tr>
+<td><code>SBC RCC compensation failed: …</code></td>
+<td>SPI-Fehler, falsche ID oder Rücklese-Abweichung, Start läuft weiter</td>
+</tr>
+<tr>
+<td><code>SBC failstart: … failed starts still armed</code></td>
+<td>Board-Test <code>sbc failstart</code> noch aktiv</td>
+</tr>
+<tr>
+<td><code>SBC UJA113x ready: ID …, reset source …, was …, SPI … Hz</code></td>
+<td>Start erfolgreich</td>
+</tr>
+<tr>
+<td><code>SBC reset source is old: no SBC reset, MCU-only start</code></td>
+<td>NVM-34: RCC stand auf dem Startwert und kein Start-Interrupt - die Reset-Quelle stammt von einem früheren SBC-Reset, dieser Start war ein reiner MCU-Reset (z. B. <code>lc reboot</code> bei offenem JP1); Startgrund <code>RESET</code>, die Reset-Statistik zählt ihn nur in der MCU-Zeile</td>
+</tr>
+<tr>
+<td><code>SBC startup irq: sys … supply … trx … wake … fail …, RCC was …</code></td>
+<td>beim Start quittierte Interrupts, RCC-Stand vor dem Start</td>
+</tr>
+<tr>
+<td><code>SBC MTPNV differs from configuration: …</code></td>
+<td>MTPNV entspricht nicht <code>startupControl</code>/<code>sbcConfig</code></td>
+</tr>
+<tr>
+<td><code>SBC limp home was active (forced sleep preparation), released</code></td>
+<td>SBC war im FSP, LIMP freigegeben</td>
+</tr>
+<tr>
+<td><code>SBC SPI: … read-back mismatches, … address echo mismatches</code></td>
+<td>Schreib- oder Lese-Integrität verletzt</td>
+</tr>
+<tr>
+<td><code>SBC startup failed: …</code></td>
+<td>Start fehlgeschlagen, neuer Versuch jede Sekunde (wiederholte Fehler bleiben stumm)</td>
+</tr>
+<tr>
+<td><code>SBC interrupt: …</code></td>
+<td>Interrupt im Betrieb</td>
+</tr>
+<tr>
+<td><code>SBC CAN transceiver ready / not ready (status …)</code></td>
+<td>Änderung der CAN-Bereitschaft</td>
+</tr>
+<tr>
+<td><code>SBC Sleep refused: …</code></td>
+<td>Sleep abgebrochen</td>
+</tr>
+</tbody>
+</table>
+<h3 id="zähler-counters">Zähler (<code>Counters</code>)<a class="headerlink" href="#zähler-counters" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Zähler</th>
+<th>Erhöht bei</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>spiErrors</code></td>
+<td>SPI-Timeout oder falschem Adress-Echo</td>
+</tr>
+<tr>
+<td><code>verifyErrors</code></td>
+<td>Rücklese-Abweichung</td>
+</tr>
+<tr>
+<td><code>addressEchoMismatches</code></td>
+<td>falschem Adress-Echo (Teilmenge von <code>spiErrors</code>)</td>
+</tr>
+<tr>
+<td><code>watchdogTriggers</code></td>
+<td>jedem Watchdog-Trigger bzw. jeder Konfiguration</td>
+</tr>
+<tr>
+<td><code>interruptEvents</code></td>
+<td>jedem Zyklus mit quittierten Interrupts</td>
+</tr>
+<tr>
+<td><code>canNotReady</code></td>
+<td>Wechsel von bereit auf nicht bereit</td>
+</tr>
+<tr>
+<td><code>modeLost</code></td>
+<td>SBC nicht mehr in Normal</td>
+</tr>
+<tr>
+<td><code>startupAttempts</code></td>
+<td>jedem Startversuch</td>
+</tr>
+</tbody>
+</table>
+<h3 id="typische-fehlerbilder">Typische Fehlerbilder<a class="headerlink" href="#typische-fehlerbilder" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Mögliche Ursache</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SPI error</code>, Echo-Zähler steigt</td>
+<td>SBC nicht versorgt, falscher Chip-Select oder Pin, SDO hängt</td>
+</tr>
+<tr>
+<td><code>wrong device ID</code></td>
+<td>anderer SBC-Typ bestückt, ID in der Konfiguration anpassen (nur nach Prüfung der Registerbelegung)</td>
+</tr>
+<tr>
+<td><code>read-back mismatch</code></td>
+<td>SDI-Leitung gestört oder Register gesperrt (Lock-Register 0x0A)</td>
+</tr>
+<tr>
+<td>ADC-/Safety-Fehler nach Stromausfall</td>
+<td>V2 aus: SBC-Start fehlgeschlagen oder <code>v2 = OFF</code></td>
+</tr>
+<tr>
+<td>MCU geht nach mehreren Resets aus</td>
+<td>RCC-Überlauf → FSP → Sleep. Läuft die Anwendung überhaupt bis zum SBC-Start?</td>
+</tr>
+<tr>
+<td><code>mode lost</code> steigt</td>
+<td>SBC-Reset ohne MCU-Reset (Watchdog, Unterspannung), Reset-Quelle im Log</td>
+</tr>
+<tr>
+<td>CAN nicht bereit</td>
+<td>VCAN-Unterspannung (VCS), TXD dominant (CFS), CAN offline konfiguriert</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="sicherheitsregeln-des-treibers">Sicherheitsregeln des Treibers<a class="headerlink" href="#sicherheitsregeln-des-treibers" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>MTPNV wird nie geschrieben.</strong> Neu programmieren geht nur nach einem Werksreset, und der braucht einen
+  Hardware-Eingriff (RSTN auf GND, CANH auf BAT, CANL auf GND beim Einschalten). Außerdem ist die Zahl der
+  Schreibzyklen begrenzt. Das bleibt eine bewusste manuelle Entscheidung.</li>
+<li><strong>Keine Schreibzugriffe bei falscher ID</strong> oder ohne gültiges Adress-Echo.</li>
+<li><strong>Register 0x00 (Watchdog) und 0x01 (Modus)</strong> sind über <code>writeRegister()</code> gesperrt: Watchdog-Änderung im Normal
+  Mode = Reset, Sleep = MCU stromlos.</li>
+<li><strong>Watchdog-Konfiguration nur in Standby</strong>, Window-Trigger nur einmal.</li>
+<li><strong>Sleep nur ohne anstehende Interrupts und mit Wake-up-Quelle.</strong></li>
+<li><strong>Selektives Wecken nur mit bestätigter Konfiguration</strong> (CPNS = 1) und nur auf /FD-Varianten; sonst kein Sleep,
+  statt unbemerkt auf jede Busaktivität aufzuwachen (COM-07).</li>
+</ul>
+<hr />
+<h2 id="tests">Tests<a class="headerlink" href="#tests" title="Permanent link">&para;</a></h2>
+<p>Host-Tests ohne Hardware: Der Treiber wird mit Zig/Clang für den PC gebaut und gegen <code>FakeUja113x</code> getestet, ein
+Registermodell mit Write-1-to-clear, System-Reset bei WMC/NWP-Änderung, Watchdog-Fenster, Adress-Echo, RSTN-Reset mit RCC
+und Forced Sleep, Partial Networking nach Datenblatt 7.9.1.3 sowie der analogen Seite von Batterieüberwachung und HVIO.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>.venv/Scripts/python<span class="w"> </span>tools/test<span class="w"> </span>-k<span class="w"> </span>uja113x
+</code></pre></div>
+<p>Die Liste der Tests steht im <a href="../../../../../doc/reference/modules/">Modulkatalog</a>. Die Aussagekraft ist mit gezielt
+eingebauten Fehlern geprüft (Mutationslisten im Changelog SYS-07, COM-07, IO-10).</p>
+<hr />
+<h2 id="verifikation">Verifikation<a class="headerlink" href="#verifikation" title="Permanent link">&para;</a></h2>
+<p>Am Eval Board bestätigt: LPSPI 500 kHz, Adress-Echo, Startablauf mit Rücklesen und ID 0x51, Quittieren der Start-Interrupts,
+V2 an und CAN bereit, Dauerbetrieb ohne SPI-Fehler (ca. 6 min), INTN-Pins mit internem Pull-up, Sleep und Wake-up per CAN
+(VER-02), RCC-Rücksetzung bei geschlossenem JP1 (VER-03).</p>
+<p>Nur im Registermodell geprüft, am Board <strong>offen</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Punkt</th>
+<th>Grund</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Sleep mit gewählten Aufweckquellen (SYS-02), Partial Networking (COM-07)</td>
+<td>Sleep nur mit Nutzer vor Ort</td>
+</tr>
+<tr>
+<td>RCC-Kompensation und Reserve für Fehlstarts (SYS-07)</td>
+<td>offen</td>
+</tr>
+<tr>
+<td>Watchdog Timeout/Window, Neuinitialisierung nach SBC-Reset</td>
+<td>Board im Entwicklungsmodus</td>
+</tr>
+<tr>
+<td>Batterieüberwachung, Messwert gegen Multimeter, HVIO, EN-Pin und LIMP (IO-10)</td>
+<td>Beschaltung unbekannt oder offen</td>
+</tr>
+<tr>
+<td>INTN1 statt Polling, Standby mit V1 an, Pin-Interrupt als Wake-up aus VLPS (IO-68, PLAT-108)</td>
+<td>offen (<code>sbc standby</code>)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="grenzen-und-offene-punkte">Grenzen und offene Punkte<a class="headerlink" href="#grenzen-und-offene-punkte" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Watchdog-Trigger</strong> hängt nur am Task <code>bsp</code>, nicht an der Programmflusskontrolle der Anwendung; ein Window-Watchdog
+  braucht mit dem 10-ms-Zyklus mindestens 64 ms Periode.</li>
+<li><strong>RCC-Reserve:</strong> Auch mit Kompensation bleibt nach einem MCU-Reset nur ein tolerierter Fehlstart; mehr ginge nur mit
+  einer Kompensation vor dem Testreset oder ohne Selbsttest-Resets bei geschlossenem JP1. <code>sbc failstart</code> setzt voraus,
+  dass <code>RCM_SSRS</code> write-1-to-clear ist (am Board zu bestätigen).</li>
+<li><strong>Ohne Entwicklungsmodus</strong> (SDMC = 0) läuft der Watchdog ab dem SBC-Reset mit 128 ms; Bootloader (200-ms-Fenster) und
+  Hochlauf der Anwendung sind dafür zu langsam.</li>
+<li><strong>Partial Networking (COM-07)</strong> ist im Treiber umgesetzt, aber nicht eingebunden (Projekt-Schema, Generator und der
+  Aufruf von <code>setCanWakeupFrame()</code> im Board-Port fehlen); die rechtsbündige Zuordnung der Datenmasken ist am Board zu
+  bestätigen.</li>
+<li><strong>Nicht umgesetzt:</strong> LIN, die vier Timer des SBC (Register 0x50–0x57), SMPS-Ausgangsspannung, General Purpose Memory,
+  Lock-Register.</li>
+<li><strong>HVIO, EN, LIMP, Batterieüberwachung (IO-10)</strong> sind am Board unbestätigt. Welche HVIO-Pins die Platine wie beschaltet,
+  steht nicht in <code>board.yaml</code> (ARCH-12). Die Schwellen 9000/18000 mV sind ein Vorschlag für ein 12-V-Bordnetz. Am Board zu
+  prüfen sind drei Hypothesen: die Richtung des Rückfallfensters der Unterspannung (BMUVS), das Verhalten von IOnOLIE
+  gegenüber IOnSCIE (Datenblatt Tabelle 69/71) und die Stromrichtung der Schwellen. Die Stromschwellen sind die
+  typischen Datenblattwerte (bis zu 20 % Streuung). <code>SbcSystem</code> loggt <code>wakeBank1</code>/<code>failureBank1</code> noch nicht.</li>
+<li><strong>Aufweckquellen für Sleep (SYS-02)</strong> sind am Board nicht geprüft; welche WAKE/HVIO-Eingänge verdrahtet sind, kennt
+  das Board-Schema nicht (ARCH-12), <code>Uja113xPowerSupply</code> bekommt die Maske als Konstruktorwert (Eval Board: 0).</li>
+<li><strong>INTN1 (IO-68)</strong> ersetzt das 10-ms-Polling nur dort, wo das Board es verdrahtet (<code>connect: intn1</code>; Eval Board: ja,
+  Demo ohne Pin-Event); INTN2 wird nicht genutzt. Die Reaktionszeit bleibt ein Servicezyklus; schneller wäre nur eine
+  Aktivierung des Tasks durch den Pin-Interrupt (IO-57). Der Stop-Modus der MCU ist PLAT-108, der warme Ruhezustand der
+  ECU SYS-156.</li>
+<li><strong>Konfiguration</strong> ist noch ein handgeschriebener Header; später aus Board und Projekt bzw. dem Studio (ARCH-05).</li>
+</ul>
+<hr />
+<h2 id="quellen">Quellen<a class="headerlink" href="#quellen" title="Permanent link">&para;</a></h2>
+<p>Aus der NXP-Dokumentensammlung des Nutzers (<code>&lt;document-collection&gt;/NXP_S32/UJA113x_SBC</code>):</p>
+<ul>
+<li>UJA113x series, Product data sheet, Rev. 2, 5 July 2016 (Registerbeschreibung, Pinning, INTN-/RSTN-Kennwerte;
+  Partial Networking: Abschnitt 7.9.1.3, Tabellen 26, 28–33, 78, 87, Abb. 19; IO-10: EN-Pin 7.4 und Tabelle 12,
+  Limp Home 7.5 und 7.10.6, Batterieüberwachung 7.8.2 mit Tabellen 14–22, HVIO 7.10 mit Tabellen 34–46,
+  Stromschwellen Tabelle 90, Identifikationscodes Tabelle 78, Einschaltwerte Tabelle 87; Watchdog 7.2 mit Tabellen 7
+  und 8, Reset-Quellen 7.3.3, Watchdog-Zeiten Tabelle 91). Öffentlich:
+  <code>https://www.nxp.com/docs/en/data-sheet/UJA113X_SER.pdf</code></li>
+<li>AH1501 UJA113x Application Hints: Software Flow, Rev. 2.0, mit Beispielsoftware UJA1132/UJA1132FD4</li>
+</ul>
+<p>Datenblatt und AH1501 liegen unter <code>doc/hardware/uja113x</code>. AH1506 und AH1507 sind nicht öffentlich; seit PLAT-117
+stützt sich keine Aussage dieses Treibers mehr auf sie.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Zurück zum Seitenanfang
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Fußzeile" >
+        
+          
+          <a href="../../../nvmDataFlash/doc/nvmDataFlash/" class="md-footer__link md-footer__link--prev" aria-label="Zurück: nvmDataFlash - data flash areas (NVM-12)">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Zurück
+              </span>
+              <div class="md-ellipsis">
+                nvmDataFlash - data flash areas (NVM-12)
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../../../../bsp/bspAdcAccess/doc/bspAdcAccess/" class="md-footer__link md-footer__link--next" aria-label="Weiter: Serialized ADC access (bspAdcAccess)">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Weiter
+              </span>
+              <div class="md-ellipsis">
+                Serialized ADC access (bspAdcAccess)
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright 2026 Daniel Simon Reinhardt-Probul - Apache-2.0
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../../..", "features": ["navigation.sections", "navigation.indexes", "navigation.top", "navigation.footer", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "In Zwischenablage kopiert", "clipboard.copy": "In Zwischenablage kopieren", "search.result.more.one": "1 weiteres Suchergebnis auf dieser Seite", "search.result.more.other": "# weitere Suchergebnisse auf dieser Seite", "search.result.none": "Keine Suchergebnisse", "search.result.one": "1 Suchergebnis", "search.result.other": "# Suchergebnisse", "search.result.placeholder": "Suchbegriff eingeben", "search.result.term.missing": "Es fehlt", "select.version": "Version ausw\u00e4hlen"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../../../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

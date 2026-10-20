@@ -1,0 +1,7197 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Hardware-neutral, configurable basic software for 32-bit automotive MCUs, built on Eclipse OpenBSW">
+      
+      
+      
+      
+        <link rel="prev" href="../anomaly-register/">
+      
+      
+        <link rel="next" href="../verification-plan/">
+      
+      
+        
+          <link rel="alternate" href="../../../../doc/safety/safety-plan/" hreflang="de">
+        
+          <link rel="alternate" href="./" hreflang="en">
+        
+      
+      
+      <link rel="icon" href="../../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>neXtBSW safety plan — software SEooC at ASIL B (SYS-60) - neXtBSW</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#nextbsw-safety-plan--software-seooc-at-asil-b-sys-60" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../" title="neXtBSW" class="md-header__button md-logo" aria-label="neXtBSW" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            neXtBSW
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              neXtBSW safety plan — software SEooC at ASIL B (SYS-60)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="indigo"  aria-label="Dunkel"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Dunkel" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="indigo"  aria-label="Hell"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Hell" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Select language">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="../../../../doc/safety/safety-plan/" hreflang="de" class="md-select__link">
+              Deutsch
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../" title="neXtBSW" class="md-nav__button md-logo" aria-label="neXtBSW" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    neXtBSW
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Start
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Wegweiser
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../guide/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Integrator
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Integrator
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Erste Schritte
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/host-durchlauf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Host-Durchlauf ohne Hardware
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/your-first-board/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Das erste Board
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/the-application/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Die Anwendung
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/build-and-flash/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bauen und Flashen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/customer-project/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Eigenes ECU-Repository
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/new-derivative/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Neues Derivat
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/board-readme-template/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vorlage Board-README
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_10" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../reference/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Konfigurationsreferenz
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3_10" id="__nav_3_10_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Konfigurationsreferenz
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/derivative/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Derivative
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/board/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Board
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/project/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/rte/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rte
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/diag/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diag
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/console/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Console
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_11" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../projects/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Projekte, Komponenten, Boards
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3_11" id="__nav_3_11_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Projekte, Komponenten, Boards
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../swc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Software-Komponenten
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../swc/DemoSwcSubstitute/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    C-Ersatz der DemoSwc
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../ecu/platforms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Board-Ports
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../boards/buildtest_s32k148/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S32K148 build-test board (S32K148 LQFP176)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_12" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_12" id="__nav_3_12_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release Notes
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_12">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Release Notes
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../release-notes/v1.0.0-rc2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.0.0-rc2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../release-notes/v1.0.0-rc1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.0.0-rc1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../start/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Safety-Assessor
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Safety-Assessor
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../safety-manual/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sicherheitshandbuch
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../concept/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sicherheitskonzept
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../figures/concept-figures/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bilder zum Konzept
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../anomaly-register/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Anomalie-Register
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_6" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4_6" id="__nav_4_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Arbeitsprodukte
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Arbeitsprodukte
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW safety plan — software SEooC at ASIL B (SYS-60)
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW safety plan — software SEooC at ASIL B (SYS-60)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#0-result-in-one-page" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0. Result in one page
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-scope-and-claim" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Scope and claim
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Scope and claim">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-the-element" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 The element
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-the-claim" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 The claim
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-roles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Roles
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-tailoring-of-the-lifecycle-for-the-seooc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Tailoring of the lifecycle for the SEooC
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-activities-per-part" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Activities per part
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-confirmation-measures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Confirmation measures
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-release" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Release
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-maintaining-the-plan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Maintaining the plan
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-tasks-proposed-by-this-plan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Tasks proposed by this plan
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-open-points" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Open points
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-review-questions-of-the-architecture-section-11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Review questions of the architecture (section 11)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-sources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Sources
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#12-change-history" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12. Change history
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../verification-plan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW verification plan and archived reports per baseline (SYS-67)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../safety-case/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW safety case — software SEooC at ASIL B (SYS-64)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cm-plan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW configuration management plan and baselines (SYS-68)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sw-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW — software architectural design specification of the safety part (SYS-65)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture-safety-analysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW software architectural safety analysis beyond the mechanisms (SYS-71)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../fmea/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW failure analysis of the base-software safety mechanisms (stage 1)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../figures/fmea-figures/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fmea figures
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dfa/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW dependent failure analysis of the stage-1 mechanisms (SYS-70)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../unit-design/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW — software unit design: watchdog handling, fault handlers, safety task (SYS-92, N2)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../coexistence/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW — coexistence of ASIL B and QM software in one image (SYS-61)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../partner-and-degraded/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Partner MCU supervision, degraded reaction and active short circuit — concept
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../config-range/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW — argument over the admissible configuration range (SYS-92, N3)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../hsi-s32k1xx/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW hardware-software interface of the stage-1 safety mechanisms — s32k1xx (SYS-66)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../hardware-mechanisms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hardware safety mechanisms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security-interplay/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW — interplay of functional safety and cybersecurity (SYS-92, N1)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../static-analysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Static analysis and coding guidelines (PLAT-74)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tool-classification/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW tool classification and safeguards of the generated code (PLAT-75)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../component-qualification/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW — route per pre-existing component and qualification plan (SYS-62)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dev-environment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW development environment: languages, guidelines, tools, build and test flow (DOC-22)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../board-test-spec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW board test specification per SSR with operational use cases (SYS-75)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../openbsw-beitraege/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributor
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Contributor
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_1" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../architecture/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architektur
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_1" id="__nav_5_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Architektur
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/openbsw/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Openbsw
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/openbsw-naehe/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Openbsw naehe
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/autosar/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Autosar
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/autosar-standard-set/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Autosar standard set
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/autosar-ecuc-map/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Autosar ecuc map
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/autosar-ecuc-evaluation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Autosar ecuc evaluation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/plattformen/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plattformen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/customer-project/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Customer project
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/versioning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW – Versionierung und Support
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/csec-concept/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CSEc in neXtBSW: keys, message authentication and secure start (SYS-56)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/kalibrierung/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Calibration in neXtBSW: parameters, maps, a versioned calibration database, measurement signals (ARCH-64)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/pin-interrupts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pin interrupts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/signal-qualifier/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Signal qualifiers for received messages (COM-03)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/treiber-granularitaet/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW – granularity of device drivers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/treiber-anbindung-analyse/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW – binding device drivers to the system: analysis of the hand-written integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/openbsw-console-number-arguments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OpenBSW console commands with a number argument - audit (PLAT-110)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_1_19" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_1_19" id="__nav_5_1_19_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Geplant nach R1
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_1_19_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_1_19">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Geplant nach R1
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/planned/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Planned
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/non-cortex-m-audit/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Non cortex m audit
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/rm4x-quellen/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rm4x quellen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/stm32-nucleo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Stm32 nucleo
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../figures/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bilder
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_2" id="__nav_5_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Bilder
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../figures/01-schichten/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    01 schichten
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../figures/02-konfigurationsfluss/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    02 konfigurationsfluss
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../figures/03-startablauf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    03 startablauf
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../figures/04-flash-uds/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    04 flash uds
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../figures/05-ecu-zustaende/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    05 ecu zustaende
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../figures/06-safety-kette/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    06 safety kette
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../figures/07-modulkarte/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    07 modulkarte
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../figures/08-lesepfade/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    08 lesepfade
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../bootloader/doc/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Moduldokumentation
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_3" id="__nav_5_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Moduldokumentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/modules/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modules
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../bootloader/doc/iso14229-1-clause16-conformance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Conformance with ISO 14229-1 clause 16 (non-volatile server memory programming)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/autosarBase/doc/autosarBase/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AUTOSAR base types (autosarBase)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/canPhyPassive/doc/canPhyPassive/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Passive CAN transceiver (canPhyPassive)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/canSystem/doc/canSystem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CAN system, hardware independent parts (canSystem)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/consoleContext/doc/consoleContext/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Console context (consoleContext)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/dem/doc/dem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    dem – fault memory (simplified AUTOSAR DEM)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/e2e/doc/e2e/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    E2E-Bibliothek (e2e)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/ecuState/doc/ecuState/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ECU-Zustandsverwaltung (ecuState)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/gdTmc6200/doc/gdTmc6200/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Gate-Treiber TMC6200 (gdTmc6200)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/hallDecoder/doc/hallDecoder/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hall decoder (hallDecoder)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/highSideSwitch/doc/highSideSwitch/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Smart high-side switch (highSideSwitch)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/mcuLink/doc/mcuLink/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mcuLink
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/nvm/doc/nvm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NvM core (libs/bsw/nvm)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/nvmDataFlash/doc/nvmDataFlash/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nvmDataFlash - data flash areas (NVM-12)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/sbcUja113x/doc/sbcUja113x/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SBC-Treiber UJA113x (sbcUja113x)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsp/bspAdcAccess/doc/bspAdcAccess/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Serialized ADC access (bspAdcAccess)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsp/bspI2c/doc/bspI2c/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    I2C master contract (bspI2c)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsp/bspPinEdge/doc/bspPinEdge/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pin edge contract (bspPinEdge)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsp/bspPinEvent/doc/bspPinEvent/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    bspPinEvent
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsp/bspSampleGroup/doc/bspSampleGroup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sample group (bspSampleGroup)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsp/bspSpi/doc/bspSpi/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SPI device contract (bspSpi)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/common/clockCheck/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Clock start-up check (PLAT-72)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/common/interruptPriority/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interrupt priorities as ranks (PLAT-10, wired up in PLAT-21, per core profile since ARCH-24)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/s32k1xx/bsp/bspCsec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    bspCsec – CSEc of the S32K1 family
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/s32k1xx/bsp/bspMcu/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    bspMcu (Familie s32k1xx) – Derivat-Header und mcu/mcu.h (PLAT-11)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/s32k1xx/startup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Startup templates per core architecture (PLAT-10)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/s32k1xx/port/safety/safeLifecycle/doc/safeLifecycle/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Safety task, s32k1xx (safeLifecycle)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/s32k1xx/port/safety/safeMemory/doc/safeMemory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Memory safety of the s32k1xx family (safeMemory)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/s32k1xx/port/safety/safeSupervisor/doc/safeSupervisor/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Safe supervisor, project values of the s32k1xx port (safeSupervisor)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/s32k1xx/port/safety/safeSystem/doc/safeSystem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference and supply supervision, s32k1xx (safeSystem)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/s32k1xx/port/bspConfiguration/src/bsp/capture/doc/capture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Input capture, s32k1xx (capture)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/s32k1xx/port/bspConfiguration/src/bsp/hall/doc/hall/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hall sensor set, s32k1xx (hall)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../tools/test/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tests und Werkzeuge
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_4" id="__nav_5_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tests und Werkzeuge
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/docgen/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    docgen - generated reference documentation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/docgen/website/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Doku-Website
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/ci/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/ci – provider-neutral CI (TOOL-03)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/setup – the Python environment of a workspace (TOOL-63)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/distcheck/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    distcheck – distribution check and export of the open tree
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/canflash/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/canflash – application and bootloader over CAN (UDS on ISO-TP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/boardtest/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/boardtest – board measurement scripts with host tests (TOOL-05)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/misra/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/misra – static analysis (PLAT-74)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/trace/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/trace — traceability of the safety requirements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/a2lgen/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    a2lgen - A2L for XCP on CAN (TOOL-01)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/calgen/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    calgen – calibration datasets (stage K2)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/csec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    csec – host side of the CSEc way back to the factory state
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/elfcheck/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    elfcheck – linked images against the derivative map and the core
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/nxupdate/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/schedana/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/schedana – analyse processor load, scheduling and data flow (TOOL-09)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/stackuse/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    stackuse – worst-case stack per execution context
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Beitragen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../SECURITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sicherheitsluecken melden
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../mcudb/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ableitung der Chipdaten (mcudb)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#0-result-in-one-page" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0. Result in one page
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-scope-and-claim" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Scope and claim
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Scope and claim">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-the-element" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 The element
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-the-claim" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 The claim
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-roles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Roles
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-tailoring-of-the-lifecycle-for-the-seooc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Tailoring of the lifecycle for the SEooC
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-activities-per-part" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Activities per part
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-confirmation-measures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Confirmation measures
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-release" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Release
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-maintaining-the-plan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Maintaining the plan
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-tasks-proposed-by-this-plan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Tasks proposed by this plan
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-open-points" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Open points
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-review-questions-of-the-architecture-section-11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Review questions of the architecture (section 11)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-sources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Sources
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#12-change-history" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12. Change history
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="nextbsw-safety-plan--software-seooc-at-asil-b-sys-60">neXtBSW safety plan — software SEooC at ASIL B (SYS-60)<a class="headerlink" href="#nextbsw-safety-plan--software-seooc-at-asil-b-sys-60" title="Permanent link">&para;</a></h1>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Title</td>
+<td>Safety plan - software SEooC at ASIL B</td>
+</tr>
+<tr>
+<td>Issue</td>
+<td><strong>3, 2026-10-08</strong> (SYS-207, the deviation for release R1 restated in section 5 after the decision of the safety responsible of 2026-10-08); issue 2: 2026-10-02 (SYS-182, after the confirmation review CR-01-1); issue 1: 2026-09-28 (SYS-60)</td>
+</tr>
+<tr>
+<td>Author</td>
+<td>SYS-60 (issue 1), SYS-182 (issue 2), SYS-207 (issue 3) — agents writing on the user's behalf, author side; the updates in between by the tasks of section 12</td>
+</tr>
+<tr>
+<td>Approver</td>
+<td>the safety manager (the user): issue 1 released 2026-10-02 with the review set of 15 safety documents; issue 2 released 2026-10-02 in the re-check of CM-01 (findings F-01 … F-08 of <code>reviews/records/CR-01-1.md</code> closed by the reviewer, the user under D-01, without independence); issue 3 released 2026-10-08 in the delta re-check of CM-01 (delta review of section 5, <code>reviews/README.md</code> section 4; record <code>reviews/records/CR-01-1.md</code>, points C1 … C3, the user under D-01, without independence)</td>
+</tr>
+<tr>
+<td>Status</td>
+<td>issue 3 <strong>accepted</strong> (released 2026-10-08 in the delta re-check of CM-01, record CR-01-1; D-01, without independence); issue 2 accepted (D-01, without independence)</td>
+</tr>
+<tr>
+<td>Change history</td>
+<td>section 12</td>
+</tr>
+</tbody>
+</table>
+<p>Working state: dev at c0928380 (after v1.0.0-rc1)</p>
+<p>Issue 1 was written against <code>dev</code> at <code>ae92e89</code>; issue 2 checks the statuses against <code>doc/todo.yaml</code> and the tree at
+<code>dev</code> 3405bf72 (merge of <code>integ/night12</code>); issue 3 changes only the deviation for release R1 in section 5 (the
+condition that lifts it), written against <code>dev</code> 9bf2d520; the activity statuses of section 4 were not re-checked. The
+delta re-check of CM-01 on 2026-10-08 added the sentence on <code>README.md</code> and the release notes in section 5 (C2) and
+released issue 3 (C3), recorded against <code>dev</code> c0928380.
+Readers: the user as project manager and safety manager, the coordinator who plans and merges the tasks named here,
+the agents of the safety tasks (SYS-61 … SYS-77, DOC-19, DOC-21, DOC-22, PLAT-83, PLAT-91, TOOL-40, TOOL-57, TOOL-58),
+and later an integrator or reviewer who wants to know how neXtBSW was developed.
+Language: English, like the rest of <code>doc/</code> (CLAUDE.md, user 2026-09-17).</p>
+<p><strong>What this document is.</strong> The safety plan that the gap analysis <code>iso26262-gap.md</code> (not published, available on request) found missing
+(rows 2-09 and 2-11, proposed task 1). It states the claim neXtBSW makes, names the people responsible, tailors the
+safety lifecycle for a software Safety Element out of Context (SEooC), lists every activity of parts 2, 6, 8 and 9 of
+ISO 26262:2018 with objective, responsible role, work product and status, plans the confirmation measures with their
+independence and defines what a release is. The consistency test
+<a href="../../../../doc/safety/test/test_safety_plan.py"><code>test/test_safety_plan.py</code></a> checks that every work product named here exists or has a task.</p>
+<p><strong>Licence rule.</strong> The standard is cited by <strong>part and clause only</strong> (for example "6-9.4.4" = ISO 26262-6:2018,
+clause 9.4.4). No text, table or figure of the standard is reproduced; requirements are restated in our own words.</p>
+<p><strong>What it is not.</strong> Not a safety case (SYS-64), not a safety manual (DOC-19), not a statement that neXtBSW complies.
+The plan says what is done, by whom and with which result; the evidence is in the work products it names.</p>
+<hr />
+<h2 id="0-result-in-one-page">0. Result in one page<a class="headerlink" href="#0-result-in-one-page" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Question</th>
+<th>Answer</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Claim (user decision iso-q2, 2026-09-22)</td>
+<td>neXtBSW is <strong>developed following the methods of ISO 26262-6 at ASIL B, without the management part</strong> — a software SEooC with ASIL B capability, stage 1 (base-software mechanisms, concept section 1.4)</td>
+</tr>
+<tr>
+<td>Openly stated limitations</td>
+<td>no quality management system (2-5.4.5), no evidence of competence (2-5.4.4), no confirmation review by an independent person (2-6.4.9, 2-6.4.10): since 2026-09-30 the user performs the confirmation measures himself (AN-093, T-11), without independence; they go into the safety manual (DOC-19) as assumptions of use (AoU-35)</td>
+</tr>
+<tr>
+<td>Roles (section 2)</td>
+<td>project manager and safety manager: <strong>the repository owner</strong> (user, GitHub <code>danielsimonreinhardt</code>), confirmed by the user on 2026-09-28 (<code>q-sys92-rollen</code>); coordinator session plans and merges; agents author; confirmation reviewer for now <strong>the user himself</strong> (decision 2026-09-30, AN-093, T-11 — not independent); an independent reviewer is still to be named (iso-q1)</td>
+</tr>
+<tr>
+<td>Tailoring (section 3)</td>
+<td>11 tailoring decisions with rationale (2-6.4.5.7) — ten tailorings of the lifecycle and one <strong>deviation</strong> (T-11), listed in the same table so that every activity names its ID: item-level work (parts 3, 4, 5, 7, hardware metrics, item impact analysis) goes to the integrator through assumptions; QMS and competence are not provided; the development interface agreement, the evaluation of hardware elements, proven in use and ASIL decomposition are not used; the functional safety assessment is deferred; the confirmation measures are performed by the user himself without independence — a deviation, lifted when an independent person is named (T-11, 2026-09-30)</td>
+</tr>
+<tr>
+<td>Activities (section 4)</td>
+<td><strong>53</strong> activities of parts 2 (16), 6 (22), 8 (11) and 9 (4), covering all <strong>97</strong> gap rows 2-01 … 9-11 of <code>iso26262-gap.md</code>. Status: 15 done, 24 partial, 6 in progress, 1 planned, 7 tailored (issue 1 at the review: 9 done, 21 partial, 9 in progress, 7 planned)</td>
+</tr>
+<tr>
+<td>Confirmation measures (section 5)</td>
+<td>11 measures; 5 of them need independence I1 at ASIL B (safety plan, safety analyses, DFA, integration and test strategy, safety case), the other 6 are planned at I1 by project choice; all 11 prepared by SYS-63; since 2026-09-30 performed by the user himself (SYS-118, T-11) — a confirmation <strong>without independence</strong>, which gives no working state an ASIL statement; <strong>1 performed</strong>: CM-01 on 2026-10-02 (record <code>reviews/records/CR-01-1.md</code>, accepted with conditions, 8 minor findings corrected by SYS-182)</td>
+</tr>
+<tr>
+<td>Release (section 6, user decision iso-q3)</td>
+<td>a release is an <strong>annotated tag <code>vX.Y.Z</code> on <code>master</code></strong>; before it: green CI run with archived report, safety documents citing the tag, qualification reports, closed confirmation reviews. Tags that miss a precondition are a <strong>development release</strong> without safety claim; R1 … R6 map one to one onto the preconditions P1 … P9 of <code>cm-plan.md</code> 5.1 (section 6)</td>
+</tr>
+<tr>
+<td>New tasks proposed (section 8)</td>
+<td>11: interplay safety/cybersecurity (N1), unit design of watchdog and hard-fault handler (N2), configuration range argument (N3), confirmation of the roles on the decision board (N4); after the tasks SYS-62, SYS-63, SYS-74 and TOOL-57 were booked done with parts open (DOC-35): performing the confirmation measures (N5), verification inspections with record (N6), service commands in the product image (N7), further qualification reports (N8), use of the safety-impact field (N9); after SYS-65 and SYS-97 were booked done with the resource estimate open (SAFETYDOC-1001): the rest of the resource estimate (N10). <strong>These ten are carried into tasks</strong> (N1 … N4 SYS-92 and N7 SYS-119 done; N5 SYS-118, N6 SYS-120, N8 SYS-121, N9 SYS-122, N10 DOC-41 open); sections 4 to 6 name the task, not the proposal. Issue 2 adds N11, the unit design of the remaining safety units (U1 of <code>unit-design.md</code>), not yet carried</td>
+</tr>
+<tr>
+<td>Verification</td>
+<td><strong>mock/host</strong>: the consistency test <code>doc/safety/test/test_safety_plan.py</code> (parser, cross-checks against <code>iso26262-gap.md</code>, <code>doc/todo.yaml</code>, the repository tree, <code>cm-plan.md</code> 5.1 and the review records, and counter-checks with broken copies); since issue 2 it also reports a lagging plan — a proposal still named after a task carried it out, a <code>planned</code> row whose task has started and whose work product exists, a measure whose status does not match its record (section 7). No hardware, no code change</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="1-scope-and-claim">1. Scope and claim<a class="headerlink" href="#1-scope-and-claim" title="Permanent link">&para;</a></h2>
+<h3 id="11-the-element">1.1 The element<a class="headerlink" href="#11-the-element" title="Permanent link">&para;</a></h3>
+<p>neXtBSW as described in <a href="../concept/"><code>concept.md</code></a> section 1: the base software (MCU drivers, safety mechanisms of
+the base software, RTE, generators) as a <strong>software component SEooC</strong> (10-9.2.4) with <strong>ASIL B capability</strong> (10-9.1).
+Stage 1 argues ASIL B with the mechanisms of the base software only (concept 1.4); the device drivers' own mechanisms
+are stage 2 and not covered by this issue. The item, its hazard analysis, its safety goals, its hardware and the
+application software are outside the element (concept 1.2, AoU-01, AoU-09, AoU-17).</p>
+<h3 id="12-the-claim">1.2 The claim<a class="headerlink" href="#12-the-claim" title="Permanent link">&para;</a></h3>
+<!-- claim:start -->
+<p><strong>neXtBSW is developed following the methods of ISO 26262-6 at ASIL B, without the management part.</strong></p>
+<!-- claim:end -->
+
+<p>Decided by the user on 2026-09-22 (decision board, iso-q2). What it means:</p>
+<ul>
+<li><strong>Parts 6, 8 and 9</strong> are applied at ASIL B for the element, with the tailoring of section 3. Where a method is not
+  applied the rationale is given in the work product (6-4.3 reading).</li>
+<li><strong>Part 2</strong> is applied as far as a single-person open-source project can apply it: a safety plan (this document),
+  roles, tailoring, safety case, confirmation measures and a release procedure. What cannot be provided is stated,
+  not assumed:</li>
+<li><strong>no quality management system</strong> in the sense of 2-5.4.5;</li>
+<li><strong>no evidence of competence</strong> of the persons in the lifecycle in the sense of 2-5.4.4 — most work is written by
+    agents on the user's behalf and reviewed by the coordinator and the user;</li>
+<li><strong>no independent confirmation review yet</strong> (2-6.4.9, 2-6.4.10): by the decision of the safety responsible of
+    2026-09-30 (AN-093, tailoring T-11) the user performs the confirmation measures of section 5 himself for now.
+    That is a confirmation <strong>without independence</strong>: its records find and close findings, but no development state
+    gets an ASIL statement from them, and no release may claim ASIL B capability until an independent person has
+    reviewed it.</li>
+<li>The integrator who uses neXtBSW in a safety-related item takes over these gaps under his own management of
+  functional safety; the safety manual (DOC-19) states them as assumptions of use (gap analysis proposal C8).</li>
+</ul>
+<hr />
+<h2 id="2-roles">2. Roles<a class="headerlink" href="#2-roles" title="Permanent link">&para;</a></h2>
+<p>Appointment of project manager and safety manager according to 2-6.4.2. The table is the reference for the column
+"Responsible" of sections 4 and 5; the consistency test rejects any other value there.</p>
+<!-- plan-roles:start -->
+<table>
+<thead>
+<tr>
+<th>Role</th>
+<th>Held by</th>
+<th>Responsibility and authority</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>project manager</td>
+<td>the repository owner (user, GitHub <code>danielsimonreinhardt</code>)</td>
+<td>scope, priorities and resources of neXtBSW; decides on the decision board; approves merges to <code>master</code> and every release (section 6)</td>
+</tr>
+<tr>
+<td>safety manager</td>
+<td>the repository owner (user, GitHub <code>danielsimonreinhardt</code>)</td>
+<td>owns this plan and the safety case; decides on tailoring, on the safety claim and on the closure of safety anomalies; confirms the ASIL-B relevance of changes</td>
+</tr>
+<tr>
+<td>coordinator</td>
+<td>the coordinator session (one at a time, CLAUDE.md "Nur eine Sitzung schreibt Planung und Merges")</td>
+<td>turns this plan into tasks in <code>doc/todo.yaml</code>, writes the agent briefs, re-runs tests and builds, merges to <code>dev</code>, keeps the status columns of this plan up to date</td>
+</tr>
+<tr>
+<td>author</td>
+<td>the agent or person who writes a work product (branch <code>agent/&lt;ID&gt;</code> or <code>claude/&lt;id&gt;</code>)</td>
+<td>produces the work product with its verification and changelog fragment; never reviews its own work</td>
+</tr>
+<tr>
+<td>confirmation reviewer</td>
+<td>for now <strong>the user himself</strong> (decision of the safety responsible 2026-09-30, AN-093, tailoring T-11); an independent person is still to be named (iso-q1, user 2026-09-22: "Reviewer spaeter klaeren")</td>
+<td>performs the confirmation reviews of section 5; planned at independence I1 (a person other than the author and other than the user as author-side approver), performed by the user without independence until that person is named; eligibility, the deviation D-01 and signature: <code>doc/safety/reviews/README.md</code> section 3</td>
+</tr>
+<tr>
+<td>integrator</td>
+<td>the organisation that builds an item on neXtBSW (outside the project)</td>
+<td>item-level work handed over by the tailoring of section 3; validates the assumptions of use at integration (2-6.4.5.7, 10-9.2.4.5)</td>
+</tr>
+</tbody>
+</table>
+<!-- plan-roles:end -->
+
+<p><strong>Confirmation of the appointment (N4, done).</strong> The user confirmed the appointment of project manager and safety
+manager on the decision board, entry <code>q-sys92-rollen</code> (opened by SYS-92 on 2026-09-28, answered "bestaetigen" by the
+user on 2026-09-28). The table above is the user's word, not a proposal of the plan. <em>Issue 2 (SYS-182, finding F-04
+of CR-01-1): issue 1 still called the entry open and dated it 2026-09-30.</em></p>
+<p><strong>One person, two roles.</strong> Project manager and safety manager are the same person. The standard allows that; it
+requires that the responsibility is assigned and that the person has the authority (2-6.4.2). The independence that
+matters at ASIL B is the one of the confirmation reviews (section 5), not the one between these two roles.</p>
+<p><strong>The user as approver is author side.</strong> Work products are written by agents on the user's behalf. The user's
+acceptance on the decision board (<code>abn-sys19</code>, <code>abn-plat75</code>, …) is a real review, but it is a review by the
+commissioning side, not an independent one. This plan therefore counts it as <strong>verification review</strong> (part 8-9), not
+as confirmation review. Whether the user wants to see this differently is part of iso-q1. <em>2026-09-30 (AN-093):</em> the
+user decided to perform the confirmation measures himself for now; this plan records it as the deviation T-11, not as
+independence — his records stay author side (first: CR-01-1, 2026-10-02).</p>
+<hr />
+<h2 id="3-tailoring-of-the-lifecycle-for-the-seooc">3. Tailoring of the lifecycle for the SEooC<a class="headerlink" href="#3-tailoring-of-the-lifecycle-for-the-seooc" title="Permanent link">&para;</a></h2>
+<p>2-6.4.5.1 requires every tailoring to be defined in the safety plan with a rationale; 2-6.4.5.7 says for an SEooC
+that the requirements are derived from assumptions on intended use and context, including the external interfaces,
+and that the assumptions are validated at integration. The tailoring below applies these two clauses. A tailoring
+does not remove the objective: where an activity moves to the integrator, the safety manual (DOC-19) carries the
+assumption that makes the hand-over explicit.</p>
+<p>T-01 … T-10 are tailorings of the lifecycle. <strong>T-11 is not a tailoring but a deviation</strong> from a requirement that
+applies at ASIL B (the independence of the confirmation measures); it stands in the same table because every activity
+and every document names it by this ID, and it says what lifts it.</p>
+<!-- plan-tailoring:start -->
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Clause(s)</th>
+<th>Tailoring</th>
+<th>Rationale</th>
+<th>Consequence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T-01</td>
+<td>2-6.4.5.7, 10-9.2.4.2, 10-9.2.4.3</td>
+<td>Item definition, hazard analysis and risk assessment, functional and technical safety concept (parts 3 and 4) are <strong>not performed</strong>; they are replaced by assumed safety goals (ASG-01 … ASG-07) and assumptions of use (AoU-01 …) in <code>concept.md</code>, from which the software safety requirements are derived</td>
+<td>an SEooC is developed without a known item; the standard's guideline for this case is to assume the higher-level requirements and to validate the assumptions at integration</td>
+<td>the integrator compares ASG and AoU with his own safety concept (AoU-02); the level of assumed technical safety requirements between ASG and SSR is stated in <code>safety-manual.md</code> section 3.2 (gap proposal C2, DOC-19)</td>
+</tr>
+<tr>
+<td>T-02</td>
+<td>parts 5 and 7, 5-8, 5-9</td>
+<td>Hardware development, hardware architectural metrics, evaluation of random hardware failures and production are <strong>not performed</strong></td>
+<td>the element is software; hardware and production belong to the item; the element contributes per mechanism what the integrator's metrics need (gap section 3)</td>
+<td>AoU-09; the re-based coverage table per mechanism goes into the safety manual (DOC-19, gap proposal M2)</td>
+</tr>
+<tr>
+<td>T-03</td>
+<td>2-5.4.4, 2-5.4.5</td>
+<td><strong>No quality management system</strong> and <strong>no evidence of competence</strong> are provided</td>
+<td>a single-person open-source project has neither; the user decided (iso-q2) to claim the part-6 methods without the management part instead of claiming what cannot be shown</td>
+<td>stated in the claim (section 1.2) and as assumption of use in the safety manual (gap proposal C8); the integrator's own QMS covers the integration</td>
+</tr>
+<tr>
+<td>T-04</td>
+<td>2-6.4.3</td>
+<td>The <strong>impact analysis at item level</strong> is not performed</td>
+<td>there is no item; for a changed element version the integrator decides at item level</td>
+<td>AoU-02; the element supplies a change history per release (CHANGELOG, section 6)</td>
+</tr>
+<tr>
+<td>T-05</td>
+<td>8-5</td>
+<td><strong>No development interface agreement</strong></td>
+<td>no customer during SEooC development; the safety manual carries the interface to the integrator</td>
+<td>an integrator who wants a development interface agreement negotiates it on the basis of DOC-19</td>
+</tr>
+<tr>
+<td>T-06</td>
+<td>8-13</td>
+<td><strong>No evaluation of hardware elements</strong></td>
+<td>hardware is outside the element (AoU-09); MCU, SBC and board are chosen by the integrator, so the element has no hardware element of its own to evaluate</td>
+<td>the integrator evaluates MCU, SBC and board; the MCU's safety manual (N2 of <code>fmea.md</code>) is his input</td>
+</tr>
+<tr>
+<td>T-07</td>
+<td>8-14</td>
+<td><strong>Proven in use is not used</strong> as an argument for any component</td>
+<td>there is no field data; the route would need operating hours we cannot show</td>
+<td>pre-existing software takes the qualification route of 8-12 or is developed per part 6 (SYS-62)</td>
+</tr>
+<tr>
+<td>T-08</td>
+<td>9-5</td>
+<td><strong>No ASIL decomposition</strong> at stage 1</td>
+<td>all stage-1 requirements are ASIL B and implemented on one MCU; decomposition is kept for a later ASIL C/D stage (concept 2.1)</td>
+<td>the integrator must not decompose into neXtBSW elements without his own analysis</td>
+</tr>
+<tr>
+<td>T-09</td>
+<td>2-6.4.12</td>
+<td>The <strong>functional safety assessment</strong> is deferred: not planned for issue 1</td>
+<td>it is only recommended at ASIL B and needs an independent assessor — the same blocker as the confirmation reviews (iso-q1); it adds nothing before those reviews exist</td>
+<td>reconsidered by the safety manager before the first release that claims ASIL B capability; the integrator may assess the element within his item assessment</td>
+</tr>
+<tr>
+<td>T-10</td>
+<td>6-11.4.1, 6-11.4.4</td>
+<td>Tests of the embedded software run on the <strong>reference eval board</strong> and the host, not on the integrator's ECU; the admissible configuration range is argued for the configurations the project builds, not for all</td>
+<td>the target ECU is unknown for an SEooC; the element can only be tested on representative hardware and configurations</td>
+<td>the integrator repeats the target tests on his ECU and verifies his configuration data set (AoU-26, 6-C.4.5); the range argument is <code>config-range.md</code> (SYS-92, proposal N3)</td>
+</tr>
+<tr>
+<td>T-11</td>
+<td>2-6.4.9, 2-6.4.10</td>
+<td><strong>Deviation, not a tailoring:</strong> the <strong>confirmation measures</strong> of section 5 are performed <strong>for now by the user himself</strong>, not by a person independent of the author side — a <strong>deviation from the required independence</strong> (I1, required at ASIL B for CM-01 … CM-05). <strong>Lifted when</strong> the safety manager names an independent person (iso-q1); from then on every measure performed under this deviation is reviewed again at I1 (run k+1, full scope)</td>
+<td>decision of the safety responsible of 2026-09-30 on the escalated anomaly AN-093: "Die Prüfungen (Bestätigungsmaßnahmen) führt vorerst der Nutzer selbst durch"; no independent person is named (iso-q1) and the reviews shall not wait for one</td>
+<td>the records of these reviews are confirmations <strong>without independence</strong>: they find and close findings, but they give <strong>no development state an ASIL statement</strong> and do not meet the release precondition R5 for a safety release; every tag stays a development release until an independent person has reviewed the work products (SYS-118, AoU-35). <strong>Who carries it until then:</strong> the safety manager, who keeps iso-q1 open, and the integrator, who takes over the missing independent confirmation under his own management of functional safety (AoU-35); no date is set — no release that claims ASIL B capability is planned (R5). Procedure and record rules: <code>doc/safety/reviews/README.md</code> section 3 (deviation D-01)</td>
+</tr>
+</tbody>
+</table>
+<!-- plan-tailoring:end -->
+
+<p>What is <strong>not</strong> tailored: part 6 is applied at ASIL B in full; the software safety requirements, the architecture,
+the unit design and verification, the integration and the target tests stay required activities of the element.
+Neither are the safety case, the confirmation reviews and the release procedure — they are planned (sections 4–6);
+the reviews are performed without independence until T-11 is lifted.</p>
+<p>Decisions that shape the plan without being tailoring:</p>
+<ul>
+<li><strong>Coexistence</strong> (iso-q4, user 2026-09-22): QM parts stay QM only with a freedom-from-interference argument per
+  module (9-6); the separating element (RTOS, MPU code) must be ASIL B (6-7.4.9). Tasks SYS-61, SYS-21. Worked out
+  in <a href="../coexistence/"><code>coexistence.md</code></a> (SYS-61): 21 of 36 modules are ASIL B (13 mechanisms, 3 separating
+  elements, 5 dependencies); of the 9 QM modules with code in the image only XCP is fully argued today, the other 8
+  count as ASIL B until SYS-21 and the findings CX-1 … CX-3 close their open rows.</li>
+<li><strong>FreeRTOS route</strong> (iso-q5, user 2026-09-22): <strong>decided</strong> on 2026-09-22 (decision <code>rtos-u1-anfrage</code>), after the
+  comparison <code>rtos-comparison.md</code> (SYS-78, done) and with the hardening of the OS boundary (SYS-80, done): neXtBSW
+  stays on FreeRTOS and qualifies it. The route is carried out by SYS-62 (plan and report QR-01, done) and the
+  FreeRTOS qualification package SYS-124 (rows P6-07 and P8-09); open point O2 is closed (AN-094).</li>
+<li><strong>Single exit</strong> (iso-q6, user 2026-09-22): MISRA C:2012 rule 15.5 is re-enabled for the safety units. Task PLAT-91.</li>
+</ul>
+<hr />
+<h2 id="4-activities-per-part">4. Activities per part<a class="headerlink" href="#4-activities-per-part" title="Permanent link">&para;</a></h2>
+<p>One row per activity. Columns:</p>
+<ul>
+<li><strong>Gap rows</strong> — the rows of <code>iso26262-gap.md</code> sections 2.1 to 2.4 the activity answers; every gap row of parts 2,
+  6, 8 and 9 appears at least once (checked).</li>
+<li><strong>Responsible</strong> — a role of section 2.</li>
+<li><strong>Work product</strong> — repository paths; <code>—</code> only for a tailored activity. A path that does not yet exist must have an
+  open task or a proposal of section 8 in the column "Task" (checked).</li>
+<li><strong>Task</strong> — task IDs of <code>doc/todo.yaml</code>, proposals <code>N&lt;n&gt;</code> of section 8, or tailoring IDs <code>T-nn</code> of section 3.</li>
+<li><strong>Status</strong> — <code>done</code> (the work product exists and meets the objective for stage 1), <code>partial</code> (exists, a named part
+  missing), <code>in progress</code> (a task is running), <code>planned</code> (a task exists, not started), <code>tailored</code> (section 3).</li>
+</ul>
+<!-- plan-activities:start -->
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Clause</th>
+<th>Activity</th>
+<th>Objective</th>
+<th>Gap rows</th>
+<th>Responsible</th>
+<th>Work product</th>
+<th>Task</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P2-01</td>
+<td>2-5.4.2</td>
+<td>Rules and processes for functional safety</td>
+<td>written rules that name the lifecycle, the roles and the work products, and that are followed in every task</td>
+<td>2-01</td>
+<td>safety manager</td>
+<td><code>CLAUDE.md</code>, <code>CONTRIBUTING.md</code>, <code>doc/safety/safety-plan.md</code></td>
+<td>SYS-60</td>
+<td>done</td>
+</tr>
+<tr>
+<td>P2-02</td>
+<td>2-5.4.2.3</td>
+<td>Interplay of functional safety and cybersecurity</td>
+<td>the attack surfaces that can reach safety functions (bootloader update over CAN, UDS, XCP) are listed with their effect on the safety argument</td>
+<td>2-02</td>
+<td>safety manager</td>
+<td><code>doc/safety/security-interplay.md</code></td>
+<td>SYS-92</td>
+<td>done</td>
+</tr>
+<tr>
+<td>P2-03</td>
+<td>2-5.4.3</td>
+<td>Management of safety anomalies</td>
+<td>one register of findings with closure rationale and reviewer; open anomalies escalated to the safety manager</td>
+<td>2-03</td>
+<td>safety manager</td>
+<td><code>doc/safety/anomaly-register.md</code></td>
+<td>SYS-77, SYS-63, SYS-118</td>
+<td>partial</td>
+</tr>
+<tr>
+<td>P2-04</td>
+<td>2-5.4.4</td>
+<td>Competence of the persons in the lifecycle</td>
+<td>the lack of competence evidence is stated to the integrator</td>
+<td>2-04</td>
+<td>safety manager</td>
+<td><code>doc/safety/safety-manual.md</code></td>
+<td>T-03, DOC-19</td>
+<td>tailored</td>
+</tr>
+<tr>
+<td>P2-05</td>
+<td>2-5.4.5</td>
+<td>Quality management</td>
+<td>the lack of a QMS is stated to the integrator</td>
+<td>2-05</td>
+<td>safety manager</td>
+<td><code>doc/safety/safety-manual.md</code></td>
+<td>T-03, DOC-19</td>
+<td>tailored</td>
+</tr>
+<tr>
+<td>P2-06</td>
+<td>2-6.4.2</td>
+<td>Appointment of project manager and safety manager</td>
+<td>both roles assigned with responsibility and authority</td>
+<td>2-06</td>
+<td>project manager</td>
+<td><code>doc/safety/safety-plan.md</code></td>
+<td>SYS-60, SYS-92</td>
+<td>done</td>
+</tr>
+<tr>
+<td>P2-07</td>
+<td>2-6.4.3</td>
+<td>Impact analysis at item level</td>
+<td>handed to the integrator</td>
+<td>2-07</td>
+<td>integrator</td>
+<td>—</td>
+<td>T-04</td>
+<td>tailored</td>
+</tr>
+<tr>
+<td>P2-08</td>
+<td>2-6.4.4</td>
+<td>Impact analysis of reused elements</td>
+<td>per pre-existing component the route (qualify, develop per part 6, replace) decided from the change status of each file</td>
+<td>2-08</td>
+<td>safety manager</td>
+<td><code>tools/openbswsync/copies.yaml</code>, <code>doc/safety/component-qualification.md</code></td>
+<td>SYS-62</td>
+<td>done</td>
+</tr>
+<tr>
+<td>P2-09</td>
+<td>2-6.4.5</td>
+<td>Tailoring of the lifecycle</td>
+<td>every tailoring defined with rationale</td>
+<td>2-09</td>
+<td>safety manager</td>
+<td><code>doc/safety/safety-plan.md</code></td>
+<td>SYS-60</td>
+<td>done</td>
+</tr>
+<tr>
+<td>P2-10</td>
+<td>2-6.4.5.7</td>
+<td>SEooC assumptions including the external interfaces</td>
+<td>assumed scope, assumed requirements and the external interfaces of the element (supervisor API, RTE, configuration files, HSI) stated for validation at integration</td>
+<td>2-10</td>
+<td>safety manager</td>
+<td><code>doc/safety/concept.md</code>, <code>doc/safety/safety-manual.md</code></td>
+<td>DOC-19, DOC-38, T-01, T-02</td>
+<td>done</td>
+</tr>
+<tr>
+<td>P2-11</td>
+<td>2-6.4.6</td>
+<td>Safety plan</td>
+<td>the safety activities planned with objective, responsible, work product and status, updated per phase</td>
+<td>2-11</td>
+<td>safety manager</td>
+<td><code>doc/safety/safety-plan.md</code></td>
+<td>SYS-60</td>
+<td>done</td>
+</tr>
+<tr>
+<td>P2-12</td>
+<td>2-6.4.7</td>
+<td>Work products under configuration, change and documentation management</td>
+<td>every work product of this plan is a configuration item and cited by baseline</td>
+<td>2-12</td>
+<td>coordinator</td>
+<td><code>doc/safety/cm-plan.md</code></td>
+<td>SYS-68, SYS-94, SYS-111</td>
+<td>done</td>
+</tr>
+<tr>
+<td>P2-13</td>
+<td>2-6.4.8</td>
+<td>Safety case</td>
+<td>claim → argument → evidence, incremental per release</td>
+<td>2-13</td>
+<td>safety manager</td>
+<td><code>doc/safety/safety-case.md</code></td>
+<td>SYS-64, SYS-100</td>
+<td>partial</td>
+</tr>
+<tr>
+<td>P2-14</td>
+<td>2-6.4.9, 2-6.4.10</td>
+<td>Confirmation reviews</td>
+<td>the confirmation measures of section 5 prepared, performed at the required independence, findings closed</td>
+<td>2-14</td>
+<td>safety manager</td>
+<td><code>doc/safety/reviews</code></td>
+<td>SYS-63, SYS-110, SYS-118, T-11</td>
+<td>partial</td>
+</tr>
+<tr>
+<td>P2-15</td>
+<td>2-6.4.11, 2-6.4.12</td>
+<td>Functional safety audit and assessment</td>
+<td>audit of the process before the first ASIL-B release; assessment deferred</td>
+<td>2-15, 2-16</td>
+<td>safety manager</td>
+<td><code>doc/safety/reviews</code></td>
+<td>SYS-63, SYS-118, T-09</td>
+<td>partial</td>
+</tr>
+<tr>
+<td>P2-16</td>
+<td>2-6.4.13</td>
+<td>Release</td>
+<td>a release is defined and made only on sufficient evidence (section 6)</td>
+<td>2-17</td>
+<td>project manager</td>
+<td><code>doc/safety/safety-plan.md</code>, <code>doc/safety/cm-plan.md</code></td>
+<td>SYS-68, SYS-67</td>
+<td>done</td>
+</tr>
+<tr>
+<td>P6-01</td>
+<td>6-5.4.1 … 6-5.4.3, 6-5.5.1</td>
+<td>Development environment and guidelines</td>
+<td>languages, guidelines (incl. the C++ subset decision), tools with versions and TCL, build and test flow in one place</td>
+<td>6-01, 6-02</td>
+<td>coordinator</td>
+<td><code>doc/safety/static-analysis.md</code>, <code>tools/ci/versions.toml</code>, <code>doc/safety/dev-environment.md</code></td>
+<td>DOC-22, DOC-28, DOC-29</td>
+<td>done</td>
+</tr>
+<tr>
+<td>P6-02</td>
+<td>6-6.4.1 … 6-6.4.3, 6-6.4.5</td>
+<td>Software safety requirements</td>
+<td>SSR derived from the assumed requirements, covering configuration, HSI, timing and every operating mode; non-safety requirements specified</td>
+<td>6-03, 6-05</td>
+<td>safety manager</td>
+<td><code>doc/requirements/safety/ssr.sdoc</code></td>
+<td>SYS-72, DOC-21, DOC-43, SYS-100</td>
+<td>partial</td>
+</tr>
+<tr>
+<td>P6-03</td>
+<td>6-6.4.4, 6-6.4.6</td>
+<td>Hardware-software interface</td>
+<td>every register, clock, interrupt and pin the stage-1 mechanisms depend on, with expected configuration</td>
+<td>6-04</td>
+<td>author</td>
+<td><code>doc/safety/hsi-s32k1xx.md</code></td>
+<td>SYS-66, SYS-93</td>
+<td>in progress</td>
+</tr>
+<tr>
+<td>P6-04</td>
+<td>6-6.4.7</td>
+<td>Verification of the SSR and the HSI</td>
+<td>structural check automated, content verified by inspection with record</td>
+<td>6-06</td>
+<td>safety manager</td>
+<td><code>doc/safety/traceability.md</code>, <code>doc/safety/reviews</code></td>
+<td>SYS-72, SYS-63, SYS-120</td>
+<td>partial</td>
+</tr>
+<tr>
+<td>P6-05</td>
+<td>6-7.4.1 … 6-7.4.5</td>
+<td>Software architectural design</td>
+<td>static and dynamic view of the safety part down to the units, with bidirectional trace to the SSR</td>
+<td>6-07, 6-08, 6-09, 6-10</td>
+<td>author</td>
+<td><code>doc/architecture/README.md</code>, <code>doc/safety/sw-architecture.md</code></td>
+<td>SYS-65, SYS-97</td>
+<td>done</td>
+</tr>
+<tr>
+<td>P6-06</td>
+<td>6-7.4.6, 6-7.4.8, 6-7.4.9</td>
+<td>Allocation, coexistence and partitioning</td>
+<td>SSR allocated to components with ASIL; QM modules argued free from interference, the separating element at ASIL B</td>
+<td>6-11, 6-13, 6-14</td>
+<td>safety manager</td>
+<td><code>doc/safety/sw-architecture.md</code>, <code>doc/safety/coexistence.md</code></td>
+<td>SYS-65, SYS-61, SYS-21</td>
+<td>partial</td>
+</tr>
+<tr>
+<td>P6-07</td>
+<td>6-7.4.7</td>
+<td>Pre-existing software</td>
+<td>OpenBSW (unchanged), FreeRTOS, newlib, ETL, CMSIS qualified per 8-12 or replaced; modified copies developed per part 6</td>
+<td>6-12</td>
+<td>safety manager</td>
+<td><code>doc/safety/component-qualification.md</code></td>
+<td>SYS-62, SYS-109, SYS-121, SYS-124</td>
+<td>in progress</td>
+</tr>
+<tr>
+<td>P6-08</td>
+<td>6-7.4.10, 6-7.4.12</td>
+<td>Safety analysis at the architectural level and error handling</td>
+<td>failure propagation of mechanisms and functional software to the SSR analysed; measures applied</td>
+<td>6-15, 6-17</td>
+<td>author</td>
+<td><code>doc/safety/fmea.md</code></td>
+<td>SYS-71, SYS-100</td>
+<td>partial</td>
+</tr>
+<tr>
+<td>P6-09</td>
+<td>6-7.4.11</td>
+<td>Dependent failure analysis at the architectural level</td>
+<td>dependent failures where freedom from interference or independence is relied on</td>
+<td>6-16</td>
+<td>author</td>
+<td><code>doc/safety/dfa.md</code></td>
+<td>SYS-70, SYS-95, SYS-195</td>
+<td>in progress</td>
+</tr>
+<tr>
+<td>P6-10</td>
+<td>6-7.4.13</td>
+<td>Resource estimate</td>
+<td>execution time, memory including worst-case stack, bus load</td>
+<td>6-18</td>
+<td>author</td>
+<td><code>tools/schedana</code>, <code>tools/elfcheck</code>, <code>doc/safety/sw-architecture.md</code></td>
+<td>SYS-65, SYS-97, DOC-41</td>
+<td>partial</td>
+</tr>
+<tr>
+<td>P6-11</td>
+<td>6-7.4.14</td>
+<td>Verification of the architectural design</td>
+<td>inspection of the architecture with record</td>
+<td>6-19</td>
+<td>safety manager</td>
+<td><code>doc/safety/sw-architecture.md</code>, <code>doc/safety/reviews</code></td>
+<td>SYS-65, SYS-63, SYS-120</td>
+<td>partial</td>
+</tr>
+<tr>
+<td>P6-12</td>
+<td>6-8.4.2 … 6-8.4.4</td>
+<td>Software unit design</td>
+<td>every safety unit has a design description consistent with architecture and HSI</td>
+<td>6-20</td>
+<td>author</td>
+<td><code>doc/safety/unit-design.md</code>, <code>platforms/s32k1xx/port/safety/safeSupervisor/doc/safeSupervisor.md</code>, <code>platforms/s32k1xx/port/safety/safeLifecycle/doc/safeLifecycle.md</code>, <code>platforms/s32k1xx/port/safety/safeMemory/doc/safeMemory.md</code>, <code>platforms/s32k1xx/port/safety/safeSystem/doc/safeSystem.md</code></td>
+<td>SYS-92, N11</td>
+<td>partial</td>
+</tr>
+<tr>
+<td>P6-13</td>
+<td>6-8.4.5</td>
+<td>Design and implementation principles</td>
+<td>the unit principles applied and gated by static analysis; single exit for the safety units</td>
+<td>6-21</td>
+<td>author</td>
+<td><code>doc/safety/static-analysis.md</code>, <code>tools/misra/rules.yaml</code></td>
+<td>PLAT-91</td>
+<td>in progress</td>
+</tr>
+<tr>
+<td>P6-14</td>
+<td>6-9.4.2, 6-9.4.3</td>
+<td>Unit verification and test case derivation</td>
+<td>static analysis, requirement-based and interface tests, code inspection with record, derivation of test cases recorded</td>
+<td>6-22, 6-23</td>
+<td>author</td>
+<td><code>tools/test/tests.yaml</code>, <code>doc/safety/verification-plan.md</code>, <code>doc/safety/reviews</code></td>
+<td>SYS-67, SYS-69, SYS-166, SYS-181</td>
+<td>partial</td>
+</tr>
+<tr>
+<td>P6-15</td>
+<td>6-9.4.4</td>
+<td>Unit coverage</td>
+<td>requirement coverage and statement/branch coverage measured, thresholds enforced with rationale per shortfall</td>
+<td>6-24</td>
+<td>coordinator</td>
+<td><code>tools/test/coverage.yaml</code>, <code>tools/test/coverage.py</code></td>
+<td>TOOL-40, TOOL-44</td>
+<td>partial</td>
+</tr>
+<tr>
+<td>P6-16</td>
+<td>6-9.4.5, 6-10.4.7</td>
+<td>Test environment differences</td>
+<td>difference between host and target (compiler, word sizes, start-up, interrupts) analysed, extra target tests derived</td>
+<td>6-25, 6-32</td>
+<td>author</td>
+<td><code>doc/safety/verification-plan.md</code></td>
+<td>SYS-67, SYS-168</td>
+<td>partial</td>
+</tr>
+<tr>
+<td>P6-17</td>
+<td>6-10.4.1 … 6-10.4.4</td>
+<td>Software integration and its verification</td>
+<td>integration steps and what is verified at each; test cases derived; requirement coverage at architectural level</td>
+<td>6-26, 6-27, 6-28, 6-29</td>
+<td>author</td>
+<td><code>doc/safety/verification-plan.md</code>, <code>doc/safety/traceability.md</code></td>
+<td>SYS-67, SYS-166, SYS-167, SYS-201</td>
+<td>partial</td>
+</tr>
+<tr>
+<td>P6-18</td>
+<td>6-10.4.5</td>
+<td>Structural coverage at the architectural level</td>
+<td>function and call coverage measured (recommended at B)</td>
+<td>6-30</td>
+<td>coordinator</td>
+<td><code>tools/test/coverage.py</code></td>
+<td>TOOL-58</td>
+<td>planned</td>
+</tr>
+<tr>
+<td>P6-19</td>
+<td>6-10.4.6</td>
+<td>Only specified functions in the released software</td>
+<td>a product build without test and fault-injection commands, checked in the image</td>
+<td>6-31</td>
+<td>author</td>
+<td><code>ecu/consoleCommands</code>, <code>tools/elfcheck</code></td>
+<td>SYS-74, SYS-119</td>
+<td>done</td>
+</tr>
+<tr>
+<td>P6-20</td>
+<td>6-11.4.1 … 6-11.4.4</td>
+<td>Testing of the embedded software</td>
+<td>requirement-based target tests per SSR with operational use cases, repeatable and archived, evaluated against the configuration range</td>
+<td>6-33, 6-34, 6-35, 6-36</td>
+<td>author</td>
+<td><code>tools/boardtest</code>, <code>doc/safety/verification-plan.md</code>, <code>doc/safety/config-range.md</code></td>
+<td>SYS-75, SYS-67, SYS-167, SYS-92, T-10</td>
+<td>partial</td>
+</tr>
+<tr>
+<td>P6-21</td>
+<td>6-C.4.1 … 6-C.4.5</td>
+<td>Configuration data</td>
+<td>valid values, units and dependencies specified; safety relevance and ASIL marked; verification route for the integrator's data set stated</td>
+<td>6-37, 6-38, 6-39</td>
+<td>author</td>
+<td><code>doc/reference/project.md</code>, <code>tools/nxconfig/checks.py</code>, <code>doc/safety/safety-manual.md</code>, <code>doc/safety/config-range.md</code></td>
+<td>DOC-19, SYS-92</td>
+<td>done</td>
+</tr>
+<tr>
+<td>P6-22</td>
+<td>6-C.4.6 … 6-C.4.11</td>
+<td>Calibration data</td>
+<td>calibration data specified, protected (CRC and layout check) and plausibility-checked</td>
+<td>6-40</td>
+<td>author</td>
+<td><code>tools/calseg</code>, <code>tools/a2lgen</code></td>
+<td>SYS-90, SYS-76</td>
+<td>done</td>
+</tr>
+<tr>
+<td>P8-01</td>
+<td>8-5</td>
+<td>Development interface agreement</td>
+<td>not used</td>
+<td>8-01</td>
+<td>project manager</td>
+<td>—</td>
+<td>T-05</td>
+<td>tailored</td>
+</tr>
+<tr>
+<td>P8-02</td>
+<td>8-6.4.1, 8-6.4.2, 8-6.4.3.1, 8-6.4.3.2</td>
+<td>Specification and management of safety requirements</td>
+<td>requirements identifiable, with ASIL, allocation, quality characteristics, hierarchy and trace to design and verification</td>
+<td>8-02, 8-03, 8-04, 8-05, 8-06, 8-07, 8-08, 8-09</td>
+<td>safety manager</td>
+<td><code>doc/requirements/safety/ssr.sdoc</code>, <code>doc/safety/traceability.md</code></td>
+<td>SYS-72, DOC-21, DOC-43, SYS-100</td>
+<td>partial</td>
+</tr>
+<tr>
+<td>P8-03</td>
+<td>8-6.4.3.3, 8-6.4.3.4</td>
+<td>Verification of the safety requirements</td>
+<td>inspection with record; requirements under configuration management</td>
+<td>8-10, 8-11</td>
+<td>safety manager</td>
+<td><code>doc/requirements/safety/ssr.sdoc</code>, <code>doc/safety/reviews</code></td>
+<td>SYS-72, SYS-63, SYS-120</td>
+<td>partial</td>
+</tr>
+<tr>
+<td>P8-04</td>
+<td>8-7</td>
+<td>Configuration management</td>
+<td>CM planned; configuration items and baselines defined; reproducibility of every release</td>
+<td>8-12, 8-13, 8-14</td>
+<td>coordinator</td>
+<td><code>doc/safety/cm-plan.md</code></td>
+<td>SYS-68, SYS-94, SYS-67, TOOL-210, TOOL-211, TOOL-212</td>
+<td>partial</td>
+</tr>
+<tr>
+<td>P8-05</td>
+<td>8-8</td>
+<td>Change management</td>
+<td>change requests with ID, base configuration and a safety impact analysis; decision by authorised role; confirmation reviews updated when safety is affected</td>
+<td>8-15, 8-16, 8-17, 8-18, 8-19</td>
+<td>coordinator</td>
+<td><code>doc/todo.yaml</code>, <code>tools/todo/todoplan.py</code></td>
+<td>TOOL-57, SYS-122</td>
+<td>partial</td>
+</tr>
+<tr>
+<td>P8-06</td>
+<td>8-9</td>
+<td>Verification</td>
+<td>verification planned per phase, specified, executed and evaluated with environment and tool versions, archived per baseline</td>
+<td>8-20, 8-21, 8-22, 8-23</td>
+<td>coordinator</td>
+<td><code>doc/safety/verification-plan.md</code>, <code>tools/test/tests.yaml</code>, <code>tools/ci/pipeline.toml</code></td>
+<td>SYS-67, SYS-166, SYS-167, TOOL-209</td>
+<td>partial</td>
+</tr>
+<tr>
+<td>P8-07</td>
+<td>8-10</td>
+<td>Documentation management</td>
+<td>every safety document with title, author, approver, version, change history and status</td>
+<td>8-24</td>
+<td>coordinator</td>
+<td><code>doc/safety/anomaly-register.md</code></td>
+<td>SYS-77, DOC-21, SYS-94</td>
+<td>done</td>
+</tr>
+<tr>
+<td>P8-08</td>
+<td>8-11</td>
+<td>Confidence in the use of software tools</td>
+<td>use cases classified, TCL derived, qualification where needed</td>
+<td>8-25</td>
+<td>safety manager</td>
+<td><code>doc/safety/tool-classification.md</code></td>
+<td>PLAT-83, SYS-88</td>
+<td>partial</td>
+</tr>
+<tr>
+<td>P8-09</td>
+<td>8-12</td>
+<td>Qualification of software components</td>
+<td>qualification plan and reports for unchanged pre-existing components; modified copies handled as own development</td>
+<td>8-26, 8-27</td>
+<td>safety manager</td>
+<td><code>doc/safety/component-qualification.md</code></td>
+<td>SYS-62, SYS-109, SYS-121, SYS-124</td>
+<td>in progress</td>
+</tr>
+<tr>
+<td>P8-10</td>
+<td>8-13</td>
+<td>Evaluation of hardware elements</td>
+<td>not performed by the element</td>
+<td>8-28</td>
+<td>integrator</td>
+<td>—</td>
+<td>T-06</td>
+<td>tailored</td>
+</tr>
+<tr>
+<td>P8-11</td>
+<td>8-14</td>
+<td>Proven in use argument</td>
+<td>not used</td>
+<td>8-29</td>
+<td>safety manager</td>
+<td>—</td>
+<td>T-07</td>
+<td>tailored</td>
+</tr>
+<tr>
+<td>P9-01</td>
+<td>9-5</td>
+<td>ASIL decomposition</td>
+<td>not used at stage 1</td>
+<td>9-01</td>
+<td>safety manager</td>
+<td>—</td>
+<td>T-08</td>
+<td>tailored</td>
+</tr>
+<tr>
+<td>P9-02</td>
+<td>9-6</td>
+<td>Criteria for coexistence</td>
+<td>each QM module argued free from interference or raised to ASIL B</td>
+<td>9-02</td>
+<td>safety manager</td>
+<td><code>doc/safety/coexistence.md</code></td>
+<td>SYS-61, SYS-21</td>
+<td>partial</td>
+</tr>
+<tr>
+<td>P9-03</td>
+<td>9-7</td>
+<td>Dependent failure analysis</td>
+<td>potential dependent failures identified from the topics of 9-7, evaluated, measures and rationale, verified</td>
+<td>9-03, 9-04, 9-05</td>
+<td>author</td>
+<td><code>doc/safety/dfa.md</code></td>
+<td>SYS-70, SYS-95, SYS-195</td>
+<td>in progress</td>
+</tr>
+<tr>
+<td>P9-04</td>
+<td>9-8</td>
+<td>Safety analyses</td>
+<td>inductive and deductive analyses to a defined method and objective, results verified</td>
+<td>9-06, 9-07, 9-08, 9-09, 9-10, 9-11</td>
+<td>author</td>
+<td><code>doc/safety/fmea.md</code></td>
+<td>SYS-71, SYS-63, SYS-118</td>
+<td>partial</td>
+</tr>
+</tbody>
+</table>
+<!-- plan-activities:end -->
+
+<p>Remarks on the status column:</p>
+<ul>
+<li><strong>P2-06 done</strong>: the roles are written down here and the user confirmed them on 2026-09-28 (<code>q-sys92-rollen</code>, N4
+  carried out by SYS-92).</li>
+<li><strong>P2-16 done</strong>: the release procedure (section 6) is fixed by iso-q3 and worked out in <code>cm-plan.md</code> (SYS-68, SYS-111
+  for the signature check, SYS-67 for the bound and archived report); the open tool work of a release (archives,
+  reproduction, asset workflow) is carried by P8-04.</li>
+<li><strong>Issue 2 (SYS-182, CR-01-1 F-06)</strong> re-checked every row against <code>doc/todo.yaml</code> and the tree at <code>dev</code> 3405bf72:
+  the proposals N1 … N10 are replaced by the tasks that carry them (section 8); P2-02, P2-12, P2-16, P6-19, P6-21 and
+  P8-07 are <code>done</code> because their tasks are done and their work products exist; P6-06, P6-11, P6-16, P8-03 and P2-15
+  moved from <code>planned</code> to <code>partial</code> because their work products exist in part (coexistence argument, inspection record
+  of the architecture in <code>sw-architecture.md</code> section 9, host/target analysis HT-1 … HT-9 of <code>verification-plan.md</code>,
+  inspection INS-SSR-01 in <code>ssr.sdoc</code>, package and checklist of the audit CM-11); rows whose tasks were all booked
+  done name the open tasks that carry the rest (for example the verification plan's gaps T-VP1 … T-VP7: SYS-166,
+  SYS-167, TOOL-209 … TOOL-212, SYS-168). P6-12 names the unit design <code>unit-design.md</code> of SYS-92; its remaining units
+  (proposal U1 of that document) are the new proposal N11.</li>
+<li>The objective of the tailored rows is kept as the objective of the integrator; the consequence column of section 3
+  says how it reaches him.</li>
+</ul>
+<hr />
+<h2 id="5-confirmation-measures">5. Confirmation measures<a class="headerlink" href="#5-confirmation-measures" title="Permanent link">&para;</a></h2>
+<p>2-6.4.9 and 2-6.4.10 require confirmation reviews of the key work products, and for ASIL B a set of them by a person
+other than the author (independence I1). The standard's list is restated in our words: the safety plan, the safety
+analyses and dependent failure analysis, the integration and test strategy, and the safety case need I1 at ASIL B;
+the safety validation specification is item level and handed over by T-01. The rest below is planned at I1 as a
+<strong>project choice</strong>, because the whole argument leans on those documents.</p>
+<p>"Reviewer" is a role of section 2. SYS-63 prepared the procedure, the record template and the review packages.
+<em>Since 2026-09-30 (AN-093, T-11):</em> the user performs the measures himself for now (task SYS-118, CM-03 including
+AN-074 and AN-075). The column "Independence" keeps what is <strong>required</strong>; a measure performed by the user reaches
+<code>performed</code> or <code>closed</code> with a record, but <strong>without independence</strong> — it does not meet R5 and gives no working state
+an ASIL statement until an independent person has reviewed it.</p>
+<!-- plan-confirmation:start -->
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Measure</th>
+<th>Work product</th>
+<th>Independence</th>
+<th>Reviewer</th>
+<th>When</th>
+<th>Task</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CM-01</td>
+<td>Confirmation review of the safety plan</td>
+<td><code>doc/safety/safety-plan.md</code></td>
+<td>I1 required at B</td>
+<td>confirmation reviewer</td>
+<td>before the first release claiming ASIL B capability, and after every new issue of the plan</td>
+<td>SYS-63, SYS-118</td>
+<td>closed</td>
+</tr>
+<tr>
+<td>CM-02</td>
+<td>Confirmation review of the safety analyses</td>
+<td><code>doc/safety/fmea.md</code>, <code>doc/safety/architecture-safety-analysis.md</code></td>
+<td>I1 required at B</td>
+<td>confirmation reviewer</td>
+<td>after SYS-71; before the first release</td>
+<td>SYS-63</td>
+<td>closed</td>
+</tr>
+<tr>
+<td>CM-03</td>
+<td>Confirmation review of the dependent failure analysis</td>
+<td><code>doc/safety/dfa.md</code></td>
+<td>I1 required at B</td>
+<td>confirmation reviewer</td>
+<td>after SYS-70; before the first release</td>
+<td>SYS-63</td>
+<td>prepared</td>
+</tr>
+<tr>
+<td>CM-04</td>
+<td>Confirmation review of the integration and test strategy</td>
+<td><code>doc/safety/verification-plan.md</code></td>
+<td>I1 required at B</td>
+<td>confirmation reviewer</td>
+<td>after SYS-67; before the first release</td>
+<td>SYS-63, SYS-67</td>
+<td>closed</td>
+</tr>
+<tr>
+<td>CM-05</td>
+<td>Confirmation review of the safety case</td>
+<td><code>doc/safety/safety-case.md</code></td>
+<td>I1 required at B</td>
+<td>confirmation reviewer</td>
+<td>per release, after SYS-64</td>
+<td>SYS-63</td>
+<td>closed</td>
+</tr>
+<tr>
+<td>CM-06</td>
+<td>Review of the release decision against the preconditions of section 6</td>
+<td><code>doc/safety/cm-plan.md</code></td>
+<td>I1 by project choice</td>
+<td>confirmation reviewer</td>
+<td>per release</td>
+<td>SYS-63, SYS-68</td>
+<td>performed</td>
+</tr>
+<tr>
+<td>CM-07</td>
+<td>Review of the safety concept and the safety requirements</td>
+<td><code>doc/safety/concept.md</code>, <code>doc/requirements/safety/goals.sdoc</code>, <code>doc/requirements/safety/assumptions.sdoc</code>, <code>doc/requirements/safety/mechanisms.sdoc</code>, <code>doc/requirements/safety/ssr.sdoc</code></td>
+<td>I1 by project choice</td>
+<td>confirmation reviewer</td>
+<td>after SYS-72; before the first release</td>
+<td>SYS-63</td>
+<td>closed</td>
+</tr>
+<tr>
+<td>CM-08</td>
+<td>Review of the tool classification and qualification</td>
+<td><code>doc/safety/tool-classification.md</code></td>
+<td>I1 by project choice</td>
+<td>confirmation reviewer</td>
+<td>after PLAT-83; before the first release</td>
+<td>SYS-63</td>
+<td>prepared</td>
+</tr>
+<tr>
+<td>CM-09</td>
+<td>Review of the component qualification and coexistence argument</td>
+<td><code>doc/safety/component-qualification.md</code>, <code>doc/safety/coexistence.md</code></td>
+<td>I1 by project choice</td>
+<td>confirmation reviewer</td>
+<td>after SYS-61 and SYS-62</td>
+<td>SYS-63</td>
+<td>prepared</td>
+</tr>
+<tr>
+<td>CM-10</td>
+<td>Review of the safety manual</td>
+<td><code>doc/safety/safety-manual.md</code></td>
+<td>I1 by project choice</td>
+<td>confirmation reviewer</td>
+<td>after DOC-19; before the first release</td>
+<td>SYS-63, DOC-19</td>
+<td>closed</td>
+</tr>
+<tr>
+<td>CM-11</td>
+<td>Functional safety audit of the process against this plan</td>
+<td><code>doc/safety/reviews</code></td>
+<td>I1 by project choice (recommended at B)</td>
+<td>confirmation reviewer</td>
+<td>once before the first release claiming ASIL B capability</td>
+<td>SYS-63, SYS-118</td>
+<td>prepared</td>
+</tr>
+</tbody>
+</table>
+<!-- plan-confirmation:end -->
+
+<p>"Prepared" means: the review package of <code>doc/safety/reviews/packages.md</code> exists (procedure, record template and
+checklists by SYS-63). A measure is <code>performed</code> when its record under <code>doc/safety/reviews/records</code> carries a
+verdict, and <code>closed</code> when the record's verdict is <code>accepted</code> and every finding is closed (checked against the
+records by the test since issue 2). SYS-118 performs all eleven, for now by the user himself (T-11).
+The functional safety assessment is not in the list (T-09).</p>
+<p><strong>Deviation for release R1 (decision of the safety responsible, 2026-10-03, task DOC-46).</strong> R1 is a <strong>development
+release without a safety claim</strong> (D-01; R5 is not met). Before R1 the measures <strong>CM-10, CM-05, CM-06, CM-04, CM-07 and
+CM-02</strong> are performed. The measures <strong>CM-03, CM-08, CM-09 and CM-11 are performed after R1</strong>; for R1 this is a
+documented deviation from the "before the first release" timing of the table (their rows keep the planned timing and
+the status <code>prepared</code>). Reasons:</p>
+<table>
+<thead>
+<tr>
+<th>Measure</th>
+<th>Reason for performing it after R1</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CM-03</td>
+<td>The anomaly AN-074 (completeness of the DFA topic list against part 9 clause 7 and its informative annex) is open and part of this measure (task SYS-118); it needs a reader of the licensed standard. The findings DFA-1 ... DFA-6 are implemented by SYS-95 (carried into <code>dev</code> for R1, task in review), so the review can take the DFA as it stands, but it is not done before R1</td>
+</tr>
+<tr>
+<td>CM-08</td>
+<td>The qualification reports of the tools with TCL 2 do not exist yet (PLAT-83, open; K08-05 of the checklist waits for them; D-11, precondition R4)</td>
+</tr>
+<tr>
+<td>CM-09</td>
+<td>The FreeRTOS qualification package and the kernel internals of the async layer (SYS-124, AN-057) are open, and <code>component-qualification.md</code> is not yet released by the safety responsible (issue pending)</td>
+</tr>
+<tr>
+<td>CM-11</td>
+<td>By its definition the audit takes place once, before the first release claiming ASIL B capability, and after the records of CM-01 ... CM-10 exist; R1 claims none, and CM-03, CM-08 and CM-09 have no record yet</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Condition that lifts the deviation</strong> (issue 3, SYS-207; decision of the safety responsible of 2026-10-08 on the
+safety escalation of the public <code>v1.0.0-rc2</code>, E1 b; confirmed in the delta re-check of CM-01 on 2026-10-08, C1): CM-03,
+CM-08, CM-09 and CM-11
+are performed (record with verdict, see above) <strong>before the first release with an ASIL B claim.</strong> Until then the
+deviation holds for Release R1 and every later development release: such a release may be distributed privately or
+publicly, but only as a <strong>development release without a safety claim</strong> (D-01, R5 not met); a public release alone
+neither needs the four measures nor lifts the deviation. Every recipient, of a private distribution as well as of
+the public repository, receives the statement "development release – no safety claim" together with the safety
+manual. <strong>Where the recipient finds it</strong> (decision of the safety responsible in the delta re-check of CM-01,
+2026-10-08, C2): the statement stands, clearly visible and with a reference to the safety manual, in the <code>README.md</code>
+of the repository and in every release note (<code>doc/release-notes/</code>); both are binding parts of every distribution,
+private or public, as long as the deviation holds. The deviation is entered in the safety case as deficit D-22.</p>
+<p><strong>Re-check of CM-01 for issue 3: performed 2026-10-08.</strong> Issue 3 changes a deviation of this plan, so CM-01 was
+repeated as a delta review of this paragraph (<code>reviews/README.md</code> section 4, rule "New issue" of section 7), by the
+user under D-01, without independence, recorded as a delta run in <code>reviews/records/CR-01-1.md</code>: C1 the condition
+restates the decision E1 b correctly; C2 the statement "development release – no safety claim" is fixed in the
+<code>README.md</code> and in every release note (the sentence above); C3 issue 3 released. No finding; the record keeps the
+verdict <code>accepted</code>, and the row CM-01 stays <code>closed</code>.</p>
+<p><strong>Performed so far</strong> (all by the user under deviation D-01, without independence — no ASIL statement, R5 not met):</p>
+<table>
+<thead>
+<tr>
+<th>Measure</th>
+<th>Record</th>
+<th>Date</th>
+<th>Baseline</th>
+<th>Verdict</th>
+<th>Findings</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CM-01</td>
+<td><code>reviews/records/CR-01-1.md</code> (not published, available on request)</td>
+<td>2026-10-02</td>
+<td><code>dev</code> at <code>abc4ea78</code></td>
+<td>accepted (first verdict <code>accepted with conditions</code>; re-check 2026-10-02 at <code>dev</code> 620e7d44; delta re-check of issue 3 on 2026-10-08, C1 … C3: issue 3 released)</td>
+<td>8 minor (AN-122 … AN-129), corrected in issue 2 by SYS-182, all <code>closed</code>; the delta re-check raised none and fixed the statement "no safety claim" in <code>README.md</code> and the release notes (C2)</td>
+</tr>
+<tr>
+<td>CM-10</td>
+<td><code>reviews/records/CR-10-1.md</code> (not published, available on request)</td>
+<td>2026-10-04</td>
+<td><code>dev</code> at <code>3297a920</code></td>
+<td>accepted (first verdict <code>accepted with conditions</code>; re-check 2026-10-04: F-01 and F-03 closed, issue 2 released; re-check 2 2026-10-04 at <code>dev</code> 2c065567: F-04 and F-05 closed, the updates DOC-51 … DOC-59 accepted as issue 2; re-check 3 2026-10-08: F-02 closed, update DOC-50 accepted)</td>
+<td>5 minor (AN-133 … AN-135, AN-143, AN-175): F-01 and F-03 corrected in safety manual issue 2 by DOC-49, F-04 by DOC-53, F-05 by DOC-58, F-02 by DOC-50 (clause reference and neXtBSW's rating E1 … E3 instead of the typical classes, also in gap section 3), all five <code>closed</code>; SM-21/SM-22 carry the class <code>medium</code> of <code>fmea.md</code> issue 2 (C7)</td>
+</tr>
+<tr>
+<td>CM-07</td>
+<td><code>reviews/records/CR-07-1.md</code> (not published, available on request)</td>
+<td>2026-10-04</td>
+<td><code>dev</code> at <code>5cc50658</code></td>
+<td>accepted (first verdict <code>accepted with conditions</code>; re-check 2026-10-04 at <code>dev</code> 898dbcd1)</td>
+<td>7 minor (AN-136 … AN-142), corrected in concept issue 3 and its catalogue by DOC-51, all <code>closed</code>; C6, C10, C17 of the gap analysis with DOC-52 after R1; the <code>fmea.md</code> re-rating M7 and the stale places of AN-012/AN-015 with CM-02 (DOC-55); new minor points against the safety manual (RN) with DOC-58</td>
+</tr>
+<tr>
+<td>CM-04</td>
+<td><code>reviews/records/CR-04-1.md</code> (not published, available on request)</td>
+<td>2026-10-04</td>
+<td><code>dev</code> at <code>aaa22c86</code></td>
+<td>accepted (first verdict <code>accepted with conditions</code>; re-check 2026-10-04 at <code>dev</code> efc474ea)</td>
+<td>9 minor (AN-144 … AN-152), corrected in verification plan issue 2 by DOC-54, all <code>closed</code>; VP-10 open until before the first safety release, T-VP8 and the new minor point RN (AN-176) with TOOL-228; the requirements of Release R1 (strict, slow, bound release CI, pre-flight, SYS-167 list, board run on the tagged image) in its section 9.1</td>
+</tr>
+<tr>
+<td>CM-02</td>
+<td><code>reviews/records/CR-02-1.md</code> (not published, available on request)</td>
+<td>2026-10-04</td>
+<td><code>dev</code> at <code>aaa22c86</code></td>
+<td>accepted (first verdict <code>accepted with conditions</code>; re-check 2026-10-04 at <code>dev</code> efc474ea)</td>
+<td>11 minor (AN-153 … AN-163), corrected in <code>fmea.md</code> issue 2 and the architecture safety analysis issue 2 by DOC-55, all <code>closed</code>; upkeep (RN) with DOC-60, B16 and the LVD reset with SYS-198 after R1; the findings ASA-1 … ASA-12 registered (AN-164 … AN-174, ASA-3 = AN-130); M2 and the open ASA findings with DOC-56 after R1; delta update of <code>fmea.md</code> issue 2 (section 1.3: a clause reference instead of the usual figures for the classes) accepted in the re-check of 2026-10-08 (C8)</td>
+</tr>
+<tr>
+<td>CM-05</td>
+<td><code>reviews/records/CR-05-1.md</code> (not published, available on request)</td>
+<td>2026-10-04</td>
+<td><code>dev</code> at <code>2c065567</code> (the candidate state of Release R1, decision Z1 a)</td>
+<td>accepted (first verdict <code>accepted with conditions</code>; re-check 2026-10-04 at <code>dev</code> 9cd81236)</td>
+<td>9 minor (AN-178 … AN-186), corrected in safety case issue 2 by DOC-79 before the tag, all <code>closed</code>; the increment row of Release R1 is filled at the tag (CM-06 checks); AN-097 … AN-099 closed, AN-101 confirmed; AN-100 open until the board run (D-15); new minor points (RN) with DOC-80 and DOC-61, D-01 "see 3.1" with DOC-81 after R1</td>
+</tr>
+<tr>
+<td>CM-06</td>
+<td><code>reviews/records/CR-06-1.md</code> (not published, available on request)</td>
+<td>2026-10-05</td>
+<td><code>v1.0.0-rc1</code> (<code>80962d9f</code>, the release decision of Release R1)</td>
+<td>accepted with conditions (R1 released with conditions as development release without a safety claim; GO1 and GO2 given)</td>
+<td>4 minor (AN-187 … AN-190), the conditions after the tag: tag and binding of the CI report (done, F-01), rest run on the tagged image (SYS-167, done 2026-10-05, green), manual board cases and BT-S1-01 on the tagged image (SYS-200, SYS-201), documentation after the tag (DOC-84, DOC-61); AN-085 and AN-086 closed, AN-088 and AN-091 confirmed; AN-100 closed with VP-6 (b)</td>
+</tr>
+</tbody>
+</table>
+<p>Verification reviews that are <strong>not</strong> confirmation measures — code inspection of the safety units (SYS-69),
+inspection of the requirements (SYS-72) and of the architecture (SYS-65) — are planned in section 4 (P6-04, P6-11,
+P6-14, P8-03). They should also be done by someone other than the author (8-9.4.3.2); an agent reviewing another
+agent's work counts for them, but not for the confirmation reviews.</p>
+<hr />
+<h2 id="6-release">6. Release<a class="headerlink" href="#6-release" title="Permanent link">&para;</a></h2>
+<p>The user decided on 2026-09-22 (iso-q3): <em>"Freigabe = annotierter Tag vX.Y.Z auf master, vorher gruener CI-Lauf mit
+archiviertem Bericht, Sicherheitsdokumente mit Verweis auf den Tag, Qualifizierungsberichte, abgeschlossene
+Reviews."</em> This section turns the decision into the preconditions of 2-6.4.13 for the element. The details of tag
+naming, signing and configuration items are SYS-68's (<code>cm-plan.md</code>).</p>
+<!-- plan-release:start -->
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Precondition before tagging <code>vX.Y.Z</code> on <code>master</code></th>
+<th>Evidence</th>
+<th>Task</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>R1</td>
+<td>The release commit is on <code>master</code>, merged from <code>dev</code> with the user's approval (CLAUDE.md), and gets an <strong>annotated tag <code>vX.Y.Z</code></strong></td>
+<td>the tag and its message</td>
+<td>SYS-68</td>
+</tr>
+<tr>
+<td>R2</td>
+<td>A <strong>green CI run</strong> on the tree that is tagged (same tree hash, clean, strict), its report bound to that tree and archived with the tool versions</td>
+<td>archived CI report</td>
+<td>SYS-67</td>
+</tr>
+<tr>
+<td>R3</td>
+<td>Every safety document of this plan <strong>cites the tag</strong> instead of loose commits (gap finding SG7)</td>
+<td>document headers</td>
+<td>SYS-68</td>
+</tr>
+<tr>
+<td>R4</td>
+<td>The <strong>qualification reports</strong> of the tools (TCL 2) and of the pre-existing components are available for that version</td>
+<td>qualification reports</td>
+<td>PLAT-83, SYS-62, SYS-121</td>
+</tr>
+<tr>
+<td>R5</td>
+<td>The <strong>confirmation reviews</strong> of section 5 and the <strong>verification inspections</strong> (code inspection of the safety units, SYS-69; inspections of section 4) are performed and closed for that version, the confirmation reviews at I1 — a record under deviation T-11 (D-01) does not count</td>
+<td>review and inspection records</td>
+<td>SYS-118, SYS-69, SYS-120</td>
+</tr>
+<tr>
+<td>R6</td>
+<td>The <strong>safety case</strong> and the <strong>safety manual</strong> are issued for that version</td>
+<td><code>safety-case.md</code>, <code>safety-manual.md</code></td>
+<td>SYS-64, DOC-19</td>
+</tr>
+</tbody>
+</table>
+<!-- plan-release:end -->
+
+<p><strong>R and P are one list (issue 2, CR-01-1 F-07).</strong> <code>cm-plan.md</code> section 5.1 states the same preconditions as P1 … P9,
+with how each is checked; a safety release needs all of them. The mapping:</p>
+<!-- plan-release-map:start -->
+<table>
+<thead>
+<tr>
+<th>cm-plan</th>
+<th>Safety plan</th>
+<th>Note</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P1</td>
+<td>R1</td>
+<td>candidate complete on <code>dev</code>, <code>VERSION</code> and changelog section</td>
+</tr>
+<tr>
+<td>P2</td>
+<td>R2</td>
+<td>green CI run on the tagged tree, report bound and archived</td>
+</tr>
+<tr>
+<td>P3</td>
+<td>R1</td>
+<td>repository integrity before the tag</td>
+</tr>
+<tr>
+<td>P4</td>
+<td>R3</td>
+<td>state lines <code>Baseline: vX.Y.Z</code></td>
+</tr>
+<tr>
+<td>P5</td>
+<td>R4</td>
+<td>qualification reports</td>
+</tr>
+<tr>
+<td>P6</td>
+<td>R5</td>
+<td>confirmation reviews at I1 and inspections closed</td>
+</tr>
+<tr>
+<td>P7</td>
+<td>R1</td>
+<td>the user's approval of merge and tag</td>
+</tr>
+<tr>
+<td>P8</td>
+<td>—</td>
+<td>export of a release line (<code>tools/distcheck</code>); a configuration-management precondition without a safety counterpart</td>
+</tr>
+<tr>
+<td>P9</td>
+<td>R6</td>
+<td>safety case and safety manual of the release — binding through R6 since issue 1 of this plan</td>
+</tr>
+</tbody>
+</table>
+<!-- plan-release-map:end -->
+
+<p>A tag that does not meet R1–R6 is a <strong>development release</strong> (the term of <code>cm-plan.md</code> 4.2 and of the tag message): it
+may be tagged for reproducibility (SYS-68) but carries no safety claim, and its tag message says so. As long as no
+independent confirmation reviewer is named (R5, T-11), <strong>every</strong> tag is a development release. Releases of the
+open-source branch and of licensed branches (PLAT-46) follow the same rule per branch.</p>
+<hr />
+<h2 id="7-maintaining-the-plan">7. Maintaining the plan<a class="headerlink" href="#7-maintaining-the-plan" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Owner:</strong> the safety manager. <strong>Kept up to date by:</strong> the coordinator.</li>
+<li><strong>Updates of the current issue:</strong> when a task named in section 4 or 5 changes its status to <code>done</code>, the coordinator
+  sets the row's status in the same merge; when a new safety task is created, the coordinator adds it to the row it
+  serves; when a proposal of section 8 becomes a task, the rows name the task instead of the proposal. Each update
+  gets a line in the change history (section 12).</li>
+<li><strong>New issue</strong> (rule sharpened in issue 2 after CR-01-1 F-08): the plan gets a new issue when its argument changes —
+  the claim, a role, a tailoring or deviation of section 3, a confirmation measure, a release precondition — and then
+  CM-01 is repeated for the change (delta review, <code>reviews/README.md</code> section 4). Issue 1 missed this twice: the
+  deviation T-11 came as an update, and the release v0.2.0 carried the plan unchecked as issue 1.</li>
+<li><strong>At a release:</strong> the plan is re-checked against the candidate and its state line becomes <code>Baseline: vX.Y.Z</code> (R3,
+  <code>cm-plan.md</code> P4); if the plan was changed since its last confirmation review, the release is a development release
+  or CM-01 is repeated first. Between releases the state line is <code>Working state: dev at &lt;commit&gt; (after vX.Y.Z)</code>
+  (<code>cm-plan.md</code> 6.1).</li>
+<li><strong>Checked by:</strong> <code>doc/safety/test/test_safety_plan.py</code>. The test fails when a named task disappears from
+  <code>doc/todo.yaml</code>, when a task is <code>done</code> although its work product is still missing, when a <code>done</code> row names a
+  missing work product, or when a gap row of parts 2, 6, 8, 9 is no longer served; since issue 2 also when the plan
+  <strong>lags behind</strong>: a row still names a proposal whose task is done (or a carried proposal at all), a row is <code>planned</code>
+  although one of its tasks has started and its work products exist, a measure of section 5 is <code>prepared</code> although
+  a record with a verdict exists (or <code>performed</code>/<code>closed</code> without one), or the mapping R ↔ P of section 6 misses a
+  precondition of <code>cm-plan.md</code> 5.1. A red test is the signal to update this plan, not to relax the test.</li>
+<li><strong>Change impact:</strong> TOOL-57 added the optional field <code>safety_impact</code> to the tasks; until it is filled for the tasks
+  that change the safety part (SYS-122, N9), the coordinator decides per merge whether a change affects a work product
+  of this plan (8-8.4.3).</li>
+</ul>
+<hr />
+<h2 id="8-tasks-proposed-by-this-plan">8. Tasks proposed by this plan<a class="headerlink" href="#8-tasks-proposed-by-this-plan" title="Permanent link">&para;</a></h2>
+<p>For the coordinator to carry into <code>doc/todo.yaml</code> (IDs are assigned there). A proposal that no task carries yet
+(column "Task" <code>—</code>) is referenced from section 4 as <code>N&lt;n&gt;</code>; once a task carries it, the column names the task and the
+rows of sections 4 to 6 name the task instead of the proposal (checked). The rows stay as the history of where the
+work came from.</p>
+<!-- plan-proposals:start -->
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Title</th>
+<th>Done when</th>
+<th>Prio</th>
+<th>Task</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>N1</td>
+<td>Interplay of functional safety and cybersecurity</td>
+<td><code>doc/safety/security-interplay.md</code> lists every interface that can change code, configuration or calibration in the field (bootloader update over CAN, UDS write services, XCP) with its effect on the safety argument, the protection that exists, and an assumption of use for what the integrator must add; referenced from the safety manual</td>
+<td>P2</td>
+<td>SYS-92</td>
+</tr>
+<tr>
+<td>N2</td>
+<td>Unit design of the safety units that have no design document</td>
+<td>a design description, consistent with architecture and HSI, exists for the watchdog handling (<code>SafeWatchdog</code> and its service), the hard-fault handler and the safety task; the list of safety units (PLAT-91) and the design documents agree, checked by a test</td>
+<td>P2</td>
+<td>SYS-92</td>
+</tr>
+<tr>
+<td>N3</td>
+<td>Argument over the admissible configuration range</td>
+<td>for every configuration value the stage-1 mechanisms depend on, the range verified by the project (generator tests with own profiles, build profiles) and the verification the integrator owes for his data set (6-C.4.5); result in the safety manual</td>
+<td>P2</td>
+<td>SYS-92</td>
+</tr>
+<tr>
+<td>N4</td>
+<td>Confirmation of the roles on the decision board</td>
+<td>the user confirms (or changes) the appointment of project manager and safety manager of section 2 on the decision board, and the entry is referenced from section 2</td>
+<td>P1</td>
+<td>SYS-92</td>
+</tr>
+<tr>
+<td>N5</td>
+<td>Perform the confirmation measures of section 5 once the reviewer is named (iso-q1)</td>
+<td>the confirmation measures CM-01 … CM-11 are performed by the named reviewer with the packages and the record template of SYS-63 (<code>doc/safety/reviews</code>), each with a record under <code>doc/safety/reviews/records</code> that carries a verdict; the closures of the anomaly register that the reviewed work products contain are confirmed in the record (anomaly register section 2.3). SYS-63 prepared them and is done; performing them is SYS-118, for now by the user himself (T-11)</td>
+<td>P1</td>
+<td>SYS-118</td>
+</tr>
+<tr>
+<td>N6</td>
+<td>Verification inspections of the SSR, the HSI and the architecture with record</td>
+<td>the inspections of section 4 that are not confirmation measures — SSR and HSI (P6-04), architecture (P6-11), safety requirements (P8-03) — are performed by someone other than the author (section 5: an agent reviewing another agent's work counts) and recorded with the template of <code>doc/safety/reviews</code>; SYS-72 and SYS-65 wrote the work products, SYS-63 the template, all three are done</td>
+<td>P2</td>
+<td>SYS-120</td>
+</tr>
+<tr>
+<td>N7</td>
+<td>Assess the service console commands for the product image</td>
+<td>every console command that stays in the product image after SYS-74 (the service commands SYS-74 left open: <code>sbc</code>/<code>gd</code> register writes, <code>out</code>/<code>pwm set</code>, <code>can send</code>, <code>kl30b on</code>, <code>nvm write</code>, <code>dem clear</code>/<code>dem cycle</code>) is either left out of the product build like the test commands or argued as a specified function, checked in the image by <code>tools/elfcheck product</code>; same work as coexistence finding CX-9 (N-CX4)</td>
+<td>P2</td>
+<td>SYS-119</td>
+</tr>
+<tr>
+<td>N8</td>
+<td>Qualification reports of the remaining pre-existing components</td>
+<td>the reports QR-02 ff. in the order of <code>component-qualification.md</code> section 4.2 (without FreeRTOS, which is postponed by q-sys62-qualifizierung); SYS-62 wrote the plan and QR-01 and is done, SYS-106 and SYS-109 carry parts of QR-03 and QR-01 only</td>
+<td>P2</td>
+<td>SYS-121</td>
+</tr>
+<tr>
+<td>N9</td>
+<td>Use of the safety-impact field of TOOL-57</td>
+<td>TOOL-57 added the optional field <code>safety_impact</code> to <code>doc/todo.yaml</code> and its check in <code>tools/todo/todoplan.py</code>, without filling it for any task; the coordinator records it for the tasks that change the safety part (the candidates are named in the TOOL-57 changelog entry), and the confirmation measures affected by a change are named in its <code>reverify</code> list</td>
+<td>P3</td>
+<td>SYS-122</td>
+</tr>
+<tr>
+<td>N10</td>
+<td>Rest of the resource estimate of the safety part</td>
+<td>the two parts <code>sw-architecture.md</code> section 6 and inspection I8 name as open are estimated: the CAN bus load (no estimate so far) and a measured worst-case execution time of the safety cycle (today analysed and checked only indirectly through the period check); SYS-65 wrote the estimate and SYS-97 bounded the interrupt stack, both are done</td>
+<td>P2</td>
+<td>DOC-41</td>
+</tr>
+<tr>
+<td>N11</td>
+<td>Unit design of the remaining safety units</td>
+<td>proposal U1 of <code>doc/safety/unit-design.md</code> section 7: every row of its unit register with status <code>partial</code> or <code>missing</code> is <code>described</code> (supervisor reaction logic, device report box, <code>SafeIo</code>/<code>SafeState</code>/register list, <code>MemoryProtection</code>, <code>IntegrityEccHandler</code>, <code>SafeMemory</code>, <code>LpitDeadmanCheck</code>, the ADC console, the rest of <code>main</code>) in the module's <code>doc/</code> or in <code>unit-design.md</code>; <code>test_unit_design.py</code> stays green. Added by issue 2 (SYS-182) because P6-12 had no open task for the rest</td>
+<td>P2</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<!-- plan-proposals:end -->
+
+<hr />
+<h2 id="9-open-points">9. Open points<a class="headerlink" href="#9-open-points" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Open point</th>
+<th>Owner</th>
+<th>Consequence until resolved</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>O1</td>
+<td>Who performs the confirmation reviews (iso-q1)? <em>Answered for now 2026-09-30 (AN-093): the user himself, without independence (T-11); an independent person is still open</em></td>
+<td>project manager</td>
+<td>the measures are performed without independence (SYS-118; first CR-01-1, 2026-10-02); every tag stays a development release without an ASIL statement until an independent person has reviewed it</td>
+</tr>
+<tr>
+<td>O2</td>
+<td>FreeRTOS route (iso-q5). <em>Closed: decided 2026-09-22 (<code>rtos-u1-anfrage</code>, AN-094) — stay on FreeRTOS and qualify it</em></td>
+<td>project manager</td>
+<td>none any more: P6-07 and P8-09 are <code>in progress</code> (SYS-62 done, qualification package SYS-124, reports SYS-121); the partitioning element is argued with SYS-21 (P6-06)</td>
+</tr>
+<tr>
+<td>O3</td>
+<td>The concept does not yet point to this plan (gap proposal C16)</td>
+<td>coordinator</td>
+<td>DOC-21 is done without it; carried by SYS-100 (touches <code>concept.md</code>) — AN-095</td>
+</tr>
+<tr>
+<td>O4</td>
+<td>Formal document elements (author, approver, status) are missing on the safety documents, this one included. <em>Issue 2: this plan carries them in its header; the document register (<code>anomaly-register.md</code> section 6, accepted 2026-10-02) carries them for every safety document</em></td>
+<td>coordinator</td>
+<td>AN-096 in review; the headers of the other documents follow their next issue</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="10-review-questions-of-the-architecture-section-11">10. Review questions of the architecture (section 11)<a class="headerlink" href="#10-review-questions-of-the-architecture-section-11" title="Permanent link">&para;</a></h2>
+<p>This task changes no code, no generator, no configuration and nothing under <code>platforms/</code>: one document and one
+consistency test. <strong>Board without an SBC, different crystal, derivative, CAN buses, task set:</strong> the plan contains no
+board fact; the one derivative-specific work product (<code>hsi-s32k1xx.md</code>, SYS-66) is named per family, and further
+families get their own HSI work product through the same row. <strong>New values in one configuration level:</strong> none.
+<strong>Host test with its own test profile:</strong> <code>test_safety_plan.py</code> checks the plan against the repository and against
+deliberately broken copies of itself; it needs no board profile. <strong>Qt-free core, YAML paths:</strong> not affected.
+<strong>Device-driver granularity, platform rule:</strong> not applicable. <em>Issue 2 (SYS-182)</em> changes the same document and its
+test only; the answers stand.</p>
+<h2 id="11-sources">11. Sources<a class="headerlink" href="#11-sources" title="Permanent link">&para;</a></h2>
+<ul>
+<li>ISO 26262:2018 parts 2, 6, 8, 9 and 10, cited by part and clause only, through the reading in
+  <code>iso26262-gap.md</code> (not published, available on request) (SYS-58); the standard itself is not in the repository.</li>
+<li>Decision of the safety responsible 2026-09-30 on AN-093 (confirmation measures by the user himself, T-11).</li>
+<li>Decisions of the user on the decision board, 2026-09-22: iso-q1 (reviewer later), iso-q2 (claim), iso-q3
+  (release), iso-q4 (coexistence), iso-q5 (FreeRTOS later), iso-q6 (single exit for safety units); 2026-09-22
+  <code>rtos-u1-anfrage</code> (FreeRTOS route); 2026-09-28 <code>q-sys92-rollen</code> (roles confirmed).</li>
+<li>Issue 1: repository at <code>ae92e89</code>: <code>doc/safety/{concept,fmea,iso26262-gap,tool-classification,static-analysis,rtos-comparison,traceability}.md</code>,
+  <code>doc/requirements/safety/ssr.sdoc</code>, <code>doc/todo.yaml</code> (tasks SYS-58 … SYS-90, DOC-19, DOC-21, DOC-22, PLAT-83, PLAT-91,
+  TOOL-40, TOOL-57, TOOL-58), <code>CLAUDE.md</code>, <code>CONTRIBUTING.md</code>.</li>
+<li>Issue 2: confirmation review record <code>doc/safety/reviews/records/CR-01-1.md</code> (findings F-01 … F-08); repository at
+  <code>dev</code> 3405bf72: <code>doc/todo.yaml</code>, <code>doc/safety/{cm-plan,verification-plan,unit-design,config-range,security-interplay,coexistence,safety-manual,anomaly-register}.md</code>.</li>
+</ul>
+<hr />
+<h2 id="12-change-history">12. Change history<a class="headerlink" href="#12-change-history" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Issue</th>
+<th>Date</th>
+<th>Task</th>
+<th>Change</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>2026-09-28</td>
+<td>SYS-60</td>
+<td>first issue against <code>dev</code> <code>ae92e89</code>: claim, roles, tailoring T-01 … T-10, 53 activities, CM-01 … CM-11, release R1 … R6, proposals N1 … N4</td>
+</tr>
+<tr>
+<td>1 (update)</td>
+<td>2026-09-28</td>
+<td>SYS-61</td>
+<td>coexistence result in section 3 (21 of 36 modules ASIL B), P9-02 <code>partial</code></td>
+</tr>
+<tr>
+<td>1 (update)</td>
+<td>2026-09-28</td>
+<td>SYS-92</td>
+<td>proposals N1 … N4 carried out in their own documents; paragraph "Confirmation of the appointment (N4)" in section 2</td>
+</tr>
+<tr>
+<td>1 (update)</td>
+<td>2026-09-28</td>
+<td>SYS-94</td>
+<td>state line <code>Working state: dev at 6f868b5 (after v0.1.0)</code> (cm-plan 6)</td>
+</tr>
+<tr>
+<td>1 (update)</td>
+<td>2026-09-29</td>
+<td>WAVE-1001</td>
+<td>statuses after the cloud waves (P2-03, P2-12 … P2-14 and others), role "confirmation reviewer" points to <code>reviews/README.md</code></td>
+</tr>
+<tr>
+<td>1 (update)</td>
+<td>2026-09-29</td>
+<td>DOC-35</td>
+<td>proposals N5 … N9 after SYS-62, SYS-63, SYS-74 and TOOL-57 were booked done with parts open; P2-08 and others</td>
+</tr>
+<tr>
+<td>1 (update)</td>
+<td>2026-09-30</td>
+<td>DOC-38</td>
+<td>decision on AN-093: confirmation measures by the user himself, tailoring T-11; claim, roles, section 5, O1; P6-22 <code>done</code></td>
+</tr>
+<tr>
+<td>1 (update)</td>
+<td>2026-10-01</td>
+<td>SAFETYDOC-1001</td>
+<td>proposal N10 (rest of the resource estimate); P2-10, P6-05 statuses</td>
+</tr>
+<tr>
+<td>1 (update)</td>
+<td>2026-10-01</td>
+<td>REL-020</td>
+<td>release candidate v0.2.0: state line <code>Baseline: v0.2.0</code> (cm-plan 5.2 step 1); the plan was carried unchecked</td>
+</tr>
+<tr>
+<td>1 (update)</td>
+<td>2026-10-01</td>
+<td>DOC-21</td>
+<td>requirements in <code>doc/requirements/safety/ssr.sdoc</code> instead of <code>doc/safety/requirements.yaml</code> (P6-02, P8-02, CM-07, sources)</td>
+</tr>
+<tr>
+<td>1 (update)</td>
+<td>2026-10-02</td>
+<td>SAFETYDOC-1002</td>
+<td>P2-10 and P6-01 <code>done</code>, status counts</td>
+</tr>
+<tr>
+<td>1 (update)</td>
+<td>2026-10-02</td>
+<td>SYS-118</td>
+<td>CM-01 <code>performed</code> (record CR-01-1, the user under D-01, accepted with conditions, findings AN-122 … AN-129)</td>
+</tr>
+<tr>
+<td>2</td>
+<td>2026-10-02</td>
+<td>SYS-182</td>
+<td>findings F-01 … F-08 of CR-01-1: formal elements and this history in the header, state line <code>Working state: dev at 3405bf72 (after v0.2.0)</code> (F-01, F-02); FreeRTOS route and O2 closed per AN-094 (F-03); roles confirmed 2026-09-28 (F-04); T-11 marked as deviation with the condition that lifts it, T-01 consequence (F-05); every activity re-checked against <code>doc/todo.yaml</code> — proposals replaced by their tasks, statuses raised, new proposal N11 (F-06, G-03); R ↔ P mapping with <code>cm-plan.md</code> 5.1, R2 and R5 aligned, term "development release" (F-07); maintenance rule (new issue when the argument changes) and the test that reports a lagging plan (F-08)</td>
+</tr>
+<tr>
+<td>2 (accepted)</td>
+<td>2026-10-02</td>
+<td>CM01-CLOSE</td>
+<td>re-check of CM-01 by the user (D-01, without independence) at <code>dev</code> 620e7d44: F-01 … F-08 closed, AN-094 confirmed, issue 2 released; record verdict <code>accepted</code>; CM-01 <code>closed</code> (section 5; no independence, R5 not met, no ASIL statement); header approver and status</td>
+</tr>
+<tr>
+<td>2 (update)</td>
+<td>2026-10-03</td>
+<td>DOC-46</td>
+<td>deviation for release R1 (decision of the safety responsible 2026-10-03): CM-10, CM-05, CM-06, CM-04, CM-07, CM-02 before R1; CM-03, CM-08, CM-09, CM-11 after R1 with reasons and the condition that lifts it (section 5); R1 is a development release without a safety claim</td>
+</tr>
+<tr>
+<td>2 (update)</td>
+<td>2026-10-04</td>
+<td>DOC-49</td>
+<td>CM-10 <code>performed</code> (record CR-10-1, the user under D-01, <code>accepted with conditions</code>, findings AN-133 … AN-135; safety manual issue 2); row CM-07 names all five work products of the package (concept and the four <code>.sdoc</code> files of DOC-21)</td>
+</tr>
+<tr>
+<td>2 (update)</td>
+<td>2026-10-04</td>
+<td>DOC-51</td>
+<td>CM-07 <code>performed</code> (record CR-07-1, the user under D-01, baseline <code>dev</code> at 5cc50658, <code>accepted with conditions</code>, findings AN-136 … AN-142 corrected in concept issue 3 and its catalogue; <code>closed</code> after the re-check of F-01 … F-07)</td>
+</tr>
+<tr>
+<td>2 (update)</td>
+<td>2026-10-04</td>
+<td>DOC-54</td>
+<td>CM-04 <code>performed</code> (record CR-04-1, the user under D-01, baseline <code>dev</code> at aaa22c86, <code>accepted with conditions</code>, findings AN-144 … AN-152 corrected in verification plan issue 2; <code>closed</code> after the re-check of F-01 … F-09)</td>
+</tr>
+<tr>
+<td>2 (update)</td>
+<td>2026-10-04</td>
+<td>DOC-55</td>
+<td>CM-02 <code>performed</code> (record CR-02-1, the user under D-01, baseline <code>dev</code> at aaa22c86, <code>accepted with conditions</code>, findings AN-153 … AN-163 corrected in <code>fmea.md</code> issue 2 and the architecture safety analysis issue 2; <code>closed</code> after the re-check of F-01 … F-11)</td>
+</tr>
+<tr>
+<td>2 (update)</td>
+<td>2026-10-04</td>
+<td>DOC-57</td>
+<td>CM-07 <code>closed</code>: re-check by the user (D-01, without independence) at <code>dev</code> 898dbcd1, F-01 … F-07 closed, record verdict <code>accepted</code>, concept issue 3 and its catalogue released (section 5; no independence, R5 not met, no ASIL statement)</td>
+</tr>
+<tr>
+<td>2 (update)</td>
+<td>2026-10-04</td>
+<td>DOC-59</td>
+<td>CM-04 and CM-02 <code>closed</code>: re-checks by the user (D-01, without independence) at <code>dev</code> efc474ea, F-01 … F-09 (CR-04-1) and F-01 … F-11 (CR-02-1) closed, record verdicts <code>accepted</code>, verification plan issue 2 and <code>fmea.md</code>/architecture safety analysis issue 2 released (section 5; no independence, R5 not met, no ASIL statement)</td>
+</tr>
+<tr>
+<td>2 (update)</td>
+<td>2026-10-04</td>
+<td>DOC-79</td>
+<td>CM-10 stays <code>performed</code>: re-check 2 by the user (D-01, without independence) at <code>dev</code> 2c065567, F-04 and F-05 closed (AN-143, AN-175), the updates of safety manual issue 2 accepted; record verdict <code>accepted with conditions</code> only because of F-02 (DOC-50, before the first public release) (section 5)</td>
+</tr>
+<tr>
+<td>2 (update)</td>
+<td>2026-10-04</td>
+<td>DOC-79</td>
+<td>CM-05 <code>performed</code> (record CR-05-1, the user under D-01, baseline <code>dev</code> at 2c065567 as the candidate of Release R1, <code>accepted with conditions</code>, findings AN-178 … AN-186 corrected in safety case issue 2; <code>closed</code> after the re-check of F-01 … F-09)</td>
+</tr>
+<tr>
+<td>2 (update)</td>
+<td>2026-10-04</td>
+<td>DOC-80</td>
+<td>CM-05 <code>closed</code>: re-check by the user (D-01, without independence) at <code>dev</code> 9cd81236, F-01 … F-09 closed, record verdict <code>accepted</code>, safety case issue 2 released (section 5; no independence, R5 not met, no ASIL statement)</td>
+</tr>
+<tr>
+<td>2 (update)</td>
+<td>2026-10-05</td>
+<td>DOC-84</td>
+<td>CM-06 <code>performed</code> (record CR-06-1, the user under D-01, baseline <code>v1.0.0-rc1</code>, <code>accepted with conditions</code>, findings AN-187 … AN-190 = the conditions after the tag; R1 released with conditions as development release without a safety claim) (section 5; no independence, R5 not met, no ASIL statement)</td>
+</tr>
+<tr>
+<td>3</td>
+<td>2026-10-08</td>
+<td>SYS-207</td>
+<td>deviation for release R1 restated after the decision of the safety responsible of 2026-10-08 (safety escalation of the public <code>v1.0.0-rc2</code>, E1 b): the condition that lifts it no longer names the first public release - CM-03, CM-08, CM-09 and CM-11 stay bound to the first release with an ASIL B claim, a public development release without a safety claim is allowed, every recipient keeps receiving the statement "no safety claim" with the safety manual (section 5); issue 2 read "before the first public release or the first release with an ASIL B claim, whichever comes first". Header (issue, author, approver, status <code>in review</code>), state line <code>Working state: dev at 9bf2d520 (after v1.0.0-rc1)</code>; the re-check of CM-01 (delta review) is open, the record CR-01-1 is not changed</td>
+</tr>
+<tr>
+<td>3 (accepted)</td>
+<td>2026-10-08</td>
+<td>SYS-209</td>
+<td>delta re-check of CM-01 by the user (D-01, without independence; record <code>reviews/records/CR-01-1.md</code>, delta run, re-check page of 2026-10-08): C1 the condition restates E1 b correctly, C2 the statement "development release – no safety claim" binding in <code>README.md</code> and every release note (sentence added in section 5), C3 issue 3 released; header approver and status, state line <code>Working state: dev at c0928380 (after v1.0.0-rc1)</code>; CM-01 stays <code>closed</code>. Re-check 3 of CM-10 (record CR-10-1, C4 … C7): F-02 closed, verdict <code>accepted</code>, CM-10 <code>closed</code>; row CM-02 of "Performed so far" with the delta update of <code>fmea.md</code> 1.3 (C8) (section 5; no independence, R5 not met, no ASIL statement)</td>
+</tr>
+</tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../anomaly-register/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Anomalie-Register">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Anomalie-Register
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../verification-plan/" class="md-footer__link md-footer__link--next" aria-label="Next: neXtBSW verification plan and archived reports per baseline (SYS-67)">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                neXtBSW verification plan and archived reports per baseline (SYS-67)
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright 2026 Daniel Simon Reinhardt-Probul - Apache-2.0
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../..", "features": ["navigation.sections", "navigation.indexes", "navigation.top", "navigation.footer", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

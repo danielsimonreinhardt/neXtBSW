@@ -1,0 +1,7854 @@
+
+<!doctype html>
+<html lang="de" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Hardware-neutral, configurable basic software for 32-bit automotive MCUs, built on Eclipse OpenBSW">
+      
+      
+      
+      
+        <link rel="prev" href="../rte/">
+      
+      
+        <link rel="next" href="../console/">
+      
+      
+        
+          <link rel="alternate" href="./" hreflang="de">
+        
+          <link rel="alternate" href="../../../en/doc/reference/diag/" hreflang="en">
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Diag - neXtBSW</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#diagnostic-description-diagyaml" class="md-skip">
+          Zum Inhalt
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Kopfzeile">
+    <a href="../../.." title="neXtBSW" class="md-header__button md-logo" aria-label="neXtBSW" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            neXtBSW
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Diag
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="indigo"  aria-label="Dunkel"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Dunkel" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="indigo"  aria-label="Hell"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Hell" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Sprache wechseln">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="de" class="md-select__link">
+              Deutsch
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../../../en/doc/reference/diag/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Suche" placeholder="Suche" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Suche">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Zurücksetzen" aria-label="Zurücksetzen" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Suche wird initialisiert
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="neXtBSW" class="md-nav__button md-logo" aria-label="neXtBSW" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    neXtBSW
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Start
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Wegweiser
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../guide/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Integrator
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Integrator
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Erste Schritte
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/host-durchlauf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Host-Durchlauf ohne Hardware
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/your-first-board/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Das erste Board
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/the-application/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Die Anwendung
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/build-and-flash/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bauen und Flashen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/customer-project/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Eigenes ECU-Repository
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/new-derivative/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Neues Derivat
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/board-readme-template/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vorlage Board-README
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_10" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Konfigurationsreferenz
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3_10" id="__nav_3_10_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_10_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Konfigurationsreferenz
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../derivative/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Derivative
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../board/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Board
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../project/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../rte/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rte
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diag
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diag
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Inhaltsverzeichnis">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Inhaltsverzeichnis
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#contents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Contents
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#diagnostic-description-file-projectsdiagyaml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Diagnostic description file projects/&lt;project&gt;/diag.yaml
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Diagnostic description file projects/&lt;project&gt;/diag.yaml">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#top-level" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        (top level)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sessions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        sessions[]
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#security" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        security[]
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#operation_cycles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        operation_cycles[]
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#enable_conditions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        enable_conditions[]
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data_identifiers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        data_identifiers[]
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data_identifiersdata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        data_identifiers[].data[]
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data_identifiersdatavalues" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        data_identifiers[].data[].values[]
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data_identifiersdatasource" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        data_identifiers[].data[].source
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#routines" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        routines[]
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#routinesstart" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        routines[].start
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#routinesstartcall" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        routines[].start.call
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#routinesstartrequest" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        routines[].start.request[]
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#routinesstartrequestvalues" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        routines[].start.request[].values[]
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#routinesstartresponse" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        routines[].start.response[]
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#routinesstop" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        routines[].stop
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#routinesresults" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        routines[].results
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fault_memory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        fault_memory
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bsw_dtc_range" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        bsw_dtc_range
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtcs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtcs[]
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtcsevent" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtcs[].event
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtcsdebounce" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtcs[].debounce
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtcsdebouncecounter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtcs[].debounce.counter
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtcsdebouncetime" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtcs[].debounce.time
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtcsaging" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtcs[].aging
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtcssnapshots" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtcs[].snapshots[]
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtcsextended_data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtcs[].extended_data[]
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtcsextended_datadata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtcs[].extended_data[].data[]
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtc_groups" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtc_groups[]
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../console/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Console
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_11" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../projects/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Projekte, Komponenten, Boards
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3_11" id="__nav_3_11_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Projekte, Komponenten, Boards
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../swc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Software-Komponenten
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../swc/DemoSwcSubstitute/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    C-Ersatz der DemoSwc
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../ecu/platforms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Board-Ports
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../boards/buildtest_s32k148/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S32K148 build-test board (S32K148 LQFP176)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_12" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_12" id="__nav_3_12_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release Notes
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_12">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Release Notes
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../release-notes/v1.0.0-rc2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.0.0-rc2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../release-notes/v1.0.0-rc1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.0.0-rc1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../safety/start/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Safety-Assessor
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Safety-Assessor
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../safety/safety-manual/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sicherheitshandbuch
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../safety/concept/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sicherheitskonzept
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../safety/figures/concept-figures/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bilder zum Konzept
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../safety/anomaly-register/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Anomalie-Register
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_6" id="__nav_4_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Arbeitsprodukte
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Arbeitsprodukte
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../safety/safety-plan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW safety plan — software SEooC at ASIL B (SYS-60)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../safety/verification-plan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW verification plan and archived reports per baseline (SYS-67)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../safety/safety-case/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW safety case — software SEooC at ASIL B (SYS-64)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../safety/cm-plan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW configuration management plan and baselines (SYS-68)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../safety/sw-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW — software architectural design specification of the safety part (SYS-65)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../safety/architecture-safety-analysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW software architectural safety analysis beyond the mechanisms (SYS-71)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../safety/fmea/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW failure analysis of the base-software safety mechanisms (stage 1)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../safety/figures/fmea-figures/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fmea figures
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../safety/dfa/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW dependent failure analysis of the stage-1 mechanisms (SYS-70)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../safety/unit-design/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW — software unit design: watchdog handling, fault handlers, safety task (SYS-92, N2)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../safety/coexistence/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW — coexistence of ASIL B and QM software in one image (SYS-61)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../safety/partner-and-degraded/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Partner MCU supervision, degraded reaction and active short circuit — concept
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../safety/config-range/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW — argument over the admissible configuration range (SYS-92, N3)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../safety/hsi-s32k1xx/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW hardware-software interface of the stage-1 safety mechanisms — s32k1xx (SYS-66)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../safety/hardware-mechanisms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hardware safety mechanisms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../safety/security-interplay/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW — interplay of functional safety and cybersecurity (SYS-92, N1)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../safety/static-analysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Static analysis and coding guidelines (PLAT-74)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../safety/tool-classification/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW tool classification and safeguards of the generated code (PLAT-75)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../safety/component-qualification/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW — route per pre-existing component and qualification plan (SYS-62)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../safety/dev-environment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW development environment: languages, guidelines, tools, build and test flow (DOC-22)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../safety/board-test-spec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW board test specification per SSR with operational use cases (SYS-75)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../openbsw-beitraege/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributor
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Contributor
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_1" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../architecture/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architektur
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_1" id="__nav_5_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Architektur
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/openbsw/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Openbsw
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/openbsw-naehe/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Openbsw naehe
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/autosar/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Autosar
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/autosar-standard-set/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Autosar standard set
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/autosar-ecuc-map/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Autosar ecuc map
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/autosar-ecuc-evaluation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Autosar ecuc evaluation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/plattformen/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plattformen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/customer-project/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Customer project
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/versioning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW – Versionierung und Support
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/csec-concept/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CSEc in neXtBSW: keys, message authentication and secure start (SYS-56)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/kalibrierung/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Calibration in neXtBSW: parameters, maps, a versioned calibration database, measurement signals (ARCH-64)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/pin-interrupts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pin interrupts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/signal-qualifier/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Signal qualifiers for received messages (COM-03)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/treiber-granularitaet/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW – granularity of device drivers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/treiber-anbindung-analyse/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW – binding device drivers to the system: analysis of the hand-written integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/openbsw-console-number-arguments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OpenBSW console commands with a number argument - audit (PLAT-110)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_1_19" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_1_19" id="__nav_5_1_19_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Geplant nach R1
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_1_19_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_1_19">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Geplant nach R1
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/planned/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Planned
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/non-cortex-m-audit/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Non cortex m audit
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/rm4x-quellen/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rm4x quellen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/stm32-nucleo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Stm32 nucleo
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../figures/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bilder
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_2" id="__nav_5_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Bilder
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../figures/01-schichten/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    01 schichten
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../figures/02-konfigurationsfluss/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    02 konfigurationsfluss
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../figures/03-startablauf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    03 startablauf
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../figures/04-flash-uds/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    04 flash uds
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../figures/05-ecu-zustaende/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    05 ecu zustaende
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../figures/06-safety-kette/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    06 safety kette
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../figures/07-modulkarte/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    07 modulkarte
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../figures/08-lesepfade/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    08 lesepfade
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../bootloader/doc/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Moduldokumentation
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_3" id="__nav_5_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Moduldokumentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modules
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../bootloader/doc/iso14229-1-clause16-conformance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Conformance with ISO 14229-1 clause 16 (non-volatile server memory programming)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/autosarBase/doc/autosarBase/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AUTOSAR base types (autosarBase)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/canPhyPassive/doc/canPhyPassive/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Passive CAN transceiver (canPhyPassive)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/canSystem/doc/canSystem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CAN system, hardware independent parts (canSystem)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/consoleContext/doc/consoleContext/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Console context (consoleContext)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/dem/doc/dem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    dem – fault memory (simplified AUTOSAR DEM)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/e2e/doc/e2e/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    E2E-Bibliothek (e2e)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/ecuState/doc/ecuState/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ECU-Zustandsverwaltung (ecuState)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/gdTmc6200/doc/gdTmc6200/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Gate-Treiber TMC6200 (gdTmc6200)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/hallDecoder/doc/hallDecoder/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hall decoder (hallDecoder)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/highSideSwitch/doc/highSideSwitch/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Smart high-side switch (highSideSwitch)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/mcuLink/doc/mcuLink/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mcuLink
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/nvm/doc/nvm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NvM core (libs/bsw/nvm)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/nvmDataFlash/doc/nvmDataFlash/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nvmDataFlash - data flash areas (NVM-12)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/sbcUja113x/doc/sbcUja113x/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SBC-Treiber UJA113x (sbcUja113x)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsp/bspAdcAccess/doc/bspAdcAccess/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Serialized ADC access (bspAdcAccess)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsp/bspI2c/doc/bspI2c/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    I2C master contract (bspI2c)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsp/bspPinEdge/doc/bspPinEdge/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pin edge contract (bspPinEdge)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsp/bspPinEvent/doc/bspPinEvent/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    bspPinEvent
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsp/bspSampleGroup/doc/bspSampleGroup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sample group (bspSampleGroup)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsp/bspSpi/doc/bspSpi/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SPI device contract (bspSpi)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/common/clockCheck/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Clock start-up check (PLAT-72)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/common/interruptPriority/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interrupt priorities as ranks (PLAT-10, wired up in PLAT-21, per core profile since ARCH-24)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/s32k1xx/bsp/bspCsec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    bspCsec – CSEc of the S32K1 family
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/s32k1xx/bsp/bspMcu/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    bspMcu (Familie s32k1xx) – Derivat-Header und mcu/mcu.h (PLAT-11)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/s32k1xx/startup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Startup templates per core architecture (PLAT-10)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/s32k1xx/port/safety/safeLifecycle/doc/safeLifecycle/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Safety task, s32k1xx (safeLifecycle)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/s32k1xx/port/safety/safeMemory/doc/safeMemory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Memory safety of the s32k1xx family (safeMemory)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/s32k1xx/port/safety/safeSupervisor/doc/safeSupervisor/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Safe supervisor, project values of the s32k1xx port (safeSupervisor)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/s32k1xx/port/safety/safeSystem/doc/safeSystem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference and supply supervision, s32k1xx (safeSystem)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/s32k1xx/port/bspConfiguration/src/bsp/capture/doc/capture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Input capture, s32k1xx (capture)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/s32k1xx/port/bspConfiguration/src/bsp/hall/doc/hall/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hall sensor set, s32k1xx (hall)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../tools/test/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tests und Werkzeuge
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_4" id="__nav_5_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tests und Werkzeuge
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/docgen/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    docgen - generated reference documentation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/docgen/website/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Doku-Website
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/ci/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/ci – provider-neutral CI (TOOL-03)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/setup – the Python environment of a workspace (TOOL-63)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/distcheck/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    distcheck – distribution check and export of the open tree
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/canflash/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/canflash – application and bootloader over CAN (UDS on ISO-TP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/boardtest/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/boardtest – board measurement scripts with host tests (TOOL-05)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/misra/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/misra – static analysis (PLAT-74)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/trace/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/trace — traceability of the safety requirements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/a2lgen/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    a2lgen - A2L for XCP on CAN (TOOL-01)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/calgen/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    calgen – calibration datasets (stage K2)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/csec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    csec – host side of the CSEc way back to the factory state
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/elfcheck/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    elfcheck – linked images against the derivative map and the core
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/nxupdate/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/schedana/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/schedana – analyse processor load, scheduling and data flow (TOOL-09)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/stackuse/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    stackuse – worst-case stack per execution context
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Beitragen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../SECURITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sicherheitsluecken melden
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../mcudb/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ableitung der Chipdaten (mcudb)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Inhaltsverzeichnis">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Inhaltsverzeichnis
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#contents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Contents
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#diagnostic-description-file-projectsdiagyaml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Diagnostic description file projects/&lt;project&gt;/diag.yaml
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Diagnostic description file projects/&lt;project&gt;/diag.yaml">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#top-level" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        (top level)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sessions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        sessions[]
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#security" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        security[]
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#operation_cycles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        operation_cycles[]
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#enable_conditions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        enable_conditions[]
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data_identifiers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        data_identifiers[]
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data_identifiersdata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        data_identifiers[].data[]
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data_identifiersdatavalues" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        data_identifiers[].data[].values[]
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data_identifiersdatasource" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        data_identifiers[].data[].source
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#routines" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        routines[]
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#routinesstart" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        routines[].start
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#routinesstartcall" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        routines[].start.call
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#routinesstartrequest" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        routines[].start.request[]
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#routinesstartrequestvalues" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        routines[].start.request[].values[]
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#routinesstartresponse" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        routines[].start.response[]
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#routinesstop" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        routines[].stop
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#routinesresults" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        routines[].results
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fault_memory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        fault_memory
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bsw_dtc_range" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        bsw_dtc_range
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtcs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtcs[]
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtcsevent" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtcs[].event
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtcsdebounce" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtcs[].debounce
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtcsdebouncecounter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtcs[].debounce.counter
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtcsdebouncetime" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtcs[].debounce.time
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtcsaging" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtcs[].aging
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtcssnapshots" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtcs[].snapshots[]
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtcsextended_data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtcs[].extended_data[]
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtcsextended_datadata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtcs[].extended_data[].data[]
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtc_groups" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtc_groups[]
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<!-- Generated by tools/docgen from tools/nxconfig/model.py. Do not edit: change the schema and run `.venv/Scripts/python tools/docgen`. -->
+
+<h1 id="diagnostic-description-diagyaml">Diagnostic description (diag.yaml)<a class="headerlink" href="#diagnostic-description-diagyaml" title="Permanent link">&para;</a></h1>
+<p>Data identifiers, routines, sessions, security levels and the diagnostic trouble codes of one ECU software. The file is named by <code>project.diag</code> in <code>project.yaml</code>, checked against its schema and against itself by <code>tools/nxconfig</code> (with file, line and YAML path, before the build) and read by the UDS job generator (COM-28), the fault memory generator (NVM-03) and the ODX/PDX export (TOOL-43). The addresses of the diagnostic connection - CAN identifiers, ISO-TP parameters and the security access of the bootloader - are project values and stand in <code>project.yaml</code>.</p>
+<p>Configuration level: <strong>Project</strong>. File: <code>projects/&lt;project&gt;/diag.yaml</code>. Schema: <code>DiagDescription</code> in <a href="../../../tools/nxconfig/model.py"><code>tools/nxconfig/model.py</code></a>.</p>
+<p>241 fields in 40 objects. 0 fields have no description in the schema and 0 numeric fields have no unit; they are marked <em>missing in schema</em> and <em>missing</em>. How to read the tables: <a href="../">reference overview</a>.</p>
+<h2 id="contents">Contents<a class="headerlink" href="#contents" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="#f-top-level">(top level)</a><ul>
+<li><a href="#f-sessions-list"><code>sessions[]</code></a></li>
+<li><a href="#f-security-list"><code>security[]</code></a></li>
+<li><a href="#f-operation_cycles-list"><code>operation_cycles[]</code></a></li>
+<li><a href="#f-enable_conditions-list"><code>enable_conditions[]</code></a></li>
+<li><a href="#f-data_identifiers-list"><code>data_identifiers[]</code></a><ul>
+<li><a href="#f-data_identifiers-list-data-list"><code>data_identifiers[].data[]</code></a><ul>
+<li><a href="#f-data_identifiers-list-data-list-values-list"><code>data_identifiers[].data[].values[]</code></a></li>
+<li><a href="#f-data_identifiers-list-data-list-source"><code>data_identifiers[].data[].source</code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#f-routines-list"><code>routines[]</code></a><ul>
+<li><a href="#f-routines-list-start"><code>routines[].start</code></a><ul>
+<li><a href="#f-routines-list-start-call"><code>routines[].start.call</code></a></li>
+<li><a href="#f-routines-list-start-request-list"><code>routines[].start.request[]</code></a><ul>
+<li><a href="#f-routines-list-start-request-list-values-list"><code>routines[].start.request[].values[]</code></a></li>
+</ul>
+</li>
+<li><a href="#f-routines-list-start-response-list"><code>routines[].start.response[]</code></a></li>
+</ul>
+</li>
+<li><a href="#f-routines-list-stop"><code>routines[].stop</code></a></li>
+<li><a href="#f-routines-list-results"><code>routines[].results</code></a></li>
+</ul>
+</li>
+<li><a href="#f-fault_memory"><code>fault_memory</code></a></li>
+<li><a href="#f-bsw_dtc_range"><code>bsw_dtc_range</code></a></li>
+<li><a href="#f-dtcs-list"><code>dtcs[]</code></a><ul>
+<li><a href="#f-dtcs-list-event"><code>dtcs[].event</code></a></li>
+<li><a href="#f-dtcs-list-debounce"><code>dtcs[].debounce</code></a><ul>
+<li><a href="#f-dtcs-list-debounce-counter"><code>dtcs[].debounce.counter</code></a></li>
+<li><a href="#f-dtcs-list-debounce-time"><code>dtcs[].debounce.time</code></a></li>
+</ul>
+</li>
+<li><a href="#f-dtcs-list-aging"><code>dtcs[].aging</code></a></li>
+<li><a href="#f-dtcs-list-snapshots-list"><code>dtcs[].snapshots[]</code></a></li>
+<li><a href="#f-dtcs-list-extended_data-list"><code>dtcs[].extended_data[]</code></a><ul>
+<li><a href="#f-dtcs-list-extended_data-list-data-list"><code>dtcs[].extended_data[].data[]</code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#f-dtc_groups-list"><code>dtc_groups[]</code></a></li>
+</ul>
+</li>
+</ul>
+<h2 id="diagnostic-description-file-projectsdiagyaml">Diagnostic description file <code>projects/&lt;project&gt;/diag.yaml</code><a class="headerlink" href="#diagnostic-description-file-projectsdiagyaml" title="Permanent link">&para;</a></h2>
+<p><a id="f-top-level"></a></p>
+<h3 id="top-level">(top level)<a class="headerlink" href="#top-level" title="Permanent link">&para;</a></h3>
+<p>Diagnostic description of a project (<code>projects/&lt;project&gt;/diag.yaml</code>, named by <code>project.diag</code>).</p>
+<p>What one ECU software answers on the diagnostic connection and what its fault memory stores: sessions, security levels, data identifiers, routines, and the DTCs with their events, debouncing, enable conditions, operation cycle, aging, snapshots and extended data. The <em>addresses</em> of the connection (CAN ids, ISO-TP, bootloader security access) are project values and stand in <code>project.yaml diagnostics</code>.</p>
+<p>The file is a description only. The UDS jobs and the fault memory are generated from it (COM-28, NVM-03) and TOOL-43 exports it as ODX/PDX.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Unit</th>
+<th>Required</th>
+<th>Default</th>
+<th>Allowed values</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>schema_version</code></td>
+<td>integer</td>
+<td></td>
+<td>yes</td>
+<td></td>
+<td><code>1</code></td>
+<td>Version of the file format; currently 1.</td>
+</tr>
+<tr>
+<td><code>sessions</code></td>
+<td>list of <a href="#f-sessions-list">object</a></td>
+<td></td>
+<td>no</td>
+<td><code>[]</code></td>
+<td></td>
+<td>Diagnostic sessions of the ECU. Left out: the identifiers and routines name no session and everything is served in every session the UDS stack knows.</td>
+</tr>
+<tr>
+<td><code>security</code></td>
+<td>list of <a href="#f-security-list">object</a></td>
+<td></td>
+<td>no</td>
+<td><code>[]</code></td>
+<td></td>
+<td>Security levels of the application. Left out: none (the security access of the bootloader stands in <code>project.yaml</code>).</td>
+</tr>
+<tr>
+<td><code>operation_cycles</code></td>
+<td>list of <a href="#f-operation_cycles-list">object</a></td>
+<td></td>
+<td>no</td>
+<td><code>[]</code></td>
+<td></td>
+<td>Operation cycles of the fault memory; required as soon as a DTC is described.</td>
+</tr>
+<tr>
+<td><code>enable_conditions</code></td>
+<td>list of <a href="#f-enable_conditions-list">object</a></td>
+<td></td>
+<td>no</td>
+<td><code>[]</code></td>
+<td></td>
+<td>Conditions a DTC can wait on before it updates its status. Left out: none.</td>
+</tr>
+<tr>
+<td><code>data_identifiers</code></td>
+<td>list of <a href="#f-data_identifiers-list">object</a></td>
+<td></td>
+<td>no</td>
+<td><code>[]</code></td>
+<td></td>
+<td>Data identifiers the ECU serves.</td>
+</tr>
+<tr>
+<td><code>routines</code></td>
+<td>list of <a href="#f-routines-list">object</a></td>
+<td></td>
+<td>no</td>
+<td><code>[]</code></td>
+<td></td>
+<td>Routines the ECU serves.</td>
+</tr>
+<tr>
+<td><code>fault_memory</code></td>
+<td><a href="#f-fault_memory">object</a></td>
+<td></td>
+<td>no</td>
+<td><code>null</code></td>
+<td></td>
+<td>Size and behaviour of the fault memory; required as soon as a DTC is described.</td>
+</tr>
+<tr>
+<td><code>bsw_dtc_range</code></td>
+<td><a href="#f-bsw_dtc_range">object</a></td>
+<td></td>
+<td>no</td>
+<td><code>{}</code></td>
+<td></td>
+<td>Block of DTC numbers of the basic software (neXtBSW range). Left out: 0x160000..0x16FFFF.</td>
+</tr>
+<tr>
+<td><code>dtcs</code></td>
+<td>list of <a href="#f-dtcs-list">object</a></td>
+<td></td>
+<td>no</td>
+<td><code>[]</code></td>
+<td></td>
+<td>Diagnostic trouble codes of the fault memory.</td>
+</tr>
+<tr>
+<td><code>dtc_groups</code></td>
+<td>list of <a href="#f-dtc_groups-list">object</a></td>
+<td></td>
+<td>no</td>
+<td><code>[]</code></td>
+<td></td>
+<td>Groups of DTCs the tester can clear with 14 besides all DTCs (0xFFFFFF) and a single DTC (ISO 14229-1, Annex D.1). Left out: none.</td>
+</tr>
+</tbody>
+</table>
+<p><a id="f-sessions-list"></a></p>
+<h3 id="sessions"><code>sessions[]</code><a class="headerlink" href="#sessions" title="Permanent link">&para;</a></h3>
+<p>One diagnostic session of the ECU (DiagnosticSessionControl, 10; ISO 14229-1, clause 9.2).</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Unit</th>
+<th>Required</th>
+<th>Default</th>
+<th>Allowed values</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>sessions[].name</code></td>
+<td>string</td>
+<td></td>
+<td>yes</td>
+<td></td>
+<td>1 to 64 characters, pattern <code>^[A-Za-z][A-Za-z0-9_]*$</code></td>
+<td>Name of the session, unique in the file; identifiers and routines refer to it by this name.</td>
+</tr>
+<tr>
+<td><code>sessions[].id</code></td>
+<td>integer</td>
+<td>none</td>
+<td>yes</td>
+<td></td>
+<td>1 to 126</td>
+<td>Session type of the sub-function. 0x01 default, 0x02 programming, 0x03 extended, 0x04 safety system; 0x40..0x5F are left to the manufacturer and 0x60..0x7E to the system supplier. The ranges ISO 14229-1 reserves are an error.</td>
+</tr>
+<tr>
+<td><code>sessions[].label</code></td>
+<td>string</td>
+<td></td>
+<td>no</td>
+<td><code>null</code></td>
+<td></td>
+<td>Readable name for the tester and for the ODX export (TOOL-43: LONG-NAME). Left out: the export uses <code>name</code>.</td>
+</tr>
+<tr>
+<td><code>sessions[].description</code></td>
+<td>string</td>
+<td></td>
+<td>no</td>
+<td><code>null</code></td>
+<td></td>
+<td>Sentence for the reader and for the ODX export (TOOL-43: DESC).</td>
+</tr>
+<tr>
+<td><code>sessions[].p2_ms</code></td>
+<td>integer</td>
+<td>ms</td>
+<td>no</td>
+<td><code>50</code></td>
+<td>&gt; 0</td>
+<td>P2 of this session: how long the ECU may take to answer before it has to ask the tester to wait.</td>
+</tr>
+<tr>
+<td><code>sessions[].p2_star_ms</code></td>
+<td>integer</td>
+<td>ms</td>
+<td>no</td>
+<td><code>5000</code></td>
+<td>&gt; 0</td>
+<td>P2* of this session: how long the tester waits after the ECU asked it to wait.</td>
+</tr>
+</tbody>
+</table>
+<p><a id="f-security-list"></a></p>
+<h3 id="security"><code>security[]</code><a class="headerlink" href="#security" title="Permanent link">&para;</a></h3>
+<p>One security level of the application (SecurityAccess, 27; ISO 14229-1, clause 9.4).</p>
+<p>The security access of the <em>bootloader</em> is not described here: it is a project value (<code>project.yaml diagnostics.bootloader.security</code>, BL-03), because the tester and the provisioning tool have to agree on it before any application exists.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Unit</th>
+<th>Required</th>
+<th>Default</th>
+<th>Allowed values</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>security[].name</code></td>
+<td>string</td>
+<td></td>
+<td>yes</td>
+<td></td>
+<td>1 to 64 characters, pattern <code>^[A-Za-z][A-Za-z0-9_]*$</code></td>
+<td>Name of the level, unique in the file.</td>
+</tr>
+<tr>
+<td><code>security[].level</code></td>
+<td>integer</td>
+<td>none</td>
+<td>yes</td>
+<td></td>
+<td>1 to 125</td>
+<td>requestSeed sub-function of the level; it has to be odd, the matching sendKey is one higher (ISO 14229-1, clause 9.4).</td>
+</tr>
+<tr>
+<td><code>security[].label</code></td>
+<td>string</td>
+<td></td>
+<td>no</td>
+<td><code>null</code></td>
+<td></td>
+<td>Same as <a href="#f-sessions-list"><code>sessions[].label</code></a>.</td>
+</tr>
+<tr>
+<td><code>security[].description</code></td>
+<td>string</td>
+<td></td>
+<td>no</td>
+<td><code>null</code></td>
+<td></td>
+<td>Sentence for the reader and for the ODX export (TOOL-43: DESC).</td>
+</tr>
+<tr>
+<td><code>security[].method</code></td>
+<td>string</td>
+<td></td>
+<td>no</td>
+<td><code>"hmac-sha256"</code></td>
+<td><code>hmac-sha256</code></td>
+<td>Method of the key calculation. <code>hmac-sha256</code>: the device key of the bootloader's security access (BL-03: HMAC-SHA256 of the project master key and the chip UID, provisioned into the key sector) answers the seed; key = the first <code>key_bytes</code> of HMAC-SHA256(device key, "NXAK" + level + seed). The key is bound to the level, so the key of one level unlocks no other level and not the bootloader. <code>seed_bytes</code> and <code>key_bytes</code> at most 32.</td>
+</tr>
+<tr>
+<td><code>security[].seed_bytes</code></td>
+<td>integer</td>
+<td>byte</td>
+<td>no</td>
+<td><code>4</code></td>
+<td>1 to 255</td>
+<td>Length of the seed the ECU sends.</td>
+</tr>
+<tr>
+<td><code>security[].key_bytes</code></td>
+<td>integer</td>
+<td>byte</td>
+<td>no</td>
+<td><code>4</code></td>
+<td>1 to 255</td>
+<td>Length of the key the tester answers with.</td>
+</tr>
+<tr>
+<td><code>security[].attempts</code></td>
+<td>integer</td>
+<td>none</td>
+<td>no</td>
+<td><code>3</code></td>
+<td>1 to 255</td>
+<td>Wrong keys in a row before the ECU refuses further attempts for <code>delay_ms</code>.</td>
+</tr>
+<tr>
+<td><code>security[].delay_ms</code></td>
+<td>integer</td>
+<td>ms</td>
+<td>no</td>
+<td><code>10000</code></td>
+<td>&gt; 0</td>
+<td>How long the ECU refuses further attempts after <code>attempts</code> wrong keys.</td>
+</tr>
+<tr>
+<td><code>security[].sessions</code></td>
+<td>list of string</td>
+<td></td>
+<td>no</td>
+<td><code>null</code></td>
+<td>item: at least 1 character, pattern <code>^[A-Za-z0-9_]+$</code></td>
+<td>Sessions the level can be unlocked in. Left out: every session of the file except the default session.</td>
+</tr>
+</tbody>
+</table>
+<p><a id="f-operation_cycles-list"></a></p>
+<h3 id="operation_cycles"><code>operation_cycles[]</code><a class="headerlink" href="#operation_cycles" title="Permanent link">&para;</a></h3>
+<p>One operation cycle of the fault memory (ISO 14229-1, D.2.1): what starts and ends a round of testing.</p>
+<p>The status bits of a DTC that speak about "this operation cycle", the confirmation threshold and the aging counter all count in the cycle named here.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Unit</th>
+<th>Required</th>
+<th>Default</th>
+<th>Allowed values</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>operation_cycles[].name</code></td>
+<td>string</td>
+<td></td>
+<td>yes</td>
+<td></td>
+<td>1 to 64 characters, pattern <code>^[A-Za-z][A-Za-z0-9_]*$</code></td>
+<td>Name of the cycle, unique in the file; a DTC refers to it by this name.</td>
+</tr>
+<tr>
+<td><code>operation_cycles[].label</code></td>
+<td>string</td>
+<td></td>
+<td>no</td>
+<td><code>null</code></td>
+<td></td>
+<td>Same as <a href="#f-sessions-list"><code>sessions[].label</code></a>.</td>
+</tr>
+<tr>
+<td><code>operation_cycles[].description</code></td>
+<td>string</td>
+<td></td>
+<td>no</td>
+<td><code>null</code></td>
+<td></td>
+<td>Sentence for the reader and for the ODX export (TOOL-43: DESC).</td>
+</tr>
+<tr>
+<td><code>operation_cycles[].kind</code></td>
+<td>string</td>
+<td></td>
+<td>no</td>
+<td><code>"power"</code></td>
+<td><code>power</code>, <code>ignition</code>, <code>operation</code>, <code>other</code></td>
+<td>What the cycle follows: <code>power</code> (the ECU is supplied), <code>ignition</code> (terminal 15), <code>operation</code> (a manufacturer defined round of operation) or <code>other</code>. The fault memory treats all of them alike; the name is for the reader and the export.</td>
+</tr>
+<tr>
+<td><code>operation_cycles[].autostart</code></td>
+<td>boolean</td>
+<td></td>
+<td>no</td>
+<td><code>true</code></td>
+<td></td>
+<td><code>true</code>: the cycle starts when the ECU starts and ends when it shuts down. <code>false</code>: the application starts and ends it.</td>
+</tr>
+</tbody>
+</table>
+<p><a id="f-enable_conditions-list"></a></p>
+<h3 id="enable_conditions"><code>enable_conditions[]</code><a class="headerlink" href="#enable_conditions" title="Permanent link">&para;</a></h3>
+<p>One condition that has to hold before a DTC may update its status (ISO 14229-1, D.2.1).</p>
+<p>While a condition of a DTC is not fulfilled its monitor result is discarded: the debounce counter keeps its value and no status bit changes.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Unit</th>
+<th>Required</th>
+<th>Default</th>
+<th>Allowed values</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>enable_conditions[].name</code></td>
+<td>string</td>
+<td></td>
+<td>yes</td>
+<td></td>
+<td>1 to 64 characters, pattern <code>^[A-Za-z][A-Za-z0-9_]*$</code></td>
+<td>Name of the condition, unique in the file; a DTC refers to it by this name.</td>
+</tr>
+<tr>
+<td><code>enable_conditions[].label</code></td>
+<td>string</td>
+<td></td>
+<td>no</td>
+<td><code>null</code></td>
+<td></td>
+<td>Same as <a href="#f-sessions-list"><code>sessions[].label</code></a>.</td>
+</tr>
+<tr>
+<td><code>enable_conditions[].description</code></td>
+<td>string</td>
+<td></td>
+<td>no</td>
+<td><code>null</code></td>
+<td></td>
+<td>Sentence for the reader and for the ODX export (TOOL-43: DESC).</td>
+</tr>
+<tr>
+<td><code>enable_conditions[].port</code></td>
+<td>string</td>
+<td></td>
+<td>no</td>
+<td><code>null</code></td>
+<td>at least 1 character, pattern <code>^[A-Za-z][A-Za-z0-9_]*(\.[A-Za-z][A-Za-z0-9_]*){2}$</code></td>
+<td>Provided port element of the ECU description that reports the condition as a boolean, <code>Component.Port.Element</code>. Exactly one of <code>port</code> and <code>bsw</code>.</td>
+</tr>
+<tr>
+<td><code>enable_conditions[].bsw</code></td>
+<td>string</td>
+<td></td>
+<td>no</td>
+<td><code>null</code></td>
+<td>at least 1 character, pattern <code>^[a-z][a-z0-9_]*(\.[A-Za-z0-9_]+)+$</code></td>
+<td>Value of the basic software that reports the condition, e.g. <code>ecu.state</code>. Exactly one of <code>port</code> and <code>bsw</code>.</td>
+</tr>
+<tr>
+<td><code>enable_conditions[].initial</code></td>
+<td>boolean</td>
+<td></td>
+<td>no</td>
+<td><code>false</code></td>
+<td></td>
+<td>State of the condition before the source has reported for the first time. <code>false</code>: no DTC waiting on it updates until then.</td>
+</tr>
+</tbody>
+</table>
+<p><a id="f-data_identifiers-list"></a></p>
+<h3 id="data_identifiers"><code>data_identifiers[]</code><a class="headerlink" href="#data_identifiers" title="Permanent link">&para;</a></h3>
+<p>One data identifier (DID) the ECU serves with 22 (read) and 2E (write).</p>
+<p>The identifier is checked against the ranges of ISO 14229-1 Annex C.1 and against the identifiers the bootloader already answers (diagdesc.py). The length of the response follows from <code>data</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Unit</th>
+<th>Required</th>
+<th>Default</th>
+<th>Allowed values</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>data_identifiers[].identifier</code></td>
+<td>integer</td>
+<td>none</td>
+<td>yes</td>
+<td></td>
+<td>0 to 65535</td>
+<td>16-bit data identifier. Must lie in a range Annex C.1 leaves to the manufacturer or the system supplier, must not be one of the identifiers the bootloader answers, and must not appear twice in this file.</td>
+</tr>
+<tr>
+<td><code>data_identifiers[].name</code></td>
+<td>string</td>
+<td></td>
+<td>yes</td>
+<td></td>
+<td>1 to 64 characters, pattern <code>^[A-Za-z][A-Za-z0-9_]*$</code></td>
+<td>Name of the identifier, unique in the file; snapshots refer to it by this name and the export uses it as the short name.</td>
+</tr>
+<tr>
+<td><code>data_identifiers[].label</code></td>
+<td>string</td>
+<td></td>
+<td>no</td>
+<td><code>null</code></td>
+<td></td>
+<td>Same as <a href="#f-sessions-list"><code>sessions[].label</code></a>.</td>
+</tr>
+<tr>
+<td><code>data_identifiers[].description</code></td>
+<td>string</td>
+<td></td>
+<td>no</td>
+<td><code>null</code></td>
+<td></td>
+<td>Sentence for the reader and for the ODX export (TOOL-43: DESC).</td>
+</tr>
+<tr>
+<td><code>data_identifiers[].group</code></td>
+<td>string</td>
+<td></td>
+<td>no</td>
+<td><code>null</code></td>
+<td>at least 1 character, pattern <code>^[A-Za-z0-9_]+$</code></td>
+<td>Free group name the tester can sort jobs by (TOOL-43: FUNCT-CLASS), e.g. <code>identification</code> or <code>actuator_test</code>. Left out: no group.</td>
+</tr>
+<tr>
+<td><code>data_identifiers[].data</code></td>
+<td>list of <a href="#f-data_identifiers-list-data-list">object</a></td>
+<td></td>
+<td>yes</td>
+<td></td>
+<td>at least 1 item</td>
+<td>The values of the identifier in the order they stand on the wire; the length of the identifier is their total width.</td>
+</tr>
+<tr>
+<td><code>data_identifiers[].read</code></td>
+<td>boolean</td>
+<td></td>
+<td>no</td>
+<td><code>true</code></td>
+<td></td>
+<td><code>true</code>: the identifier answers ReadDataByIdentifier (22).</td>
+</tr>
+<tr>
+<td><code>data_identifiers[].write</code></td>
+<td>boolean</td>
+<td></td>
+<td>no</td>
+<td><code>false</code></td>
+<td></td>
+<td><code>true</code>: the identifier accepts WriteDataByIdentifier (2E). A constant source cannot be written.</td>
+</tr>
+<tr>
+<td><code>data_identifiers[].read_sessions</code></td>
+<td>list of string</td>
+<td></td>
+<td>no</td>
+<td><code>null</code></td>
+<td>item: at least 1 character, pattern <code>^[A-Za-z0-9_]+$</code></td>
+<td>Sessions (<code>sessions[].name</code>) the identifier may be read in. Left out: every session of the file.</td>
+</tr>
+<tr>
+<td><code>data_identifiers[].write_sessions</code></td>
+<td>list of string</td>
+<td></td>
+<td>no</td>
+<td><code>null</code></td>
+<td>item: at least 1 character, pattern <code>^[A-Za-z0-9_]+$</code></td>
+<td>Sessions the identifier may be written in; see <code>read_sessions</code>. Only with <code>write</code>.</td>
+</tr>
+<tr>
+<td><code>data_identifiers[].read_security</code></td>
+<td>string</td>
+<td></td>
+<td>no</td>
+<td><code>null</code></td>
+<td>at least 1 character, pattern <code>^[A-Za-z0-9_]+$</code></td>
+<td>Security level (<code>security[].name</code>) that has to be unlocked for reading. Left out: no security access needed.</td>
+</tr>
+<tr>
+<td><code>data_identifiers[].write_security</code></td>
+<td>string</td>
+<td></td>
+<td>no</td>
+<td><code>null</code></td>
+<td>at least 1 character, pattern <code>^[A-Za-z0-9_]+$</code></td>
+<td>Security level that has to be unlocked for writing; see <code>read_security</code>. Only with <code>write</code>.</td>
+</tr>
+</tbody>
+</table>
+<p><a id="f-data_identifiers-list-data-list"></a></p>
+<h3 id="data_identifiersdata"><code>data_identifiers[].data[]</code><a class="headerlink" href="#data_identifiersdata" title="Permanent link">&para;</a></h3>
+<p>One value inside the data of a data identifier: a parameter plus where its value comes from.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Unit</th>
+<th>Required</th>
+<th>Default</th>
+<th>Allowed values</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>data_identifiers[].data[].name</code></td>
+<td>string</td>
+<td></td>
+<td>yes</td>
+<td></td>
+<td>1 to 64 characters, pattern <code>^[A-Za-z][A-Za-z0-9_]*$</code></td>
+<td>Name of the element, unique within its list; the export uses it as the short name of the parameter.</td>
+</tr>
+<tr>
+<td><code>data_identifiers[].data[].label</code></td>
+<td>string</td>
+<td></td>
+<td>no</td>
+<td><code>null</code></td>
+<td></td>
+<td>Same as <a href="#f-sessions-list"><code>sessions[].label</code></a>.</td>
+</tr>
+<tr>
+<td><code>data_identifiers[].data[].description</code></td>
+<td>string</td>
+<td></td>
+<td>no</td>
+<td><code>null</code></td>
+<td></td>
+<td>Sentence for the reader and for the ODX export (TOOL-43: DESC).</td>
+</tr>
+<tr>
+<td><code>data_identifiers[].data[].type</code></td>
+<td>string</td>
+<td></td>
+<td>yes</td>
+<td></td>
+<td><code>uint8</code>, <code>uint16</code>, <code>uint32</code>, <code>int8</code>, <code>int16</code>, <code>int32</code>, <code>float32</code>, <code>ascii</code>, <code>bytes</code></td>
+<td>Type on the wire: an integer (<code>uint8</code>, <code>uint16</code>, <code>uint32</code>, <code>int8</code>, <code>int16</code>, <code>int32</code>), <code>float32</code>, a text (<code>ascii</code>) or raw bytes (<code>bytes</code>). <code>ascii</code> and <code>bytes</code> need <code>length_bytes</code>, the others take their width from the type.</td>
+</tr>
+<tr>
+<td><code>data_identifiers[].data[].length_bytes</code></td>
+<td>integer</td>
+<td>byte</td>
+<td>no</td>
+<td><code>null</code></td>
+<td>&gt; 0</td>
+<td>Only for <code>ascii</code> and <code>bytes</code>: width of the element on the wire - always exactly this many bytes: a shorter text is filled up with NUL (0x00), a longer one is cut, so that a tester can split a response by the description alone (e.g. several identifiers in one 22 response, COM-33). For every other type the width follows from <code>type</code> and stating it is an error.</td>
+</tr>
+<tr>
+<td><code>data_identifiers[].data[].byte_order</code></td>
+<td>string</td>
+<td></td>
+<td>no</td>
+<td><code>"big"</code></td>
+<td><code>big</code>, <code>little</code></td>
+<td>Byte order of an element wider than one byte. <code>big</code> is the order UDS uses for its own parameters and the default here; <code>little</code> only where the value is passed on unchanged from a little endian source.</td>
+</tr>
+<tr>
+<td><code>data_identifiers[].data[].unit</code></td>
+<td>string</td>
+<td>unit of the described value</td>
+<td>no</td>
+<td><code>null</code></td>
+<td></td>
+<td>Physical unit of the value as it is shown (e.g. <code>mV</code>, <code>degC</code>, <code>1/min</code>); the export uses it as the display name of the unit. Left out: the value has no unit (a count, an index, a text, raw bytes).</td>
+</tr>
+<tr>
+<td><code>data_identifiers[].data[].factor</code></td>
+<td>number</td>
+<td>none</td>
+<td>no</td>
+<td><code>1.0</code></td>
+<td>finite</td>
+<td>Physical value = <code>factor</code> * coded value + <code>offset</code> (the linear conversion of the export). Only for numeric types.</td>
+</tr>
+<tr>
+<td><code>data_identifiers[].data[].offset</code></td>
+<td>number</td>
+<td>none</td>
+<td>no</td>
+<td><code>0.0</code></td>
+<td>finite</td>
+<td>Added after <code>factor</code>; see there. Only for numeric types.</td>
+</tr>
+<tr>
+<td><code>data_identifiers[].data[].min</code></td>
+<td>number</td>
+<td>unit of the described value</td>
+<td>no</td>
+<td><code>null</code></td>
+<td>finite</td>
+<td>Smallest physical value the element takes; the export writes it as the lower limit. Left out: the range of the type.</td>
+</tr>
+<tr>
+<td><code>data_identifiers[].data[].max</code></td>
+<td>number</td>
+<td>unit of the described value</td>
+<td>no</td>
+<td><code>null</code></td>
+<td>finite</td>
+<td>Largest physical value the element takes; see <code>min</code>.</td>
+</tr>
+<tr>
+<td><code>data_identifiers[].data[].values</code></td>
+<td>list of <a href="#f-data_identifiers-list-data-list-values-list">object</a></td>
+<td></td>
+<td>no</td>
+<td><code>null</code></td>
+<td>at least 1 item</td>
+<td>Text table of an integer element: one entry per coded value (the export writes it as a text table conversion). Only for integer types, and not together with <code>factor</code>, <code>offset</code>, <code>min</code> or <code>max</code>; each coded value only once.</td>
+</tr>
+<tr>
+<td><code>data_identifiers[].data[].source</code></td>
+<td><a href="#f-data_identifiers-list-data-list-source">object</a></td>
+<td></td>
+<td>yes</td>
+<td></td>
+<td></td>
+<td>Where this value comes from: an RTE port, a value of the basic software, or a constant. Every value of an identifier has its own source, so an identifier can mix a fixed byte with a live value (e.g. the number of modules of 0xF180 with the version text).</td>
+</tr>
+</tbody>
+</table>
+<p><a id="f-data_identifiers-list-data-list-values-list"></a></p>
+<h3 id="data_identifiersdatavalues"><code>data_identifiers[].data[].values[]</code><a class="headerlink" href="#data_identifiersdatavalues" title="Permanent link">&para;</a></h3>
+<p>One line of a text table: a coded value and what the tester shows for it.</p>
+<p>A list instead of a mapping, because the export writes one entry per line (TOOL-43: COMPU-SCALE with its own text) and because the YAML loader of tools/nxconfig reads every mapping key as a string.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Unit</th>
+<th>Required</th>
+<th>Default</th>
+<th>Allowed values</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>data_identifiers[].data[].values[].value</code></td>
+<td>integer</td>
+<td>none</td>
+<td>yes</td>
+<td></td>
+<td></td>
+<td>Coded value as it stands on the wire.</td>
+</tr>
+<tr>
+<td><code>data_identifiers[].data[].values[].text</code></td>
+<td>string</td>
+<td></td>
+<td>yes</td>
+<td></td>
+<td>1 to 64 characters</td>
+<td>What the tester shows for this value.</td>
+</tr>
+</tbody>
+</table>
+<p><a id="f-data_identifiers-list-data-list-source"></a></p>
+<h3 id="data_identifiersdatasource"><code>data_identifiers[].data[].source</code><a class="headerlink" href="#data_identifiersdatasource" title="Permanent link">&para;</a></h3>
+<p>Where the data of an identifier comes from: exactly one of the three.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Unit</th>
+<th>Required</th>
+<th>Default</th>
+<th>Allowed values</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>data_identifiers[].data[].source.port</code></td>
+<td>string</td>
+<td></td>
+<td>no</td>
+<td><code>null</code></td>
+<td>at least 1 character, pattern <code>^[A-Za-z][A-Za-z0-9_]*(\.[A-Za-z][A-Za-z0-9_]*){2}$</code></td>
+<td>Provided port element of the ECU description, <code>Component.Port.Element</code> (<code>rte.yaml components</code>). The value is read through the RTE.</td>
+</tr>
+<tr>
+<td><code>data_identifiers[].data[].source.bsw</code></td>
+<td>string</td>
+<td></td>
+<td>no</td>
+<td><code>null</code></td>
+<td>at least 1 character, pattern <code>^[a-z][a-z0-9_]*(\.[A-Za-z0-9_]+)+$</code></td>
+<td>Value of the basic software in the notation of the <code>rte.yaml</code> connections, e.g. <code>ecu.state</code> or <code>adc.mv.&lt;CHANNEL&gt;</code>. Which names exist is resolved by the RTE generator, not here.</td>
+</tr>
+<tr>
+<td><code>data_identifiers[].data[].source.constant</code></td>
+<td>integer or string</td>
+<td>unit of the element it fills</td>
+<td>no</td>
+<td><code>null</code></td>
+<td></td>
+<td>Fixed value that does not change at runtime (e.g. a hardware number or the number of modules of 0xF180). A text for <code>ascii</code>, a number for a numeric element; it has to fit the element (checked in diagdesc.py).</td>
+</tr>
+</tbody>
+</table>
+<p><a id="f-routines-list"></a></p>
+<h3 id="routines"><code>routines[]</code><a class="headerlink" href="#routines" title="Permanent link">&para;</a></h3>
+<p>One routine the ECU serves with RoutineControl (31).</p>
+<p>The identifier is checked against the ranges of ISO 14229-1 Annex F.1 and against the routines of the bootloader (diagdesc.py).</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Unit</th>
+<th>Required</th>
+<th>Default</th>
+<th>Allowed values</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>routines[].identifier</code></td>
+<td>integer</td>
+<td>none</td>
+<td>yes</td>
+<td></td>
+<td>0 to 65535</td>
+<td>16-bit routine identifier. Must lie in a range Annex F.1 leaves to the manufacturer or the system supplier and must not appear twice in this file.</td>
+</tr>
+<tr>
+<td><code>routines[].name</code></td>
+<td>string</td>
+<td></td>
+<td>yes</td>
+<td></td>
+<td>1 to 64 characters, pattern <code>^[A-Za-z][A-Za-z0-9_]*$</code></td>
+<td>Name of the routine, unique in the file.</td>
+</tr>
+<tr>
+<td><code>routines[].label</code></td>
+<td>string</td>
+<td></td>
+<td>no</td>
+<td><code>null</code></td>
+<td></td>
+<td>Same as <a href="#f-sessions-list"><code>sessions[].label</code></a>.</td>
+</tr>
+<tr>
+<td><code>routines[].description</code></td>
+<td>string</td>
+<td></td>
+<td>no</td>
+<td><code>null</code></td>
+<td></td>
+<td>Sentence for the reader and for the ODX export (TOOL-43: DESC).</td>
+</tr>
+<tr>
+<td><code>routines[].group</code></td>
+<td>string</td>
+<td></td>
+<td>no</td>
+<td><code>null</code></td>
+<td>at least 1 character, pattern <code>^[A-Za-z0-9_]+$</code></td>
+<td>Same as <a href="#f-data_identifiers-list"><code>data_identifiers[].group</code></a>.</td>
+</tr>
+<tr>
+<td><code>routines[].start</code></td>
+<td><a href="#f-routines-list-start">object</a></td>
+<td></td>
+<td>yes</td>
+<td></td>
+<td></td>
+<td>startRoutine (sub-function 01); every routine has one.</td>
+</tr>
+<tr>
+<td><code>routines[].stop</code></td>
+<td><a href="#f-routines-list-stop">object</a></td>
+<td></td>
+<td>no</td>
+<td><code>null</code></td>
+<td></td>
+<td>stopRoutine (sub-function 02). Left out: the routine cannot be stopped.</td>
+</tr>
+<tr>
+<td><code>routines[].results</code></td>
+<td><a href="#f-routines-list-results">object</a></td>
+<td></td>
+<td>no</td>
+<td><code>null</code></td>
+<td></td>
+<td>requestRoutineResults (sub-function 03). Left out: the routine reports no result of its own.</td>
+</tr>
+<tr>
+<td><code>routines[].sessions</code></td>
+<td>list of string</td>
+<td></td>
+<td>no</td>
+<td><code>null</code></td>
+<td>item: at least 1 character, pattern <code>^[A-Za-z0-9_]+$</code></td>
+<td>Sessions (<code>sessions[].name</code>) the routine may run in. Left out: every session of the file.</td>
+</tr>
+<tr>
+<td><code>routines[].security</code></td>
+<td>string</td>
+<td></td>
+<td>no</td>
+<td><code>null</code></td>
+<td>at least 1 character, pattern <code>^[A-Za-z0-9_]+$</code></td>
+<td>Security level (<code>security[].name</code>) that has to be unlocked. Left out: none.</td>
+</tr>
+</tbody>
+</table>
+<p><a id="f-routines-list-start"></a></p>
+<h3 id="routinesstart"><code>routines[].start</code><a class="headerlink" href="#routinesstart" title="Permanent link">&para;</a></h3>
+<p>One of the three steps of RoutineControl (31): start, stop or requestResults.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Unit</th>
+<th>Required</th>
+<th>Default</th>
+<th>Allowed values</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>routines[].start.call</code></td>
+<td><a href="#f-routines-list-start-call">object</a></td>
+<td></td>
+<td>yes</td>
+<td></td>
+<td></td>
+<td>What the step runs: a runnable of a component or a service of the basic software.</td>
+</tr>
+<tr>
+<td><code>routines[].start.request</code></td>
+<td>list of <a href="#f-routines-list-start-request-list">object</a></td>
+<td></td>
+<td>no</td>
+<td><code>[]</code></td>
+<td></td>
+<td>Parameters the tester sends with this step, in wire order. Left out: none.</td>
+</tr>
+<tr>
+<td><code>routines[].start.response</code></td>
+<td>list of <a href="#f-routines-list-start-response-list">object</a></td>
+<td></td>
+<td>no</td>
+<td><code>[]</code></td>
+<td></td>
+<td>Parameters the ECU answers with, in wire order. Left out: none.</td>
+</tr>
+</tbody>
+</table>
+<p><a id="f-routines-list-start-call"></a></p>
+<h3 id="routinesstartcall"><code>routines[].start.call</code><a class="headerlink" href="#routinesstartcall" title="Permanent link">&para;</a></h3>
+<p>What one step of a routine runs: exactly one of the two.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Unit</th>
+<th>Required</th>
+<th>Default</th>
+<th>Allowed values</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>routines[].start.call.runnable</code></td>
+<td>string</td>
+<td></td>
+<td>no</td>
+<td><code>null</code></td>
+<td>at least 1 character, pattern <code>^[A-Za-z][A-Za-z0-9_]*\.[A-Za-z][A-Za-z0-9_]*$</code></td>
+<td>Runnable of a component of the ECU description, <code>Component.Runnable</code>.</td>
+</tr>
+<tr>
+<td><code>routines[].start.call.bsw</code></td>
+<td>string</td>
+<td></td>
+<td>no</td>
+<td><code>null</code></td>
+<td>at least 1 character, pattern <code>^[a-z][a-z0-9_]*(\.[A-Za-z0-9_]+)+$</code></td>
+<td>Service of the basic software in the notation of the <code>rte.yaml</code> connections, e.g. <code>bsw.reset.request</code>. Which names exist is resolved by the RTE generator, not here.</td>
+</tr>
+</tbody>
+</table>
+<p><a id="f-routines-list-start-request-list"></a></p>
+<h3 id="routinesstartrequest"><code>routines[].start.request[]</code><a class="headerlink" href="#routinesstartrequest" title="Permanent link">&para;</a></h3>
+<p>One value on the wire: a parameter of a routine request or response.</p>
+<p>Everything an ODX export needs to describe the value on the wire and in physical units is here: the coded type (<code>type</code>, <code>length_bytes</code>, <code>byte_order</code>), the conversion to the physical value (<code>factor</code>, <code>offset</code>, <code>unit</code>, or <code>values</code> for a text table) and its range (<code>min</code>, <code>max</code>). The byte position follows from the order of the list, the total length from the parameters - neither is configured.</p>
+<p>The data of an identifier uses <code>DiagDataElement</code>, which adds where the value comes from.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Unit</th>
+<th>Required</th>
+<th>Default</th>
+<th>Allowed values</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>routines[].start.request[].name</code></td>
+<td>string</td>
+<td></td>
+<td>yes</td>
+<td></td>
+<td>1 to 64 characters, pattern <code>^[A-Za-z][A-Za-z0-9_]*$</code></td>
+<td>Same as <a href="#f-data_identifiers-list-data-list"><code>data_identifiers[].data[].name</code></a>.</td>
+</tr>
+<tr>
+<td><code>routines[].start.request[].label</code></td>
+<td>string</td>
+<td></td>
+<td>no</td>
+<td><code>null</code></td>
+<td></td>
+<td>Same as <a href="#f-sessions-list"><code>sessions[].label</code></a>.</td>
+</tr>
+<tr>
+<td><code>routines[].start.request[].description</code></td>
+<td>string</td>
+<td></td>
+<td>no</td>
+<td><code>null</code></td>
+<td></td>
+<td>Sentence for the reader and for the ODX export (TOOL-43: DESC).</td>
+</tr>
+<tr>
+<td><code>routines[].start.request[].type</code></td>
+<td>string</td>
+<td></td>
+<td>yes</td>
+<td></td>
+<td><code>uint8</code>, <code>uint16</code>, <code>uint32</code>, <code>int8</code>, <code>int16</code>, <code>int32</code>, <code>float32</code>, <code>ascii</code>, <code>bytes</code></td>
+<td>Same as <a href="#f-data_identifiers-list-data-list"><code>data_identifiers[].data[].type</code></a>.</td>
+</tr>
+<tr>
+<td><code>routines[].start.request[].length_bytes</code></td>
+<td>integer</td>
+<td>byte</td>
+<td>no</td>
+<td><code>null</code></td>
+<td>&gt; 0</td>
+<td>Same as <a href="#f-data_identifiers-list-data-list"><code>data_identifiers[].data[].length_bytes</code></a>.</td>
+</tr>
+<tr>
+<td><code>routines[].start.request[].byte_order</code></td>
+<td>string</td>
+<td></td>
+<td>no</td>
+<td><code>"big"</code></td>
+<td><code>big</code>, <code>little</code></td>
+<td>Same as <a href="#f-data_identifiers-list-data-list"><code>data_identifiers[].data[].byte_order</code></a>.</td>
+</tr>
+<tr>
+<td><code>routines[].start.request[].unit</code></td>
+<td>string</td>
+<td>unit of the described value</td>
+<td>no</td>
+<td><code>null</code></td>
+<td></td>
+<td>Same as <a href="#f-data_identifiers-list-data-list"><code>data_identifiers[].data[].unit</code></a>.</td>
+</tr>
+<tr>
+<td><code>routines[].start.request[].factor</code></td>
+<td>number</td>
+<td>none</td>
+<td>no</td>
+<td><code>1.0</code></td>
+<td>finite</td>
+<td>Same as <a href="#f-data_identifiers-list-data-list"><code>data_identifiers[].data[].factor</code></a>.</td>
+</tr>
+<tr>
+<td><code>routines[].start.request[].offset</code></td>
+<td>number</td>
+<td>none</td>
+<td>no</td>
+<td><code>0.0</code></td>
+<td>finite</td>
+<td>Added after <code>factor</code>; see there. Only for numeric types.</td>
+</tr>
+<tr>
+<td><code>routines[].start.request[].min</code></td>
+<td>number</td>
+<td>unit of the described value</td>
+<td>no</td>
+<td><code>null</code></td>
+<td>finite</td>
+<td>Same as <a href="#f-data_identifiers-list-data-list"><code>data_identifiers[].data[].min</code></a>.</td>
+</tr>
+<tr>
+<td><code>routines[].start.request[].max</code></td>
+<td>number</td>
+<td>unit of the described value</td>
+<td>no</td>
+<td><code>null</code></td>
+<td>finite</td>
+<td>Largest physical value the element takes; see <code>min</code>.</td>
+</tr>
+<tr>
+<td><code>routines[].start.request[].values</code></td>
+<td>list of <a href="#f-routines-list-start-request-list-values-list">object</a></td>
+<td></td>
+<td>no</td>
+<td><code>null</code></td>
+<td>at least 1 item</td>
+<td>Same as <a href="#f-data_identifiers-list-data-list"><code>data_identifiers[].data[].values</code></a>.</td>
+</tr>
+</tbody>
+</table>
+<p><a id="f-routines-list-start-request-list-values-list"></a></p>
+<h3 id="routinesstartrequestvalues"><code>routines[].start.request[].values[]</code><a class="headerlink" href="#routinesstartrequestvalues" title="Permanent link">&para;</a></h3>
+<p>One line of a text table: a coded value and what the tester shows for it.</p>
+<p>A list instead of a mapping, because the export writes one entry per line (TOOL-43: COMPU-SCALE with its own text) and because the YAML loader of tools/nxconfig reads every mapping key as a string.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Unit</th>
+<th>Required</th>
+<th>Default</th>
+<th>Allowed values</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>routines[].start.request[].values[].value</code></td>
+<td>integer</td>
+<td>none</td>
+<td>yes</td>
+<td></td>
+<td></td>
+<td>Coded value as it stands on the wire.</td>
+</tr>
+<tr>
+<td><code>routines[].start.request[].values[].text</code></td>
+<td>string</td>
+<td></td>
+<td>yes</td>
+<td></td>
+<td>1 to 64 characters</td>
+<td>What the tester shows for this value.</td>
+</tr>
+</tbody>
+</table>
+<p><a id="f-routines-list-start-response-list"></a></p>
+<h3 id="routinesstartresponse"><code>routines[].start.response[]</code><a class="headerlink" href="#routinesstartresponse" title="Permanent link">&para;</a></h3>
+<p>Same keys as <code>routines[].start.request[]</code> (<a href="#f-routines-list-start-request-list">table</a>); the paths start with <code>routines[].start.response[]</code> instead of <code>routines[].start.request[]</code>.</p>
+<p><a id="f-routines-list-start-response-list-values-list"></a></p>
+<p><a id="f-routines-list-stop"></a></p>
+<h3 id="routinesstop"><code>routines[].stop</code><a class="headerlink" href="#routinesstop" title="Permanent link">&para;</a></h3>
+<p>Same keys as <code>routines[].start</code> (<a href="#f-routines-list-start">table</a>); the paths start with <code>routines[].stop</code> instead of <code>routines[].start</code>.</p>
+<p><a id="f-routines-list-stop-call"></a>
+<a id="f-routines-list-stop-request-list"></a>
+<a id="f-routines-list-stop-request-list-values-list"></a>
+<a id="f-routines-list-stop-response-list"></a>
+<a id="f-routines-list-stop-response-list-values-list"></a></p>
+<p><a id="f-routines-list-results"></a></p>
+<h3 id="routinesresults"><code>routines[].results</code><a class="headerlink" href="#routinesresults" title="Permanent link">&para;</a></h3>
+<p>Same keys as <code>routines[].start</code> (<a href="#f-routines-list-start">table</a>); the paths start with <code>routines[].results</code> instead of <code>routines[].start</code>.</p>
+<p><a id="f-routines-list-results-call"></a>
+<a id="f-routines-list-results-request-list"></a>
+<a id="f-routines-list-results-request-list-values-list"></a>
+<a id="f-routines-list-results-response-list"></a>
+<a id="f-routines-list-results-response-list-values-list"></a></p>
+<p><a id="f-fault_memory"></a></p>
+<h3 id="fault_memory"><code>fault_memory</code><a class="headerlink" href="#fault_memory" title="Permanent link">&para;</a></h3>
+<p>Size and behaviour of the fault memory as a whole (simplified AUTOSAR DEM, user 2026-09-21).</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Unit</th>
+<th>Required</th>
+<th>Default</th>
+<th>Allowed values</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>fault_memory.max_entries</code></td>
+<td>integer</td>
+<td>none</td>
+<td>yes</td>
+<td></td>
+<td>1 to 255</td>
+<td>DTCs the memory holds at the same time. Fewer than the described DTCs is allowed (not all of them are stored at once) and is reported as a warning.</td>
+</tr>
+<tr>
+<td><code>fault_memory.overflow</code></td>
+<td>string</td>
+<td></td>
+<td>no</td>
+<td><code>"replace_oldest"</code></td>
+<td><code>replace_oldest</code>, <code>keep_oldest</code></td>
+<td>What happens when the memory is full and a further DTC matures: <code>replace_oldest</code> displaces the least important, oldest entry (see <code>priority</code>), <code>keep_oldest</code> discards the new one.</td>
+</tr>
+<tr>
+<td><code>fault_memory.snapshot_records_max</code></td>
+<td>integer</td>
+<td>none</td>
+<td>no</td>
+<td><code>1</code></td>
+<td>0 to 254</td>
+<td>Snapshot records stored per DTC. 0: no snapshots are stored.</td>
+</tr>
+<tr>
+<td><code>fault_memory.extended_records_max</code></td>
+<td>integer</td>
+<td>none</td>
+<td>no</td>
+<td><code>1</code></td>
+<td>0 to 143</td>
+<td>Extended data records stored per DTC. 0: none.</td>
+</tr>
+<tr>
+<td><code>fault_memory.aging_cycle</code></td>
+<td>string</td>
+<td></td>
+<td>no</td>
+<td><code>null</code></td>
+<td>at least 1 character, pattern <code>^[A-Za-z0-9_]+$</code></td>
+<td>Operation cycle the aging of a DTC counts in when the DTC names none. Left out: the cycle of the DTC.</td>
+</tr>
+<tr>
+<td><code>fault_memory.cycle_ms</code></td>
+<td>integer</td>
+<td>ms</td>
+<td>no</td>
+<td><code>10</code></td>
+<td>1 to 1000</td>
+<td>Cycle of the fault memory: every event is sampled once per cycle, so a counter debouncing of n samples takes n cycles, and time debouncing counts in steps of this. Reported BSW events are taken over once per cycle as well.</td>
+</tr>
+<tr>
+<td><code>fault_memory.write_interval_ms</code></td>
+<td>integer</td>
+<td>ms</td>
+<td>no</td>
+<td><code>1000</code></td>
+<td>0 to 3600000</td>
+<td>Shortest distance between two writes of a changed fault memory block to the persistent memory (NvM write policy CHANGE, wear of an EEPROM emulation); the run-down writes what is left. 0: only at the run-down.</td>
+</tr>
+</tbody>
+</table>
+<p><a id="f-bsw_dtc_range"></a></p>
+<h3 id="bsw_dtc_range"><code>bsw_dtc_range</code><a class="headerlink" href="#bsw_dtc_range" title="Permanent link">&para;</a></h3>
+<p>The block of DTC numbers the basic software raises its own DTCs in (TOOL-131, configurable since TOOL-178).</p>
+<p>Numbering plan and default: tools/nxconfig/bswdtc.py. A DTC of a BSW event the plan knows leaves <code>number</code> out and gets <code>base</code> + the offset of its source, so moving the base moves every BSW DTC. Project DTCs are numbered outside the range (a project DTC inside it is reported as a warning).</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Unit</th>
+<th>Required</th>
+<th>Default</th>
+<th>Allowed values</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>bsw_dtc_range.base</code></td>
+<td>integer</td>
+<td>none</td>
+<td>no</td>
+<td><code>1441792</code></td>
+<td>256 to 16776704</td>
+<td>First number of the range; it is also the group identifier of the whole range and never a DTC. A multiple of 0x100. Left out: 0x160000 (P16xx-yy, the default of neXtBSW).</td>
+</tr>
+<tr>
+<td><code>bsw_dtc_range.size</code></td>
+<td>integer</td>
+<td>none</td>
+<td>no</td>
+<td><code>65536</code></td>
+<td>256 to 16776704</td>
+<td>Numbers in the range, a multiple of 0x100 (one block per source of the plan). Below 0x900 the later sources of the plan have no number. Left out: 0x10000.</td>
+</tr>
+</tbody>
+</table>
+<p><a id="f-dtcs-list"></a></p>
+<h3 id="dtcs"><code>dtcs[]</code><a class="headerlink" href="#dtcs" title="Permanent link">&para;</a></h3>
+<p>One diagnostic trouble code of the fault memory.</p>
+<p>The number is a 3-byte DTC in the ISO 14229-1 format (Annex D.4, format identifier 0x01); the ranges Annex D.1 reserves for legislation and for the group identifiers are checked in diagdesc.py. Warning lamp and OBD are deliberately not described (decision of the user, 2026-09-21): the status byte has no warningIndicatorRequested source here and the OBD class bits of Annex D.3.3 stay at the unclassified value.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Unit</th>
+<th>Required</th>
+<th>Default</th>
+<th>Allowed values</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>dtcs[].number</code></td>
+<td>integer</td>
+<td>none</td>
+<td>no</td>
+<td><code>null</code></td>
+<td>0 to 16777215</td>
+<td>3-byte DTC number. 0x000000..0x0000FF is reserved for legislation and 0xFFFF00..0xFFFFFF are the group identifiers (Annex D.1); the number must not appear twice in this file. Left out (TOOL-178): only for an event of the basic software that the neXtBSW numbering plan knows (tools/nxconfig/bswdtc.py) - the number is <code>bsw_dtc_range.base</code> plus the offset of the plan, so it follows the range of the project.</td>
+</tr>
+<tr>
+<td><code>dtcs[].bsw_instance</code></td>
+<td>integer</td>
+<td>none</td>
+<td>no</td>
+<td><code>null</code></td>
+<td>0 to 255</td>
+<td>Low byte of a derived number for a BSW source with instances (TOOL-178): index of the used CAN bus for <code>can.busoff.&lt;BUS&gt;</code>, cause for <code>safety.&lt;cause&gt;</code>, NvM block index for <code>nvm.*.&lt;BLOCK&gt;</code>. Only with <code>number</code> left out and only for such a source.</td>
+</tr>
+<tr>
+<td><code>dtcs[].name</code></td>
+<td>string</td>
+<td></td>
+<td>yes</td>
+<td></td>
+<td>1 to 64 characters, pattern <code>^[A-Za-z][A-Za-z0-9_]*$</code></td>
+<td>Name of the DTC, unique in the file.</td>
+</tr>
+<tr>
+<td><code>dtcs[].label</code></td>
+<td>string</td>
+<td></td>
+<td>no</td>
+<td><code>null</code></td>
+<td></td>
+<td>Same as <a href="#f-sessions-list"><code>sessions[].label</code></a>.</td>
+</tr>
+<tr>
+<td><code>dtcs[].description</code></td>
+<td>string</td>
+<td></td>
+<td>no</td>
+<td><code>null</code></td>
+<td></td>
+<td>Sentence for the reader and for the ODX export (TOOL-43: DESC).</td>
+</tr>
+<tr>
+<td><code>dtcs[].group</code></td>
+<td>string</td>
+<td></td>
+<td>no</td>
+<td><code>null</code></td>
+<td>at least 1 character, pattern <code>^[A-Za-z0-9_]+$</code></td>
+<td>Same as <a href="#f-data_identifiers-list"><code>data_identifiers[].group</code></a>.</td>
+</tr>
+<tr>
+<td><code>dtcs[].display_code</code></td>
+<td>string</td>
+<td></td>
+<td>no</td>
+<td><code>null</code></td>
+<td>1 to 16 characters, pattern <code>^[A-Za-z0-9_-]+$</code></td>
+<td>Code the tester shows instead of the number (e.g. <code>P061600</code>), for the ODX export (TOOL-43: DISPLAY-TROUBLE-CODE). It is not derived: this description uses the ISO 14229-1 DTC format (Annex D.4, 0x01), which fixes no display text. Left out: the export has none and the tester shows the number - except for a derived BSW number (<code>number</code> left out), which gets its SAE J2012 display (0x160100: P160100).</td>
+</tr>
+<tr>
+<td><code>dtcs[].severity</code></td>
+<td>string</td>
+<td></td>
+<td>no</td>
+<td><code>"none"</code></td>
+<td><code>none</code>, <code>maintenance_only</code>, <code>check_at_next_halt</code>, <code>check_immediately</code></td>
+<td>Severity of the DTC (Annex D.3.2, bits 7..5 of the severity byte): <code>none</code>, <code>maintenance_only</code>, <code>check_at_next_halt</code> or <code>check_immediately</code>.</td>
+</tr>
+<tr>
+<td><code>dtcs[].event</code></td>
+<td><a href="#f-dtcs-list-event">object</a></td>
+<td></td>
+<td>yes</td>
+<td></td>
+<td></td>
+<td>The monitor whose result sets and clears the DTC.</td>
+</tr>
+<tr>
+<td><code>dtcs[].debounce</code></td>
+<td><a href="#f-dtcs-list-debounce">object</a></td>
+<td></td>
+<td>yes</td>
+<td></td>
+<td></td>
+<td>How the raw monitor result becomes a matured test result.</td>
+</tr>
+<tr>
+<td><code>dtcs[].operation_cycle</code></td>
+<td>string</td>
+<td></td>
+<td>yes</td>
+<td></td>
+<td>at least 1 character, pattern <code>^[A-Za-z0-9_]+$</code></td>
+<td>Operation cycle (<code>operation_cycles[].name</code>) the status bits, the confirmation and the aging of this DTC count in.</td>
+</tr>
+<tr>
+<td><code>dtcs[].enable_conditions</code></td>
+<td>list of string</td>
+<td></td>
+<td>no</td>
+<td><code>[]</code></td>
+<td>item: at least 1 character, pattern <code>^[A-Za-z0-9_]+$</code></td>
+<td>Conditions (<code>enable_conditions[].name</code>) that all have to hold before the status of this DTC is updated. Left out: none.</td>
+</tr>
+<tr>
+<td><code>dtcs[].confirmation_threshold</code></td>
+<td>integer</td>
+<td>none</td>
+<td>no</td>
+<td><code>1</code></td>
+<td>1 to 255</td>
+<td>Operation cycles with a failed test before the confirmed bit is set and the entry is stored (Annex D.2.1). 1: the first failed test confirms.</td>
+</tr>
+<tr>
+<td><code>dtcs[].aging</code></td>
+<td><a href="#f-dtcs-list-aging">object</a></td>
+<td></td>
+<td>no</td>
+<td><code>null</code></td>
+<td></td>
+<td>When a confirmed DTC is forgotten again. Left out: it is kept until the tester clears it.</td>
+</tr>
+<tr>
+<td><code>dtcs[].priority</code></td>
+<td>integer</td>
+<td>none</td>
+<td>no</td>
+<td><code>1</code></td>
+<td>1 to 255</td>
+<td>Which DTC wins when the fault memory is full: 1 is the most important entry, a larger number is displaced first.</td>
+</tr>
+<tr>
+<td><code>dtcs[].snapshots</code></td>
+<td>list of <a href="#f-dtcs-list-snapshots-list">object</a></td>
+<td></td>
+<td>no</td>
+<td><code>[]</code></td>
+<td></td>
+<td>Snapshot records of this DTC. Left out: none.</td>
+</tr>
+<tr>
+<td><code>dtcs[].extended_data</code></td>
+<td>list of <a href="#f-dtcs-list-extended_data-list">object</a></td>
+<td></td>
+<td>no</td>
+<td><code>[]</code></td>
+<td></td>
+<td>Extended data records of this DTC. Left out: none.</td>
+</tr>
+</tbody>
+</table>
+<p><a id="f-dtcs-list-event"></a></p>
+<h3 id="dtcsevent"><code>dtcs[].event</code><a class="headerlink" href="#dtcsevent" title="Permanent link">&para;</a></h3>
+<p>The monitor whose result sets and clears one DTC: exactly one source.</p>
+<p>Every DTC has an event; a DTC nothing can set is a description of nothing and is reported as an error.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Unit</th>
+<th>Required</th>
+<th>Default</th>
+<th>Allowed values</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>dtcs[].event.port</code></td>
+<td>string</td>
+<td></td>
+<td>no</td>
+<td><code>null</code></td>
+<td>at least 1 character, pattern <code>^[A-Za-z][A-Za-z0-9_]*(\.[A-Za-z][A-Za-z0-9_]*){2}$</code></td>
+<td>Provided port element of the ECU description that reports the test result, <code>Component.Port.Element</code>.</td>
+</tr>
+<tr>
+<td><code>dtcs[].event.bsw</code></td>
+<td>string</td>
+<td></td>
+<td>no</td>
+<td><code>null</code></td>
+<td>at least 1 character, pattern <code>^[a-z][a-z0-9_]*(\.[A-Za-z0-9_]+)+$</code></td>
+<td>Monitor of the basic software that reports the test result, e.g. <code>can.busoff.&lt;BUS&gt;</code>. Which names exist is resolved by the RTE generator, not here.</td>
+</tr>
+<tr>
+<td><code>dtcs[].event.description</code></td>
+<td>string</td>
+<td></td>
+<td>no</td>
+<td><code>null</code></td>
+<td></td>
+<td>What the monitor tests, for the reader and the export.</td>
+</tr>
+<tr>
+<td><code>dtcs[].event.result</code></td>
+<td>string</td>
+<td></td>
+<td>no</td>
+<td><code>null</code></td>
+<td><code>boolean</code>, <code>qualifier</code>, <code>status</code>, <code>limit</code></td>
+<td>How the value of the source becomes a test result, sampled once per fault memory cycle (<code>fault_memory.cycle_ms</code>): <code>boolean</code> (true: failed), <code>qualifier</code> (a signal qualifier of Rte_Qlf.h: QLF_OK passed, QLF_DEBOUNCE no result, every error failed), <code>status</code> (the AUTOSAR event status: 0 passed, 1 failed, 2 prepassed, 3 prefailed, other values no result) or <code>limit</code> (<code>failed_above</code>/<code>failed_below</code>). Left out: derived by the RTE generator - <code>limit</code> if a limit is given, <code>qualifier</code> for a qualifier source, <code>boolean</code> for a boolean port. A source the BSW reports itself (a <code>bsw</code> name the RTE does not know) reports AUTOSAR event states through dem::IFaultMemory::report().</td>
+</tr>
+<tr>
+<td><code>dtcs[].event.failed_above</code></td>
+<td>integer</td>
+<td>none</td>
+<td>no</td>
+<td><code>null</code></td>
+<td></td>
+<td><code>limit</code>: the sample is failed while the value is above this (in the unit of the source), passed otherwise.</td>
+</tr>
+<tr>
+<td><code>dtcs[].event.failed_below</code></td>
+<td>integer</td>
+<td>none</td>
+<td>no</td>
+<td><code>null</code></td>
+<td></td>
+<td><code>limit</code>: the sample is failed while the value is below this.</td>
+</tr>
+</tbody>
+</table>
+<p><a id="f-dtcs-list-debounce"></a></p>
+<h3 id="dtcsdebounce"><code>dtcs[].debounce</code><a class="headerlink" href="#dtcsdebounce" title="Permanent link">&para;</a></h3>
+<p>How the raw result of a monitor becomes a matured test result: exactly one of the two ways.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Unit</th>
+<th>Required</th>
+<th>Default</th>
+<th>Allowed values</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>dtcs[].debounce.counter</code></td>
+<td><a href="#f-dtcs-list-debounce-counter">object</a></td>
+<td></td>
+<td>no</td>
+<td><code>null</code></td>
+<td></td>
+<td>Debouncing by counting test samples.</td>
+</tr>
+<tr>
+<td><code>dtcs[].debounce.time</code></td>
+<td><a href="#f-dtcs-list-debounce-time">object</a></td>
+<td></td>
+<td>no</td>
+<td><code>null</code></td>
+<td></td>
+<td>Debouncing by time.</td>
+</tr>
+</tbody>
+</table>
+<p><a id="f-dtcs-list-debounce-counter"></a></p>
+<h3 id="dtcsdebouncecounter"><code>dtcs[].debounce.counter</code><a class="headerlink" href="#dtcsdebouncecounter" title="Permanent link">&para;</a></h3>
+<p>Debouncing by counting test samples (AUTOSAR DEM counter debouncing).</p>
+<p>Every failed sample moves the counter up by <code>increment</code>, every passed sample down by <code>decrement</code>. At <code>failed_threshold</code> the DTC is failed, at <code>passed_threshold</code> it is passed. The counter is the fault detection counter ISO 14229-1 D.6 describes.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Unit</th>
+<th>Required</th>
+<th>Default</th>
+<th>Allowed values</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>dtcs[].debounce.counter.failed_threshold</code></td>
+<td>integer</td>
+<td>none</td>
+<td>no</td>
+<td><code>127</code></td>
+<td>1 to 127</td>
+<td>Counter value at which the test counts as failed.</td>
+</tr>
+<tr>
+<td><code>dtcs[].debounce.counter.passed_threshold</code></td>
+<td>integer</td>
+<td>none</td>
+<td>no</td>
+<td><code>-128</code></td>
+<td>-128 to -1</td>
+<td>Counter value at which the test counts as passed.</td>
+</tr>
+<tr>
+<td><code>dtcs[].debounce.counter.increment</code></td>
+<td>integer</td>
+<td>none</td>
+<td>no</td>
+<td><code>1</code></td>
+<td>1 to 255</td>
+<td>Step of one failed sample.</td>
+</tr>
+<tr>
+<td><code>dtcs[].debounce.counter.decrement</code></td>
+<td>integer</td>
+<td>none</td>
+<td>no</td>
+<td><code>1</code></td>
+<td>1 to 255</td>
+<td>Step of one passed sample.</td>
+</tr>
+<tr>
+<td><code>dtcs[].debounce.counter.jump_up</code></td>
+<td>integer</td>
+<td>none</td>
+<td>no</td>
+<td><code>null</code></td>
+<td>-128 to 127</td>
+<td>Value a counter below it jumps to on a failed sample, before the sample adds <code>increment</code>. Left out: 0 - the first failed sample after passed ones moves the counter over zero, so the DTC is prefailed at once (ISO 14229-1, D.6).</td>
+</tr>
+<tr>
+<td><code>dtcs[].debounce.counter.jump_down</code></td>
+<td>integer</td>
+<td>none</td>
+<td>no</td>
+<td><code>null</code></td>
+<td>-128 to 127</td>
+<td>Value a counter above it jumps to on a passed sample, before the sample subtracts <code>decrement</code>. Left out: 0 (the first passed sample after failed ones moves it below zero).</td>
+</tr>
+</tbody>
+</table>
+<p><a id="f-dtcs-list-debounce-time"></a></p>
+<h3 id="dtcsdebouncetime"><code>dtcs[].debounce.time</code><a class="headerlink" href="#dtcsdebouncetime" title="Permanent link">&para;</a></h3>
+<p>Debouncing by time: the monitor has to report the same result for this long before it counts.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Unit</th>
+<th>Required</th>
+<th>Default</th>
+<th>Allowed values</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>dtcs[].debounce.time.failed_ms</code></td>
+<td>integer</td>
+<td>ms</td>
+<td>yes</td>
+<td></td>
+<td>&gt; 0</td>
+<td>How long the monitor has to report failed without interruption before the test counts as failed.</td>
+</tr>
+<tr>
+<td><code>dtcs[].debounce.time.passed_ms</code></td>
+<td>integer</td>
+<td>ms</td>
+<td>yes</td>
+<td></td>
+<td>&gt; 0</td>
+<td>How long the monitor has to report passed without interruption before the test counts as passed.</td>
+</tr>
+</tbody>
+</table>
+<p><a id="f-dtcs-list-aging"></a></p>
+<h3 id="dtcsaging"><code>dtcs[].aging</code><a class="headerlink" href="#dtcsaging" title="Permanent link">&para;</a></h3>
+<p>When a confirmed DTC is forgotten again (ISO 14229-1, D.2.1 and D.7).</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Unit</th>
+<th>Required</th>
+<th>Default</th>
+<th>Allowed values</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>dtcs[].aging.threshold_cycles</code></td>
+<td>integer</td>
+<td>none</td>
+<td>yes</td>
+<td></td>
+<td>1 to 255</td>
+<td>Operation cycles that have to end without the test failing before the confirmed bit is cleared and the entry is released.</td>
+</tr>
+<tr>
+<td><code>dtcs[].aging.cycle</code></td>
+<td>string</td>
+<td></td>
+<td>no</td>
+<td><code>null</code></td>
+<td>at least 1 character, pattern <code>^[A-Za-z0-9_]+$</code></td>
+<td>Operation cycle (<code>operation_cycles[].name</code>) the aging counts in. Left out: the cycle of the DTC.</td>
+</tr>
+</tbody>
+</table>
+<p><a id="f-dtcs-list-snapshots-list"></a></p>
+<h3 id="dtcssnapshots"><code>dtcs[].snapshots[]</code><a class="headerlink" href="#dtcssnapshots" title="Permanent link">&para;</a></h3>
+<p>One snapshot record of a DTC: the data identifiers stored when the DTC is first confirmed.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Unit</th>
+<th>Required</th>
+<th>Default</th>
+<th>Allowed values</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>dtcs[].snapshots[].record_number</code></td>
+<td>integer</td>
+<td>none</td>
+<td>yes</td>
+<td></td>
+<td>1 to 254</td>
+<td>Number of the record, unique per DTC. 0x00 and 0xFF are reserved by ISO 14229-1 (0xFF requests all records).</td>
+</tr>
+<tr>
+<td><code>dtcs[].snapshots[].dids</code></td>
+<td>list of string</td>
+<td></td>
+<td>yes</td>
+<td></td>
+<td>at least 1 item; item: at least 1 character, pattern <code>^[A-Za-z0-9_]+$</code></td>
+<td>Data identifiers (<code>data_identifiers[].name</code>) stored in the record, in this order; each one once.</td>
+</tr>
+<tr>
+<td><code>dtcs[].snapshots[].label</code></td>
+<td>string</td>
+<td></td>
+<td>no</td>
+<td><code>null</code></td>
+<td></td>
+<td>Same as <a href="#f-sessions-list"><code>sessions[].label</code></a>.</td>
+</tr>
+<tr>
+<td><code>dtcs[].snapshots[].description</code></td>
+<td>string</td>
+<td></td>
+<td>no</td>
+<td><code>null</code></td>
+<td></td>
+<td>Sentence for the reader and for the ODX export (TOOL-43: DESC).</td>
+</tr>
+</tbody>
+</table>
+<p><a id="f-dtcs-list-extended_data-list"></a></p>
+<h3 id="dtcsextended_data"><code>dtcs[].extended_data[]</code><a class="headerlink" href="#dtcsextended_data" title="Permanent link">&para;</a></h3>
+<p>One extended data record of a DTC (ISO 14229-1, D.8).</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Unit</th>
+<th>Required</th>
+<th>Default</th>
+<th>Allowed values</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>dtcs[].extended_data[].record_number</code></td>
+<td>integer</td>
+<td>none</td>
+<td>yes</td>
+<td></td>
+<td>1 to 143</td>
+<td>Number of the record, unique per DTC. Annex D.8 leaves 0x01..0x8F to the manufacturer; 0x00, 0x90..0xFD are reserved and 0xFE/0xFF request all records.</td>
+</tr>
+<tr>
+<td><code>dtcs[].extended_data[].data</code></td>
+<td>list of <a href="#f-dtcs-list-extended_data-list-data-list">object</a></td>
+<td></td>
+<td>yes</td>
+<td></td>
+<td>at least 1 item</td>
+<td>The values of the record in the order they stand on the wire.</td>
+</tr>
+<tr>
+<td><code>dtcs[].extended_data[].label</code></td>
+<td>string</td>
+<td></td>
+<td>no</td>
+<td><code>null</code></td>
+<td></td>
+<td>Same as <a href="#f-sessions-list"><code>sessions[].label</code></a>.</td>
+</tr>
+<tr>
+<td><code>dtcs[].extended_data[].description</code></td>
+<td>string</td>
+<td></td>
+<td>no</td>
+<td><code>null</code></td>
+<td></td>
+<td>Sentence for the reader and for the ODX export (TOOL-43: DESC).</td>
+</tr>
+</tbody>
+</table>
+<p><a id="f-dtcs-list-extended_data-list-data-list"></a></p>
+<h3 id="dtcsextended_datadata"><code>dtcs[].extended_data[].data[]</code><a class="headerlink" href="#dtcsextended_datadata" title="Permanent link">&para;</a></h3>
+<p>One value of an extended data record: a counter of the fault memory or a data identifier.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Unit</th>
+<th>Required</th>
+<th>Default</th>
+<th>Allowed values</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>dtcs[].extended_data[].data[].name</code></td>
+<td>string</td>
+<td></td>
+<td>yes</td>
+<td></td>
+<td>1 to 64 characters, pattern <code>^[A-Za-z][A-Za-z0-9_]*$</code></td>
+<td>Name of the value inside the record, unique in the record.</td>
+</tr>
+<tr>
+<td><code>dtcs[].extended_data[].data[].counter</code></td>
+<td>string</td>
+<td></td>
+<td>no</td>
+<td><code>null</code></td>
+<td><code>occurrence_counter</code>, <code>aging_counter</code>, <code>fault_detection_counter</code>, <code>failed_cycles</code>, <code>operation_cycles_since_first_failed</code></td>
+<td>Counter of the fault memory: <code>occurrence_counter</code> (how often the DTC matured), <code>aging_counter</code> (cycles counted towards aging), <code>fault_detection_counter</code> (the debounce counter, D.6), <code>failed_cycles</code> (operation cycles with a failed test) or <code>operation_cycles_since_first_failed</code>. Each is one byte; exactly one of <code>counter</code> and <code>did</code>.</td>
+</tr>
+<tr>
+<td><code>dtcs[].extended_data[].data[].did</code></td>
+<td>string</td>
+<td></td>
+<td>no</td>
+<td><code>null</code></td>
+<td>at least 1 character, pattern <code>^[A-Za-z0-9_]+$</code></td>
+<td>Data identifier (<code>data_identifiers[].name</code>) stored in the record. Exactly one of <code>counter</code> and <code>did</code>.</td>
+</tr>
+<tr>
+<td><code>dtcs[].extended_data[].data[].label</code></td>
+<td>string</td>
+<td></td>
+<td>no</td>
+<td><code>null</code></td>
+<td></td>
+<td>Same as <a href="#f-sessions-list"><code>sessions[].label</code></a>.</td>
+</tr>
+<tr>
+<td><code>dtcs[].extended_data[].data[].description</code></td>
+<td>string</td>
+<td></td>
+<td>no</td>
+<td><code>null</code></td>
+<td></td>
+<td>Sentence for the reader and for the ODX export (TOOL-43: DESC).</td>
+</tr>
+</tbody>
+</table>
+<p><a id="f-dtc_groups-list"></a></p>
+<h3 id="dtc_groups"><code>dtc_groups[]</code><a class="headerlink" href="#dtc_groups" title="Permanent link">&para;</a></h3>
+<p>A group of DTCs a tester clears with ClearDiagnosticInformation (14) (NVM-09).</p>
+<p><code>group</code> is the 3-byte groupOfDTC value the tester sends, <code>first</code>..<code>last</code> the DTC numbers it stands for. ISO 14229-1, Annex D.1 leaves the groups to the vehicle manufacturer and reserves 0xFFFF00..0xFFFFFE for the functional groups (e.g. 0xFFFF33 emissions, 0xFFFFD0 safety); 0xFFFFFF (all DTCs) and a single DTC number need no entry. Checked in diagdesc.py, generated by tools/diaggen as the table <code>diagDtcGroups()</code> of ecu/uds.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Unit</th>
+<th>Required</th>
+<th>Default</th>
+<th>Allowed values</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>dtc_groups[].name</code></td>
+<td>string</td>
+<td></td>
+<td>yes</td>
+<td></td>
+<td>1 to 64 characters, pattern <code>^[A-Za-z][A-Za-z0-9_]*$</code></td>
+<td>Name of the group, unique in the file.</td>
+</tr>
+<tr>
+<td><code>dtc_groups[].bsw</code></td>
+<td>boolean</td>
+<td></td>
+<td>no</td>
+<td><code>false</code></td>
+<td></td>
+<td><code>true</code> (TOOL-178): the group of the whole neXtBSW range - <code>group</code>, <code>first</code> and <code>last</code> are derived from <code>bsw_dtc_range</code> (base, base, base + size - 1) and are left out.</td>
+</tr>
+<tr>
+<td><code>dtc_groups[].group</code></td>
+<td>integer</td>
+<td>none</td>
+<td>no</td>
+<td><code>null</code></td>
+<td>0 to 16777215</td>
+<td>groupOfDTC value of the group (Annex D.1): a group of the vehicle manufacturer or a functional group 0xFFFF00..0xFFFFFE. Not 0xFFFFFF (all DTCs) and not the number of a described DTC; unique in the file. Required unless <code>bsw</code> is true.</td>
+</tr>
+<tr>
+<td><code>dtc_groups[].first</code></td>
+<td>integer</td>
+<td>none</td>
+<td>no</td>
+<td><code>null</code></td>
+<td>0 to 16777215</td>
+<td>Lowest DTC number of the group. Required unless <code>bsw</code> is true.</td>
+</tr>
+<tr>
+<td><code>dtc_groups[].last</code></td>
+<td>integer</td>
+<td>none</td>
+<td>no</td>
+<td><code>null</code></td>
+<td>0 to 16777215</td>
+<td>Highest DTC number of the group (at least <code>first</code>, below the group identifiers 0xFFFF00). Required unless <code>bsw</code> is true.</td>
+</tr>
+<tr>
+<td><code>dtc_groups[].label</code></td>
+<td>string</td>
+<td></td>
+<td>no</td>
+<td><code>null</code></td>
+<td></td>
+<td>Same as <a href="#f-sessions-list"><code>sessions[].label</code></a>.</td>
+</tr>
+<tr>
+<td><code>dtc_groups[].description</code></td>
+<td>string</td>
+<td></td>
+<td>no</td>
+<td><code>null</code></td>
+<td></td>
+<td>Sentence for the reader and for the ODX export (TOOL-43: DESC).</td>
+</tr>
+</tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Zurück zum Seitenanfang
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Fußzeile" >
+        
+          
+          <a href="../rte/" class="md-footer__link md-footer__link--prev" aria-label="Zurück: Rte">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Zurück
+              </span>
+              <div class="md-ellipsis">
+                Rte
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../console/" class="md-footer__link md-footer__link--next" aria-label="Weiter: Console">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Weiter
+              </span>
+              <div class="md-ellipsis">
+                Console
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright 2026 Daniel Simon Reinhardt-Probul - Apache-2.0
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.sections", "navigation.indexes", "navigation.top", "navigation.footer", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "In Zwischenablage kopiert", "clipboard.copy": "In Zwischenablage kopieren", "search.result.more.one": "1 weiteres Suchergebnis auf dieser Seite", "search.result.more.other": "# weitere Suchergebnisse auf dieser Seite", "search.result.none": "Keine Suchergebnisse", "search.result.one": "1 Suchergebnis", "search.result.other": "# Suchergebnisse", "search.result.placeholder": "Suchbegriff eingeben", "search.result.term.missing": "Es fehlt", "select.version": "Version ausw\u00e4hlen"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

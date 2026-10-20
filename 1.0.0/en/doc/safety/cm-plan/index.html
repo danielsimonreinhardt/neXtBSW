@@ -1,0 +1,7134 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Hardware-neutral, configurable basic software for 32-bit automotive MCUs, built on Eclipse OpenBSW">
+      
+      
+      
+      
+        <link rel="prev" href="../safety-case/">
+      
+      
+        <link rel="next" href="../sw-architecture/">
+      
+      
+        
+          <link rel="alternate" href="../../../../doc/safety/cm-plan/" hreflang="de">
+        
+          <link rel="alternate" href="./" hreflang="en">
+        
+      
+      
+      <link rel="icon" href="../../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>neXtBSW configuration management plan and baselines (SYS-68) - neXtBSW</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#nextbsw-configuration-management-plan-and-baselines-sys-68" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../" title="neXtBSW" class="md-header__button md-logo" aria-label="neXtBSW" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            neXtBSW
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              neXtBSW configuration management plan and baselines (SYS-68)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="indigo"  aria-label="Dunkel"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Dunkel" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="indigo"  aria-label="Hell"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Hell" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Select language">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="../../../../doc/safety/cm-plan/" hreflang="de" class="md-select__link">
+              Deutsch
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../" title="neXtBSW" class="md-nav__button md-logo" aria-label="neXtBSW" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    neXtBSW
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Start
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Wegweiser
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../guide/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Integrator
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Integrator
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Erste Schritte
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/host-durchlauf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Host-Durchlauf ohne Hardware
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/your-first-board/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Das erste Board
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/the-application/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Die Anwendung
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/build-and-flash/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bauen und Flashen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/customer-project/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Eigenes ECU-Repository
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/new-derivative/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Neues Derivat
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/board-readme-template/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vorlage Board-README
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_10" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../reference/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Konfigurationsreferenz
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3_10" id="__nav_3_10_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Konfigurationsreferenz
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/derivative/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Derivative
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/board/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Board
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/project/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/rte/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rte
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/diag/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diag
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/console/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Console
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_11" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../projects/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Projekte, Komponenten, Boards
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3_11" id="__nav_3_11_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Projekte, Komponenten, Boards
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../swc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Software-Komponenten
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../swc/DemoSwcSubstitute/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    C-Ersatz der DemoSwc
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../ecu/platforms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Board-Ports
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../boards/buildtest_s32k148/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S32K148 build-test board (S32K148 LQFP176)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_12" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_12" id="__nav_3_12_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release Notes
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_12">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Release Notes
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../release-notes/v1.0.0-rc2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.0.0-rc2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../release-notes/v1.0.0-rc1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.0.0-rc1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../start/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Safety-Assessor
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Safety-Assessor
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../safety-manual/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sicherheitshandbuch
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../concept/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sicherheitskonzept
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../figures/concept-figures/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bilder zum Konzept
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../anomaly-register/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Anomalie-Register
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_6" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4_6" id="__nav_4_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Arbeitsprodukte
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Arbeitsprodukte
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../safety-plan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW safety plan — software SEooC at ASIL B (SYS-60)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../verification-plan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW verification plan and archived reports per baseline (SYS-67)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../safety-case/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW safety case — software SEooC at ASIL B (SYS-64)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW configuration management plan and baselines (SYS-68)
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW configuration management plan and baselines (SYS-68)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#0-result-in-one-page" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0. Result in one page
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-scope-roles-and-relation-to-other-plans" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Scope, roles and relation to other plans
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Scope, roles and relation to other plans">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-scope" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Scope
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-roles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Roles
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-interfaces-to-other-plans" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 Interfaces to other plans
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-configuration-items" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Configuration items
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-identification-and-naming" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Identification and naming
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Identification and naming">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-branches" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 Branches
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-versions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 Versions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-commits-in-records" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 Commits in records
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-baselines" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Baselines
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Baselines">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-definition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 Definition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-safety-status-of-a-baseline-decided-q-cm1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 Safety status of a baseline [Decided Q-CM1]
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-existing-baselines" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 Existing baselines
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#44-release-lines-plat-46" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.4 Release lines (PLAT-46)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-release-procedure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Release procedure
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Release procedure">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-preconditions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 Preconditions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 Steps
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53-tag-message" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3 Tag message
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-how-safety-documents-name-their-baseline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. How safety documents name their baseline
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. How safety documents name their baseline">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-rule" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 Rule
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-why-the-tag-and-not-the-commit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 Why the tag and not the commit
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63-inventory-of-the-loose-commits-and-migration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.3 Inventory of the loose commits and migration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#64-migration-done-issue-2-sys-94" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.4 Migration done (issue 2, SYS-94)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#65-consistency-test-g5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.5 Consistency test (G5)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-archiving-of-baselines-and-records" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Archiving of baselines and records
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. Archiving of baselines and records">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#71-reproducing-a-baseline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.1 Reproducing a baseline
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-changes-and-their-base-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Changes and their base configuration
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-status-accounting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Status accounting
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-gaps-found-and-proposed-tasks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Gaps found and proposed tasks
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-open-questions-for-the-decision-board" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Open questions for the decision board
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#12-clauses-addressed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12. Clauses addressed
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#13-review-questions-of-the-architecture-section-11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13. Review questions of the architecture (section 11)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#14-sources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        14. Sources
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sw-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW — software architectural design specification of the safety part (SYS-65)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture-safety-analysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW software architectural safety analysis beyond the mechanisms (SYS-71)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../fmea/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW failure analysis of the base-software safety mechanisms (stage 1)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../figures/fmea-figures/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fmea figures
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dfa/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW dependent failure analysis of the stage-1 mechanisms (SYS-70)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../unit-design/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW — software unit design: watchdog handling, fault handlers, safety task (SYS-92, N2)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../coexistence/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW — coexistence of ASIL B and QM software in one image (SYS-61)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../partner-and-degraded/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Partner MCU supervision, degraded reaction and active short circuit — concept
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../config-range/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW — argument over the admissible configuration range (SYS-92, N3)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../hsi-s32k1xx/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW hardware-software interface of the stage-1 safety mechanisms — s32k1xx (SYS-66)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../hardware-mechanisms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hardware safety mechanisms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security-interplay/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW — interplay of functional safety and cybersecurity (SYS-92, N1)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../static-analysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Static analysis and coding guidelines (PLAT-74)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tool-classification/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW tool classification and safeguards of the generated code (PLAT-75)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../component-qualification/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW — route per pre-existing component and qualification plan (SYS-62)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dev-environment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW development environment: languages, guidelines, tools, build and test flow (DOC-22)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../board-test-spec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW board test specification per SSR with operational use cases (SYS-75)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../openbsw-beitraege/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributor
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Contributor
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_1" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../architecture/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architektur
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_1" id="__nav_5_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Architektur
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/openbsw/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Openbsw
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/openbsw-naehe/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Openbsw naehe
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/autosar/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Autosar
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/autosar-standard-set/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Autosar standard set
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/autosar-ecuc-map/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Autosar ecuc map
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/autosar-ecuc-evaluation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Autosar ecuc evaluation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/plattformen/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plattformen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/customer-project/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Customer project
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/versioning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW – Versionierung und Support
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/csec-concept/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CSEc in neXtBSW: keys, message authentication and secure start (SYS-56)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/kalibrierung/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Calibration in neXtBSW: parameters, maps, a versioned calibration database, measurement signals (ARCH-64)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/pin-interrupts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pin interrupts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/signal-qualifier/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Signal qualifiers for received messages (COM-03)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/treiber-granularitaet/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW – granularity of device drivers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/treiber-anbindung-analyse/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW – binding device drivers to the system: analysis of the hand-written integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/openbsw-console-number-arguments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OpenBSW console commands with a number argument - audit (PLAT-110)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_1_19" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_1_19" id="__nav_5_1_19_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Geplant nach R1
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_1_19_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_1_19">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Geplant nach R1
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/planned/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Planned
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/non-cortex-m-audit/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Non cortex m audit
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/rm4x-quellen/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rm4x quellen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/stm32-nucleo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Stm32 nucleo
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../figures/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bilder
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_2" id="__nav_5_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Bilder
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../figures/01-schichten/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    01 schichten
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../figures/02-konfigurationsfluss/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    02 konfigurationsfluss
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../figures/03-startablauf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    03 startablauf
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../figures/04-flash-uds/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    04 flash uds
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../figures/05-ecu-zustaende/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    05 ecu zustaende
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../figures/06-safety-kette/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    06 safety kette
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../figures/07-modulkarte/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    07 modulkarte
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../figures/08-lesepfade/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    08 lesepfade
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../bootloader/doc/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Moduldokumentation
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_3" id="__nav_5_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Moduldokumentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/modules/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modules
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../bootloader/doc/iso14229-1-clause16-conformance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Conformance with ISO 14229-1 clause 16 (non-volatile server memory programming)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/autosarBase/doc/autosarBase/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AUTOSAR base types (autosarBase)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/canPhyPassive/doc/canPhyPassive/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Passive CAN transceiver (canPhyPassive)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/canSystem/doc/canSystem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CAN system, hardware independent parts (canSystem)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/consoleContext/doc/consoleContext/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Console context (consoleContext)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/dem/doc/dem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    dem – fault memory (simplified AUTOSAR DEM)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/e2e/doc/e2e/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    E2E-Bibliothek (e2e)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/ecuState/doc/ecuState/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ECU-Zustandsverwaltung (ecuState)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/gdTmc6200/doc/gdTmc6200/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Gate-Treiber TMC6200 (gdTmc6200)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/hallDecoder/doc/hallDecoder/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hall decoder (hallDecoder)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/highSideSwitch/doc/highSideSwitch/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Smart high-side switch (highSideSwitch)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/mcuLink/doc/mcuLink/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mcuLink
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/nvm/doc/nvm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NvM core (libs/bsw/nvm)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/nvmDataFlash/doc/nvmDataFlash/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nvmDataFlash - data flash areas (NVM-12)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/sbcUja113x/doc/sbcUja113x/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SBC-Treiber UJA113x (sbcUja113x)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsp/bspAdcAccess/doc/bspAdcAccess/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Serialized ADC access (bspAdcAccess)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsp/bspI2c/doc/bspI2c/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    I2C master contract (bspI2c)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsp/bspPinEdge/doc/bspPinEdge/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pin edge contract (bspPinEdge)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsp/bspPinEvent/doc/bspPinEvent/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    bspPinEvent
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsp/bspSampleGroup/doc/bspSampleGroup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sample group (bspSampleGroup)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsp/bspSpi/doc/bspSpi/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SPI device contract (bspSpi)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/common/clockCheck/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Clock start-up check (PLAT-72)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/common/interruptPriority/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interrupt priorities as ranks (PLAT-10, wired up in PLAT-21, per core profile since ARCH-24)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/s32k1xx/bsp/bspCsec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    bspCsec – CSEc of the S32K1 family
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/s32k1xx/bsp/bspMcu/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    bspMcu (Familie s32k1xx) – Derivat-Header und mcu/mcu.h (PLAT-11)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/s32k1xx/startup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Startup templates per core architecture (PLAT-10)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/s32k1xx/port/safety/safeLifecycle/doc/safeLifecycle/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Safety task, s32k1xx (safeLifecycle)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/s32k1xx/port/safety/safeMemory/doc/safeMemory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Memory safety of the s32k1xx family (safeMemory)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/s32k1xx/port/safety/safeSupervisor/doc/safeSupervisor/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Safe supervisor, project values of the s32k1xx port (safeSupervisor)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/s32k1xx/port/safety/safeSystem/doc/safeSystem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference and supply supervision, s32k1xx (safeSystem)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/s32k1xx/port/bspConfiguration/src/bsp/capture/doc/capture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Input capture, s32k1xx (capture)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/s32k1xx/port/bspConfiguration/src/bsp/hall/doc/hall/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hall sensor set, s32k1xx (hall)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../tools/test/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tests und Werkzeuge
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_4" id="__nav_5_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tests und Werkzeuge
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/docgen/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    docgen - generated reference documentation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/docgen/website/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Doku-Website
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/ci/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/ci – provider-neutral CI (TOOL-03)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/setup – the Python environment of a workspace (TOOL-63)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/distcheck/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    distcheck – distribution check and export of the open tree
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/canflash/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/canflash – application and bootloader over CAN (UDS on ISO-TP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/boardtest/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/boardtest – board measurement scripts with host tests (TOOL-05)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/misra/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/misra – static analysis (PLAT-74)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/trace/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/trace — traceability of the safety requirements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/a2lgen/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    a2lgen - A2L for XCP on CAN (TOOL-01)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/calgen/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    calgen – calibration datasets (stage K2)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/csec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    csec – host side of the CSEc way back to the factory state
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/elfcheck/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    elfcheck – linked images against the derivative map and the core
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/nxupdate/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/schedana/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/schedana – analyse processor load, scheduling and data flow (TOOL-09)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/stackuse/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    stackuse – worst-case stack per execution context
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Beitragen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../SECURITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sicherheitsluecken melden
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../mcudb/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ableitung der Chipdaten (mcudb)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#0-result-in-one-page" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0. Result in one page
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-scope-roles-and-relation-to-other-plans" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Scope, roles and relation to other plans
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Scope, roles and relation to other plans">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-scope" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Scope
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-roles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Roles
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-interfaces-to-other-plans" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 Interfaces to other plans
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-configuration-items" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Configuration items
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-identification-and-naming" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Identification and naming
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Identification and naming">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-branches" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 Branches
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-versions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 Versions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-commits-in-records" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 Commits in records
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-baselines" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Baselines
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Baselines">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-definition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 Definition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-safety-status-of-a-baseline-decided-q-cm1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 Safety status of a baseline [Decided Q-CM1]
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-existing-baselines" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 Existing baselines
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#44-release-lines-plat-46" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.4 Release lines (PLAT-46)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-release-procedure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Release procedure
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Release procedure">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-preconditions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 Preconditions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 Steps
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53-tag-message" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3 Tag message
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-how-safety-documents-name-their-baseline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. How safety documents name their baseline
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. How safety documents name their baseline">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-rule" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 Rule
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-why-the-tag-and-not-the-commit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 Why the tag and not the commit
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63-inventory-of-the-loose-commits-and-migration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.3 Inventory of the loose commits and migration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#64-migration-done-issue-2-sys-94" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.4 Migration done (issue 2, SYS-94)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#65-consistency-test-g5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.5 Consistency test (G5)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-archiving-of-baselines-and-records" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Archiving of baselines and records
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. Archiving of baselines and records">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#71-reproducing-a-baseline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.1 Reproducing a baseline
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-changes-and-their-base-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Changes and their base configuration
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-status-accounting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Status accounting
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-gaps-found-and-proposed-tasks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Gaps found and proposed tasks
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-open-questions-for-the-decision-board" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Open questions for the decision board
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#12-clauses-addressed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12. Clauses addressed
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#13-review-questions-of-the-architecture-section-11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13. Review questions of the architecture (section 11)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#14-sources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        14. Sources
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="nextbsw-configuration-management-plan-and-baselines-sys-68">neXtBSW configuration management plan and baselines (SYS-68)<a class="headerlink" href="#nextbsw-configuration-management-plan-and-baselines-sys-68" title="Permanent link">&para;</a></h1>
+<p>Status: 2026-09-28, <strong>issue 2 (SYS-94)</strong>: the user's decisions Q-CM1 … Q-CM4 (decision board <code>q-cm-plan</code>,
+2026-09-28) are worked in, the state line of section 6 is set in every safety document and checked by
+<a href="../../../../doc/safety/test/test_cm_plan.py"><code>test/test_cm_plan.py</code></a> (gaps G5, G6). Issue 1 (<strong>SYS-68</strong>) was written against <code>dev</code> at
+<code>ae92e89</code> (after release <code>v0.1.0</code>), draft for acceptance by the user.
+Update 2026-10-02 (<strong>SYS-182</strong>, confirmation review CR-01-1 of the safety plan, finding F-07): P9 is binding through
+the safety plan's precondition R6 (no longer a proposal); section 5.1 names the safety plan's R for each P (the
+mapping is kept in safety plan section 6 and checked by <code>test_safety_plan.py</code>).
+Update 2026-10-08 (<strong>PLAT-118a</strong>): section 4.3 names the next candidate <code>v1.0.0-rc2</code> and the state of its
+preconditions before the tag; no rule of this plan changed.
+Update 2026-10-08 (<strong>SYS-207</strong>, <strong>SYS-209</strong>): section 4.3 states for <code>v1.0.0-rc2</code> that a public development release
+without a safety claim is allowed under the restated deviation D-22 (safety plan issue 3, released in the delta
+re-check of CM-01 on 2026-10-08) and where the statement "no safety claim" stands; no rule of this plan changed.
+Working state: dev at c0928380 (after v1.0.0-rc1)
+Readers: the user as configuration manager and release authority, the coordinator who merges and releases, the agents
+of SYS-60 (safety plan), SYS-64 (safety case), SYS-67 (verification plan), TOOL-57 (change requests), DOC-19 (safety
+manual) and DOC-21 (StrictDoc).
+Language: English, like the rest of <code>doc/</code> (CLAUDE.md, user 2026-09-17).</p>
+<p><strong>What this document is.</strong> The written configuration management plan that
+<code>iso26262-gap.md</code> (not published, available on request) found missing (rows 8-12, 8-13, 8-14, 2-12; section 6 task 10; finding SG7). It
+states which items are under configuration management, how they are identified, what a <strong>baseline</strong> is, how a release
+is made, and how the safety documents name the state they are about. The standard is cited by part and clause only
+(for example "8-7.4.3" = ISO 26262-8:2018, 7.4.3); no text of it is reproduced.</p>
+<p><strong>What it decides and what it only proposes.</strong> Binding is the user's decision <strong>iso-q3</strong> of 2026-09-22: <em>a release is
+an annotated tag <code>vX.Y.Z</code> on <code>master</code>; before it there is a green CI run with an archived report, the safety documents
+refer to the tag, the qualification reports exist and the reviews are closed.</em> Everything else here works that
+decision out. Issue 1 marked the points where the plan went beyond it as <strong>[Proposal]</strong> and put four of them to the
+decision board (section 11); the user decided all four as recommended on 2026-09-28 (decision board <code>q-cm-plan</code>), and
+issue 2 marks them <strong>[Decided Q-CMn]</strong>. What is still marked <strong>[Proposal]</strong> (the release lines of 4.4, the fields
+of the tag message beyond the status line) was not part of those questions; P9 is binding since 2026-10-02 because it
+is the safety plan's precondition R6 (accepted with the safety plan, SYS-182).</p>
+<p><strong>What it is not.</strong> Not the change management process (that is <code>doc/todo.yaml</code> plus TOOL-57), not the verification
+plan (SYS-67), not the documentation management rules (DOC-21). It names the interfaces to them.</p>
+<hr />
+<h2 id="0-result-in-one-page">0. Result in one page<a class="headerlink" href="#0-result-in-one-page" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Question</th>
+<th>Answer</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Configuration items</td>
+<td>13 classes, from the element's source code to the verification records (section 2); build output, <code>doc/confidential</code> and keys are deliberately <strong>not</strong> items, with the reason</td>
+</tr>
+<tr>
+<td>Identification</td>
+<td>every item in git is identified by the <strong>commit</strong>; the element as a whole by <code>VERSION</code> (SemVer with the interface meaning of 3.2, ARCH-55, Q-CM4) and the release tag; the OpenBSW submodule by its gitlink; external tools by version plus SHA-256 (<code>tools/ci/versions.toml</code>)</td>
+</tr>
+<tr>
+<td>Baseline</td>
+<td>an <strong>annotated tag <code>vX.Y.Z</code> on <code>master</code></strong>, never moved, never deleted (section 4). It fixes every item in git at once. What lies outside git (CI report, tool archives) is bound to the tag by SHA-256</td>
+</tr>
+<tr>
+<td>Safety status of a baseline</td>
+<td><strong>[Decided Q-CM1]</strong> each release tag states in its message whether it is a <strong>safety release</strong> (all preconditions of section 5.1 met) or a <strong>development release</strong> (reproducible, but without a safety claim). Only a safety release may be cited as evidence in a safety case</td>
+</tr>
+<tr>
+<td>Existing baselines</td>
+<td><strong>one</strong>: <code>v0.1.0</code> → <code>ed48460</code> (merge commit on <code>master</code>, annotated, not signed, 2026-09-28). By section 5.1 it is a <strong>development release</strong>: its CI report is not archived beyond 14 days, the safety documents do not cite it, qualification reports and reviews do not exist</td>
+</tr>
+<tr>
+<td>Release procedure</td>
+<td>nine steps from the release candidate on <code>dev</code> to the archived report (section 5.2), with the checks that already exist in <code>tools/ci</code> and <code>tools/nxconfig pin</code></td>
+</tr>
+<tr>
+<td>Citation rule</td>
+<td>every safety document carries one line <code>Baseline: vX.Y.Z</code> (or <code>Working state: dev at &lt;commit&gt; (after vX.Y.Z)</code>) in its header; commit hashes in the body are history, not the state the document claims (section 6)</td>
+</tr>
+<tr>
+<td>Loose commits</td>
+<td>issue 1 found 11 different hashes in 6 documents (section 6.3); all 10 neXtBSW commits among them are contained in <code>v0.1.0</code>, the eleventh is the OpenBSW submodule commit that <code>v0.1.0</code> pins. <strong>Issue 2 (SYS-94):</strong> 20 of the 21 safety documents carry the state line (all but the generated <code>traceability.md</code>, see 6.4); the old hashes stay as history</td>
+</tr>
+<tr>
+<td>Archiving</td>
+<td><strong>[Decided Q-CM3]</strong> the release CI report as a GitHub release asset plus a local copy; for a safety release also the external tool archives (section 7)</td>
+</tr>
+<tr>
+<td>Signing</td>
+<td><strong>[Decided Q-CM2]</strong> release tags are signed with the user's SSH key from the first safety release on; development releases stay annotated only (4.1 rule 5, G3)</td>
+</tr>
+<tr>
+<td>Gaps found on the way</td>
+<td>the CI report does not record commit or tree hash (G1); CI artifacts are kept 14 days (G2); tags are not signed and <code>pincheck</code> checks no signature (G3); <code>master</code> carries its merge commits only, <code>dev</code> does not merge them back (G4, harmless, rule stated); G5 and G6 are closed by SYS-94 — section 10</td>
+</tr>
+<tr>
+<td>Verification</td>
+<td>issue 1: <strong>analysis</strong> (mock), the repository read at <code>ae92e89</code>, <code>pincheck</code> in release mode on a checkout of <code>v0.1.0</code> returned <code>ok</code>. Issue 2: <strong>host test</strong> (mock) <a href="../../../../doc/safety/test/test_cm_plan.py"><code>test/test_cm_plan.py</code></a> with counter-checks on broken copies; no code changed, no hardware</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="1-scope-roles-and-relation-to-other-plans">1. Scope, roles and relation to other plans<a class="headerlink" href="#1-scope-roles-and-relation-to-other-plans" title="Permanent link">&para;</a></h2>
+<h3 id="11-scope">1.1 Scope<a class="headerlink" href="#11-scope" title="Permanent link">&para;</a></h3>
+<p>The plan covers the <strong>neXtBSW development repository</strong> (private, the repository owner's GitHub account) as the
+development repository of the SEooC, including the work products needed to reproduce the element and its evidence
+(8-7.4.3). It covers the open source line (published as <code>github.com/danielsimonreinhardt/neXtBSW</code>, an export of
+this repository without history) and the licensed lines of
+<code>lizenz-und-release.md</code> (not published, available on request) (PLAT-46) only in so far as each of them is derived
+from one baseline of this repository (section 4.4).</p>
+<p>A <strong>customer repository</strong> (workspace with <code>nextbsw.yaml</code>, <a href="../../architecture/customer-project/"><code>customer-project.md</code></a>)
+is the integrator's configuration management, not this plan's. The interface is one sentence: the integrator pins a
+<strong>release tag</strong> of this repository, and <code>tools/ci run --workspace &lt;dir&gt; --release</code> proves the pin is a clean,
+annotated, reachable release (TOOL-65).</p>
+<h3 id="12-roles">1.2 Roles<a class="headerlink" href="#12-roles" title="Permanent link">&para;</a></h3>
+<p>neXtBSW has one human. The roles are named so that a second person can take one of them later (iso-q1 is still open;
+since 2026-09-30 the user reviews himself under deviation D-01, see the row "Reviewer").</p>
+<table>
+<thead>
+<tr>
+<th>Role</th>
+<th>Held by</th>
+<th>Responsibility in this plan</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Configuration manager, release authority</td>
+<td>the user</td>
+<td>accepts this plan; approves every merge to <code>master</code> and every release tag; decides the safety status of a release</td>
+</tr>
+<tr>
+<td>Integrator of <code>dev</code></td>
+<td>the coordinator session (exactly one at a time, CLAUDE.md 2026-09-16)</td>
+<td>merges checked agent branches to <code>dev</code>, keeps planning, changelog and <code>tests.yaml</code>, pushes <code>dev</code>, prepares release candidates, creates the tag after approval</td>
+</tr>
+<tr>
+<td>Contributor</td>
+<td>agents (<code>agent/&lt;ID&gt;</code> locally, <code>claude/&lt;id&gt;</code> in cloud sessions), the user</td>
+<td>changes only the paths of their task; never commit to <code>dev</code>/<code>master</code>, never tag</td>
+</tr>
+<tr>
+<td>Reviewer</td>
+<td>an independent person not yet named (iso-q1, SYS-63); <strong>for now the user himself</strong> (decision of the safety responsible 2026-09-30 on AN-093; safety plan tailoring T-11; <code>reviews/README.md</code> section 3.1, deviation D-01)</td>
+<td>confirmation reviews (SYS-118). A review by the user is a confirmation <strong>without independence</strong>: it does not meet P6, so no release can be a safety release on it, and no working state or tag gets an ASIL statement until an independent person has reviewed it (section 5.1, P6)</td>
+</tr>
+</tbody>
+</table>
+<p>Independence: the integrator re-runs tests and builds of every agent branch, and the user accepts; for the author of
+code and its tests this is not independence at I1 (gap row 8-23). This plan does not change that.</p>
+<h3 id="13-interfaces-to-other-plans">1.3 Interfaces to other plans<a class="headerlink" href="#13-interfaces-to-other-plans" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Plan / process</th>
+<th>Task</th>
+<th>What it takes from this plan</th>
+<th>What this plan takes from it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Safety plan</td>
+<td>SYS-60</td>
+<td>the release definition and its preconditions (section 5.1)</td>
+<td>the list of work products per release and who checks them</td>
+</tr>
+<tr>
+<td>Verification plan</td>
+<td>SYS-67</td>
+<td>the baseline a report belongs to; the rule that a report is archived per release (section 7)</td>
+<td>the report format, what "green" means per level</td>
+</tr>
+<tr>
+<td>Change management</td>
+<td><code>doc/todo.yaml</code>, TOOL-57</td>
+<td>the base configuration of a change (section 8)</td>
+<td>task IDs, safety impact per change</td>
+</tr>
+<tr>
+<td>Documentation management</td>
+<td>DOC-21</td>
+<td>the baseline line of a document header (section 6)</td>
+<td>author, approver, status fields</td>
+</tr>
+<tr>
+<td>Safety case</td>
+<td>SYS-64</td>
+<td>"evidence is cited per safety release"</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Release lines</td>
+<td>PLAT-46, PLAT-50</td>
+<td>"one line = one baseline + one profile" (section 4.4)</td>
+<td>the export and its check (<code>tools/distcheck</code>)</td>
+</tr>
+<tr>
+<td>Customer projects</td>
+<td>ARCH-54, TOOL-65</td>
+<td>the tag rules (annotated, on <code>master</code>, <code>VERSION</code>)</td>
+<td>the pin check, which already enforces them</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="2-configuration-items">2. Configuration items<a class="headerlink" href="#2-configuration-items" title="Permanent link">&para;</a></h2>
+<p>A configuration item (CI) is anything whose exact state is needed to rebuild the element, to re-run its verification
+or to understand a safety claim. The table groups them in classes; each class names how its state is identified.</p>
+<table>
+<thead>
+<tr>
+<th>Class</th>
+<th>Item</th>
+<th>Where</th>
+<th>Identified by</th>
+<th>Changed by</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CI-01</td>
+<td>Source code of the element</td>
+<td><code>libs/</code>, <code>platforms/</code>, <code>ecu/</code>, <code>bootloader/</code>, <code>swc/</code> (component code), root <code>CMakeLists.txt</code>, <code>CMakePresets.json</code>, <code>cmake/</code></td>
+<td>commit</td>
+<td>contributors via task, merged by the integrator</td>
+</tr>
+<tr>
+<td>CI-02</td>
+<td>Pre-existing software</td>
+<td><code>external/openbsw</code> (submodule, never modified; contains FreeRTOS and ETL), the modified copies of OpenBSW files listed in <code>tools/openbswsync/copies.yaml</code>, CMSIS/vendor headers in the tree, newlib from the pinned GCC</td>
+<td>gitlink commit of the submodule; <code>copies.yaml</code> in the commit; GCC version and SHA-256 in <code>versions.toml</code></td>
+<td>submodule update only as its own task</td>
+</tr>
+<tr>
+<td>CI-03</td>
+<td>Configuration data</td>
+<td><code>mcudb/**</code>, <code>boards/*/board.yaml</code>, <code>projects/*/project.yaml</code>, <code>projects/*/rte.yaml</code>, module manifests, <code>swc/*/swc.yaml</code></td>
+<td>commit</td>
+<td>contributors via task</td>
+</tr>
+<tr>
+<td>CI-04</td>
+<td>Models and generated code that is checked in</td>
+<td><code>swc/*/*.slx</code> and the component code generated from it by <code>tools/swc/swc_build.m</code></td>
+<td>commit; the generator input is in the same commit</td>
+<td>model and generator only, never by hand (CLAUDE.md)</td>
+</tr>
+<tr>
+<td>CI-05</td>
+<td>Own tools (generators, checks)</td>
+<td><code>tools/**</code> except <code>tools/studio</code></td>
+<td>commit; the tool confidence level per tool in <a href="../tool-classification/"><code>tool-classification.md</code></a></td>
+<td>contributors via task</td>
+</tr>
+<tr>
+<td>CI-06</td>
+<td>External tools and packages</td>
+<td>ARM GCC, CMake, Ninja, actionlint: <code>tools/ci/versions.toml</code>; Python: <code>tools/ci/.python-version</code>; packages: <code>tools/ci/constraints.txt</code>, <code>constraints-docs.txt</code>, <code>tools/misra/requirements.txt</code></td>
+<td>version <strong>and SHA-256</strong> of each archive, exact package pins, in the commit</td>
+<td>only by editing the pin file, then a full CI run (versions.toml header)</td>
+</tr>
+<tr>
+<td>CI-07</td>
+<td>Tests, test data and verification settings</td>
+<td><code>tools/test/tests.yaml</code>, test folders next to the code, <code>tools/test/coverage.yaml</code>, <code>tools/misra/{rules,baseline,deviations,defects}.yaml</code>, <code>tools/ci/pipeline.toml</code>, <code>doc/safety/test/</code></td>
+<td>commit</td>
+<td>contributors; <code>tests.yaml</code> only by the integrator</td>
+</tr>
+<tr>
+<td>CI-08</td>
+<td>Safety work products</td>
+<td><code>doc/safety/**</code> (concept, fmea, requirements, gap analysis, tool classification, static analysis, this plan, the future safety plan, manual, case)</td>
+<td>commit; the <strong>baseline line</strong> of each document (section 6)</td>
+<td>task of the document; approval by the user</td>
+</tr>
+<tr>
+<td>CI-09</td>
+<td>Architecture and reference documentation</td>
+<td><code>doc/architecture/**</code>, <code>doc/reference/**</code>, <code>libs/*/doc/**</code>, READMEs</td>
+<td>commit</td>
+<td>contributors via task</td>
+</tr>
+<tr>
+<td>CI-10</td>
+<td>Planning and change records</td>
+<td><code>doc/todo.yaml</code>, <code>doc/TODO.md</code>, <code>CHANGELOG.md</code>, <code>doc/changelog.d/</code>, <code>doc/briefs/</code></td>
+<td>commit</td>
+<td>integrator only</td>
+</tr>
+<tr>
+<td>CI-11</td>
+<td>Verification records</td>
+<td>board captures <code>tools/boardtest/captures/**</code> (469 files in git at <code>ae92e89</code>); CI report of a release (<code>ci-result.json</code>, <code>summary.md</code>, <code>tests.json</code>, <code>tests.log</code>, <code>coverage.*</code>, <code>misra/</code>)</td>
+<td>board captures: commit; CI report: SHA-256 in the tag message (section 7)</td>
+<td>captures by the integrator; the CI report is written only by <code>tools.ci run</code></td>
+</tr>
+<tr>
+<td>CI-12</td>
+<td>Release identity</td>
+<td>root file <code>VERSION</code>, the release tag</td>
+<td><code>VERSION</code> in the commit; tag object</td>
+<td>integrator after approval</td>
+</tr>
+<tr>
+<td>CI-13</td>
+<td>neXtBSW Studio (tool, proprietary)</td>
+<td><code>tools/studio/**</code>, <code>tools/studio/version.py</code></td>
+<td>commit plus its own version <code>v_x.y.z</code>; recorded in the tag message</td>
+<td>contributors via task (CLAUDE.md version rules)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Not configuration items</strong>, with the reason:</p>
+<table>
+<thead>
+<tr>
+<th>Not an item</th>
+<th>Why</th>
+<th>How it is still controlled</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Build output (<code>build/</code>, <code>%TEMP%/s32k/…</code>, ELF/HEX/MAP)</td>
+<td>reproducible from a baseline; keeping it would create a second truth</td>
+<td>the CI report lists the artefacts with sizes; the image CRC is cited in board records</td>
+</tr>
+<tr>
+<td><code>doc/confidential/**</code> (ISO 26262, NDA data sheets)</td>
+<td>licensed or NDA material, gitignored, must not enter the repository</td>
+<td>cited by title, edition and revision in the documents that use it (<code>source:</code> fields in <code>mcudb</code>/<code>board.yaml</code>)</td>
+</tr>
+<tr>
+<td>Keys (BL-03)</td>
+<td>secrets, outside the repository</td>
+<td>host tests use only the insecure test key; the release names no key</td>
+</tr>
+<tr>
+<td>Decision board (artifact <code>items</code>)</td>
+<td>an external working tool, not versioned by git</td>
+<td>every decision is transcribed into <code>doc/todo.yaml</code> (<code>done_when</code>, "Entscheidung Nutzer <date>") or <code>CHANGELOG.md</code>, which are CI-10</td>
+</tr>
+<tr>
+<td>Workstation state (<code>.venv</code>, tool cache, IDE)</td>
+<td>derived from CI-06</td>
+<td><code>tools.ci check</code> compares it with the pins</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="3-identification-and-naming">3. Identification and naming<a class="headerlink" href="#3-identification-and-naming" title="Permanent link">&para;</a></h2>
+<h3 id="31-branches">3.1 Branches<a class="headerlink" href="#31-branches" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Branch</th>
+<th>Purpose</th>
+<th>Who writes</th>
+<th>Rule</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>master</code></td>
+<td>released states only</td>
+<td>integrator, after the user's approval</td>
+<td>receives <strong>only merges from <code>dev</code></strong> (<code>--no-ff</code>); no direct commit, no hotfix on <code>master</code> — a fix goes through <code>dev</code> and a new PATCH release</td>
+</tr>
+<tr>
+<td><code>dev</code></td>
+<td>integration branch</td>
+<td>integrator</td>
+<td>receives only checked task branches; pushed after every merge (after <code>git fsck --full --no-dangling</code>); never force-pushed</td>
+</tr>
+<tr>
+<td><code>agent/&lt;ID&gt;</code></td>
+<td>one task of a local agent</td>
+<td>the agent</td>
+<td>stays local; kept after the merge (CLAUDE.md 2026-09-25)</td>
+</tr>
+<tr>
+<td><code>claude/&lt;id&gt;</code></td>
+<td>one task of a cloud session</td>
+<td>the cloud session</td>
+<td>pushed to <code>origin</code>, merged by the integrator</td>
+</tr>
+</tbody>
+</table>
+<p>The task ID in the branch name is the link to the change request (section 8).</p>
+<h3 id="32-versions">3.2 Versions<a class="headerlink" href="#32-versions" title="Permanent link">&para;</a></h3>
+<ul>
+<li>The element has <strong>one</strong> version: the root file <code>VERSION</code>, <code>MAJOR.MINOR.PATCH</code> without suffix (ARCH-55; read by
+  CMake, <code>nxconfig</code>, Studio and <code>tools/ci</code>).</li>
+<li><strong>[Decided Q-CM4]</strong> SemVer meaning for a base software: MAJOR = an incompatible change of an interface the integrator uses
+  (RTE interface, configuration schema, safe-supervisor API, AoU); MINOR = new function, compatible; PATCH = fix
+  without interface change. As long as MAJOR is 0, a MINOR step may break interfaces, and the changelog says so.</li>
+<li>The release tag is <code>v</code> + <code>VERSION</code> (<code>tools/nxconfig/version.py: tag_of</code>). No other tag name starts with <code>v&lt;digit&gt;</code>.</li>
+<li>The Studio has its own version <code>v_x.y.z</code> (<code>tools/studio/version.py</code>, CLAUDE.md); it is <strong>not</strong> a tag. A release tag
+  records which Studio version belongs to it.</li>
+</ul>
+<h3 id="33-commits-in-records">3.3 Commits in records<a class="headerlink" href="#33-commits-in-records" title="Permanent link">&para;</a></h3>
+<ul>
+<li>In records meant to survive (tag messages, safety case, archived reports) a commit is written <strong>in full</strong> (40 hex).</li>
+<li>In prose a short hash of at least 7 characters is fine; it must be unique in the repository at the time of writing.</li>
+<li>A short hash of the OpenBSW submodule is marked as such ("OpenBSW submodule at <code>3b6e702</code>"), because it does not
+  resolve in the neXtBSW repository.</li>
+</ul>
+<hr />
+<h2 id="4-baselines">4. Baselines<a class="headerlink" href="#4-baselines" title="Permanent link">&para;</a></h2>
+<h3 id="41-definition">4.1 Definition<a class="headerlink" href="#41-definition" title="Permanent link">&para;</a></h3>
+<p>A <strong>baseline</strong> is an <strong>annotated git tag <code>vX.Y.Z</code> on a commit reachable from <code>master</code></strong> (iso-q3). Because git commits
+are content-addressed, one tag fixes every configuration item in git at once: source, configuration, generated code,
+own tools, tool pins, tests, safety documents, board captures and the OpenBSW submodule commit (its gitlink). What lies
+outside git is bound to the tag through its hash in the tag message (section 5.3): the archived CI report and,
+through <code>versions.toml</code>, every external tool archive.</p>
+<p>Rules:</p>
+<ol>
+<li><strong>Annotated</strong>, never lightweight: the tag object carries tagger, date and the message of section 5.3.
+   <code>tools/nxconfig/pincheck.py</code> rejects a lightweight release tag (<code>tag-lightweight</code>).</li>
+<li><strong>On <code>master</code></strong>: the tagged commit is the merge commit on <code>master</code> (or reachable from it); <code>pincheck</code> rejects
+   <code>tag-unreachable</code>.</li>
+<li><strong><code>VERSION</code> equals the tag</strong>: <code>tools/ci</code> is red otherwise (<code>check_release_version</code>).</li>
+<li><strong>Immutable</strong>: a published tag is never moved or deleted, and never re-created with the same name. A wrong release
+   is corrected by the next PATCH release, whose changelog names what was wrong.</li>
+<li><strong>[Decided Q-CM2] Signed from the first safety release on</strong>, with the user's SSH signing key
+   (<code>git config gpg.format ssh</code>, <code>git tag -s</code>). Development releases stay annotated only. Signing does not change any
+   other rule; <code>pincheck</code> does not (yet) check a signature (G3): until it does, step 7 of 5.2 includes
+   <code>git tag -v vX.Y.Z</code> for a safety release, run against the user's <code>allowed_signers</code> file.</li>
+</ol>
+<h3 id="42-safety-status-of-a-baseline-decided-q-cm1">4.2 Safety status of a baseline <strong>[Decided Q-CM1]</strong><a class="headerlink" href="#42-safety-status-of-a-baseline-decided-q-cm1" title="Permanent link">&para;</a></h3>
+<p>The decision iso-q3 binds the preconditions to "release". <code>v0.1.0</code> already exists and does not meet them — it was
+made as a reproducible version for customer pins (ARCH-54/55), before this plan. To keep both true, a release tag
+states its <strong>safety status</strong> in its message:</p>
+<table>
+<thead>
+<tr>
+<th>Status</th>
+<th>Meaning</th>
+<th>May be cited as evidence in a safety case</th>
+<th>Preconditions</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>development release</code></td>
+<td>a reproducible, versioned state; the integrator may pin it for development</td>
+<td><strong>no</strong></td>
+<td>P1–P3 and P7–P8 of section 5.1</td>
+</tr>
+<tr>
+<td><code>safety release</code></td>
+<td>a state for which the SEooC claim (iso-q2: developed with the methods of part 6 for ASIL B, without the management part) is made</td>
+<td><strong>yes</strong></td>
+<td><strong>all</strong> of P1–P9</td>
+</tr>
+</tbody>
+</table>
+<p>The status never changes after tagging. A development release that later passes the reviews does not become a safety
+release; the next PATCH release does.</p>
+<p><strong>Alternative, not chosen:</strong> only a state that meets all preconditions gets a <code>vX.Y.Z</code> tag at all, and
+development states for customer pins use another tag form (for example <code>vX.Y.Z-dev.N</code>). That conflicts with ARCH-55
+(<code>VERSION</code> without suffix, CMake takes numbers only) and with <code>pincheck</code>; the user chose the status line (Q-CM1,
+2026-09-28).</p>
+<h3 id="43-existing-baselines">4.3 Existing baselines<a class="headerlink" href="#43-existing-baselines" title="Permanent link">&para;</a></h3>
+<p>The table is checked against <code>git for-each-ref refs/tags/v*</code> by <a href="../../../../doc/safety/test/test_cm_plan.py"><code>test/test_cm_plan.py</code></a>: every
+release tag of the clone has one row with its full commit, and every row a tag.</p>
+<!-- baselines:start -->
+<table>
+<thead>
+<tr>
+<th>Tag</th>
+<th>Commit</th>
+<th>Tagger, date</th>
+<th>Content of the message</th>
+<th>Status by 4.2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>v0.1.0</code></td>
+<td><code>ed48460d51422ba2f5e6b76230745d53cd3484d8</code> (merge <code>dev</code> → <code>master</code>, <code>dev</code> at <code>0fe50ae9</code>)</td>
+<td>Daniel Reinhardt, 2026-09-28 11:02:59 +0200</td>
+<td>"neXtBSW 0.1.0 – first tagged state, dev 0fe50ae9, Studio v_0.16.25, full run 217/217 green (261 839 test cases), git fsck without finding, compiler xPack GCC 11.3.1" (paraphrased; the message is German)</td>
+<td><strong>development release</strong>: annotated, on <code>master</code>, <code>VERSION</code> 0.1.0, OpenBSW submodule at <code>3b6e702</code>; the CI report is not archived with a hash (P2), the safety documents do not cite it (P4), no qualification reports (P5), no reviews (P6)</td>
+</tr>
+<tr>
+<td><code>v0.2.0</code></td>
+<td><code>2e55d54125a8aaf0d7482baf2ee0caba4d14645f</code> (merge <code>dev</code> → <code>master</code>, <code>dev</code> at <code>a128f871</code>, code state <code>0d1aea1a</code>)</td>
+<td>Daniel Reinhardt, 2026-10-01</td>
+<td>"neXtBSW 0.2.0 – development release, Studio v_0.22.2, CI run r3 on <code>73b1f142</code> 330/331 green (515 724 test cases), only red entry logcheck fixed in <code>0d1aea1a</code> and rerun targeted (logcheck alone 25/25), report archived with SHA-256, git fsck without finding, known issues NVM-29 and SYS-150" (paraphrased)</td>
+<td><strong>development release</strong>: annotated, on <code>master</code>, <code>VERSION</code> 0.2.0, OpenBSW submodule at <code>3b6e702</code>; P1 P2 P3 P7 met, P4 formally met (documents carried unchecked, 6.1), P5 P6 P9 not met, P8 not applicable; approved by the user (decision board release-v0-2-0)</td>
+</tr>
+<tr>
+<td><code>v1.0.0-rc1</code></td>
+<td><code>80962d9f1a1d46e641c5181ba9bbf138e0dc6ce9</code> (merge of the release candidate <code>r1/rc1-cand</code> <code>268b41e6</code> → <code>master</code>, tree <code>f93bc886</code>; code freeze <code>bce1202a</code>, documentation freeze <code>039d8bcc</code>)</td>
+<td>Daniel Reinhardt, 2026-10-05</td>
+<td>"neXtBSW 1.0.0-rc1 – Status: development release - no safety claim; candidate 268b41e6, tree f93bc886, OpenBSW submodule 3b6e702, compiler xPack GCC 11.3.1, CI <code>tools.ci run --strict --slow</code> on 268b41e6 413/413 entries (539 160 test cases, static analysis 0 new), report <code>ci-out-v1.0.0-rc1.zip</code> bound and archived with SHA-256, board SYS-167 on the candidate bce1202a, preconditions, release candidate tag (TOOL-232, TOOL-235), approved by the user (CM-06 record CR-06-1), git fsck without corruption" (paraphrased)</td>
+<td><strong>development release</strong> (Release R1, first release candidate of <code>VERSION</code> 1.0.0, TOOL-232): annotated, on <code>master</code>, <code>VERSION</code> 1.0.0, OpenBSW submodule at <code>3b6e702</code>; P1 P2 P3 P7 met, P4 not met (documents carried as working state, CM-06 K06-03 n.a.), P5 P6 P9 not met (D-01, D-21, D-22), P8 export after the tag; approved with conditions by the user (CM-06, record <code>reviews/records/CR-06-1.md</code>, <code>accepted with conditions</code>, decision board cm06-freigabe-1005)</td>
+</tr>
+</tbody>
+</table>
+<!-- baselines:end -->
+
+<p><strong>Next candidate, not yet a baseline: <code>v1.0.0-rc2</code></strong> (PLAT-118, prepared by PLAT-118a against <code>dev</code> <code>f4055d8e</code>). The
+user approved on 2026-10-08 the merge of <code>dev</code> into <code>master</code> and the tag <code>v1.0.0-rc2</code> as the cleaned source of the
+public repository (transcribed into <code>doc/todo.yaml</code>, PLAT-118; P7 for merge and tag). Its row is entered after the
+tag (step 9 of 5.2); until then the test accepts the missing row, because the tag belongs to <code>VERSION</code> 1.0.0. Planned
+status by 4.2: <strong>development release</strong> — to be stated in the status line of the tag message. State of the
+preconditions before the tag: P1 open (the changelog section of the candidate), P2 open (release CI run on the tree
+that is tagged, report bound with <code>tools.ci release --tag v1.0.0-rc2</code> and archived), P3 at the merge, P4 not met
+(documents carried as working state, as for <code>v1.0.0-rc1</code>), P5, P6 and P9 not met, P8 with the export after the tag.
+Public distribution: allowed as a development release without a safety claim (decision of the safety responsible
+2026-10-08, E1 b; safety plan section 5 issue 3, released in the delta re-check of CM-01 on 2026-10-08; safety case
+D-22); CM-03, CM-08, CM-09 and CM-11 stay bound to the first release with an ASIL B claim, and every recipient receives
+the statement "no safety claim" with the safety manual - it stands in the <code>README.md</code> of the repository and in every
+release note (safety plan section 5, C2).
+<strong>No release decision for rc2 is recorded:</strong> CM-06 (record <code>reviews/records/CR-06-1.md</code>) covers <code>v1.0.0-rc1</code> only;
+whether CM-06 is performed for rc2 before the tag is the user's decision (pending). Release notes:
+<a href="../../release-notes/v1.0.0-rc2/"><code>../release-notes/v1.0.0-rc2.md</code></a>.</p>
+<p><code>git diff 0fe50ae ed48460</code> is empty: the merge commit on <code>master</code> carries exactly the tree of <code>dev</code> at <code>0fe50ae</code>.
+The release check of <code>tools/nxconfig/pincheck.py</code> (<code>check_tree(release=True)</code>, the rule behind <code>tools.ci check
+--release</code>) run on a clean checkout of <code>v0.1.0</code> on 2026-09-28 returns one finding, <code>ok</code>: <em>neXtBSW 0.1.0 stands on
+the annotated tag v0.1.0, reachable from origin/master, tree clean</em>. The formal tag rules of section 4.1 (1–3) hold
+for it; what makes it a development release are the preconditions of 5.1, not the tag.</p>
+<h3 id="44-release-lines-plat-46">4.4 Release lines (PLAT-46)<a class="headerlink" href="#44-release-lines-plat-46" title="Permanent link">&para;</a></h3>
+<p><strong>[Proposal]</strong> An open source export or a licensed line is not a baseline of its own; it is <strong>one baseline plus one
+distribution profile</strong> (<code>tools/distcheck export --profile &lt;p&gt;</code>). Its identity is "<code>vX.Y.Z</code>, profile <code>open</code>", and the
+export records the full commit hash of the tag it was made from. A licensed overlay carries the same version (the
+<code>overlay-version</code> check of <code>pincheck</code>). How the export is published is PLAT-46's decision, not this plan's.</p>
+<hr />
+<h2 id="5-release-procedure">5. Release procedure<a class="headerlink" href="#5-release-procedure" title="Permanent link">&para;</a></h2>
+<h3 id="51-preconditions">5.1 Preconditions<a class="headerlink" href="#51-preconditions" title="Permanent link">&para;</a></h3>
+<p>P1–P3 and P7–P8 are needed for every release, P4–P6 and P9 additionally for a safety release. The source of each
+precondition is iso-q3 (SYS-60) unless marked otherwise. The safety plan (section 6) states the same preconditions as
+R1 … R6: P1, P3 and P7 = R1, P2 = R2, P4 = R3, P5 = R4, P6 = R5, P9 = R6; P8 has no safety counterpart (SYS-182).</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Precondition</th>
+<th>How it is checked</th>
+<th>Exists today</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P1</td>
+<td>The release candidate on <code>dev</code> is complete: all tasks meant for the release merged, <code>CHANGELOG.md</code> has a section for <code>vX.Y.Z</code>, <code>VERSION</code> is <code>X.Y.Z</code></td>
+<td>the integrator; <code>tools/nxconfig version</code></td>
+<td>yes</td>
+</tr>
+<tr>
+<td>P2</td>
+<td>A <strong>green CI run</strong> on the tree that will be tagged, <strong>with an archived report</strong></td>
+<td><code>python -m tools.ci run --strict --clean</code> (with <code>--slow</code> for a safety release, so the mutation runs count); the tree hash of the run equals the tree of the tag (section 7)</td>
+<td>the run yes; recording the tree hash no (G1), archiving no (G2)</td>
+</tr>
+<tr>
+<td>P3</td>
+<td>Repository integrity</td>
+<td><code>git fsck --full --no-dangling</code> without finding (CLAUDE.md 2026-09-16); working tree clean</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>P4</td>
+<td>The <strong>safety documents refer to the tag</strong>: every file of CI-08 carries <code>Baseline: vX.Y.Z</code> (section 6)</td>
+<td><a href="../../../../doc/safety/test/test_cm_plan.py"><code>test/test_cm_plan.py</code></a> (G5): on a tagged checkout every state line must be <code>Baseline: v&lt;VERSION&gt;</code></td>
+<td>the test yes (SYS-94); the lines are <code>Working state</code> until the next release</td>
+</tr>
+<tr>
+<td>P5</td>
+<td>The <strong>qualification reports</strong> exist: tool qualification per <a href="../tool-classification/"><code>tool-classification.md</code></a> for every tool with TCL &gt; 1 used for the release, and the qualification of pre-existing software per SYS-62</td>
+<td>the safety plan's work-product list (SYS-60)</td>
+<td>no</td>
+</tr>
+<tr>
+<td>P6</td>
+<td>The <strong>reviews are closed</strong>: confirmation reviews of SYS-63 and the inspections of SYS-69 for the documents and units of the release, findings closed</td>
+<td>review records under <code>doc/safety/reviews/</code>; a record under deviation D-01 (the user, without independence) does <strong>not</strong> count</td>
+<td>no (no independent reviewer named, iso-q1; the user reviews under D-01 since 2026-09-30, AN-093)</td>
+</tr>
+<tr>
+<td>P7</td>
+<td>The user approves the merge to <code>master</code> and the tag, with the safety status of section 4.2</td>
+<td>entry in the decision board, transcribed into <code>doc/todo.yaml</code></td>
+<td>practice yes, entry format no</td>
+</tr>
+<tr>
+<td>P8</td>
+<td>For an export of a release line: <code>tools/distcheck check --profile &lt;p&gt; --references</code> without error (PLAT-50)</td>
+<td><code>tools/distcheck</code></td>
+<td>yes</td>
+</tr>
+<tr>
+<td>P9</td>
+<td>The safety case (SYS-64) and the safety manual (DOC-19) of the release exist and cite the tag (safety plan R6)</td>
+<td>SYS-64's own evidence-link test</td>
+<td>no</td>
+</tr>
+</tbody>
+</table>
+<h3 id="52-steps">5.2 Steps<a class="headerlink" href="#52-steps" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>Action</th>
+<th>Command / check</th>
+<th>Who</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Freeze the candidate on <code>dev</code>: set <code>VERSION</code>, close the changelog section, set every CI-08 header to <code>Baseline: vX.Y.Z</code> (the tag name is known before the tag exists, so no document has to cite a hash of itself)</td>
+<td><code>tools/nxconfig version</code>; test G5</td>
+<td>integrator</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Full CI run on the candidate; keep the output folder</td>
+<td><code>python -m tools.ci run --strict --clean [--slow] --out build/ci-out-vX.Y.Z</code></td>
+<td>integrator (workstation) or GitHub Actions (<code>workflow_dispatch</code> / PR <code>dev</code> → <code>master</code>)</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Integrity</td>
+<td><code>git fsck --full --no-dangling</code>; <code>git status --porcelain</code> empty</td>
+<td>integrator</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Approval of merge and tag with safety status</td>
+<td>decision board entry</td>
+<td>user</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Merge to <code>master</code> without fast-forward</td>
+<td><code>git checkout master &amp;&amp; git merge --no-ff dev -m "Merge dev in master: neXtBSW X.Y.Z (Studio v_…)"</code>; then <code>git diff dev master</code> must be empty</td>
+<td>integrator</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Create the annotated tag on the merge commit with the message of section 5.3</td>
+<td><code>git tag -a vX.Y.Z -F msg-vX.Y.Z.txt master</code>; for a safety release <code>git tag -s</code> with the SSH key (Q-CM2)</td>
+<td>integrator</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Prove the tag is a release</td>
+<td><code>python -m tools.ci check --release</code> (runs <code>pincheck</code> on the tree: annotated, reachable from <code>master</code>, clean, <code>VERSION</code> equal); <code>python tools/nxconfig pin projects/&lt;p&gt;/project.yaml --release</code>; on the tagged checkout <code>python -m unittest doc/safety/test/test_cm_plan.py</code> (all state lines <code>Baseline: vX.Y.Z</code>); for a safety release <code>git tag -v vX.Y.Z</code></td>
+<td>integrator</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Publish</td>
+<td><code>git push origin master vX.Y.Z</code> — the tag explicitly, never <code>--tags</code>, never <code>--force</code></td>
+<td>integrator</td>
+</tr>
+<tr>
+<td>9</td>
+<td>Archive the CI report of step 2 as a GitHub release asset and in the local archive, for a safety release with the tool archives (section 7, Q-CM3); record the release in <code>CHANGELOG.md</code>, on the roadmap page and in the decision board</td>
+<td>—</td>
+<td>integrator</td>
+</tr>
+</tbody>
+</table>
+<p>A failure at any step stops the release. A tag that is already pushed is not removed (rule 4 of 4.1); the next PATCH
+release replaces it.</p>
+<h3 id="53-tag-message">5.3 Tag message<a class="headerlink" href="#53-tag-message" title="Permanent link">&para;</a></h3>
+<p>The tag message is the permanent record of the baseline. The line <code>Status:</code> is <strong>decided</strong> (Q-CM1): every release
+tag carries it, <code>development release</code> or <code>safety release</code>. The other lines are <strong>[Proposal]</strong>, the integrator's
+working template (values as example):</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>neXtBSW 0.2.0
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>Status: development release        (or: safety release)
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>Commit: dev &lt;40-hex commit that was merged&gt;, tree &lt;40-hex tree&gt;
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>OpenBSW: submodule &lt;40-hex commit&gt;
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>Studio: v_0.17.0
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>Compiler: xPack GCC 11.3.1 (tools/ci/versions.toml)
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>CI: &lt;run id or "local"&gt;, verdict pass, &lt;n&gt;/&lt;n&gt; entries, &lt;n&gt; test cases, with/without --slow
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>CI report: sha256 &lt;hash of the report archive&gt; (ci-out-v0.2.0.zip)
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>Preconditions: P1 P2 P3 P7 met; P4 P5 P6 P9 not met   (a safety release lists all as met)
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>Approved: user, decision board &lt;item id&gt;, &lt;date&gt;
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>git fsck: no finding
+</code></pre></div>
+<p><code>v0.1.0</code> predates this template; its message carries the dev commit, the Studio version, the run result, <code>git fsck</code>
+and the compiler, and lacks tree hash, report hash, status and preconditions (section 4.3).</p>
+<hr />
+<h2 id="6-how-safety-documents-name-their-baseline">6. How safety documents name their baseline<a class="headerlink" href="#6-how-safety-documents-name-their-baseline" title="Permanent link">&para;</a></h2>
+<h3 id="61-rule">6.1 Rule<a class="headerlink" href="#61-rule" title="Permanent link">&para;</a></h3>
+<p>Every document of CI-08 carries <strong>one</strong> line in its header that says which state its statements are about:</p>
+<ul>
+<li><code>Baseline: vX.Y.Z</code> — the document was checked against that release and is part of it. This is the only form a
+  safety release accepts (P4).</li>
+<li><code>Working state: dev at &lt;commit&gt; (after vX.Y.Z)</code> — the document was written between two releases. At the next
+  release, step 1 of 5.2 replaces the line with <code>Baseline: v&lt;next&gt;</code> after the document has been re-checked against the
+  candidate (or the release says in its message that the document was carried unchecked, which excludes a safety
+  release).</li>
+</ul>
+<p>The existing sentences "written against <code>dev</code> at <code>&lt;hash&gt;</code>" and the "Update <date> (task, against <code>dev</code> at <code>&lt;hash&gt;</code>)"
+blocks stay as <strong>history</strong>: they say when and against what a part was written. They no longer define the document's
+state. Commit hashes in the body (a board record at image <code>c9a4f31</code>, an inventory at <code>19df315</code>) are evidence of a
+past observation and stay as they are.</p>
+<h3 id="62-why-the-tag-and-not-the-commit">6.2 Why the tag and not the commit<a class="headerlink" href="#62-why-the-tag-and-not-the-commit" title="Permanent link">&para;</a></h3>
+<ul>
+<li>One name for all documents of a release instead of one hash per document (finding SG7).</li>
+<li>A tag says the state was <strong>released</strong> (reachable from <code>master</code>, CI green); a <code>dev</code> hash says nothing about that.</li>
+<li>The tag cannot move; a hash can be unreachable after a history rewrite (the project had one, <code>filter-branch</code> in
+  2026-09, <code>lizenz-und-release.md</code> (not published, available on request)).</li>
+</ul>
+<h3 id="63-inventory-of-the-loose-commits-and-migration">6.3 Inventory of the loose commits and migration<a class="headerlink" href="#63-inventory-of-the-loose-commits-and-migration" title="Permanent link">&para;</a></h3>
+<p>Read at <code>ae92e89</code> (<code>grep</code> for short hashes in back-quotes). Every neXtBSW commit listed is an ancestor of <code>v0.1.0</code>
+(<code>git merge-base --is-ancestor &lt;hash&gt; v0.1.0</code>), so none is lost and every document can take <code>Working state: dev at
+ae92e89 (after v0.1.0)</code> today and <code>Baseline: v&lt;next&gt;</code> at the next release.</p>
+<table>
+<thead>
+<tr>
+<th>Document</th>
+<th>Hashes cited</th>
+<th>Role of the hashes</th>
+<th>Migration (by the document's next task or the release step 1; <strong>not</strong> done here)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>concept.md</code></td>
+<td><code>c0beb4d</code> (issue 1), <code>fa04ed1</code> (issue 2), <code>c9a4f31</code> (board image)</td>
+<td>header: written/checked against; body: evidence</td>
+<td>add the baseline line; keep both hashes as history</td>
+</tr>
+<tr>
+<td><code>fmea.md</code></td>
+<td><code>63ea900</code> (issue 1), <code>f2e2c43</code> (SYS-49), <code>1bbba28</code> (SYS-40)</td>
+<td>header and "Update" blocks; sources</td>
+<td>add the baseline line</td>
+</tr>
+<tr>
+<td><code>iso26262-gap.md</code></td>
+<td><code>62a1b53</code> (analysis), <code>fa04ed1</code>, <code>63ea900</code>, <code>f8ee573</code> (quoted in SG7)</td>
+<td>header and sources; SG7 quotes the others</td>
+<td>add the baseline line; SG7 is closed by this plan once the lines exist</td>
+</tr>
+<tr>
+<td><code>tool-classification.md</code></td>
+<td><code>f8ee573</code> (issue 1), <code>f2e2c43</code> (SYS-49), <code>62a1b53</code> (norm questions)</td>
+<td>header and "Update" blocks</td>
+<td>add the baseline line</td>
+</tr>
+<tr>
+<td><code>rtos-comparison.md</code></td>
+<td><code>d9d5996</code>; OpenBSW submodule <code>3b6e702</code></td>
+<td>header</td>
+<td>add the baseline line; the submodule hash is marked as such already</td>
+</tr>
+<tr>
+<td><code>static-analysis.md</code></td>
+<td><code>19df315</code> (inventory 2026-09-21)</td>
+<td>body: date of an inventory</td>
+<td>add the baseline line</td>
+</tr>
+<tr>
+<td><code>hardware-mechanisms.md</code>, <code>traceability.md</code>, <code>requirements.yaml</code></td>
+<td>none</td>
+<td>—</td>
+<td>add the baseline line (<code>requirements.yaml</code>: a header comment, or the StrictDoc document field after DOC-21)</td>
+</tr>
+<tr>
+<td><code>cm-plan.md</code> (this)</td>
+<td><code>ae92e89</code></td>
+<td>header</td>
+<td>follows the rule from issue 1</td>
+</tr>
+</tbody>
+</table>
+<p>The documents of the running cloud wave (SYS-60 <code>safety-plan.md</code>, SYS-66 <code>hsi-s32k1xx.md</code>, SYS-70 <code>dfa.md</code>) should
+start with the line; the coordinator can add it at the merge if they do not.</p>
+<h3 id="64-migration-done-issue-2-sys-94">6.4 Migration done (issue 2, SYS-94)<a class="headerlink" href="#64-migration-done-issue-2-sys-94" title="Permanent link">&para;</a></h3>
+<p>SYS-94 set the line in every safety document, at <code>dev</code> <code>6f868b5</code> (2026-09-28). Only the header was touched: the line
+is inserted as a paragraph of its own (after the title, or after the header table), nothing else in the documents
+changed, and every hash of 6.3 stays in place as history. The commit named in each line is chosen by one rule:</p>
+<ul>
+<li>the commit the document says it was <strong>written against</strong>, when that commit lies after <code>v0.1.0</code> and no later task
+  changed the document since;</li>
+<li>otherwise <code>6f868b5</code>, the <code>dev</code> state at which the line was set: the document was written against a commit before
+  <code>v0.1.0</code> or names none (<code>concept.md</code>, <code>fmea.md</code>, <code>iso26262-gap.md</code>, <code>tool-classification.md</code>, <code>rtos-comparison.md</code>,
+  <code>static-analysis.md</code>, <code>hardware-mechanisms.md</code>, <code>requirements.yaml</code>), or later tasks changed it after that commit
+  (<code>dfa.md</code> by SYS-91, <code>safety-plan.md</code> by SYS-61 and SYS-92, this plan by SYS-94).</li>
+</ul>
+<p><code>Working state</code> claims no re-check (6.1): it says between which release and which <code>dev</code> state the document was
+written. The re-check against the release candidate happens in step 1 of 5.2.</p>
+<table>
+<thead>
+<tr>
+<th>Document</th>
+<th>State line</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>anomaly-register.md</code></td>
+<td><code>Working state: dev at 65f3dc9 (after v0.1.0)</code> (set by SYS-77, unchanged)</td>
+</tr>
+<tr>
+<td><code>architecture-safety-analysis.md</code>, <code>config-range.md</code>, <code>security-interplay.md</code>, <code>unit-design.md</code></td>
+<td><code>Working state: dev at 65f3dc9 (after v0.1.0)</code></td>
+</tr>
+<tr>
+<td><code>hsi-s32k1xx.md</code></td>
+<td><code>Working state: dev at ae92e89 (after v0.1.0)</code></td>
+</tr>
+<tr>
+<td><code>safety-case.md</code></td>
+<td><code>Working state: dev at 20b2e04 (after v0.1.0)</code> (set by SYS-64, unchanged; its test ties it to the increment <code>next</code>)</td>
+</tr>
+<tr>
+<td><code>sw-architecture.md</code></td>
+<td><code>Working state: dev at 20b2e04 (after v0.1.0)</code>; the header table row <code>Baseline</code> (a <code>dev</code> hash, not a tag) is renamed <code>Built against</code> so the word keeps the meaning of 6.1</td>
+</tr>
+<tr>
+<td><code>coexistence.md</code></td>
+<td><code>Working state: dev at 65f3dc9 (after v0.1.0)</code>; its header table row <code>Baseline</code> is renamed <code>Built against</code> for the same reason</td>
+</tr>
+<tr>
+<td><code>cm-plan.md</code>, <code>concept.md</code>, <code>dfa.md</code>, <code>fmea.md</code>, <code>hardware-mechanisms.md</code>, <code>iso26262-gap.md</code>, <code>rtos-comparison.md</code>, <code>safety-plan.md</code>, <code>static-analysis.md</code>, <code>tool-classification.md</code></td>
+<td><code>Working state: dev at 6f868b5 (after v0.1.0)</code></td>
+</tr>
+<tr>
+<td><code>requirements.yaml</code></td>
+<td><code># Working state: dev at 6f868b5 (after v0.1.0)</code> as a header comment (a YAML file has no prose header; the StrictDoc document field replaces it after DOC-21)</td>
+</tr>
+<tr>
+<td><code>traceability.md</code></td>
+<td><strong>none</strong>: the file is generated by <code>tools/trace matrix</code> and <code>safety-trace</code> fails on any hand edit. It is exempt in the test as long as the document register lists it as <code>generated</code>; the generator should print the line of <code>requirements.yaml</code> (proposal to the coordinator, <code>tools/trace</code> is outside SYS-94)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="65-consistency-test-g5">6.5 Consistency test (G5)<a class="headerlink" href="#65-consistency-test-g5" title="Permanent link">&para;</a></h3>
+<p><a href="../../../../doc/safety/test/test_cm_plan.py"><code>test/test_cm_plan.py</code></a> checks, on every run:</p>
+<ol>
+<li>every file directly under <code>doc/safety</code> (<code>*.md</code>, <code>*.yaml</code>) except the generated ones has <strong>exactly one</strong> state line,
+   and it lies in the header (before the first <code>##</code> heading or <code>---</code> rule; for YAML in the leading comment block);</li>
+<li>the line has one of the two forms of 6.1, nothing else on it;</li>
+<li><code>Working state</code>: the commit resolves, is an ancestor of <code>HEAD</code>, and the named release is the <strong>newest</strong> release
+   whose content the commit contains; <code>Baseline</code>: the tag exists and is not newer than <code>VERSION</code>;</li>
+<li>on a checkout that carries the release tag <code>v</code> + <code>VERSION</code> (step 7 of 5.2) every line is <code>Baseline: v&lt;VERSION&gt;</code>;</li>
+<li>the table of 4.3 lists exactly the release tags of <code>git for-each-ref refs/tags/v*</code>, each with its full commit;</li>
+<li>the exempt generated files are exactly the rows of the document register (<code>anomaly-register.md</code> section 6) with
+   status <code>generated</code>.</li>
+</ol>
+<p>The git checks (3 to 5) are skipped with a message when the clone is shallow or has no release tags; the text checks
+always run. Counter-checks on broken copies show that each rule sees its fault.</p>
+<hr />
+<h2 id="7-archiving-of-baselines-and-records">7. Archiving of baselines and records<a class="headerlink" href="#7-archiving-of-baselines-and-records" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>What</th>
+<th>Where</th>
+<th>Retention</th>
+<th>Bound to the baseline by</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>All items in git</td>
+<td><code>origin</code> (GitHub, private) and the workstation clone</td>
+<td>permanent; tags and <code>master</code> never rewritten</td>
+<td>the tag</td>
+</tr>
+<tr>
+<td>CI report of the release run (the whole <code>--out</code> folder, zipped)</td>
+<td><strong>[Decided Q-CM3]</strong> as an asset of a GitHub release <code>vX.Y.Z</code> on <code>origin</code>, plus a copy in a local archive folder outside the repository</td>
+<td>permanent</td>
+<td>SHA-256 in the tag message; <code>tree</code> in the report (G1)</td>
+</tr>
+<tr>
+<td>GitHub Actions artifacts of other runs</td>
+<td>GitHub</td>
+<td>14 days (<code>.github/workflows/ci.yml</code>, <code>retention-days: 14</code>)</td>
+<td>none — they are working records, not release evidence (G2)</td>
+</tr>
+<tr>
+<td>External tool archives</td>
+<td>download URLs in <code>versions.toml</code>; the tool cache</td>
+<td>as long as the URL lives</td>
+<td>SHA-256 in <code>versions.toml</code>. <strong>[Decided Q-CM3]</strong> for a safety release, the archives of ARM GCC, CMake and Ninja are copied into the local archive next to the report, because a vanished URL would make the baseline unreproducible</td>
+</tr>
+<tr>
+<td>Board records</td>
+<td><code>tools/boardtest/captures/**</code> in git</td>
+<td>permanent</td>
+<td>the commit (they are CI-11); a board record cites the image CRC and the commit it was built from</td>
+</tr>
+<tr>
+<td>Decisions</td>
+<td><code>doc/todo.yaml</code>, <code>CHANGELOG.md</code></td>
+<td>permanent</td>
+<td>the commit</td>
+</tr>
+</tbody>
+</table>
+<p>Which report files a release needs and what makes it "green" per verification level is SYS-67's to define; this plan
+only requires that the release report is archived and bound to the tag.</p>
+<h3 id="71-reproducing-a-baseline">7.1 Reproducing a baseline<a class="headerlink" href="#71-reproducing-a-baseline" title="Permanent link">&para;</a></h3>
+<p>The procedure the plan promises (8-7.4.4); not executed for this issue:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>git<span class="w"> </span>clone<span class="w"> </span>&lt;origin&gt;<span class="w"> </span>neXtBSW<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>neXtBSW
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>git<span class="w"> </span>checkout<span class="w"> </span>vX.Y.Z<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>git<span class="w"> </span>submodule<span class="w"> </span>update<span class="w"> </span>--init
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>git<span class="w"> </span>describe<span class="w"> </span>--exact-match<span class="w">   </span><span class="c1"># must print vX.Y.Z</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>python<span class="w"> </span>-m<span class="w"> </span>tools.ci<span class="w"> </span>setup<span class="w"> </span>--python-packages
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>python<span class="w"> </span>-m<span class="w"> </span>tools.ci<span class="w"> </span>run<span class="w"> </span>--strict<span class="w"> </span>--clean<span class="w"> </span>--release<span class="w"> </span>--out<span class="w"> </span>build/ci-repro
+</code></pre></div>
+<p>Expected: verdict pass, the same entries and test cases as the archived report, and the same artefact sizes. Whether
+the images are <strong>byte-identical</strong> across machines is not proven: individual tasks recorded a byte-identical demo image
+before and after their change on the same workstation (for example ARCH-55), not across machines and operating
+systems. Until it is proven, the image CRC of a board record is valid for the image that was flashed, and a rebuilt
+image is compared by its CRC before it is used as that evidence.</p>
+<hr />
+<h2 id="8-changes-and-their-base-configuration">8. Changes and their base configuration<a class="headerlink" href="#8-changes-and-their-base-configuration" title="Permanent link">&para;</a></h2>
+<p>Change management itself is <code>doc/todo.yaml</code> (task IDs, <code>done_when</code>, owner lines with dates, the decision board) and
+will get the safety impact field of TOOL-57. This plan adds only the link to configuration management (8-8.4.2: a
+change request names its base configuration):</p>
+<ul>
+<li>The <strong>base configuration of a change</strong> is the <code>dev</code> commit its branch started from. git records it
+  (<code>git merge-base dev agent/&lt;ID&gt;</code>); the integrator writes it into the merge commit message or the changelog entry when
+  it matters for a safety document ("against <code>dev</code> at …").</li>
+<li>A change that touches a CI-08 document sets that document to <code>Working state: dev at &lt;commit&gt; (after vX.Y.Z)</code>.</li>
+<li>A change of CI-06 (tool pins) requires a full CI run (versions.toml header) and is named in the next release message.</li>
+<li>A submodule update of <code>external/openbsw</code> is a task of its own, never a side effect.</li>
+</ul>
+<hr />
+<h2 id="9-status-accounting">9. Status accounting<a class="headerlink" href="#9-status-accounting" title="Permanent link">&para;</a></h2>
+<p>What anyone can ask the repository, without a tool of its own:</p>
+<table>
+<thead>
+<tr>
+<th>Question</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Which baselines exist?</td>
+<td><code>git for-each-ref refs/tags/v* --format='%(refname:short) %(objecttype) %(*objectname) %(taggerdate:iso)'</code></td>
+</tr>
+<tr>
+<td>Is this checkout a release?</td>
+<td><code>python -m tools.ci check --release</code>, or <code>python tools/nxconfig pin &lt;project&gt; --release</code></td>
+</tr>
+<tr>
+<td>What changed between two baselines?</td>
+<td><code>git log --oneline vA..vB</code>; <code>CHANGELOG.md</code> sections</td>
+</tr>
+<tr>
+<td>Is a cited commit in a baseline?</td>
+<td><code>git merge-base --is-ancestor &lt;hash&gt; vX.Y.Z</code></td>
+</tr>
+<tr>
+<td>Which OpenBSW does a baseline use?</td>
+<td><code>git ls-tree vX.Y.Z external/openbsw</code></td>
+</tr>
+<tr>
+<td>Which tool versions?</td>
+<td><code>git show vX.Y.Z:tools/ci/versions.toml</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="10-gaps-found-and-proposed-tasks">10. Gaps found and proposed tasks<a class="headerlink" href="#10-gaps-found-and-proposed-tasks" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Gap</th>
+<th>Where</th>
+<th>Proposed fix</th>
+<th>Task</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>G1</td>
+<td>The CI report records the path of the tree, not its commit or tree hash; <code>summary.md</code> names the tag only as text. An archived report cannot be proven to belong to a tag</td>
+<td><code>tools/ci/ci.py</code> (<code>finish</code>, payload <code>tree</code>)</td>
+<td>add <code>commit</code>, <code>tree_hash</code>, <code>describe</code> and <code>dirty</code> to <code>ci-result.json</code> and the summary</td>
+<td>SYS-67 (touches <code>tools/ci</code>)</td>
+</tr>
+<tr>
+<td>G2</td>
+<td>CI artifacts are kept 14 days; no release report is archived</td>
+<td><code>.github/workflows/ci.yml</code></td>
+<td>release asset per tag (section 7); optionally a workflow on tag push that attaches the report</td>
+<td>SYS-67</td>
+</tr>
+<tr>
+<td>G3</td>
+<td>Tags are not signed, <code>pincheck</code> does not verify a signature</td>
+<td><code>v0.1.0</code>; <code>tools/nxconfig/pincheck.py</code></td>
+<td><strong>decided (Q-CM2):</strong> SSH signing from the first safety release on (4.1 rule 5); until the check exists, <code>git tag -v</code> in step 7. Open: a <code>pincheck</code> finding <code>tag-unsigned</code> when the tag message says <code>safety release</code> (error with <code>--release</code>)</td>
+<td>new task (touches <code>tools/nxconfig</code>, outside SYS-94); needed before the first safety release</td>
+</tr>
+<tr>
+<td>G4</td>
+<td><code>master</code> carries the merge commits, <code>dev</code> does not merge them back (at <code>ae92e89</code>: <code>dev</code> has 20 commits after <code>0fe50ae</code>, <code>master</code> has 1 merge commit that is not in <code>dev</code>)</td>
+<td>history</td>
+<td>no fix needed: content is identical (<code>git diff 0fe50ae ed48460</code> empty); the rule "master only by merge from dev" (3.1) keeps it so. A check <code>git diff dev master</code> = empty right after each release merge is step 5</td>
+<td>—</td>
+</tr>
+<tr>
+<td>G5</td>
+<td>No test that every CI-08 document carries a baseline line and that at a release all lines name <code>v</code> + <code>VERSION</code></td>
+<td><code>doc/safety/test/</code></td>
+<td><strong>done (SYS-94):</strong> <a href="../../../../doc/safety/test/test_cm_plan.py"><code>test/test_cm_plan.py</code></a>, rules in 6.5</td>
+<td>SYS-94</td>
+</tr>
+<tr>
+<td>G6</td>
+<td>The safety documents do not carry the baseline line yet</td>
+<td><code>doc/safety/*</code></td>
+<td><strong>done (SYS-94):</strong> migration of 6.4; open only <code>traceability.md</code> (generated, proposal to <code>tools/trace</code>)</td>
+<td>SYS-94</td>
+</tr>
+<tr>
+<td>G7</td>
+<td>The tag message of <code>v0.1.0</code> lacks status, tree hash and report hash</td>
+<td><code>v0.1.0</code></td>
+<td>none (immutable); the next release uses the template of 5.3</td>
+<td>—</td>
+</tr>
+<tr>
+<td>G8</td>
+<td>Byte-identical rebuild across machines not proven</td>
+<td>section 7.1</td>
+<td>one reproduction of <code>v0.1.0</code> on the Linux runner and on the workstation, image CRCs compared</td>
+<td>SYS-67 or new</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="11-open-questions-for-the-decision-board">11. Open questions for the decision board<a class="headerlink" href="#11-open-questions-for-the-decision-board" title="Permanent link">&para;</a></h2>
+<p>All four were decided by the user on 2026-09-28 as recommended (decision board <code>q-cm-plan</code>) and are worked in by
+issue 2 (SYS-94).</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Question</th>
+<th>Recommendation</th>
+<th>Decision (user, 2026-09-28)</th>
+<th>Where worked in</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Q-CM1</td>
+<td>Accept the <strong>safety status line</strong> (development release / safety release) in the tag message, so <code>v0.1.0</code> stays a valid release without a safety claim (section 4.2)?</td>
+<td>yes</td>
+<td>yes: status line in every tag message</td>
+<td>0, 4.2, 5.3</td>
+</tr>
+<tr>
+<td>Q-CM2</td>
+<td><strong>Sign</strong> release tags (SSH signing key of the user), and from which release on?</td>
+<td>yes, from the first safety release; development releases annotated only</td>
+<td>yes: SSH signature from the first safety release</td>
+<td>0, 4.1 rule 5, 5.2 steps 6-7, G3</td>
+</tr>
+<tr>
+<td>Q-CM3</td>
+<td>Archive the release CI report as a <strong>GitHub release asset</strong> plus a local copy, and for a safety release the external tool archives too (section 7)?</td>
+<td>yes</td>
+<td>yes</td>
+<td>0, 5.2 step 9, 7</td>
+</tr>
+<tr>
+<td>Q-CM4</td>
+<td>Accept the SemVer meaning for interfaces of section 3.2?</td>
+<td>yes</td>
+<td>yes</td>
+<td>0, 3.2</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="12-clauses-addressed">12. Clauses addressed<a class="headerlink" href="#12-clauses-addressed" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Gap row</th>
+<th>Clause</th>
+<th>Before</th>
+<th>After this issue</th>
+<th>What is still missing</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>8-12</td>
+<td>8-7.4.1</td>
+<td>missing</td>
+<td>plan written: items, identification, baselines, release procedure</td>
+<td>acceptance by the user</td>
+</tr>
+<tr>
+<td>8-13</td>
+<td>8-7.4.3</td>
+<td>partial</td>
+<td>baseline defined; one tag exists; outside-git items bound by hash</td>
+<td>G1, G2 (report bound and archived), G8</td>
+</tr>
+<tr>
+<td>8-14</td>
+<td>8-7.4.4, 7.4.5</td>
+<td>partial</td>
+<td>when items are identified (every commit; baseline per release) and how a baseline is reproduced (7.1)</td>
+<td>the reproduction has not been executed (G8)</td>
+</tr>
+<tr>
+<td>2-12</td>
+<td>2-6.4.7.2</td>
+<td>partial</td>
+<td>safety work products are CI-08; issue 2: every one carries its state line, checked by a test</td>
+<td><code>traceability.md</code> (generated); <code>Baseline</code> lines at the first release after this plan</td>
+</tr>
+<tr>
+<td>8-16</td>
+<td>8-8.4.2</td>
+<td>partial</td>
+<td>base configuration of a change defined (section 8)</td>
+<td>TOOL-57 for the safety impact</td>
+</tr>
+<tr>
+<td>8-22</td>
+<td>8-9.4.3</td>
+<td>partial</td>
+<td>report archived per release (section 7)</td>
+<td>SYS-67</td>
+</tr>
+<tr>
+<td>SG7</td>
+<td>—</td>
+<td>open</td>
+<td>rule and migration list (section 6); issue 2: migration done (6.4) and tested (6.5)</td>
+<td><code>Baseline: vX.Y.Z</code> at the next release</td>
+</tr>
+</tbody>
+</table>
+<h2 id="13-review-questions-of-the-architecture-section-11">13. Review questions of the architecture (section 11)<a class="headerlink" href="#13-review-questions-of-the-architecture-section-11" title="Permanent link">&para;</a></h2>
+<p>SYS-68 changed no code, no generator, no configuration: one new document. SYS-94 (issue 2) adds one host test for
+documents and one header line per safety document; no code, generator, configuration or board data. <strong>Board without an SBC, other crystal,
+other derivative, several CAN buses, several tasks:</strong> nothing in this plan depends on a board or a derivative; the
+configuration items are named by path class (<code>boards/*</code>, <code>projects/*</code>, <code>mcudb/**</code>), not by the eval board. <strong>New
+values in one configuration level:</strong> none introduced. <strong>Host test with its own profile:</strong> none needed for a process
+document; the consistency test G5 is proposed. <strong>Qt-free core, YAML paths:</strong> not touched. <strong>Device driver
+granularity, platform rule:</strong> not applicable.</p>
+<h2 id="14-sources">14. Sources<a class="headerlink" href="#14-sources" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Decisions of the user of 2026-09-22 (iso-q2, iso-q3) as recorded in <code>doc/todo.yaml</code> (SYS-60, SYS-68) and
+  <a href="../../architecture/customer-project/"><code>customer-project.md</code></a>; decisions on branches, merges, pushes and the single
+  coordinator in <code>CLAUDE.md</code>.</li>
+<li><code>iso26262-gap.md</code> (not published, available on request) rows 2-12, 8-12 … 8-24, section 6 task 10, finding SG7; ISO 26262-2 and -8
+  (2018) cited by part and clause only.</li>
+<li>Repository at <code>ae92e89</code>: <code>VERSION</code>, <code>tools/nxconfig/{version,pincheck}.py</code>, <code>tools/ci/{README.md,ci.py,versions.toml,
+  pipeline.toml}</code>, <code>.github/workflows/ci.yml</code>, <code>tools/distcheck/README.md</code>, <code>tools/openbswsync/copies.yaml</code>,
+  <code>tools/boardtest/captures/</code>, <code>doc/safety/*</code>, <code>doc/architecture/{lizenz-und-release,customer-project}.md</code>,
+  <code>CONTRIBUTING.md</code>.</li>
+<li>Decision board <code>q-cm-plan</code> (user, 2026-09-28): Q-CM1 … Q-CM4 as recommended, as recorded in <code>doc/todo.yaml</code>
+  (SYS-94).</li>
+<li>Tag <code>v0.1.0</code> and history read with <code>git for-each-ref</code>, <code>git cat-file -p v0.1.0</code>, <code>git merge-base --is-ancestor</code>,
+  <code>git diff 0fe50ae ed48460</code>, <code>git ls-tree v0.1.0 external/openbsw</code>.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../safety-case/" class="md-footer__link md-footer__link--prev" aria-label="Previous: neXtBSW safety case — software SEooC at ASIL B (SYS-64)">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                neXtBSW safety case — software SEooC at ASIL B (SYS-64)
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../sw-architecture/" class="md-footer__link md-footer__link--next" aria-label="Next: neXtBSW — software architectural design specification of the safety part (SYS-65)">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                neXtBSW — software architectural design specification of the safety part (SYS-65)
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright 2026 Daniel Simon Reinhardt-Probul - Apache-2.0
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../..", "features": ["navigation.sections", "navigation.indexes", "navigation.top", "navigation.footer", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

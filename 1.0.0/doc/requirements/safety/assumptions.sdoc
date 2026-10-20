@@ -1,0 +1,662 @@
+[DOCUMENT]
+TITLE: Assumptions of use (AoU)
+OPTIONS:
+  VIEW_STYLE: Table
+
+[GRAMMAR]
+IMPORT_FROM_FILE: @nextbsw
+
+[TEXT]
+STATEMENT: >>>
+Working state: dev at 2c065567 (after v0.2.0)
+
+The assumptions of use of the Safety Element out of Context - the duties neXtBSW hands to the integrator - moved
+from doc/safety/concept.md section 4 (sections 4.1 to 4.5) and the proposed ones from doc/safety/fmea.md section 6
+by DOC-21 step 3 (content unchanged; the short titles are new). STATUS concept: part of the safety concept's list
+(an entry that is still open for acceptance by the safety responsible says so in its text); proposed: proposed by an
+analysis and not yet carried into the concept. The safety manual (doc/safety/safety-manual.md) gives every entry its
+place and how to fulfil it. Field texts are Markdown as in doc/safety.
+
+Issue 3 (DOC-51, 2026-10-04), together with concept.md issue 3: the state after the corrections of the confirmation
+review CM-07 (record doc/safety/reviews/records/CR-07-1.md, the user under deviation D-01, verdict accepted with
+conditions), released with the re-check in that record on 2026-10-04 (verdict accepted, CM-07 closed;
+DOC-57). Changed: AoU-04 and AoU-32 name the second degradable case,
+the trip of a hardware shut-off path (decision ZA); AoU-01 and AoU-05 use the fault tolerant time interval of the
+item and the maximum fault handling time interval of the element (proposal C7 of the gap analysis, decision ZB);
+AoU-18 owns the reaction to a timing violation (C18); **AoU-33** is a node of section 4.3 (decision ZF); AoU-24
+(section 4.3), AoU-25 (section 4.2) and AoU-40 (section 4.4) are binding with the status concept (decision ZG), so
+the section "Proposed by the failure analysis" is empty and removed. Before issue 3 this document had no number.
+
+Update of issue 3 (DOC-53, 2026-10-04) - a **content change, not editorial**: AoU-19 restated after SYS-113 (title
+now "Events that reach the error memory"). Before: the cause of a resetting event survived the reset only as console
+output and in the reset-loop record, and the integrator stored it himself until SYS-113. Now: the cause is reported
+as a DTC at the next start if the project has the DTC or the collective DTC; S1 held without reset,
+`CHECK_REGISTER_ERROR`, `RTE_TIMING_VIOLATION` and `DEVICE_REPORT` store none; the integrator adds his own storage
+only where he needs more. This relaxes a duty of the integrator. The re-check of CM-07 (record CR-07-1) had described
+the change as editorial; re-check 2 of CM-10 (record doc/safety/reviews/records/CR-10-1.md, N9, the user under
+deviation D-01, 2026-10-04) accepted it as a content update of issue 3 with this note (DOC-79).
+
+Update of issue 3 (BL-41, 2026-10-07) - a **content change**, not yet accepted: AoU-34 after decision SDMS0-1 c of
+the safety review SBC watchdog (2026-10-06). Before: with `bootloader.sbc_watchdog: leave` and an SBC without
+software development mode the bootloader left the SBC watchdog alone, and the integrator accepted that a device
+without a valid application could be programmed only with a debugger. Now: without development mode (UJA113x SDMS 0)
+the bootloader always serves the watchdog, `leave` takes effect only with SDMS 1, and the application takes the
+watchdog over as with `serve`; new is the duty that the board reaches the bootloader's watchdog setting within the
+first watchdog period after an SBC reset (128 ms). The added duty is open for confirmation by the safety responsible.
+
+Update of issue 3 (BL-42, 2026-10-07) - a **content change**, not yet accepted: AoU-34 after decision BL41-2 b of
+the safety review bootloader 0.3.10 (2026-10-07). Before: the bootloader served the watchdog with SDMS 0 only if it
+switched the SBC on itself (SBC in `bootloader.init`); an SBC that was only read stayed unserved. Now: with SDMS 0
+it is served in that case too, the bootloader sets up only the watchdog and leaves the SBC in Standby (V2 and CAN
+not written). The duties of AoU-34 now apply to every bootloader with the UJA113x hook.
+<<<
+
+[[SECTION]]
+TITLE: 4.1 Item, goals and ASIL
+
+[AOU]
+UID: AoU-01
+TITLE: Hazard analysis, safety goals and fault tolerance times by the integrator
+STATEMENT: >>>
+The integrator performs the hazard analysis of his item, derives the safety goals and their ASIL, and determines the
+**fault tolerant time interval (FTTI)** of each goal. neXtBSW assumes none of these and provides none of them.
+*Issue 3 (C7):* the FTTI exists at item level only; the element states per mechanism its maximum fault handling time
+interval (FHTI, concept section 7.2).
+<<<
+STATUS: concept
+SOURCE: concept.md section 4.1
+
+[AOU]
+UID: AoU-02
+TITLE: Assumed safety goals checked against the item's own
+STATEMENT: >>>
+The integrator checks the assumed safety goals in section 2.2 against his own. Every goal he replaces or adds
+requires the mechanisms of section 6 to be re-evaluated for that goal.
+<<<
+STATUS: concept
+SOURCE: concept.md section 4.1
+
+[AOU]
+UID: AoU-03
+TITLE: Target ASIL B, no claim for ASIL C and D
+STATEMENT: >>>
+The target is **ASIL B**, confirmed for the first implementation. ASIL C and D are to be considered in a later stage
+(section 2.1); until then the element makes no claim for them, and an integrator with a C or D goal cannot rely on
+it.
+<<<
+STATUS: concept
+SOURCE: concept.md section 4.1
+
+[AOU]
+UID: AoU-04
+TITLE: Safe states of the element acceptable for the item
+STATEMENT: >>>
+The safe state of the item is reached by **de-energising the declared outputs** and, for most events, by a
+**reset**; for the events listed in section 3 the de-energised state is **held without reset until a power cycle**
+(S1 held, decision `sys23-halt`, decided 2026-09-21: S1 held). *SYS-117:* for events the element declares
+degradable, the project may choose the reaction **degraded** (SD, section 3): only the safe-output groups mapped to
+the event go to their safe state, the rest of the ECU keeps running without a reset, and the event is reported to
+the application and, through it, to the error memory. *Issue 3 (SYS-135, CM-07 decision ZA):* the element declares
+two cases degradable - a fault of one attached device (`DEVICE_FAULT`) and the **trip of a hardware shut-off path**
+(SM-58, report `HW_SHUTOFF`: the path switched its PWM group off and nothing else is wrong); a finding of the path
+itself is never degraded. The integrator confirms (a) that each of these states is a
+safe state for his item, (b) that a reset and restart cycle is tolerable, (c) that an ECU which stays de-energised
+and silent on the bus until the next power cycle is tolerable, and (d) for every degraded mapping, AoU-32. Faults of
+the MCU itself are never degraded. A fail-operational item beyond this — where the function must continue after a
+fault of the MCU — is not supported.
+<<<
+STATUS: concept
+SOURCE: concept.md section 4.1
+
+[AOU]
+UID: AoU-05
+TITLE: Fault tolerant time interval longer than the fault handling time interval
+STATEMENT: >>>
+The integrator confirms that the **fault tolerant time interval (FTTI) of every safety goal of his item is longer
+than the maximum fault handling time interval (FHTI)** of the mechanisms he relies on — detection plus reaction until
+the outputs are de-energised; section 7.2 gives the FHTI per class of mechanism, including the faults of the time
+bases of the supervision. *Issue 3 (C7):* worded with FTTI and FHTI; before, "fault tolerance time" and "worst-case
+reaction time".
+<<<
+STATUS: concept
+SOURCE: concept.md section 4.1
+
+[AOU]
+UID: AoU-32
+TITLE: Degraded mapping safe and its groups independent
+STATEMENT: >>>
+*New after issue 2 (SYS-117, number as proposed in [`partner-and-degraded.md`](../../safety/partner-and-degraded.md) section
+7.1).* For every degraded mapping (`safety.degraded`) the integrator confirms that the **remaining function is safe
+with the mapped groups in their safe state**, for as long as the item may run like that (a fault-reaction and repair
+interval is an item question; the element offers the report and the latch, nothing else), and that the **groups are
+independent in his hardware**: no shared gate-driver supply, current sensor, connector or other part through which
+the fault of one group reaches another. `nxconfig` sees a shared timer and a shared device bus (it knows the
+configuration) and refuses resp. handles them; it does not see a shared supply or sensor on the board. *Issue 3
+(SYS-135, CM-07 decision ZA):* the same holds for a mapping of the trip of a hardware shut-off path (`HW_SHUTOFF`,
+SM-58): the mapping names exactly the group the path switches off, and the integrator confirms that the rest of the
+function is safe while that group stays off until the reset (the path itself is latched until then). Since IO-45 a
+group consists of its PWM channels and the `safe_off` outputs of the devices bound to its PWM group (board
+`pwm[].gate_driver`: the gate-driver enable), and SD switches both; an enable of a device bound to no PWM group goes
+off with S1 alone (warning of `nxconfig`) - for such a board the integrator confirms that forcing the channels
+inactive is enough for his bridge. The remaining function runs on the same MCU and the same mechanisms as before: SD
+adds no redundancy by itself.
+<<<
+STATUS: concept
+SOURCE: concept.md section 4.1
+
+[AOU]
+UID: AoU-35
+TITLE: Integrator's safety management covers the element's open process items
+STATEMENT: >>>
+*New after issue 2 (numbered in the safety manual, DOC-19; carried over by DOC-38).* The integrator takes over under
+his own management of functional safety that neXtBSW has **no quality management system**, **no evidence of
+competence** of the persons in its lifecycle, **no independent confirmation review** yet and **no functional safety
+assessment** (safety plan section 1.2, tailorings T-03, T-09 and T-11); every tag is a development baseline until
+the confirmation reviews are closed. His QMS covers the integration; he may assess the element within his item
+assessment.
+<<<
+STATUS: concept
+SOURCE: concept.md section 4.1
+
+[[/SECTION]]
+
+[[SECTION]]
+TITLE: 4.2 Configuration is part of the safety argument
+
+[AOU]
+UID: AoU-06
+TITLE: Every output whose energy matters is declared
+STATEMENT: >>>
+Every output whose energy matters is declared: PWM groups in the project, and every other output through `safe_off:
+true` at `connect.<name>` in the module manifest of its driver. **An output that is not in the table is not switched
+off** by any of the three paths (safe state, fault handlers, halt deadman). The build enforces one
+`IPowerStageOutput` adapter per `safe_off` output (`NX_SAFE_OFF_OUTPUT_COUNT`, IO-32), but it cannot know about an
+output nobody declared.
+<<<
+STATUS: concept
+SOURCE: concept.md section 4.2
+
+[AOU]
+UID: AoU-07
+TITLE: Inactive levels correct for the integrator's circuit
+STATEMENT: >>>
+The **inactive level** of each PWM group and each `safe_off` output is correct for the integrator's circuit (active
+high or low, and what the pin does while the MCU is in reset, when the GPIO falls back to being an input). External
+pull resistors are the integrator's responsibility.
+<<<
+STATUS: concept
+SOURCE: concept.md section 4.2
+
+[AOU]
+UID: AoU-08
+TITLE: Task set lets the safety task run at its period
+STATEMENT: >>>
+The task set, the periods and the priorities in `project.yaml` are chosen so that the safety task actually runs at
+its period under worst-case load. *Corrected by DOC-38 (review DOC-19, D6):* since SYS-25 the safety task period
+(`modules.safeLifecycle.task_period_ms`) and the MCU watchdog time-out (`modules.safeLifecycle.watchdog_timeout_ms`)
+are **project values**, and the watchdog service interval is **derived** from them by `nxconfig` (section 7.1;
+[`config-range.md`](../../safety/config-range.md) CV-01, CV-02). `nxconfig` checks the relation `3 × service interval ≤ time-out`
+at the fastest LPO and stops the build with the YAML path if it is violated. The integrator changes the period in
+the project, not in the code; that the safety task really runs at that period under his worst-case load is his to
+show (schedule analysis, `tools/schedana`).
+<<<
+STATUS: concept
+SOURCE: concept.md section 4.2
+
+[AOU]
+UID: AoU-09
+TITLE: Hardware side of the safety argument by the integrator
+STATEMENT: >>>
+The integrator supplies the **hardware side** of the safety argument: failure rates of the MCU and the fitted parts,
+the single-point and latent-fault metrics, and the hardware measures the part manufacturers require (external
+monitoring, redundant sensing, plausibility against a second source). neXtBSW quantifies none of this.
+<<<
+STATUS: concept
+SOURCE: concept.md section 4.2
+
+[AOU]
+UID: AoU-10
+TITLE: Configuration files under change control
+STATEMENT: >>>
+The derivative, board and project YAML files are **safety-related configuration data**. A change to them changes the
+generated safety code. The integrator applies the same change control to them as to source code, and re-runs the
+verification.
+<<<
+STATUS: concept
+SOURCE: concept.md section 4.2
+
+[AOU]
+UID: AoU-11
+TITLE: Safety-related signals chosen and protected by E2E
+STATEMENT: >>>
+The integrator chooses which signals are safety-related and configures an **E2E profile** for each of them. The
+library protects what it is told to protect; it does not decide.
+<<<
+STATUS: concept
+SOURCE: concept.md section 4.2
+
+[AOU]
+UID: AoU-12
+TITLE: Application evaluates the signal qualifier
+STATEMENT: >>>
+Where a value comes from an ADC channel, the application reads the **quality qualifier** alongside the value and
+does not use a value marked `QLF_ERROR` or `QLF_ERROR_RANGE`.
+<<<
+STATUS: concept
+SOURCE: concept.md section 4.2
+
+[AOU]
+UID: AoU-30
+TITLE: The three safety role pins used only in their role
+STATEMENT: >>>
+*New after issue 2 (SYS-87, user decision 2026-09-25, variant A).* The three pins of the `safety` section of
+`project.yaml` are used **only in their role** (safe-state code of the family port,
+`platforms/s32k1xx/port/safety/safeIo`). **(a)** `safe_state_output` is the **indicator** of the safe state: it is
+**not a power output** and it is **not written by the application**. Entering S1 disables its pin (it floats);
+leaving S1 switches it back to GPIO with the output latch as the application left it (`SafeState::leaveSafeState`).
+An actuator on that pin would float in S1 and come back on without an enable of its driver — exactly what SSR-004
+excludes for power outputs. `nxconfig` warns at `safety.safe_state_output` when an `rte.yaml` `dio.out` connection
+writes the indicator; the key `safety.safe_state_output_shared_with_application: "<reason>"` is the integrator's
+explicit, reasoned confirmation that the output is a pure display (for example a status LED), and it is his to
+justify. **(b)** `locked_pin` is **not reconfigured by any driver** (function, direction): its pin control register
+is locked at start (SM-21) and its configuration is checked every safety cycle (SM-22); a reconfiguration is a
+register fault and enters S1. Its level stays writable, so the application may switch it. No configuration value
+says whether a driver reconfigures a pin; nothing checks this part. **(c)** `test_pin` is **unconnected** on the
+circuit: it is configured as an input with pull-down and its direction is checked every safety cycle (SM-22), so on
+a wired net the pull-down would load that net. `nxconfig` refuses a pin the board file names as wired; a net the
+board file does not describe it cannot see. In the terms of ISO 26262-10, clause 9.2.4.2, this is an assumption on
+the target environment of the software element; under clause 9.2.4.5 the integrator checks it against his schematic
+before integration and handles a mismatch as a change with an impact analysis.
+<<<
+STATUS: concept
+SOURCE: concept.md section 4.2
+
+[AOU]
+UID: AoU-25
+TITLE: Restart or re-check interval fits the latent-fault interval
+STATEMENT: >>>
+The watchdog self-test (SM-07) runs once per start, and so does the ROM check (SM-14) when its period is 0. The
+integrator restarts the ECU at least as often as his latent-fault interval for these faults requires; for SM-14 he
+may instead set `modules.safeMemory.rom_check_period_ms` to at most his latent-fault interval (the re-check exists
+since SYS-44, T5) and longer than the longest flash write of his ECU. *Issue 3 (CM-07 decision ZG):* proposed by the
+failure analysis ([`fmea.md`](../../safety/fmea.md) section 6, SYS-20), binding through the safety manual since its
+acceptance (review DOC-19, D3, 2026-09-30) and a node of section 4.2 with the status concept since issue 3.
+<<<
+STATUS: concept
+SOURCE: concept.md section 4.2 (proposed in fmea.md section 6, SYS-20; binding since CM-07 ZG)
+
+[[/SECTION]]
+
+[[SECTION]]
+TITLE: 4.3 Hardware around the MCU
+
+[AOU]
+UID: AoU-13
+TITLE: Independent time base needs an external watchdog
+STATEMENT: >>>
+The MCU-internal watchdog runs in the same clock domain as the core it supervises. If the integrator's concept needs
+a **time base independent of the MCU**, an external watchdog must be fitted and configured — the `watchdog_trigger`
+role exists for that (UJA113x today). On the eval board the SBC watchdog is switched off (development mode); an
+integrator must not copy that setting into a product.
+<<<
+STATUS: concept
+SOURCE: concept.md section 4.3
+
+[AOU]
+UID: AoU-14
+TITLE: Watchdog trigger follows one task only
+STATEMENT: >>>
+The watchdog trigger today follows **one task** (the driver's own cycle, or the safety task for the MCU watchdog).
+It is not a program-flow check over all tasks. An integrator who needs that must couple the trigger to alive signs
+of the other tasks.
+<<<
+STATUS: concept
+SOURCE: concept.md section 4.3
+
+[AOU]
+UID: AoU-15
+TITLE: Hardware reset counter budget survives the start-up
+STATEMENT: >>>
+If the board counts resets in hardware (the SBC reset counter with its LIMP output), the integrator confirms that
+the counter budget survives his start-up, including any self-test resets (the eval board's compensation for the
+OpenBSW watchdog fast test, SYS-07, leaves room for exactly one failed start).
+<<<
+STATUS: concept
+SOURCE: concept.md section 4.3
+
+[AOU]
+UID: AoU-16
+TITLE: Debug interface decided for the product
+STATEMENT: >>>
+The **debug interface** is a way into the ECU that no software mechanism closes. The halt deadman (SM-06; *corrected
+by DOC-38, review DOC-19 D6* — issue 2 named SM-22) limits the damage to the power stage; it does not prevent a
+debugger from stopping the core. The integrator decides whether the debug port is disabled in the product.
+<<<
+STATUS: concept
+SOURCE: concept.md section 4.3
+
+[AOU]
+UID: AoU-34
+TITLE: SBC watchdog taken over by the application after the bootloader
+STATEMENT: >>>
+*New after issue 2 (numbered in the safety manual from BL-28, DOC-19; carried over by DOC-38; changed by BL-41,
+decision SDMS0-1 c of the safety review SBC watchdog 2026-10-06, and BL-42).* If the project selects
+`bootloader.sbc_watchdog: serve`, or its SBC runs without software development mode (UJA113x SDMS 0 - then the
+bootloader serves the watchdog with `leave` too, because it already runs after an SBC reset, data sheet Table 7 and
+8; since BL-42, decision BL41-2 b of the safety review bootloader 0.3.10 2026-10-07, also if the SBC is only read,
+not in `bootloader.init`: it then gets the watchdog setting alone and stays in Standby, V2 and CAN are not written),
+the application takes the SBC watchdog over at the latest 1 024 ms after the jump, also on a slow start; while
+the bootloader runs, the SBC watchdog supervises only the bootloader's main loop, not its program flow; the updater
+stays locked with SDMS 0. `leave` takes effect only with development mode (SDMS 1): the bootloader does not touch the
+watchdog. *Added by BL-41, open for confirmation by the safety responsible:* with SDMS 0 the board reaches the
+bootloader's watchdog setting within the first watchdog period after an SBC reset (UJA113x: 128 ms), including the
+SBC start-up the bootloader waits for (at most 100 ms). `nxconfig` checks the project value with its YAML path; the
+bootloader reports why it serves (`bl_sbc_watchdog.reason`); the application's SBC driver triggers a running
+watchdog with the value it finds at start-up.
+<<<
+STATUS: concept
+SOURCE: concept.md section 4.3
+
+[AOU]
+UID: AoU-36
+TITLE: MCU manufacturer's safety manual obtained and applied
+STATEMENT: >>>
+*New after issue 2 (numbered in the safety manual, DOC-19; carried over by DOC-38).* The integrator obtains the
+**MCU manufacturer's safety manual** and applies the software measures and the configuration it requires. neXtBSW
+does not have it ([`fmea.md`](../../safety/fmea.md) N2, task SYS-131); every hardware coverage statement of this concept is about
+neXtBSW's use of a feature, not about the manufacturer's requirements.
+<<<
+STATUS: concept
+SOURCE: concept.md section 4.3
+
+[AOU]
+UID: AoU-37
+TITLE: Hardware threshold inputs away from the comparator supply at start
+STATEMENT: >>>
+*New after issue 2 (SYS-135, safety review SYS-128/SYS-130 point C3, 2026-09-30; binding by the decision of the
+user as safety responsible on 2026-10-04, review CM-10 point Z4).* For every **hardware threshold** of his project (`hw_thresholds`, SM-58) the integrator
+ensures that at every start the signal at the comparator input lies **further below the comparator supply (VDDA)
+than the comparator's input offset plus its hysteresis** (data sheet: offset at most 25 mV; hysteresis of the level
+the start test uses). The start test of the path ([`hardware-mechanisms.md`](../../safety/hardware-mechanisms.md) 2.5, SYS-128)
+forces the comparison against the VDDA ladder in both directions; a signal at or near the rail cannot be told from
+an output stuck at "above" and fails it. The failure is fail-safe - the group is held off and the finding holds S1
+(SYS-130; a finding is never degraded, SYS-135) - but the ECU does not start its function. He checks his circuit
+(divider, amplifier output range, clamp, a supply that ramps) against VDDA at start-up.
+<<<
+STATUS: concept
+SOURCE: concept.md section 4.3
+
+[AOU]
+UID: AoU-38
+TITLE: Conditions of the start-up test of the active short
+STATEMENT: >>>
+*New after issue 2 (SYS-143, safety review SYS-136/SYS-141 points E2-E4, 2026-09-30; binding by the decision of
+the user as safety responsible on 2026-10-04, review CM-10 point Z4; refines AoU-33 (d) for the start test).* For every PWM group with the start-up test of
+the active short (`pwm.<group>.safe_state_test`, SM-27) the integrator ensures: **(a) standstill at power-on** - the
+test runs only after a power-on reset; he confirms that the machine does not turn then, or that a short of
+`safe_state_test_us` per short at a turning machine is harmless for his item (the base software sees no rotation
+without the phase voltages of IO-64); **(b) enable off during the test** - the gate-driver enable of the group is
+off from power-on until the application enables it; with a gate driver bound to the group (board
+`pwm[].gate_driver`) the base software reads it back through the driver and refuses the short when it reads on; for
+a group **without** a bound gate driver nothing is read back, and he confirms by his circuit (for example a
+pull-down on the enable) that the forced pattern cannot reach the bridge during the test; **(c) budget** - every
+task below the first application task (on the S32K1 port the BSP task with the SBC watchdog trigger, the device
+supervision and the halt guard's poll) tolerates a delay of the sum of all holds once per power-on (at most a third
+of `modules.safeLifecycle.watchdog_timeout_ms`, checked by `tools/rtegen`); in particular the period of an external
+watchdog triggered from such a task is longer than that sum plus its normal trigger interval; **(d) availability
+after a reset** - after a reset without power-on the short is available only if the power-on test passed; after a
+low-voltage reset or a reset whose reason the MCU cannot tell, the group has freewheel only until the next power-on,
+and he accepts that for his item (for example a brown-out while the machine turns).
+<<<
+STATUS: concept
+SOURCE: concept.md section 4.3
+
+[AOU]
+UID: AoU-39
+TITLE: Supply kept above the low-voltage detect threshold
+STATEMENT: >>>
+*New after issue 2 (SYS-125; binding by the decision of the user as safety responsible on 2026-10-04, review
+CM-10 point Z4).* The family port s32k1xx
+switches the MCU's low-voltage detect reset on (SM-59): a VDD below VLVD (up to 3.00 V falling, S32K1xx data sheet)
+resets the MCU. The integrator keeps VDD, including tolerance, ripple, load steps and the ramp at start, **above
+3.05 V** (the highest VLVD plus the hysteresis), otherwise the ECU resets or does not start. On a 5 V supply this
+holds by a wide margin; on a **3.3 V supply** the margin is at most 0.3 V (a regulator with a tolerance of 10 % may
+already trip it) and must be shown by his supply design. He does not rely on the LVD in the low-power modes
+VLPR/VLPS (it is off there, only the LVR acts).
+<<<
+STATUS: concept
+SOURCE: concept.md section 4.3
+
+[AOU]
+UID: AoU-24
+TITLE: ADC reference tolerance fits the accuracy needed
+STATEMENT: >>>
+The integrator checks that `modules.safeSystem.adc_reference_tolerance_mv` relative to `board.adc_reference_mv` is
+smaller than the accuracy his safety-related analogue values need, because a reference drift inside the band is a
+silent gain error on every channel (F16). *Issue 3 (CM-07 decision ZG):* proposed by the failure analysis
+([`fmea.md`](../../safety/fmea.md) section 6, SYS-20), binding through the safety manual since its acceptance (review
+DOC-19, D3, 2026-09-30) and a node of section 4.3 with the status concept since issue 3 (the reference of the board is
+the hardware around the MCU this assumption is about).
+<<<
+STATUS: concept
+SOURCE: concept.md section 4.3 (proposed in fmea.md section 6, SYS-20; binding since CM-07 ZG)
+
+[AOU]
+UID: AoU-33
+TITLE: Active short of a PWM group chosen, written and tested under the integrator's safety concept
+STATEMENT: >>>
+*New in issue 3 (CM-07 decision ZF; proposed in [`partner-and-degraded.md`](../../safety/partner-and-degraded.md)
+section 7.1 for SYS-116, in force through the safety manual for every project with an active short since CM-10,
+CR-10-1 F-03).* For every PWM group whose project allows an active short (`pwm.<group>.safe_states`, SM-26) the
+integrator confirms: **(a)** the choice of the safe state of the group - freewheel or an active short - is part of his
+safety function; **(b)** the software that selects the state runs at the ASIL of that safety goal; **(c)** the board's
+reset state of the bridge is tolerable while the MCU is in reset and restarts, because every reset ends the short;
+**(d)** the start-up test of the short (SM-27) runs only at standstill, where no phase voltage is measured (AoU-38
+refines (d) for the start test). The base software applies a selection only as SM-26 describes and falls back to
+freewheel on any doubt; whether the short or freewheel is the safe state of his machine, the base software cannot
+know.
+<<<
+STATUS: concept
+SOURCE: concept.md section 4.3 (proposed in partner-and-degraded.md section 7.1; in force since CM-10 F-03; node since CM-07 ZF)
+
+[[/SECTION]]
+
+[[SECTION]]
+TITLE: 4.4 Software the integrator adds
+
+[AOU]
+UID: AoU-17
+TITLE: ASIL of modules and of the integrator's software
+STATEMENT: >>>
+*Rewritten by SYS-61 (coexistence, decision iso-q4).* Which software in the image is ASIL B and which stays QM is
+decided per module in [`coexistence.md`](../../safety/coexistence.md): a QM module counts as QM only while every coexistence row
+that names it is argued; otherwise it counts as ASIL B. For the integrator this means: (a) his application is QM
+unless he allocates safety requirements to it; (b) a safety-related SWC must, until SYS-21 provides the ASIL B
+partition, be developed together with every QM module that still has an open row (today: all application code and 8
+of the 9 QM modules with code in the demo image) at the target ASIL, or he provides his own partitioning with the
+evidence of `coexistence.md` section 7; (c) every safety-relevant signal he receives over the bus is configured with
+E2E (SM-31), and no diagnostic routine or I/O control of his drives a power output without his own argument. The MPU
+protects the safety manager's data, not the application's.
+<<<
+STATUS: concept
+SOURCE: concept.md section 4.4
+
+[AOU]
+UID: AoU-18
+TITLE: Application respects its configured periods
+STATEMENT: >>>
+The integrator's application respects its **configured periods**. The RTE reports a violation (SM-05), but the
+reaction today is a log entry only; an application that regularly overruns is a configuration error, not something
+the BSW repairs. *Issue 3 (proposal C18 of the gap analysis):* because the element only reports a timing violation
+(S3), the **reaction to it within the FTTI of his goal is the application's**: the integrator allocates that reaction
+to his application, or shows that a late runnable cannot violate his safety goal within its FTTI.
+<<<
+STATUS: concept
+SOURCE: concept.md section 4.4
+
+[AOU]
+UID: AoU-19
+TITLE: Events that reach the error memory
+STATEMENT: >>>
+*Corrected by DOC-38 (review DOC-19, D6), state after SYS-113 by DOC-53.* A non-volatile error memory exists since
+NVM-03 (`libs/bsw/dem`), but most reactions of the safe supervisor end in a reset (S1 + S2) or in S1 held before the
+error memory can store anything. Since SYS-113 the cause of a resetting event survives the reset in the reset-loop
+record and is reported as a DTC at the next start (`safety.<event>`, `safety.mcu_watchdog`, `safety.fault_exception`,
+`safety.reset_other`; `safety.reset_loop` after two or more safety resets in a row), if the project has the DTC or
+the collective DTC. Events that do not reset (S1 held, `CHECK_REGISTER_ERROR`), `RTE_TIMING_VIOLATION` (log only) and
+`DEVICE_REPORT` store no DTC; a reset by button, debugger or diagnostic service after a safety reset does not report
+the old cause again. The degraded reaction SD keeps the ECU running (SYS-117): the application reads the degraded
+groups through the RTE signal `safety.degraded`, and a DTC samples them (`safety.device_fault`, NVM-08). An integrator
+who needs more than this (for example the cause of an event that stores no DTC) adds his own storage.
+<<<
+STATUS: concept
+SOURCE: concept.md section 4.4
+
+[AOU]
+UID: AoU-20
+TITLE: Non-qualified RTOS, compiler and libraries accepted or replaced
+STATEMENT: >>>
+The RTOS, the compiler and the C/C++ libraries used are **not qualified** (section 8). The integrator either accepts
+that, or runs the qualification himself, or replaces them.
+<<<
+STATUS: concept
+SOURCE: concept.md section 4.4
+
+[AOU]
+UID: AoU-21
+TITLE: Device safety manuals obtained and the driver use checked
+STATEMENT: >>>
+For every safety-related **device** in his design, the integrator obtains the manufacturer's safety manual or safety
+application note, and checks that the way our driver uses the part matches it — including the settings the part
+manufacturer requires and the diagnostics he requires to be run. We do not have those documents today (section 13).
+*Issue 2:* the device drivers' diagnostics are stage 2 and not credited in stage 1 (section 1.4); until SYS-28
+delivers them, whatever the integrator's argument needs from a part's diagnostics is his to provide and to justify.
+<<<
+STATUS: concept
+SOURCE: concept.md section 4.4
+
+[AOU]
+UID: AoU-22
+TITLE: Static analysis of the integrator's own code and configuration
+STATEMENT: >>>
+*New in issue 2, proposed by PLAT-74.* The static analysis of neXtBSW ([`static-analysis.md`](../../safety/static-analysis.md))
+covers neXtBSW's own code in the configuration of the demo project only. It does not cover the integrator's
+application code, his generated code, his project configuration or the code paths of other derivatives. An
+integrator who relies on coding-guideline compliance runs the same analysis (or a qualified one) on his own code in
+**his** project configuration, and handles the findings with the same rules (deviation records with approval, no
+silent baseline growth). MISRA C++:2023 is not checked by any free tool; if his argument needs it, he provides the
+tool.
+<<<
+STATUS: concept
+SOURCE: concept.md section 4.4
+
+[AOU]
+UID: AoU-23
+TITLE: No stage-1 claim for ASG-03 and ASG-04, partial for ASG-01
+STATEMENT: >>>
+*New in issue 2.* In stage 1 neXtBSW makes **no claim** for the detection part of ASG-03 (cell voltage, temperature,
+current outside the safe operating area) and none for ASG-04 (unintended balancing), and only a partial one for
+ASG-01 (section 2.2). An integrator whose item has such goals provides the detection himself — in the application,
+in hardware, or by arguing the device diagnostics under AoU-21 — until the gaps G1–G5 (section 9.5) are closed and
+stage 2 exists.
+<<<
+STATUS: concept
+SOURCE: concept.md section 4.4
+
+[AOU]
+UID: AoU-40
+TITLE: Holds on the FlexNVM block are short and not taken below a storing task
+STATEMENT: >>>
+*New after issue 2 (NVM-25; binding since issue 3 by the decision ZG of the confirmation review CM-07).* A task that reads the data
+flash in place under a hold of the FlexNVM block (`dataflash::DirectRead`, `AreaService::holdForDirectRead()`,
+SM-60) keeps the hold short and runs at no lower priority than any task that stores into the EEPROM emulation (NvM).
+While a hold exists no EEPROM store starts: a store waits at most 260 ms and then fails with a reported write error
+(it never collides). A hold of a lower-priority task that is preempted can therefore make a store of the NvM fail;
+the integrator either keeps holds out of such tasks or shows that a failed store is acceptable for his item.
+<<<
+STATUS: concept
+SOURCE: concept.md section 4.4 (NVM-25; binding since CM-07 ZG)
+
+[AOU]
+UID: AoU-41
+TITLE: No bus master other than the core accesses RAM until SYS-21 restricts descriptor 0
+STATEMENT: >>>
+*New after issue 2 (review Welle-0210-Tag, S171-1, decided by the safety responsible 2026-10-02).* No bus master
+other than the core - the DMA (eDMA, master M2) and the Ethernet controller (master M3) - accesses RAM, and no
+driver or application code enables one of them, until SYS-21 restricts MPU descriptor 0 for masters M2 and M3. The
+descriptor grants these masters read, write and execute access in the whole address space, so the MPU does not
+protect the protected RAM against them (hsi-s32k1xx.md H10, fmea.md N3). Today no neXtBSW driver enables such a
+master; an integrator who adds one takes the protection of the protected RAM against it into his own safety
+argument.
+<<<
+STATUS: concept
+SOURCE: concept.md section 4.4 (review Welle-0210-Tag, S171-1)
+
+[AOU]
+UID: AoU-42
+TITLE: All tasks run privileged
+STATEMENT: >>>
+*New after issue 2 (review Welle-0210-Tag, SYS-172 P1, decided by the safety responsible 2026-10-02).* Every task
+of the image runs in the privileged thread mode. The short interrupt lock (`cpsid`) around the check and the write
+in the selection, the lock and the start test of the active short (SYS-172) takes effect only in privileged code;
+in the unprivileged thread mode the instruction is ignored without a fault and the race it closes would be open
+again. An integrator who introduces unprivileged tasks first adds a lock that works for them (a supervisor call)
+or shows that the race stays closed.
+<<<
+STATUS: concept
+SOURCE: concept.md section 4.4 (review Welle-0210-Tag, SYS-172 P1)
+
+[[/SECTION]]
+
+[[SECTION]]
+TITLE: 4.5 Tools and generated code (new after issue 2, DOC-38)
+
+[AOU]
+UID: AoU-26
+TITLE: Image only through the build, tool checks on the own configuration
+STATEMENT: >>>
+The integrator generates the image **only through the build**, with the tool versions pinned by
+`tools/ci/constraints.txt`, never edits a generated file, and runs the tool checks of `tool-classification.md`
+section 4 on **his own project configuration** after every change of configuration or tool version. He verifies the
+validity of this predetermined classification (use cases, maximum ASIL, tool versions and environment) for his item
+before relying on it, and runs every image at least once on the target before release.
+<<<
+STATUS: concept
+SOURCE: concept.md section 4.5
+
+[AOU]
+UID: AoU-27
+TITLE: Studio display is not evidence
+STATEMENT: >>>
+The **Studio's display** (validation messages, step state, test results, schedule analysis) is not evidence.
+Evidence is the output of the command-line tools and of `tools/test` from the repository's interpreter, as recorded
+by the CI; the packaged Studio may carry older copies of the tool packages.
+<<<
+STATUS: concept
+SOURCE: concept.md section 4.5
+
+[AOU]
+UID: AoU-28
+TITLE: Calibration and diagnostic write access controlled
+STATEMENT: >>>
+**Calibration and diagnostic write access** to safety-relevant values is either disabled in the product, or each
+such write is interlocked by the application or the safe supervisor, and a calibrated safety-relevant parameter is
+verified by reading back its stored value without the A2L conversion (`memory.calibration.profile: production`,
+console `cal values`; the generated plausibility check limits a write, it does not replace the read-back).
+<<<
+STATUS: concept
+SOURCE: concept.md section 4.5
+
+[AOU]
+UID: AoU-29
+TITLE: Code generator of the application classified by the integrator
+STATEMENT: >>>
+The classification and qualification of the application's **code generator** (Embedded Coder) and the verification
+of the generated model code are the integrator's; no neXtBSW check verifies the behaviour of that code — rtegen
+checks only the interface. neXtBSW supplies the RTE interface description and the Embedded Coder settings applied by
+`tools/swc/swc_create.m`.
+<<<
+STATUS: concept
+SOURCE: concept.md section 4.5
+
+[[/SECTION]]

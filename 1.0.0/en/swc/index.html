@@ -1,0 +1,6266 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Hardware-neutral, configurable basic software for 32-bit automotive MCUs, built on Eclipse OpenBSW">
+      
+      
+      
+      
+        <link rel="prev" href="../projects/">
+      
+      
+        <link rel="next" href="DemoSwcSubstitute/">
+      
+      
+        
+          <link rel="alternate" href="../../swc/" hreflang="de">
+        
+          <link rel="alternate" href="./" hreflang="en">
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Software-Komponenten - neXtBSW</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#software-komponenten-simulink-autosar-classic" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../" title="neXtBSW" class="md-header__button md-logo" aria-label="neXtBSW" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            neXtBSW
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Software-Komponenten
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="indigo"  aria-label="Dunkel"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Dunkel" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="indigo"  aria-label="Hell"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Hell" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Select language">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="../../swc/" hreflang="de" class="md-select__link">
+              Deutsch
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../" title="neXtBSW" class="md-nav__button md-logo" aria-label="neXtBSW" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    neXtBSW
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Start
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Wegweiser
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../doc/guide/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Integrator
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Integrator
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doc/guide/getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Erste Schritte
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doc/guide/host-durchlauf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Host-Durchlauf ohne Hardware
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doc/guide/your-first-board/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Das erste Board
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doc/guide/the-application/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Die Anwendung
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doc/guide/build-and-flash/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bauen und Flashen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doc/guide/customer-project/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Eigenes ECU-Repository
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doc/guide/new-derivative/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Neues Derivat
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doc/guide/board-readme-template/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vorlage Board-README
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_10" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../doc/reference/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Konfigurationsreferenz
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3_10" id="__nav_3_10_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Konfigurationsreferenz
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doc/reference/derivative/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Derivative
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doc/reference/board/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Board
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doc/reference/project/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doc/reference/rte/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rte
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doc/reference/diag/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diag
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doc/reference/console/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Console
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_11" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../projects/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Projekte, Komponenten, Boards
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3_11" id="__nav_3_11_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_11_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Projekte, Komponenten, Boards
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Software-Komponenten
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Software-Komponenten
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#voraussetzungen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Voraussetzungen
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#modellregeln" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Modellregeln
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#arbeitsablauf" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Arbeitsablauf
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#hand-written-c-components-rte-20" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hand-written C components (RTE-20)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-types-rte-04" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data types (RTE-04)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#named-types-in-swcyaml-rte-15" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Named types in swc.yaml (RTE-15)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#array-ports-rte-25" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Array ports (RTE-25)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#measurements-tool-143" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Measurements (TOOL-143)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tasks-rte-02" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tasks (RTE-02)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#kalibrierparameter-rte-03" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Kalibrierparameter (RTE-03)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#calibration-objects-rte-26" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Calibration objects (RTE-26)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ecu-zustand-und-sleep-anforderung-sys-01sys-02" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ECU-Zustand und Sleep-Anforderung (SYS-01/SYS-02)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#signal-qualifier-empfangener-can-botschaften-com-03" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Signal-Qualifier empfangener CAN-Botschaften (COM-03)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Signal-Qualifier empfangener CAN-Botschaften (COM-03)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#datenkonsistenz-zwischen-tasks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Datenkonsistenz zwischen Tasks
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tests
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#demoswc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DemoSwc
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="DemoSwcSubstitute/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    C-Ersatz der DemoSwc
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ecu/platforms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Board-Ports
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../boards/buildtest_s32k148/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S32K148 build-test board (S32K148 LQFP176)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_12" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_12" id="__nav_3_12_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release Notes
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_12">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Release Notes
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doc/release-notes/v1.0.0-rc2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.0.0-rc2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doc/release-notes/v1.0.0-rc1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.0.0-rc1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../doc/safety/start/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Safety-Assessor
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Safety-Assessor
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doc/safety/safety-manual/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sicherheitshandbuch
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doc/safety/concept/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sicherheitskonzept
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doc/safety/figures/concept-figures/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bilder zum Konzept
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doc/safety/anomaly-register/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Anomalie-Register
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_6" id="__nav_4_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Arbeitsprodukte
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Arbeitsprodukte
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doc/safety/safety-plan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW safety plan — software SEooC at ASIL B (SYS-60)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doc/safety/verification-plan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW verification plan and archived reports per baseline (SYS-67)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doc/safety/safety-case/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW safety case — software SEooC at ASIL B (SYS-64)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doc/safety/cm-plan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW configuration management plan and baselines (SYS-68)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doc/safety/sw-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW — software architectural design specification of the safety part (SYS-65)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doc/safety/architecture-safety-analysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW software architectural safety analysis beyond the mechanisms (SYS-71)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doc/safety/fmea/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW failure analysis of the base-software safety mechanisms (stage 1)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doc/safety/figures/fmea-figures/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fmea figures
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doc/safety/dfa/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW dependent failure analysis of the stage-1 mechanisms (SYS-70)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doc/safety/unit-design/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW — software unit design: watchdog handling, fault handlers, safety task (SYS-92, N2)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doc/safety/coexistence/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW — coexistence of ASIL B and QM software in one image (SYS-61)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doc/safety/partner-and-degraded/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Partner MCU supervision, degraded reaction and active short circuit — concept
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doc/safety/config-range/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW — argument over the admissible configuration range (SYS-92, N3)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doc/safety/hsi-s32k1xx/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW hardware-software interface of the stage-1 safety mechanisms — s32k1xx (SYS-66)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doc/safety/hardware-mechanisms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hardware safety mechanisms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doc/safety/security-interplay/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW — interplay of functional safety and cybersecurity (SYS-92, N1)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doc/safety/static-analysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Static analysis and coding guidelines (PLAT-74)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doc/safety/tool-classification/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW tool classification and safeguards of the generated code (PLAT-75)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doc/safety/component-qualification/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW — route per pre-existing component and qualification plan (SYS-62)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doc/safety/dev-environment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW development environment: languages, guidelines, tools, build and test flow (DOC-22)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doc/safety/board-test-spec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW board test specification per SSR with operational use cases (SYS-75)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../doc/openbsw-beitraege/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributor
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Contributor
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_1" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../doc/architecture/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architektur
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_1" id="__nav_5_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Architektur
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doc/architecture/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doc/architecture/openbsw/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Openbsw
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doc/architecture/openbsw-naehe/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Openbsw naehe
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doc/architecture/autosar/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Autosar
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doc/architecture/autosar-standard-set/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Autosar standard set
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doc/architecture/autosar-ecuc-map/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Autosar ecuc map
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doc/architecture/autosar-ecuc-evaluation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Autosar ecuc evaluation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doc/architecture/plattformen/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plattformen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doc/architecture/customer-project/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Customer project
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doc/architecture/versioning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW – Versionierung und Support
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doc/architecture/csec-concept/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CSEc in neXtBSW: keys, message authentication and secure start (SYS-56)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doc/architecture/kalibrierung/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Calibration in neXtBSW: parameters, maps, a versioned calibration database, measurement signals (ARCH-64)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doc/architecture/pin-interrupts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pin interrupts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doc/architecture/signal-qualifier/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Signal qualifiers for received messages (COM-03)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doc/architecture/treiber-granularitaet/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW – granularity of device drivers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doc/architecture/treiber-anbindung-analyse/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW – binding device drivers to the system: analysis of the hand-written integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doc/architecture/openbsw-console-number-arguments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OpenBSW console commands with a number argument - audit (PLAT-110)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_1_19" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_1_19" id="__nav_5_1_19_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Geplant nach R1
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_1_19_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_1_19">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Geplant nach R1
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doc/architecture/planned/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Planned
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doc/architecture/non-cortex-m-audit/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Non cortex m audit
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doc/architecture/rm4x-quellen/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rm4x quellen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doc/architecture/stm32-nucleo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Stm32 nucleo
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../doc/figures/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bilder
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_2" id="__nav_5_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Bilder
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doc/figures/01-schichten/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    01 schichten
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doc/figures/02-konfigurationsfluss/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    02 konfigurationsfluss
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doc/figures/03-startablauf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    03 startablauf
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doc/figures/04-flash-uds/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    04 flash uds
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doc/figures/05-ecu-zustaende/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    05 ecu zustaende
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doc/figures/06-safety-kette/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    06 safety kette
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doc/figures/07-modulkarte/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    07 modulkarte
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doc/figures/08-lesepfade/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    08 lesepfade
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../bootloader/doc/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Moduldokumentation
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_3" id="__nav_5_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Moduldokumentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doc/reference/modules/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modules
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../bootloader/doc/iso14229-1-clause16-conformance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Conformance with ISO 14229-1 clause 16 (non-volatile server memory programming)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../libs/bsw/autosarBase/doc/autosarBase/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AUTOSAR base types (autosarBase)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../libs/bsw/canPhyPassive/doc/canPhyPassive/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Passive CAN transceiver (canPhyPassive)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../libs/bsw/canSystem/doc/canSystem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CAN system, hardware independent parts (canSystem)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../libs/bsw/consoleContext/doc/consoleContext/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Console context (consoleContext)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../libs/bsw/dem/doc/dem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    dem – fault memory (simplified AUTOSAR DEM)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../libs/bsw/e2e/doc/e2e/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    E2E-Bibliothek (e2e)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../libs/bsw/ecuState/doc/ecuState/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ECU-Zustandsverwaltung (ecuState)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../libs/bsw/gdTmc6200/doc/gdTmc6200/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Gate-Treiber TMC6200 (gdTmc6200)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../libs/bsw/hallDecoder/doc/hallDecoder/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hall decoder (hallDecoder)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../libs/bsw/highSideSwitch/doc/highSideSwitch/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Smart high-side switch (highSideSwitch)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../libs/bsw/mcuLink/doc/mcuLink/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mcuLink
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../libs/bsw/nvm/doc/nvm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NvM core (libs/bsw/nvm)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../libs/bsw/nvmDataFlash/doc/nvmDataFlash/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nvmDataFlash - data flash areas (NVM-12)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../libs/bsw/sbcUja113x/doc/sbcUja113x/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SBC-Treiber UJA113x (sbcUja113x)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../libs/bsp/bspAdcAccess/doc/bspAdcAccess/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Serialized ADC access (bspAdcAccess)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../libs/bsp/bspI2c/doc/bspI2c/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    I2C master contract (bspI2c)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../libs/bsp/bspPinEdge/doc/bspPinEdge/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pin edge contract (bspPinEdge)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../libs/bsp/bspPinEvent/doc/bspPinEvent/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    bspPinEvent
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../libs/bsp/bspSampleGroup/doc/bspSampleGroup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sample group (bspSampleGroup)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../libs/bsp/bspSpi/doc/bspSpi/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SPI device contract (bspSpi)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../platforms/common/clockCheck/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Clock start-up check (PLAT-72)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../platforms/common/interruptPriority/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interrupt priorities as ranks (PLAT-10, wired up in PLAT-21, per core profile since ARCH-24)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../platforms/s32k1xx/bsp/bspCsec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    bspCsec – CSEc of the S32K1 family
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../platforms/s32k1xx/bsp/bspMcu/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    bspMcu (Familie s32k1xx) – Derivat-Header und mcu/mcu.h (PLAT-11)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../platforms/s32k1xx/startup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Startup templates per core architecture (PLAT-10)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../platforms/s32k1xx/port/safety/safeLifecycle/doc/safeLifecycle/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Safety task, s32k1xx (safeLifecycle)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../platforms/s32k1xx/port/safety/safeMemory/doc/safeMemory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Memory safety of the s32k1xx family (safeMemory)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../platforms/s32k1xx/port/safety/safeSupervisor/doc/safeSupervisor/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Safe supervisor, project values of the s32k1xx port (safeSupervisor)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../platforms/s32k1xx/port/safety/safeSystem/doc/safeSystem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference and supply supervision, s32k1xx (safeSystem)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../platforms/s32k1xx/port/bspConfiguration/src/bsp/capture/doc/capture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Input capture, s32k1xx (capture)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../platforms/s32k1xx/port/bspConfiguration/src/bsp/hall/doc/hall/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hall sensor set, s32k1xx (hall)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../tools/test/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tests und Werkzeuge
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_4" id="__nav_5_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tests und Werkzeuge
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tools/docgen/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    docgen - generated reference documentation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tools/docgen/website/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Doku-Website
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tools/ci/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/ci – provider-neutral CI (TOOL-03)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tools/setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/setup – the Python environment of a workspace (TOOL-63)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tools/distcheck/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    distcheck – distribution check and export of the open tree
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tools/canflash/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/canflash – application and bootloader over CAN (UDS on ISO-TP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tools/boardtest/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/boardtest – board measurement scripts with host tests (TOOL-05)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tools/misra/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/misra – static analysis (PLAT-74)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tools/trace/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/trace — traceability of the safety requirements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tools/a2lgen/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    a2lgen - A2L for XCP on CAN (TOOL-01)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tools/calgen/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    calgen – calibration datasets (stage K2)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tools/csec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    csec – host side of the CSEc way back to the factory state
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tools/elfcheck/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    elfcheck – linked images against the derivative map and the core
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tools/nxupdate/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tools/schedana/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/schedana – analyse processor load, scheduling and data flow (TOOL-09)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tools/stackuse/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    stackuse – worst-case stack per execution context
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Beitragen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SECURITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sicherheitsluecken melden
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mcudb/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ableitung der Chipdaten (mcudb)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#voraussetzungen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Voraussetzungen
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#modellregeln" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Modellregeln
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#arbeitsablauf" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Arbeitsablauf
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#hand-written-c-components-rte-20" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hand-written C components (RTE-20)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-types-rte-04" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data types (RTE-04)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#named-types-in-swcyaml-rte-15" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Named types in swc.yaml (RTE-15)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#array-ports-rte-25" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Array ports (RTE-25)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#measurements-tool-143" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Measurements (TOOL-143)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tasks-rte-02" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tasks (RTE-02)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#kalibrierparameter-rte-03" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Kalibrierparameter (RTE-03)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#calibration-objects-rte-26" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Calibration objects (RTE-26)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ecu-zustand-und-sleep-anforderung-sys-01sys-02" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ECU-Zustand und Sleep-Anforderung (SYS-01/SYS-02)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#signal-qualifier-empfangener-can-botschaften-com-03" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Signal-Qualifier empfangener CAN-Botschaften (COM-03)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Signal-Qualifier empfangener CAN-Botschaften (COM-03)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#datenkonsistenz-zwischen-tasks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Datenkonsistenz zwischen Tasks
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tests
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#demoswc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DemoSwc
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="software-komponenten-simulink-autosar-classic">Software-Komponenten (Simulink, AUTOSAR Classic)<a class="headerlink" href="#software-komponenten-simulink-autosar-classic" title="Permanent link">&para;</a></h1>
+<p>Anwendungslogik entsteht als Simulink-Modell, das als <strong>AUTOSAR-Classic-Softwarekomponente (SWC)</strong> mit dem
+AUTOSAR Blockset konfiguriert ist. Embedded Coder erzeugt C-Code und ARXML. Eine eigene, schlanke RTE
+(<code>tools/rtegen</code>) verbindet die Ports mit der Basis-Software (OpenBSW) und ruft die Runnables zyklisch auf.</p>
+<p>A component can also be written in C by hand, with the same RTE API and without MATLAB: see
+<a href="#hand-written-c-components-rte-20">Hand-written C components (RTE-20)</a>.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>swc/&lt;Swc&gt;/&lt;Swc&gt;.slx ──(tools/swc/swc_build.m, MATLAB)──► swc/&lt;Swc&gt;/generated/{src,arxml}   (eingecheckt)
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>                                                                  │
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>projects/&lt;p&gt;/project.yaml → rte.yaml ─(tools/rtegen, CMake)───────┴─► build/&lt;preset&gt;/generated/rte
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>ecu/asyncCoreConfiguration/tasks.yaml ─┘                                 Rte_Type.h, Rte_&lt;Swc&gt;.h, Rte.c,
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>                                                                         RteConfig.h/.cpp, RteTasks.h,
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>                                                                         tasks/async/Config.h
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>ecu/application: RteSystem ── init runnables + rte::init(), dann je Anwendungs-Task in seinem Kontext alle period_ms:
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>                              readInputs(task) → fällige Runnables des Tasks in Reihenfolge → writeOutputs(task)
+</code></pre></div>
+<h2 id="voraussetzungen">Voraussetzungen<a class="headerlink" href="#voraussetzungen" title="Permanent link">&para;</a></h2>
+<ul>
+<li>MATLAB <strong>R2024a</strong> mit Simulink, Embedded Coder und AUTOSAR Blockset (nur zum Ändern eines Modells).</li>
+<li>Für den Firmware-Build ist MATLAB nicht nötig: Der erzeugte Code liegt im Repo.</li>
+<li>The published (open source) tree does <strong>not</strong> contain the code Simulink Coder generated (MATLAB student licence,
+  decision F9 A, PLAT-119): there <code>swc/DemoSwc</code> is built from the hand-written C substitute
+  <a href="DemoSwcSubstitute/"><code>swc/DemoSwcSubstitute</code></a> with the same RTE interface; with your own MATLAB licence
+  you generate the original from the model.</li>
+</ul>
+<h2 id="modellregeln">Modellregeln<a class="headerlink" href="#modellregeln" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Thema</th>
+<th>Regel</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Modelltyp</td>
+<td>Export-Function-Modell, System Target File <code>autosar.tlc</code></td>
+</tr>
+<tr>
+<td>Runnables</td>
+<td>je eine Function-Call-Inport pro Runnable, die Abtastzeit ist die Periode (ganze ms, Vielfaches der RTE-Basisperiode). Der Init-Runnable <code>&lt;Swc&gt;_Init</code> entsteht automatisch.</td>
+</tr>
+<tr>
+<td>Ports</td>
+<td>Root-Inports = Required Ports, Root-Outports = Provided Ports, Sender-Receiver, Zugriff <code>ExplicitReceive</code>/<code>ExplicitSend</code></td>
+</tr>
+<tr>
+<td>Datentypen</td>
+<td>AUTOSAR-Plattformtypen (<code>boolean</code>, <code>uint8/16/32</code>, <code>sint8/16/32</code>, <code>float32/64</code>); arrays, records (buses), enumerations and fixed point between components, see "Data types (RTE-04)"</td>
+</tr>
+<tr>
+<td>Hardware</td>
+<td>keine Hardware-Blöcke (MBDT o. Ä.) im Modell: Ein-/Ausgänge nur über Ports</td>
+</tr>
+<tr>
+<td>Zielhardware</td>
+<td><code>ARM Compatible-&gt;ARM Cortex-M</code></td>
+</tr>
+</tbody>
+</table>
+<p>| Kalibrierparameter | Elemente des ParameterReceiver-Ports <code>CalPrm</code> (Abschnitt „Kalibrierparameter“), Werte nur in <code>&lt;Swc&gt;_data.m</code> |</p>
+<p>Nicht unterstützt (noch): Client-Server-Ports, Mode-Management, mehrere Instanzen.</p>
+<h2 id="arbeitsablauf">Arbeitsablauf<a class="headerlink" href="#arbeitsablauf" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong>Neue Komponente:</strong> <code>swc/template/swc.yaml</code> nach <code>swc/&lt;Swc&gt;/swc.yaml</code> kopieren, Name, Runnables und Ports
+   eintragen, <code>python tools/swc/swc_yaml.py check swc/&lt;Swc&gt;</code>, dann
+   <code>matlab -batch "addpath tools/swc; swc_create('swc/&lt;Swc&gt;')"</code>. Das legt <code>&lt;Swc&gt;.slx</code> mit Subsystemen je Runnable,
+   Ports und AUTOSAR-Zuordnung an; danach ist die <code>.slx</code> die Quelle. Bausteine: Library Browser „neXtBSW
+   Components“ (<code>swc/template/NxSwcLib.slx</code>), z. B. <code>SensorQualifier</code>.</li>
+<li><strong>Ports einer bestehenden Komponente ändern</strong> (TOOL-14): Die <code>.slx</code> wird nie neu erzeugt. Geänderte Ports der
+   <code>swc.yaml</code> schreibt <code>swc_ports</code> gezielt ins bestehende Modell – hinzufügen, umbenennen, entfernen, Datentyp –,
+   jeder andere Block und jede andere Linie bleibt, wo sie ist:
+   <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">swc_ports</span><span class="p">(</span><span class="s">'swc/&lt;Swc&gt;'</span><span class="p">,</span><span class="w"> </span><span class="s">'report'</span><span class="p">,</span><span class="w"> </span><span class="s">'ports.json'</span><span class="p">)</span><span class="w">   </span><span class="c">% nur lesen: Ports und was im Modell daran hängt</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="n">swc_ports</span><span class="p">(</span><span class="s">'swc/&lt;Swc&gt;'</span><span class="p">,</span><span class="w"> </span><span class="s">'apply'</span><span class="p">,</span><span class="w">  </span><span class="s">'plan.json'</span><span class="p">)</span><span class="w">    </span><span class="c">% schreiben; der Plan muss eine vorhandene Kopie der .slx nennen</span>
+</code></pre></div>
+   Aus dem Studio mit Vorschau und Sicherung: <code>studio component ports projects/&lt;projekt&gt; &lt;Swc&gt; [--detach] --apply</code>
+   (tools/studio/README.md). Ein Port, an dem Logik hängt, wird <strong>abgelehnt</strong>, solange das Abtrennen nicht
+   ausdrücklich erlaubt ist – und auch dann wird kein Block gelöscht: an die Stelle des Ports tritt
+   <code>&lt;Port&gt;_Removed</code> (Constant bzw. Terminator). Runnables ändert man weiterhin in Simulink.</li>
+<li><strong>Code erzeugen</strong> (nach jeder Modelländerung):
+   <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nb">cd</span><span class="w"> </span><span class="o">&lt;</span><span class="n">repo</span><span class="o">&gt;</span><span class="p">;</span><span class="w"> </span><span class="n">addpath</span><span class="w"> </span><span class="s">tools/swc</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="n">swc_build</span><span class="p">(</span><span class="s">'swc/DemoSwc'</span><span class="p">)</span>
+</code></pre></div>
+   Schreibt <code>generated/src</code>, <code>generated/arxml</code> und <code>generated/model.sha256</code> (Hash der <code>.slx</code>). Datumszeilen werden
+   aus dem erzeugten Code entfernt, damit Git nur echte Änderungen zeigt. Passt die <code>.slx</code> nicht mehr zum
+   Hash, warnt der CMake-Konfigurierlauf, dass der eingecheckte Code veraltet ist.</li>
+<li><strong>Verbinden</strong> in der ECU-Beschreibung des Projekts (<code>projects/&lt;projekt&gt;/rte.yaml</code>, in <code>project.yaml</code> unter
+   <code>project.rte</code>). Paths inside it (<code>path</code>, <code>can.dbc</code>) are relative to that <code>rte.yaml</code> (RTE-22, <code>schema_version: 2</code>),
+   not to the repository root: a reusable component like DemoSwc is reached with <code>../../swc/&lt;Swc&gt;</code>, a
+   project-specific one with <code>swc/&lt;Swc&gt;</code>, and the project's DBC lies next to the file. That way a project keeps
+   working when it is moved, copied or kept outside the neXtBSW tree. An older description without the key is
+   format 1, whose paths were relative to the repository root (<code>rtegen --repo</code>); <code>nxconfig migrate</code> raises it
+   (<code>projects/README.md</code>).
+   <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nt">schema_version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="nt">components</span><span class="p">:</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">DemoSwc</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">    </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">../../swc/DemoSwc</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="nt">connections</span><span class="p">:</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="w">  </span><span class="nt">DemoSwc.Button1.Button1</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dio.in.BUTTON1</span><span class="w">          </span><span class="c1"># Required Port &lt;- digitaler Eingang</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="w">  </span><span class="nt">DemoSwc.MotorNtc_mV.MotorNtc_mV</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">adc.mv.MOTOR_NTC</span><span class="w">  </span><span class="c1"># Required Port &lt;- ADC in mV</span>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="w">  </span><span class="nt">DemoSwc.Led1.Led1</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dio.out.LED1</span><span class="w">                  </span><span class="c1"># Provided Port -&gt; digitaler Ausgang</span>
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="w">  </span><span class="nt">DemoSwc.PcCommandQlf.PcCommandQlf</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">can.qlf.PC_Command</span><span class="w">  </span><span class="c1"># Qualifier einer Empfangsbotschaft (uint8)</span>
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="w">  </span><span class="nt">DemoSwc.MotorNtcFiltered_mV.MotorNtcFiltered_mV</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">rte</span><span class="w">   </span><span class="c1"># bleibt in der RTE</span>
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="w">  </span><span class="c1"># OtherSwc.In.Value: DemoSwc.Out.Value           # Komponente zu Komponente</span>
+</code></pre></div>
+   <code>rtegen</code> prüft: jeder Required Port verbunden, Richtung und Datentyp passen zum Ziel, Signal existiert im
+   Board-Profil und wird vom Projekt genutzt (<code>use:</code>/<code>pwm:</code> in <code>project.yaml</code>), Perioden und Versätze passen zum Task
+   (Abschnitt „Tasks“).</li>
+<li><strong>Firmware bauen</strong> wie gewohnt (<code>cmake --build --preset buildtest-s32k148-min</code>, <code>projects/README.md</code>), flashen per
+   CAN oder J-Link.</li>
+<li><strong>Am Target prüfen:</strong> Konsole <code>rte signals</code> (alle Puffer mit Verbindung) und <code>rte runnables</code> (je Task Kontext,
+   Periode, Zyklen, Überläufe, längster Zyklus; je Runnable Periode, Versatz, Aufrufe, Laufzeit), <code>stats cpu</code> und
+   <code>stats stack</code> für die Tasks.</li>
+</ol>
+<h2 id="hand-written-c-components-rte-20">Hand-written C components (RTE-20)<a class="headerlink" href="#hand-written-c-components-rte-20" title="Permanent link">&para;</a></h2>
+<p>A component can also be written in C by hand instead of being modelled in Simulink. It is described, connected,
+scheduled and calibrated exactly like a Simulink component; only the source of the code differs, and no MATLAB is
+involved at any step.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>swc/&lt;Swc&gt;/swc.yaml (implementation: c) ──(tools/swc/swc_skeleton.py create, once)──► swc/&lt;Swc&gt;/src/&lt;Swc&gt;.c  (yours)
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>        │                                                                                    │
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>        └──(tools/rtegen reads swc.yaml instead of ARXML)──► Rte_&lt;Swc&gt;.h, Rte.c, RteConfig.cpp ─┴─► ecu/application
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Simulink component</th>
+<th>C component</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>swc.yaml</code></td>
+<td>optional; after <code>swc_create</code> only the description the model came from</td>
+<td><strong>required and the master</strong>: <code>implementation: c</code></td>
+</tr>
+<tr>
+<td>What rtegen reads</td>
+<td><code>generated/arxml/*.arxml</code></td>
+<td><code>swc.yaml</code> (runnables, ports, parameters)</td>
+</tr>
+<tr>
+<td>Code</td>
+<td><code>generated/src</code> (Embedded Coder, <code>swc_build</code>)</td>
+<td><code>src/*.c</code> (hand-written)</td>
+</tr>
+<tr>
+<td>Runnable functions</td>
+<td><code>&lt;Runnable&gt;</code> (Embedded Coder), <code>&lt;Swc&gt;_Init</code></td>
+<td><strong><code>&lt;Swc&gt;_&lt;Runnable&gt;</code></strong>, <code>&lt;Swc&gt;_Init</code></td>
+</tr>
+<tr>
+<td>Port and parameter API</td>
+<td><code>Rte_Read_&lt;Port&gt;_&lt;Port&gt;</code>, <code>Rte_Write_&lt;Port&gt;_&lt;Port&gt;</code>, <code>Rte_Prm_CalPrm_&lt;Name&gt;</code> from <code>Rte_&lt;Swc&gt;.h</code></td>
+<td>the same</td>
+</tr>
+<tr>
+<td>Calibration values</td>
+<td><code>&lt;Swc&gt;_data.m</code></td>
+<td>the same (read by <code>tools/swc/mdata.py</code>, no MATLAB)</td>
+</tr>
+<tr>
+<td>Build rules</td>
+<td><code>ecu/rte</code> (<code>swcComponents</code>, warnings of the generated code not fatal), outside the MISRA scope</td>
+<td><code>ecu/application</code> like the application code: <code>-Wall -Wextra</code>, warnings are errors, in the MISRA scope of <code>tools/misra</code></td>
+</tr>
+<tr>
+<td><code>model.sha256</code> hint</td>
+<td>yes</td>
+<td>no (there is no model)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Workflow</strong></p>
+<ol>
+<li>Copy <code>swc/template/swc.yaml</code> to <code>swc/&lt;Swc&gt;/swc.yaml</code> (or <code>projects/&lt;project&gt;/swc/&lt;Swc&gt;/</code>), set the name, runnables,
+   ports, parameters and <strong><code>implementation: c</code></strong>; check with <code>python tools/swc/swc_yaml.py check swc/&lt;Swc&gt;</code>.</li>
+<li>Create the code skeleton <strong>once</strong>: <code>python tools/swc/swc_skeleton.py create swc/&lt;Swc&gt;</code>. It writes <code>src/&lt;Swc&gt;.c</code> with
+   <code>&lt;Swc&gt;_Init</code> and one function per runnable, each with commented example accesses; it never overwrites a C source, the
+   file is yours from then on.</li>
+<li>Write the logic. Keep the state <code>static</code>; runnables that share state belong in one task (the RTE protects port
+   buffers, not the component's own variables).</li>
+<li>Connect and schedule it in <code>rte.yaml</code> like any component, <code>path</code> relative to that file (RTE-22).</li>
+<li>After changing runnables: <code>python tools/swc/swc_skeleton.py check swc/&lt;Swc&gt;</code> lists missing, <code>static</code> or duplicate
+   runnable functions and orphans (warnings, exit code 0, <code>--strict</code>: 1); rtegen and the Studio show the same findings.</li>
+</ol>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1"># swc/LevelMon/swc.yaml</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">LevelMon</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="nt">implementation</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">c</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="nt">runnables</span><span class="p">:</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> name</span><span class="p">:</span><span class="w"> </span><span class="nv">Run10ms</span><span class="p p-Indicator">,</span><span class="nt"> period_ms</span><span class="p">:</span><span class="w"> </span><span class="nv">10</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="nt">ports</span><span class="p">:</span>
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> name</span><span class="p">:</span><span class="w"> </span><span class="nv">Level_mV</span><span class="p p-Indicator">,</span><span class="nt"> direction</span><span class="p">:</span><span class="w"> </span><span class="nv">in</span><span class="p p-Indicator">,</span><span class="nt"> type</span><span class="p">:</span><span class="w"> </span><span class="nv">uint32</span><span class="p p-Indicator">,</span><span class="nt"> runnables</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">Run10ms</span><span class="p p-Indicator">]</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> name</span><span class="p">:</span><span class="w"> </span><span class="nv">Above</span><span class="p p-Indicator">,</span><span class="nt"> direction</span><span class="p">:</span><span class="w"> </span><span class="nv">out</span><span class="p p-Indicator">,</span><span class="nt"> type</span><span class="p">:</span><span class="w"> </span><span class="nv">boolean</span><span class="p p-Indicator">,</span><span class="nt"> runnables</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">Run10ms</span><span class="p p-Indicator">]</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="nt">parameters</span><span class="p">:</span>
+<a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> name</span><span class="p">:</span><span class="w"> </span><span class="nv">OnLevel_mV</span><span class="p p-Indicator">,</span><span class="nt"> type</span><span class="p">:</span><span class="w"> </span><span class="nv">uint32</span><span class="p p-Indicator">,</span><span class="nt"> runnables</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">Run10ms</span><span class="p p-Indicator">]</span><span class="w"> </span><span class="p p-Indicator">}</span><span class="w">      </span><span class="c1"># value in LevelMon_data.m</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="cm">/* swc/LevelMon/src/LevelMon.c */</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">"Rte_LevelMon.h"</span>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="k">static</span><span class="w"> </span><span class="n">boolean</span><span class="w"> </span><span class="n">above</span><span class="p">;</span>
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="kt">void</span><span class="w"> </span><span class="nf">LevelMon_Init</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">above</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">FALSE</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="kt">void</span><span class="w"> </span><span class="nf">LevelMon_Run10ms</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="p">{</span>
+<a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a><span class="w">    </span><span class="n">uint32</span><span class="w"> </span><span class="n">level_mV</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0U</span><span class="p">;</span>
+<a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a><span class="w">    </span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="n">Rte_Read_Level_mV_Level_mV</span><span class="p">(</span><span class="o">&amp;</span><span class="n">level_mV</span><span class="p">);</span>
+<a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a><span class="w">    </span><span class="n">above</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">level_mV</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">Rte_Prm_CalPrm_OnLevel_mV</span><span class="p">())</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">TRUE</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">FALSE</span><span class="p">;</span>
+<a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a><span class="w">    </span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="n">Rte_Write_Above_Above</span><span class="p">(</span><span class="n">above</span><span class="p">);</span>
+<a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a><span class="p">}</span>
+</code></pre></div>
+<p>rtegen builds the same component model as from the ARXML, so the same checks apply:</p>
+<ul>
+<li><strong>Ports:</strong> sender-receiver, port = interface = data element name, platform types, explicit access by exactly the
+  runnables listed at the port (the task plan uses that list), init value 0.</li>
+<li><strong>Calibration parameters</strong> are supported (scalar, row vector <code>dim</code>, fixed point <code>lsb</code>/<code>offset</code>); values come from
+  <code>&lt;Swc&gt;_data.m</code> without MATLAB.</li>
+<li><strong>Messages:</strong> errors carry the swc.yaml file, YAML path and line; the name in <code>rte.yaml</code> must be the name in swc.yaml;
+  two runnables with the same C function are an error. <strong>Array ports</strong> (RTE-25) are supported, see below.</li>
+<li><strong>Not (yet) available:</strong> records, enumerations and fixed point at ports (<code>types:</code> is refused), implicit access (RTE-09),
+  mode ports (RTE-08), init values other than 0; such a component is built in Simulink.</li>
+</ul>
+<p>Example and proof: test profile <code>tools/rtegen/test/c_swc</code> (C component <code>LevelMonSwc</code> next to the Simulink component
+<code>DemoSwc</code>), tests <code>rtegen-c-swc</code>, <code>swc-skeleton</code>, <code>rtegen-reference</code> and the firmware build <code>target-c-swc</code>.</p>
+<h2 id="data-types-rte-04">Data types (RTE-04)<a class="headerlink" href="#data-types-rte-04" title="Permanent link">&para;</a></h2>
+<p>Besides the platform types, sender-receiver ports carry the composite and scaled types of Embedded Coder R2024a.
+Test model: <code>tools/rtegen/test/types/TypeSwc</code> (<code>TypeSwc_create.m</code> builds the model, <code>swc_build</code> generates it).</p>
+<table>
+<thead>
+<tr>
+<th>Type in the model</th>
+<th>ARXML</th>
+<th>In the RTE</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>vector <code>uint16</code>, dimension 4</td>
+<td>IMPLEMENTATION-DATA-TYPE <code>ARRAY</code> (<code>rt_Array_uint16_4</code>)</td>
+<td><code>typedef uint16 rt_Array_uint16_4[4];</code>, <code>Rte_Read(uint16* data)</code>, <code>Rte_Write(const uint16* data)</code>, copied with <code>memcpy</code></td>
+</tr>
+<tr>
+<td>bus (<code>Simulink.Bus</code>), also nested and with vector elements</td>
+<td><code>STRUCTURE</code> + APPLICATION-RECORD-DATA-TYPE</td>
+<td><code>typedef struct { ... } Name;</code>, <code>Rte_Read(Name* data)</code>, <code>Rte_Write(const Name* data)</code></td>
+</tr>
+<tr>
+<td>enumeration (<code>Simulink.IntEnumType</code> or <code>uint8</code> based)</td>
+<td><code>VALUE</code> + TEXTTABLE compu method</td>
+<td><code>typedef uint8 Name;</code> and one macro per literal (<code>#define TypeSwc_Mode_Fault ((TypeSwc_Mode)3U)</code>)</td>
+</tr>
+<tr>
+<td>fixed point <code>fixdt(...)</code></td>
+<td><code>VALUE</code> + LINEAR compu method of the application type</td>
+<td><code>typedef uint16 UFIX16_SP1_BN40;</code>, stored values; the scaling is checked, not converted</td>
+</tr>
+</tbody>
+</table>
+<p>Model rules, because the RTE defines these types (<code>Rte_Type.h</code>):</p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Rule</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Bus</td>
+<td><code>DataScope = 'Imported'</code>, <code>HeaderFile = 'Rte_Type.h'</code>, root ports with <code>BusOutputAsStruct</code> on</td>
+</tr>
+<tr>
+<td>Enumeration</td>
+<td><code>getDataScope</code> returns <code>'Imported'</code>, <code>getHeaderFile</code> returns <code>'Rte_Type.h'</code>, <code>addClassNameToEnumNames</code> returns <code>true</code>; a <code>uint8</code> enumeration in a MATLAB Function block needs <code>SimGenImportedTypeDefs</code> on (simulation only)</td>
+</tr>
+<tr>
+<td>Fixed point in a bus</td>
+<td>a named <code>Simulink.NumericType</code> (a bare <code>fixdt(...)</code> bus element loses its scaling in the ARXML of R2024a); at a root port a bare <code>fixdt</code> is fine</td>
+</tr>
+</tbody>
+</table>
+<p>Units of <code>Simulink.BusElement.Unit</code> and port <code>Unit</code> do not reach the ARXML of R2024a.</p>
+<p>What rtegen checks (message with YAML path, also in <code>rtegen --validate</code> and the Studio):
+- A connection between two components needs the same layout, element types, scaling and literals; records also the same
+  type name.
+- One type name has one definition over all components, one literal name one value.
+- Records, arrays and fixed point connect only to component ports, <code>rte</code> and <code>rte.init</code>; BSW and CAN targets carry
+  unscaled scalars. Enumerations are integers and may use BSW targets of their platform type (e.g. <code>ecu.state</code>).
+- Init values from the ARXML (numerical, literal, array, record, constant reference); physical values become stored values,
+  rounded to the nearest step and checked against the type.
+- Refused: variable-size arrays, unions, anonymous nested records, compu methods other than IDENTICAL, LINEAR and
+  TEXTTABLE, records as calibration parameters.</p>
+<p>The console (<code>rte signals</code>) lists records and arrays element by element, enumerations as integer, fixed point as its
+stored value.</p>
+<h2 id="named-types-in-swcyaml-rte-15">Named types in swc.yaml (RTE-15)<a class="headerlink" href="#named-types-in-swcyaml-rte-15" title="Permanent link">&para;</a></h2>
+<p>A Simulink component describes its records, enumerations and fixed-point types in the list <code>types:</code> of swc.yaml;
+a port names one of them as its <code>type</code>. <code>swc_create</code> builds the model with them, so a component with composite
+ports no longer has to be modelled by hand as <code>TypeSwc_create.m</code> does.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="nt">types</span><span class="p">:</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MySwc_Mode</span><span class="w">                  </span><span class="c1"># enumeration</span>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="w">    </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">enum</span>
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="w">    </span><span class="nt">base</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uint8</span><span class="w">                       </span><span class="c1"># optional: uint8 (default), uint16, sint8, sint16, sint32</span>
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="w">    </span><span class="nt">literals</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">Off</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">Run</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">Fault</span><span class="p">:</span><span class="w"> </span><span class="nv">3</span><span class="p p-Indicator">}]</span><span class="w">  </span><span class="c1"># a name, or {name: value}; without a value the previous one + 1, first 0</span>
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="w">    </span><span class="nt">default</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Off</span><span class="w">                      </span><span class="c1"># optional, the first literal otherwise</span>
+<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MySwc_Speed</span><span class="w">                 </span><span class="c1"># fixed point</span>
+<a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a><span class="w">    </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">fixed</span>
+<a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a><span class="w">    </span><span class="nt">base</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sint16</span><span class="w">                      </span><span class="c1"># integer platform type of the stored value</span>
+<a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a><span class="w">    </span><span class="nt">lsb</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.0625</span><span class="w">                       </span><span class="c1"># physical = stored * lsb + offset</span>
+<a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a><span class="w">    </span><span class="nt">offset</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span><span class="w">                         </span><span class="c1"># optional</span>
+<a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a><span class="w">    </span><span class="nt">unit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">rpm</span><span class="w">                         </span><span class="c1"># optional</span>
+<a id="__codelineno-7-13" name="__codelineno-7-13" href="#__codelineno-7-13"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MySwc_Cmd</span><span class="w">                   </span><span class="c1"># record (bus)</span>
+<a id="__codelineno-7-14" name="__codelineno-7-14" href="#__codelineno-7-14"></a><span class="w">    </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">record</span>
+<a id="__codelineno-7-15" name="__codelineno-7-15" href="#__codelineno-7-15"></a><span class="w">    </span><span class="nt">elements</span><span class="p">:</span>
+<a id="__codelineno-7-16" name="__codelineno-7-16" href="#__codelineno-7-16"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> name</span><span class="p">:</span><span class="w"> </span><span class="nv">Mode</span><span class="p p-Indicator">,</span><span class="nt"> type</span><span class="p">:</span><span class="w"> </span><span class="nv">MySwc_Mode</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<a id="__codelineno-7-17" name="__codelineno-7-17" href="#__codelineno-7-17"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> name</span><span class="p">:</span><span class="w"> </span><span class="nv">Speed</span><span class="p p-Indicator">,</span><span class="nt"> type</span><span class="p">:</span><span class="w"> </span><span class="nv">MySwc_Speed</span><span class="p p-Indicator">,</span><span class="nt"> unit</span><span class="p">:</span><span class="w"> </span><span class="nv">rpm</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<a id="__codelineno-7-18" name="__codelineno-7-18" href="#__codelineno-7-18"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> name</span><span class="p">:</span><span class="w"> </span><span class="nv">Limits</span><span class="p p-Indicator">,</span><span class="nt"> type</span><span class="p">:</span><span class="w"> </span><span class="nv">uint8</span><span class="p p-Indicator">,</span><span class="nt"> dimension</span><span class="p">:</span><span class="w"> </span><span class="nv">2</span><span class="w"> </span><span class="p p-Indicator">}</span><span class="w">   </span><span class="c1"># array inside the record</span>
+<a id="__codelineno-7-19" name="__codelineno-7-19" href="#__codelineno-7-19"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> name</span><span class="p">:</span><span class="w"> </span><span class="nv">Enable</span><span class="p p-Indicator">,</span><span class="nt"> type</span><span class="p">:</span><span class="w"> </span><span class="nv">boolean</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<a id="__codelineno-7-20" name="__codelineno-7-20" href="#__codelineno-7-20"></a><span class="nt">ports</span><span class="p">:</span>
+<a id="__codelineno-7-21" name="__codelineno-7-21" href="#__codelineno-7-21"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> name</span><span class="p">:</span><span class="w"> </span><span class="nv">Cmd</span><span class="p p-Indicator">,</span><span class="nt"> direction</span><span class="p">:</span><span class="w"> </span><span class="nv">in</span><span class="p p-Indicator">,</span><span class="nt"> type</span><span class="p">:</span><span class="w"> </span><span class="nv">MySwc_Cmd</span><span class="p p-Indicator">,</span><span class="nt"> runnables</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">Run10ms</span><span class="p p-Indicator">]</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<a id="__codelineno-7-22" name="__codelineno-7-22" href="#__codelineno-7-22"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> name</span><span class="p">:</span><span class="w"> </span><span class="nv">Speed</span><span class="p p-Indicator">,</span><span class="nt"> direction</span><span class="p">:</span><span class="w"> </span><span class="nv">out</span><span class="p p-Indicator">,</span><span class="nt"> type</span><span class="p">:</span><span class="w"> </span><span class="nv">MySwc_Speed</span><span class="p p-Indicator">,</span><span class="nt"> min</span><span class="p">:</span><span class="w"> </span><span class="nv">-100</span><span class="p p-Indicator">,</span><span class="nt"> max</span><span class="p">:</span><span class="w"> </span><span class="nv">100</span><span class="p p-Indicator">,</span><span class="nt"> runnables</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">Run10ms</span><span class="p p-Indicator">]</span><span class="w"> </span><span class="p p-Indicator">}</span>
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Kind</th>
+<th>In the model (<code>swc_create</code>)</th>
+<th>In the RTE (tools/rtegen, from the ARXML)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>enum</code></td>
+<td><code>Simulink.defineIntEnumType</code> with <code>StorageType</code> = base, <code>DataScope</code> Imported, <code>HeaderFile</code> <code>Rte_Type.h</code>, class name in the literal names; model setting <code>SimGenImportedTypeDefs</code> on</td>
+<td><code>typedef uint8 MySwc_Mode;</code>, <code>#define MySwc_Mode_Fault ((MySwc_Mode)3U)</code></td>
+</tr>
+<tr>
+<td><code>fixed</code></td>
+<td>named <code>Simulink.NumericType</code> (alias, Imported): binary point scaling for a power-of-two lsb without offset, slope and bias otherwise</td>
+<td><code>typedef sint16 MySwc_Speed;</code>, stored values, LINEAR compu method</td>
+</tr>
+<tr>
+<td><code>record</code></td>
+<td><code>Simulink.Bus</code> (Imported), root port as nonvirtual bus (<code>BusOutputAsStruct</code>)</td>
+<td><code>typedef struct { ... } MySwc_Cmd;</code></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Where the definitions live:</strong> <code>swc_create</code> writes <code>&lt;Swc&gt;_types.m</code> next to the model (generated, do not edit); the
+  model's <code>PreLoadFcn</code> and <code>swc_load_init</code> run it. After a change of <code>types:</code> write it again with
+  <code>python tools/swc/swc_yaml.py types swc/&lt;Swc&gt;</code> (<code>--check</code> only compares). It is an input of <code>generated/model.sha256</code>.</li>
+<li><strong>Why named fixed point:</strong> a bare <code>fixdt(...)</code> inside a bus loses its scaling in the ARXML of R2024a.</li>
+<li><strong>Checks</strong> (YAML path and line): kind and keys per kind; literals are unique identifiers with unique values; <code>default</code>
+  is a literal; fixed point needs an integer base and <code>lsb</code> &gt; 0; record elements are platform or named types, no arrays
+  of records, no recursion; an unused type is a warning. <code>min</code>/<code>max</code> are allowed for fixed point only. The typedef and
+  every literal macro <code>&lt;Type&gt;_&lt;Literal&gt;</code> join the check of generated identifiers (TOOL-134).</li>
+<li><strong>Type names are global in the ECU:</strong> prefix them with the component (<code>MySwc_Mode</code>) unless two components share a type.</li>
+<li><strong>Not (yet) covered:</strong> C components refuse <code>types:</code>; arrays of named types at a port (use a record with an array
+  element); the Studio forms and <code>swc_ports</code> know platform types only.</li>
+</ul>
+<p>rtegen compares the port types of swc.yaml with the ARXML (TOOL-166): enumeration and fixed point by platform type, a
+record by its name. Proof: <code>tools/swc/test/fixtures/TypeYamlSwc/swc.yaml</code>, <code>test_swc_yaml.py</code> (SwcTypesTest) and the
+MATLAB test <code>SwcTypesTest.m</code>.</p>
+<h2 id="array-ports-rte-25">Array ports (RTE-25)<a class="headerlink" href="#array-ports-rte-25" title="Permanent link">&para;</a></h2>
+<p>A port of swc.yaml is an array of fixed size with the key <code>dimension</code> (default 1 = scalar):</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="nt">ports</span><span class="p">:</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> name</span><span class="p">:</span><span class="w"> </span><span class="nv">CellVoltages</span><span class="p p-Indicator">,</span><span class="nt"> direction</span><span class="p">:</span><span class="w"> </span><span class="nv">out</span><span class="p p-Indicator">,</span><span class="nt"> type</span><span class="p">:</span><span class="w"> </span><span class="nv">uint16</span><span class="p p-Indicator">,</span><span class="nt"> runnables</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">Run10ms</span><span class="p p-Indicator">],</span><span class="nt"> dimension</span><span class="p">:</span><span class="w"> </span><span class="nv">96</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> name</span><span class="p">:</span><span class="w"> </span><span class="nv">SocByOcv</span><span class="p p-Indicator">,</span><span class="nt"> direction</span><span class="p">:</span><span class="w"> </span><span class="nv">in</span><span class="p p-Indicator">,</span><span class="nt"> type</span><span class="p">:</span><span class="w"> </span><span class="nv">uint8</span><span class="p p-Indicator">,</span><span class="nt"> runnables</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">Run10ms</span><span class="p p-Indicator">],</span><span class="nt"> dimension</span><span class="p">:</span><span class="w"> </span><span class="nv">hvscmc.number_cell_voltages</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> name</span><span class="p">:</span><span class="w"> </span><span class="nv">CellTemps</span><span class="p p-Indicator">,</span><span class="nt"> direction</span><span class="p">:</span><span class="w"> </span><span class="nv">in</span><span class="p p-Indicator">,</span><span class="nt"> type</span><span class="p">:</span><span class="w"> </span><span class="nv">sint16</span><span class="p p-Indicator">,</span><span class="nt"> runnables</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">Run10ms</span><span class="p p-Indicator">],</span><span class="nt"> dimension</span><span class="p">:</span><span class="w"> </span><span class="nv">16</span><span class="p p-Indicator">,</span>
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="nt">      dimension_source</span><span class="p">:</span><span class="w"> </span><span class="nv">hvscmc.number_temp_sensors</span><span class="w"> </span><span class="p p-Indicator">}</span>
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Form</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>dimension: &lt;n&gt;</code></td>
+<td>whole number 1..4096; the master of the generated code</td>
+</tr>
+<tr>
+<td><code>dimension: &lt;expression&gt;</code></td>
+<td>a name of the init data (or arithmetic of names and numbers, <code>a.n * 2</code>), resolved when swc.yaml is loaded (rtegen, <code>swc_yaml.py check</code>, Studio) from <code>&lt;Swc&gt;_init.m</code> and <code>init_data/*.m</code> next to swc.yaml - <strong>without MATLAB</strong> (<code>tools/swc/initdata.py</code>)</td>
+</tr>
+<tr>
+<td><code>dimension: &lt;n&gt;</code> + <code>dimension_source: &lt;expression&gt;</code></td>
+<td>the number with the expression it came from, as an import writes it when the expression cannot be resolved without MATLAB; checked again whenever the init data allows it</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Decision (RTE-25): the generated code always has a number, the resolution happens in the tool.</strong> Init data is evaluated
+without MATLAB only for plain top-level assignments (<code>name = &lt;number&gt;;</code>, <code>a.b = &lt;arithmetic&gt;;</code>, numeric casts,
+<code>Simulink.Parameter</code>). Anything else (<code>.mat</code> file, data dictionary, function call, assignment inside <code>if</code>/<code>for</code>) is an
+error at the port with the next step: write the number MATLAB gives as <code>dimension</code> and keep the expression as
+<code>dimension_source</code>. A <code>dimension_source</code> that resolves to another number is an error, one that cannot be resolved a
+warning.</p>
+<p>What follows from a dimension &gt; 1:
+- <strong>RTE:</strong> type <code>rt_Array_&lt;type&gt;_&lt;n&gt;</code>, <code>Rte_Read_&lt;P&gt;_&lt;P&gt;(&lt;type&gt;* data)</code>, <code>Rte_Write_&lt;P&gt;_&lt;P&gt;(const &lt;type&gt;* data)</code>, a buffer
+  of the full size copied with <code>memcpy</code>; consistency between tasks as for every signal (section "Datenkonsistenz
+  zwischen Tasks").
+- <strong>Connections:</strong> both ports need the same dimension and element type; a scalar and an array do not connect.
+- <strong>CAN:</strong> signals stay scalar; an array port at <code>can.*</code> or another BSW target is refused (one scalar port per element).
+- <strong>A2L:</strong> one <code>MEASUREMENT</code> with <code>MATRIX_DIM &lt;n&gt;</code> (tools/a2lgen); the console lists the elements.
+- <strong>Simulink components:</strong> <code>swc_create</code> sets <code>PortDimensions</code>; a different number in the ARXML is a warning (the RTE
+  follows the model). <strong>C components:</strong> the skeleton declares an array per example access.</p>
+<p>Proof: test profile <code>tools/rtegen/test/arrays</code>, tests <code>rtegen-c-swc</code>, <code>swc-yaml</code>, <code>swc-skeleton</code>, <code>a2lgen</code>. The Studio
+import takes the dimension from the model (TOOL-143).</p>
+<h2 id="measurements-tool-143">Measurements (TOOL-143)<a class="headerlink" href="#measurements-tool-143" title="Permanent link">&para;</a></h2>
+<p>Ports are measurable over XCP anyway. An internal value becomes measurable through the list <code>measurements:</code> of
+swc.yaml (decision E6 a, <code>doc/architecture/kalibrierung.md</code> section 8.1):</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="nt">measurements</span><span class="p">:</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> name</span><span class="p">:</span><span class="w"> </span><span class="nv">HvsCellMod_u_CellMax</span><span class="p p-Indicator">,</span><span class="nt"> type</span><span class="p">:</span><span class="w"> </span><span class="nv">float32</span><span class="p p-Indicator">,</span><span class="nt"> unit</span><span class="p">:</span><span class="w"> </span><span class="nv">V</span><span class="p p-Indicator">,</span><span class="nt"> min</span><span class="p">:</span><span class="w"> </span><span class="nv">0</span><span class="p p-Indicator">,</span><span class="nt"> max</span><span class="p">:</span><span class="w"> </span><span class="nv">5</span><span class="p p-Indicator">,</span><span class="nt"> description</span><span class="p">:</span><span class="w"> </span><span class="nv">highest cell voltage</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> name</span><span class="p">:</span><span class="w"> </span><span class="nv">HvsCellMod_u_Cells</span><span class="p p-Indicator">,</span><span class="nt"> type</span><span class="p">:</span><span class="w"> </span><span class="nv">float32</span><span class="p p-Indicator">,</span><span class="nt"> dimension</span><span class="p">:</span><span class="w"> </span><span class="nv">hvscmc.number_cell_voltages</span><span class="w"> </span><span class="p p-Indicator">}</span>
+</code></pre></div>
+<p>Keys: <code>name</code> (C identifier of a global variable), <code>type</code> (platform type), <code>dimension</code> and <code>dimension_source</code> as for ports,
+<code>unit</code>, <code>min</code>/<code>max</code> (TOOL-150: engineering limits, A2L <code>LOWER_LIMIT</code>/<code>UPPER_LIMIT</code>, <code>min &lt;= max</code>, inside the type range)
+and <code>description</code> (all optional).</p>
+<ul>
+<li><strong>Simulink component:</strong> the model marks the signal: a named <code>Simulink.Signal</code> with storage class <code>ExportedGlobal</code> or
+  <code>ExportToFile</code> (only these make Embedded Coder define a global variable). rtegen checks each entry against
+  <code>generated/src</code> and only declares the variable. <strong>With AUTOSAR the signal at a root port must keep <code>Auto</code></strong> (R2024a
+  refuses the build otherwise); the port is measurable anyway.</li>
+<li><strong>C component:</strong> the RTE defines the variable in <code>Rte.c</code> (initial value 0) and declares it in <code>Rte_&lt;Swc&gt;.h</code>.</li>
+<li><strong>RTE and A2L:</strong> rtegen adds the rows <code>&lt;Swc&gt;.&lt;name&gt;</code> to <code>rte::SIGNALS</code> (XCP reads, never writes); tools/a2lgen makes one
+  <code>MEASUREMENT</code> per entry (<code>MATRIX_DIM</code>, <code>PHYS_UNIT</code>). One name is one global symbol per ECU.</li>
+<li><strong>Limits:</strong> <code>rte::SIGNALS</code> has no room for them, so a2lgen reads <code>min</code>/<code>max</code> (and the <code>unit</code> of a port) from the swc.yaml
+  of every component of the project (<code>--project</code>); without them <code>MEASUREMENT</code> keeps the type range.</li>
+</ul>
+<p><strong>Ports are measurable this way too:</strong> since TOOL-150 a port may carry <code>unit</code>, <code>min</code> and <code>max</code>. The naming convention
+(<code>doc/naming/praefix-tabelle.yaml</code>, <code>tools/studio/core/portnaming.py</code>) proposes them from the name's prefix at import
+(<code>u_</code> → unit <code>V</code>, <code>pct_</code> → <code>%</code> and <code>0..100</code>); a prefix only proposes and warns (decision E6 a). <code>swc_yaml.find_prefix()</code> is
+the one place that recognizes a prefix. Tests: <code>swc-yaml</code>, <code>rtegen-c-swc</code>, <code>a2lgen</code>, <code>studio-core</code>.</p>
+<h2 id="tasks-rte-02">Tasks (RTE-02)<a class="headerlink" href="#tasks-rte-02" title="Permanent link">&para;</a></h2>
+<p>Runnables laufen in frei konfigurierbaren Anwendungs-Tasks der ECU-Beschreibung (<code>rte.yaml</code>, Abschnitt <code>tasks:</code>):</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="nt">tasks</span><span class="p">:</span>
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">motor</span><span class="w">              </span><span class="c1"># Kontext TASK_MOTOR, Name in "stats"; klein, Buchstaben und Ziffern</span>
+<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="w">    </span><span class="nt">period_ms</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="w">    </span><span class="nt">priority</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">45</span><span class="w">             </span><span class="c1"># Ordnungsschlüssel zwischen den BSW-Tasks, siehe unten</span>
+<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="w">    </span><span class="nt">stack_bytes</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1536</span>
+<a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a><span class="w">    </span><span class="nt">runnables</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">MotorSwc.Run1ms</span><span class="p p-Indicator">]</span>
+<a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">swc</span>
+<a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a><span class="w">    </span><span class="nt">period_ms</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
+<a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a><span class="w">    </span><span class="nt">priority</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">30</span>
+<a id="__codelineno-10-10" name="__codelineno-10-10" href="#__codelineno-10-10"></a><span class="w">    </span><span class="nt">stack_bytes</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2048</span>
+<a id="__codelineno-10-11" name="__codelineno-10-11" href="#__codelineno-10-11"></a><span class="w">    </span><span class="nt">runnables</span><span class="p">:</span><span class="w">                                     </span><span class="c1"># Aufrufreihenfolge im Zyklus</span>
+<a id="__codelineno-10-12" name="__codelineno-10-12" href="#__codelineno-10-12"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">DemoSwc.Run10ms</span>
+<a id="__codelineno-10-13" name="__codelineno-10-13" href="#__codelineno-10-13"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> runnable</span><span class="p">:</span><span class="w"> </span><span class="nv">DemoSwc.Run100ms</span><span class="p p-Indicator">,</span><span class="nt"> offset_ms</span><span class="p">:</span><span class="w"> </span><span class="nv">20</span><span class="w"> </span><span class="p p-Indicator">}</span><span class="w">   </span><span class="c1"># Aufruf bei 20, 120, 220 ms ...</span>
+<a id="__codelineno-10-14" name="__codelineno-10-14" href="#__codelineno-10-14"></a><span class="nt">can</span><span class="p">:</span>
+<a id="__codelineno-10-15" name="__codelineno-10-15" href="#__codelineno-10-15"></a><span class="w">  </span><span class="nt">task</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">swc</span><span class="w">                  </span><span class="c1"># Pflicht bei mehreren Tasks: dort wird CAN gepackt/entpackt</span>
+</code></pre></div>
+<ul>
+<li><strong>Prioritäten:</strong> <code>priority</code> ist ein Ordnungsschlüssel: BSW-Tasks aus <code>ecu/asyncCoreConfiguration/tasks.yaml</code> (background
+  10, bsp 20, can 40, sysadmin 50, safety 60) und Anwendungs-Tasks werden danach sortiert und durchnummeriert
+  (<code>tasks/async/Config.h</code>). Gleiche Schlüssel, Anwendungs-Tasks über <code>safety</code> (<code>above_application</code>) und mehr Tasks als
+  FreeRTOS-Prioritäten sind Fehler mit YAML-Pfad.</li>
+<li><strong>Prüfungen</strong> (YAML-Pfad, z. B. <code>tasks[1].runnables[2].offset_ms: 25 ms is no multiple of the period 10 ms of task app</code>):
+  Runnable-Periode und Versatz sind Vielfache der Task-Periode, der Versatz ist kleiner als die Runnable-Periode, jedes
+  periodische Runnable gehört genau einem Task, Init-Runnables keinem, die Task-Periode ist ein Vielfaches des OS-Ticks,
+  der Stack mindestens <code>min_stack_bytes</code>, der Name nicht <code>idle</code>/<code>timer</code>/BSW-Task, CAN-Zyklen sind Vielfache der Periode
+  von <code>can.task</code>.</li>
+<li><strong>Ohne <code>tasks:</code></strong> entsteht ein Task <code>swc</code> (Schlüssel 30, 2048 Byte) mit dem ggT der Runnable-Perioden.</li>
+<li><strong>Erzeugt:</strong> <code>tasks/async/Config.h</code>, <code>RteTasks.h</code>, <code>rte::TASKS[]</code> und <code>rte::RUNNABLES[]</code>. Init-Runnables laufen beim
+  Lifecycle-Init im Kontext des ersten Anwendungs-Tasks, danach verteilt <code>rte::init()</code> die Werte an alle Tasks.</li>
+</ul>
+<h2 id="kalibrierparameter-rte-03">Kalibrierparameter (RTE-03)<a class="headerlink" href="#kalibrierparameter-rte-03" title="Permanent link">&para;</a></h2>
+<p>Verstellbare Werte einer Komponente (Filterkonstanten, Schwellen, Kennlinien) sind <strong>ParameterReceiver-Ports</strong>: alle
+Parameter einer Komponente sind Elemente des Ports <code>CalPrm</code>, das Modell liest sie mit <code>Rte_Prm_CalPrm_&lt;Name&gt;()</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Was</th>
+<th>Wo (genau eine Stelle)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Name, Typ, Dimension, Festkomma-Skalierung</td>
+<td>Modell (<code>.slx</code>); beim Anlegen aus <code>swc.yaml</code> → <code>parameters:</code></td>
+</tr>
+<tr>
+<td><strong>Wert</strong></td>
+<td><code>swc/&lt;Swc&gt;/&lt;Swc&gt;_data.m</code> neben dem Modell (bei Projektkomponenten <code>projects/&lt;p&gt;/swc/&lt;Swc&gt;/&lt;Swc&gt;_data.m</code>)</td>
+</tr>
+<tr>
+<td>Ablage zur Laufzeit</td>
+<td>RAM, von rtegen erzeugt: <code>Rte_Prm_&lt;Swc&gt;_CalPrm_&lt;Name&gt;_data</code> (nicht <code>const</code>)</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="c">% swc/DemoSwc/DemoSwc_data.m</span>
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="n">FilterAlpha</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mf">0.125</span><span class="p">;</span><span class="w">   </span><span class="c">% [-] Gewicht des NTC-Tiefpasses</span>
+</code></pre></div>
+<ul>
+<li>Die Datendatei ist gewöhnlicher MATLAB-Code im Stil der alten MBDT-<code>*_data.m</code> (Zahlen, Zeilenvektoren,
+  <code>hex2dec</code>/<code>bin2dec</code>, Verweise wie <code>Gain = cal.gain;</code>). Gelesen wird sie <strong>ohne MATLAB</strong> von <code>tools/swc/mdata.py</code>, von
+  rtegen und <code>swc_yaml.py</code>; MATLAB liest dieselbe Datei über <code>tools/swc/swc_load_data.m</code>. Ein in der <code>.slx</code> gespeicherter
+  Zahlenwert oder der INIT-VALUE im ARXML zählt nie.</li>
+<li>Modellseitig ist ein Parameter ein <code>Simulink.Parameter</code> als <strong>Modellargument</strong> (<code>ParameterArgumentNames</code>), abgebildet als
+  <code>PortParameter</code> (<code>tools/swc/swc_map_parameters.m</code>). Ein Parameter, den das Modell nicht benutzt, bekommt im ARXML keinen
+  Typ; rtegen meldet das.</li>
+<li>Typen: Plattformtypen als Skalar oder Zeilenvektor (<code>dim</code>), Festkomma über <code>lsb</code>/<code>offset</code>. In der Datendatei steht der
+  <strong>physikalische</strong> Wert; rtegen rechnet in den gespeicherten Wert um und prüft Länge und Wertebereich.</li>
+<li>Parameter werden in der <code>rte.yaml</code> <strong>nicht</strong> verbunden und brauchen keine Kopien am Task-Übergang.</li>
+<li><strong>Für XCP (TOOL-01):</strong> <code>rte::PARAMETERS[]</code> nennt Name, Adresse, Typ, Elementanzahl, Einheit und die Umrechnung
+  <code>physikalisch = (numerator[0] + numerator[1] · gespeichert) / denominator</code> (A2L <code>RAT_FUNC</code>).</li>
+</ul>
+<h2 id="calibration-objects-rte-26">Calibration objects (RTE-26)<a class="headerlink" href="#calibration-objects-rte-26" title="Permanent link">&para;</a></h2>
+<p>Stage K1 of the calibration concept (<a href="../doc/architecture/kalibrierung/">doc/architecture/kalibrierung.md</a>, decision
+E1 a): <code>swc.yaml</code> <code>parameters:</code> is the one definition of the calibration objects of a component, for C and Simulink
+components alike. The RTE-03 keys keep their meaning; a parameter without the keys below stays exactly as before
+(value or array, type range as limits, QM, generated code and A2L unchanged).</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>kind</code></td>
+<td><code>value</code>, <code>array</code> (<code>dim</code> ≥ 2), <code>curve</code>, <code>map</code>, <code>axis</code> (shared breakpoints, <code>dim</code> ≥ 2); without <code>kind</code>: value (<code>dim</code> 1) or array</td>
+</tr>
+<tr>
+<td><code>axis</code></td>
+<td>curve: the name of a shared axis, or own breakpoints <code>{dim, type, lsb, offset, unit, min, max, description}</code></td>
+</tr>
+<tr>
+<td><code>axes</code></td>
+<td>map: <code>{x: …, y: …}</code>, each as <code>axis</code>; in <code>&lt;Swc&gt;_data.m</code> and the dataset X are the rows, Y the columns (Simulink: the other way round, see below)</td>
+</tr>
+<tr>
+<td><code>unit</code>, <code>description</code></td>
+<td>physical unit and one line of text (A2L <code>PHYS_UNIT</code>, long identifier)</td>
+</tr>
+<tr>
+<td><code>min</code>, <code>max</code></td>
+<td>engineering limits, physical, inside the type range (with <code>lsb</code>/<code>offset</code>), <code>min</code> ≤ <code>max</code></td>
+</tr>
+<tr>
+<td><code>safety</code></td>
+<td><code>qm</code> (default), <code>asil_a</code>, <code>asil_b</code>; an ASIL class needs <code>min</code> and <code>max</code> (also on own axes), a shared axis needs at least the class of every curve/map using it; ASIL C/D come later</td>
+</tr>
+<tr>
+<td><code>value_table</code></td>
+<td><code>{stored value: text}</code> for an integer or boolean type without <code>lsb</code> (A2L <code>COMPU_VTAB</code>)</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="nt">parameters</span><span class="p">:</span>
+<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> name</span><span class="p">:</span><span class="w"> </span><span class="nv">SpeedAxis_rpm</span><span class="p p-Indicator">,</span><span class="nt"> kind</span><span class="p">:</span><span class="w"> </span><span class="nv">axis</span><span class="p p-Indicator">,</span><span class="nt"> type</span><span class="p">:</span><span class="w"> </span><span class="nv">uint16</span><span class="p p-Indicator">,</span><span class="nt"> dim</span><span class="p">:</span><span class="w"> </span><span class="nv">5</span><span class="p p-Indicator">,</span><span class="nt"> unit</span><span class="p">:</span><span class="w"> </span><span class="nv">rpm</span><span class="p p-Indicator">,</span><span class="nt"> min</span><span class="p">:</span><span class="w"> </span><span class="nv">0</span><span class="p p-Indicator">,</span><span class="nt"> max</span><span class="p">:</span><span class="w"> </span><span class="nv">8000</span><span class="p p-Indicator">,</span><span class="nt"> safety</span><span class="p">:</span><span class="w"> </span><span class="nv">asil_b</span><span class="p p-Indicator">,</span>
+<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="nt">      runnables</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">Run10ms</span><span class="p p-Indicator">]</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TorqueLimit_Nm</span><span class="w">            </span><span class="c1"># map: X shared, Y own (TorqueLimit_Nm_Y)</span>
+<a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="w">    </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">map</span>
+<a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a><span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sint16</span>
+<a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a><span class="w">    </span><span class="nt">lsb</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.1</span>
+<a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a><span class="w">    </span><span class="nt">unit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Nm</span>
+<a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a><span class="w">    </span><span class="nt">min</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
+<a id="__codelineno-12-10" name="__codelineno-12-10" href="#__codelineno-12-10"></a><span class="w">    </span><span class="nt">max</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">250</span>
+<a id="__codelineno-12-11" name="__codelineno-12-11" href="#__codelineno-12-11"></a><span class="w">    </span><span class="nt">safety</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">asil_b</span>
+<a id="__codelineno-12-12" name="__codelineno-12-12" href="#__codelineno-12-12"></a><span class="w">    </span><span class="nt">axes</span><span class="p">:</span>
+<a id="__codelineno-12-13" name="__codelineno-12-13" href="#__codelineno-12-13"></a><span class="w">      </span><span class="nt">x</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SpeedAxis_rpm</span>
+<a id="__codelineno-12-14" name="__codelineno-12-14" href="#__codelineno-12-14"></a><span class="w">      </span><span class="nt">y</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">dim</span><span class="p">:</span><span class="w"> </span><span class="nv">3</span><span class="p p-Indicator">,</span><span class="nt"> type</span><span class="p">:</span><span class="w"> </span><span class="nv">sint8</span><span class="p p-Indicator">,</span><span class="nt"> unit</span><span class="p">:</span><span class="w"> </span><span class="nv">degC</span><span class="p p-Indicator">,</span><span class="nt"> min</span><span class="p">:</span><span class="w"> </span><span class="nv">-40</span><span class="p p-Indicator">,</span><span class="nt"> max</span><span class="p">:</span><span class="w"> </span><span class="nv">125</span><span class="p p-Indicator">}</span>
+<a id="__codelineno-12-15" name="__codelineno-12-15" href="#__codelineno-12-15"></a><span class="w">    </span><span class="nt">runnables</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">Run10ms</span><span class="p p-Indicator">]</span>
+<a id="__codelineno-12-16" name="__codelineno-12-16" href="#__codelineno-12-16"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> name</span><span class="p">:</span><span class="w"> </span><span class="nv">Mode</span><span class="p p-Indicator">,</span><span class="nt"> type</span><span class="p">:</span><span class="w"> </span><span class="nv">uint8</span><span class="p p-Indicator">,</span><span class="nt"> value_table</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">0</span><span class="p">:</span><span class="w"> </span><span class="nv">Off</span><span class="p p-Indicator">,</span><span class="nt"> 1</span><span class="p">:</span><span class="w"> </span><span class="nv">Eco</span><span class="p p-Indicator">,</span><span class="nt"> 2</span><span class="p">:</span><span class="w"> </span><span class="nv">Sport</span><span class="p p-Indicator">},</span><span class="nt"> runnables</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">Run10ms</span><span class="p p-Indicator">]</span><span class="w"> </span><span class="p p-Indicator">}</span>
+</code></pre></div>
+<p><strong>Values.</strong> Until the dataset of the project exists (stage K2, TOOL-145) the values stay in <code>&lt;Swc&gt;_data.m</code> as the defaults of
+the component type. A map is a matrix with one row per X breakpoint (<code>[120 110 90; 150 140 120]</code>); own breakpoints stand
+under <code>&lt;Name&gt;_X</code> / <code>&lt;Name&gt;_Y</code>. Checked without MATLAB (<code>swc_yaml.py</code>, rtegen): breakpoints strictly ascending, every
+default inside <code>min</code>/<code>max</code> and the stored limits, a map of the shape its axes give, values of a value table listed in it.</p>
+<p><strong>RTE.</strong> Own breakpoints are elements <code>&lt;Name&gt;_X</code> / <code>&lt;Name&gt;_Y</code> of <code>CalPrm</code> (access <code>Rte_Prm_CalPrm_&lt;Name&gt;_X()</code>), stored with
+the values in one record (A2L <code>STD_AXIS</code>); a shared axis is its own object (<code>AXIS_PTS</code>). A map is stored as one block per
+X breakpoint with the values over Y (Y fastest; in the A2L <code>FNC_VALUES … COLUMN_DIR</code>, TOOL-196). <code>rte::PARAMETERS[]</code> gets
+the limits as stored values, the rows of the axes, the kind and the safety class; texts and the layout identifier go to
+<code>RteCalibration.json</code> for tools/a2lgen.</p>
+<p><strong>Simulink components.</strong> The definition in <code>swc.yaml</code> is checked against the ARXML (element type, number of values and
+scaling must agree); parameters of the model that <code>swc.yaml</code> does not define stay RTE-03 parameters with a warning.</p>
+<p><strong>X/Y rule for a map in Simulink (TOOL-193, TOOL-196).</strong> In the model a map (nx X, ny Y breakpoints) is the matrix
+<strong>ny × nx</strong>: rows run over Y (1st input of the n-D Lookup Table block), columns over X (2nd input). Because the model keeps
+column-major layout, the flat order is the same as in <code>&lt;Swc&gt;_data.m</code> (one row per X), the dataset, the RTE and the A2L;
+nothing is transposed on the way. <code>tools/swc/swc_params.m</code> refuses a matrix of the wrong form or a row-major model;
+<code>swc_load_data.m</code> fills it with <code>reshape(flat, size(p.Value))</code>. A <code>Simulink.LookupTable</code> is split into <code>&lt;Name&gt;</code> and
+<code>&lt;Name&gt;_X</code> (set 2) / <code>&lt;Name&gt;_Y</code> (set 1).</p>
+<p>Examples: the test profile <code>tools/rtegen/test/calib</code> (C component <code>CalMapSwc</code>) and <code>tools/a2lgen/README.md</code>.</p>
+<h2 id="ecu-zustand-und-sleep-anforderung-sys-01sys-02">ECU-Zustand und Sleep-Anforderung (SYS-01/SYS-02)<a class="headerlink" href="#ecu-zustand-und-sleep-anforderung-sys-01sys-02" title="Permanent link">&para;</a></h2>
+<p>Die ECU-Zustandsverwaltung (<code>libs/bsw/ecuState</code>) ist über die Verbindungsziele <code>ecu.state</code>, <code>ecu.wakeup</code>,
+<code>ecu.wakeup.&lt;Quelle&gt;</code> und <code>ecu.sleep_request</code> der ECU-Beschreibung erreichbar; Tabelle der Ziele und Beispiel: <a href="../libs/bsw/ecuState/doc/ecuState/#rte-ports">RTE-Ports in
+<code>ecuState.md</code></a>.</p>
+<ul>
+<li>Mehrere <code>ecu.sleep_request</code> werden <strong>UND-verknüpft</strong>: geschlafen wird erst, wenn alle Ports 1 melden; eine Komponente
+  kann Sleep nur zulassen, nie gegen eine andere erzwingen.</li>
+<li>Zeiten, Richtlinien und Aufweckquellen sind <strong>Projektwerte</strong> in <code>project.yaml</code> unter <code>modules.ecuState</code>
+  (<code>projects/README.md</code>), nicht in der <code>rte.yaml</code>.</li>
+</ul>
+<h2 id="signal-qualifier-empfangener-can-botschaften-com-03">Signal-Qualifier empfangener CAN-Botschaften (COM-03)<a class="headerlink" href="#signal-qualifier-empfangener-can-botschaften-com-03" title="Permanent link">&para;</a></h2>
+<p>Timeout-, Prüfsummen- und Zählerprüfung laufen in der RTE, <strong>nicht im Modell</strong>
+(<a href="../doc/architecture/signal-qualifier/"><code>doc/architecture/signal-qualifier.md</code></a>). Jede empfangene Botschaft
+hat einen Qualifier, den ein Required Port (<code>uint8</code>) über <code>can.qlf.&lt;Botschaft&gt;</code> liest:</p>
+<table>
+<thead>
+<tr>
+<th>Wert</th>
+<th>Name</th>
+<th>Bedeutung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td><code>QLF_DEBOUNCE</code></td>
+<td>noch nichts Gültiges empfangen oder ein Fehler wird noch entprellt</td>
+</tr>
+<tr>
+<td>1</td>
+<td><code>QLF_OK</code></td>
+<td>alle Prüfungen bestanden</td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>QLF_ERROR_ALIVE</code></td>
+<td>E2E-Zähler wiederholt oder falsche Folge (länger als <code>debounce_ms</code>)</td>
+</tr>
+<tr>
+<td>4</td>
+<td><code>QLF_ERROR_CRC</code></td>
+<td>E2E-Prüfsumme oder Data ID falsch (länger als <code>debounce_ms</code>)</td>
+</tr>
+<tr>
+<td>8</td>
+<td><code>QLF_ERROR_TIMEOUT</code></td>
+<td>keine Botschaft seit <code>timeout_ms</code></td>
+</tr>
+<tr>
+<td>16</td>
+<td><code>QLF_ERROR</code></td>
+<td>Bus-Fehler (Transceiver nicht bereit, Bus-off) – sofort, für alle Botschaften des Busses</td>
+</tr>
+<tr>
+<td>32</td>
+<td><code>QLF_ERROR_RANGE</code></td>
+<td>Messwert außerhalb seines gültigen Bereichs, länger als <code>debounce_ms</code> (Bibliotheksblock <code>NxSwcLib/SensorQualifier</code>, RTE-07)</td>
+</tr>
+</tbody>
+</table>
+<p>Vorrang bei mehreren Fehlern: <code>QLF_ERROR</code> &gt; <code>QLF_ERROR_TIMEOUT</code> &gt; <code>QLF_ERROR_CRC</code> &gt; <code>QLF_ERROR_ALIVE</code>. Nach
+<strong>einer</strong> gültigen Botschaft ist der Qualifier wieder <code>QLF_OK</code>. Signalwerte übernimmt die RTE nur aus gültigen
+Botschaften; im Fehlerfall bleiben sie stehen (<code>on_error: hold</code>, Vorgabe) oder fallen auf den DBC-Startwert
+(<code>on_error: init</code>). Konfiguriert wird das je Botschaft in <code>rte.yaml</code> unter <code>can.qualifiers</code> (Profil P01, P02
+oder P11 der AUTOSAR-E2E-Bibliothek <code>libs/bsw/e2e</code>, CRC- und Zählerlage über DBC-Signalnamen); Sendebotschaften
+mit <code>e2e</code> schützt die RTE beim Senden selbst. Beispiel und Prüfungen: <code>projects/README.md</code> und die Referenz
+<code>doc/reference/rte.md</code>.</p>
+<p>Die Konstanten erzeugt rtegen als <code>Rte_Qlf.h</code> (C/C++) und <code>Rte_Qlf.m</code> (MATLAB). Im Modell wird der Qualifier wie jeder
+<code>uint8</code>-Eingang verwendet (<code>Qlf == QLF_OK</code>); <strong>als Zahl gehören die Werte nicht ins Modell</strong>. <code>swc_build</code> und
+<code>swc_mil_test</code> holen sie über <code>tools/swc/swc_load_qlf.m</code> in den Base-Workspace (im MATLAB-Desktop einmal <code>swc_load_qlf</code>).
+Gesucht wird <code>Rte_Qlf.m</code> unter <code>NX_RTE_GENERATED</code>, <code>&lt;repo&gt;/build/**/generated/rte</code> und <code>%TEMP%/s32k/**/generated/rte</code>;
+wird nichts gefunden, bricht der Lauf ab. Ein Projekt muss also <strong>einmal konfiguriert</strong> sein
+(<code>cmake --preset buildtest-s32k148-min</code>).</p>
+<p><strong>Folge für wiederverwendbare Komponenten:</strong> Ein Qualifier-Port ist ein Required Port; ein Projekt ohne CAN kann ihn nicht
+verbinden. Eine „Konstante als Quelle“ (<code>const.QLF_DEBOUNCE</code>) kennt die ECU-Beschreibung nicht.</p>
+<h3 id="datenkonsistenz-zwischen-tasks">Datenkonsistenz zwischen Tasks<a class="headerlink" href="#datenkonsistenz-zwischen-tasks" title="Permanent link">&para;</a></h3>
+<p><code>rtegen</code> liest aus dem ARXML, welche Runnables welche Ports lesen oder schreiben (<code>DATA-RECEIVE-POINT-BY-ARGUMENTS</code>,
+<code>DATA-SEND-POINTS</code>; fehlen alle Zugriffspunkte einer Komponente, gilt jeder Port als von jedem Runnable genutzt).
+Die BSW-Übergabe eines Puffers (dio, adc, pwm, ecu.*) läuft im Task des Ports, CAN im <code>can.task</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Fall</th>
+<th>Umsetzung</th>
+<th>Eigenschaft</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Puffer nur in einem Task</td>
+<td>direkter Zugriff wie bisher</td>
+<td>kein Lock, kein Zusatzspeicher</td>
+</tr>
+<tr>
+<td>Puffer in mehreren Tasks, jeder Port in einem Task</td>
+<td><strong>Kopie am Task-Übergang</strong>: je Task eine Kopie <code>Rte_Cpy_&lt;task&gt;_…</code>; <code>readInputs(task)</code> übernimmt unter einem Lock alle veröffentlichten Werte, die der Task liest; <code>writeOutputs(task)</code> veröffentlicht unter einem Lock alle Werte, die er geschrieben hat</td>
+<td>Ein Zyklus sieht einen festen Stand (zweimal lesen ergibt denselben Wert, Wertepaare eines Zyklus bleiben zusammen); Geschriebenes wird erst am Zyklusende sichtbar, Leser sehen es spätestens in ihrem nächsten Zyklus</td>
+</tr>
+<tr>
+<td>Ein Port wird von Runnables in mehreren Tasks genutzt</td>
+<td><strong>atomare Übergabe</strong>: <code>Rte_Read</code>/<code>Rte_Write</code> greifen unter dem Lock direkt auf den veröffentlichten Wert zu (<code>RteConfig.cpp</code>)</td>
+<td>jeder Zugriff für sich konsistent (auch 64 Bit), kein fester Stand über den Zyklus</td>
+</tr>
+</tbody>
+</table>
+<p>Das Lock ist <code>async::LockType</code> (FreeRTOS: Interrupts gesperrt), gehalten nur für die Kopien. Die Konsole (<code>rte signals</code>)
+zeigt die veröffentlichten Werte.</p>
+<h2 id="tests">Tests<a class="headerlink" href="#tests" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>.venv/Scripts/python<span class="w"> </span>-m<span class="w"> </span>unittest<span class="w"> </span>tools/rtegen/test_rtegen.py<span class="w">   </span><span class="c1"># RTE-Generator inkl. RteMultiTaskHostTest, RteTypesHostTest</span>
+<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>.venv/Scripts/python<span class="w"> </span>tools/test<span class="w"> </span>-k<span class="w"> </span>rtegen-c-swc<span class="w">                </span><span class="c1"># C-Komponenten (RTE-20)</span>
+<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>.venv/Scripts/python<span class="w"> </span>tools/test<span class="w"> </span>-k<span class="w"> </span>swc-skeleton
+<a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a>.venv/Scripts/python<span class="w"> </span>tools/test<span class="w"> </span>-k<span class="w"> </span>target-c-swc
+<a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a>.venv/Scripts/python<span class="w"> </span>tools/test<span class="w"> </span>-k<span class="w"> </span>target-demo<span class="w">                 </span><span class="c1"># erzeugte RTE des Demo-Builds</span>
+<a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a>.venv/Scripts/python<span class="w"> </span>tools/test<span class="w"> </span>-k<span class="w"> </span>demoswc-sil<span class="w">                 </span><span class="c1"># Software-in-the-Loop der DemoSwc</span>
+<a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a>.venv/Scripts/python<span class="w"> </span>-m<span class="w"> </span>unittest<span class="w"> </span>tools/swc/test_swc_yaml.py<span class="w">    </span><span class="c1"># swc.yaml, Named types (RTE-15)</span>
+</code></pre></div>
+<p>Model-in-the-Loop (Simulink, gleiche Stimuli wie SIL, optional Vergleich mit der SIL-Spur; Pfade absolut übergeben, RTE-12):</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>matlab<span class="w"> </span>-batch<span class="w"> </span><span class="s2">"addpath('&lt;repo&gt;/tools/swc'); swc_mil_test('&lt;repo&gt;/swc/DemoSwc', '&lt;repo&gt;/build/host/demoswc_sil_trace.csv')"</span>
+<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>matlab<span class="w"> </span>-batch<span class="w"> </span><span class="s2">"results = runtests('tools/swc/test/SwcTypesTest.m'); assertSuccess(results)"</span>
+</code></pre></div>
+<p>Der SIL-Test von Hand (<code>NX_BUILD_DIR</code> = Build-Verzeichnis des Demo-Projekts, siehe
+<a href="../tools/test/"><code>tools/test/README.md</code></a>, „Build directory“):</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>.venv/Scripts/python<span class="w"> </span>-m<span class="w"> </span>ziglang<span class="w"> </span>cc<span class="w"> </span>-std<span class="o">=</span>c99<span class="w"> </span>-O1<span class="w"> </span>-Wall<span class="w"> </span>-Wextra<span class="w"> </span>-Werror<span class="w"> </span>-Ilibs/bsw/autosarBase/include<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="w">    </span>-I<span class="nv">$NX_BUILD_DIR</span>/generated/rte<span class="w"> </span>-Iswc/DemoSwc/generated/src<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a><span class="w">    </span>swc/DemoSwc/generated/src/DemoSwc.c<span class="w"> </span><span class="nv">$NX_BUILD_DIR</span>/generated/rte/Rte.c<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a><span class="w">    </span>swc/DemoSwc/test/DemoSwc_sil_test.c<span class="w"> </span>-o<span class="w"> </span>build/host/demoswc_sil.exe
+<a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a>build/host/demoswc_sil.exe<span class="w"> </span>build/host/demoswc_sil_trace.csv<span class="w">   </span><span class="c1"># optional: Spur je Runnable-Aufruf</span>
+</code></pre></div>
+<h2 id="demoswc">DemoSwc<a class="headerlink" href="#demoswc" title="Permanent link">&para;</a></h2>
+<p>Published tree: the generated code is replaced by the hand-written C substitute
+<a href="DemoSwcSubstitute/"><code>swc/DemoSwcSubstitute</code></a> (PLAT-119), which implements the behaviour below.</p>
+<p>Die frühere Board-Demo als Modell:</p>
+<table>
+<thead>
+<tr>
+<th>Runnable</th>
+<th>Periode</th>
+<th>Logik</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>DemoSwc_Init</code></td>
+<td>Init</td>
+<td>–</td>
+</tr>
+<tr>
+<td><code>Run10ms</code></td>
+<td>10 ms</td>
+<td><code>Led1 = Button1</code>; <code>Led2</code> wechselt alle 50 Aufrufe (1 Hz blinken), <strong>freigegeben</strong> durch <code>PcCommandQlf == QLF_OK</code></td>
+</tr>
+<tr>
+<td><code>Run100ms</code></td>
+<td>100 ms</td>
+<td><code>MotorNtcFiltered_mV = y + (MotorNtc_mV − y) · FilterAlpha</code> (Tiefpass, <code>FilterAlpha</code> = 0,125 aus <code>DemoSwc_data.m</code>, RTE-03)</td>
+</tr>
+</tbody>
+</table>
+<p>Ports: <code>Button1</code> (boolean), <code>MotorNtc_mV</code> (uint32), <code>PcCommandQlf</code> (uint8, Signal-Qualifier von <code>PC_Command</code>)
+als Required Ports; <code>Led1</code>, <code>Led2</code> (boolean) und <code>MotorNtcFiltered_mV</code> (uint32) als Provided Ports.</p>
+<p><strong>Freigabe statt Ersatzwert (COM-13):</strong> <code>DemoSwc</code> liest kein Signal von <code>PC_Command</code>, nur dessen Qualifier – ein
+Ersatzwert hätte also nichts zu ersetzen. Stattdessen gibt der Qualifier <code>Led2</code> frei: <code>Led2 = Blinken AND
+(PcCommandQlf == QLF_OK)</code>. Der Blinkzähler läuft währenddessen weiter, deshalb blinkt <code>Led2</code> nach der Heilung
+phasenrichtig weiter, und die Reaktion ist innerhalb eines Aufrufs in beide Richtungen sichtbar (LED2 am Board
+und <code>EVB_Status.Led2</code> auf dem Bus). <code>Led1</code> bleibt unabhängig, damit der Fehlerfall vom Tasterpfad zu
+unterscheiden ist.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../projects/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Projekte">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Projekte
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="DemoSwcSubstitute/" class="md-footer__link md-footer__link--next" aria-label="Next: C-Ersatz der DemoSwc">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                C-Ersatz der DemoSwc
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright 2026 Daniel Simon Reinhardt-Probul - Apache-2.0
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.indexes", "navigation.top", "navigation.footer", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

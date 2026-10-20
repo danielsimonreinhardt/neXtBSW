@@ -1,0 +1,8029 @@
+
+<!doctype html>
+<html lang="de" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Hardware-neutral, configurable basic software for 32-bit automotive MCUs, built on Eclipse OpenBSW">
+      
+      
+      
+      
+        <link rel="prev" href="../config-range/">
+      
+      
+        <link rel="next" href="../hardware-mechanisms/">
+      
+      
+        
+          <link rel="alternate" href="./" hreflang="de">
+        
+          <link rel="alternate" href="../../../en/doc/safety/hsi-s32k1xx/" hreflang="en">
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>neXtBSW hardware-software interface of the stage-1 safety mechanisms — s32k1xx (SYS-66) - neXtBSW</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#nextbsw-hardware-software-interface-of-the-stage-1-safety-mechanisms--s32k1xx-sys-66" class="md-skip">
+          Zum Inhalt
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Kopfzeile">
+    <a href="../../.." title="neXtBSW" class="md-header__button md-logo" aria-label="neXtBSW" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            neXtBSW
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              neXtBSW hardware-software interface of the stage-1 safety mechanisms — s32k1xx (SYS-66)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="indigo"  aria-label="Dunkel"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Dunkel" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="indigo"  aria-label="Hell"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Hell" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Sprache wechseln">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="de" class="md-select__link">
+              Deutsch
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../../../en/doc/safety/hsi-s32k1xx/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Suche" placeholder="Suche" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Suche">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Zurücksetzen" aria-label="Zurücksetzen" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Suche wird initialisiert
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="neXtBSW" class="md-nav__button md-logo" aria-label="neXtBSW" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    neXtBSW
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Start
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Wegweiser
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../guide/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Integrator
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Integrator
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Erste Schritte
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/host-durchlauf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Host-Durchlauf ohne Hardware
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/your-first-board/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Das erste Board
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/the-application/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Die Anwendung
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/build-and-flash/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bauen und Flashen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/customer-project/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Eigenes ECU-Repository
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/new-derivative/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Neues Derivat
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/board-readme-template/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vorlage Board-README
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_10" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../reference/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Konfigurationsreferenz
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3_10" id="__nav_3_10_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Konfigurationsreferenz
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/derivative/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Derivative
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/board/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Board
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/project/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/rte/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rte
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/diag/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diag
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/console/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Console
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_11" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../projects/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Projekte, Komponenten, Boards
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3_11" id="__nav_3_11_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Projekte, Komponenten, Boards
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../swc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Software-Komponenten
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../swc/DemoSwcSubstitute/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    C-Ersatz der DemoSwc
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../ecu/platforms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Board-Ports
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../boards/buildtest_s32k148/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S32K148 build-test board (S32K148 LQFP176)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_12" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_12" id="__nav_3_12_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release Notes
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_12">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Release Notes
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../release-notes/v1.0.0-rc2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.0.0-rc2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../release-notes/v1.0.0-rc1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.0.0-rc1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../start/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Safety-Assessor
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Safety-Assessor
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../safety-manual/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sicherheitshandbuch
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../concept/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sicherheitskonzept
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../figures/concept-figures/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bilder zum Konzept
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../anomaly-register/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Anomalie-Register
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_6" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4_6" id="__nav_4_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Arbeitsprodukte
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Arbeitsprodukte
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../safety-plan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW safety plan — software SEooC at ASIL B (SYS-60)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../verification-plan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW verification plan and archived reports per baseline (SYS-67)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../safety-case/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW safety case — software SEooC at ASIL B (SYS-64)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cm-plan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW configuration management plan and baselines (SYS-68)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sw-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW — software architectural design specification of the safety part (SYS-65)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture-safety-analysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW software architectural safety analysis beyond the mechanisms (SYS-71)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../fmea/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW failure analysis of the base-software safety mechanisms (stage 1)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../figures/fmea-figures/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fmea figures
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dfa/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW dependent failure analysis of the stage-1 mechanisms (SYS-70)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../unit-design/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW — software unit design: watchdog handling, fault handlers, safety task (SYS-92, N2)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../coexistence/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW — coexistence of ASIL B and QM software in one image (SYS-61)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../partner-and-degraded/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Partner MCU supervision, degraded reaction and active short circuit — concept
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../config-range/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW — argument over the admissible configuration range (SYS-92, N3)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW hardware-software interface of the stage-1 safety mechanisms — s32k1xx (SYS-66)
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW hardware-software interface of the stage-1 safety mechanisms — s32k1xx (SYS-66)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Inhaltsverzeichnis">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Inhaltsverzeichnis
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#0-result-in-one-page" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0. Result in one page
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-reading-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Reading rules
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Reading rules">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-columns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Columns
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-status-words-for-the-check" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Status words for the check
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-overview-which-mechanism-depends-on-which-peripheral" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Overview: which mechanism depends on which peripheral
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-clocks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Clocks
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-per-mechanism" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Per mechanism
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Per mechanism">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-sm-01-sm-02-sm-03-sm-07--mcu-watchdog-wdog" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 SM-01, SM-02, SM-03, SM-07 — MCU watchdog (WDOG)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-sm-04-period-part--lptmr0-against-lpo1k" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 SM-04 (period part) — LPTMR0 against LPO1K
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-sm-06--halt--stall-deadman-lpit0-channel-1-and-dfsr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 SM-06 — halt / stall deadman (LPIT0 channel 1) and DFSR
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#44-sm-10--sm-13--system-mpu" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.4 SM-10 … SM-13 — system MPU
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#45-sm-14--rom-check-crc-unit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.5 SM-14 — ROM check (CRC unit)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#46-sm-15-sm-16--ecc-of-ram-and-flash-erm-ftfc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.6 SM-15, SM-16 — ECC of RAM and flash (ERM, FTFC)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#47-sm-17--fault-handlers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.7 SM-17 — fault handlers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#48-sm-18-sm-19-sm-20--adc-reference-and-internal-supplies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.8 SM-18, SM-19, SM-20 — ADC reference and internal supplies
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#49-sm-21-sm-22--register-lock-and-register-check-safeio-list" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.9 SM-21, SM-22 — register lock and register check (SafeIo list)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#410-sm-23-sm-24-sm-25--safe-outputs-table-and-the-safe-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.10 SM-23, SM-24, SM-25 — safe outputs table and the safe state
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#411-sm-30-sm-31-sm-32--measurement-qualifier-and-can" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.11 SM-30, SM-31, SM-32 — measurement qualifier and CAN
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#412-sm-50--start-reason-and-reset-loop-limit-rcm-no-init-ram" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.12 SM-50 — start reason and reset-loop limit (RCM, no-init RAM)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#413-sm-51--image-check-by-the-bootloader" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.13 SM-51 — image check by the bootloader
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#414-sm-04-sequence-sm-05--the-time-bases-being-supervised" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.14 SM-04 (sequence), SM-05 — the time bases being supervised
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#415-sm-34-sm-53--no-mcu-hardware-of-their-own" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.15 SM-34, SM-53 — no MCU hardware of their own
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-interrupts-and-exceptions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Interrupts and exceptions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-pins" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Pins
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-derivatives-of-the-family" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Derivatives of the family
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-findings--configuration-that-is-relied-on-but-not-re-checked" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Findings — configuration that is relied on but not re-checked
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-hardware-functions-that-are-deliberately-not-used-in-stage-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Hardware functions that are deliberately not used in stage 1
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-review-record" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Review record
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-review-questions-of-the-architecture-section-11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Review questions of the architecture (section 11)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#12-sources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12. Sources
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../hardware-mechanisms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hardware safety mechanisms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security-interplay/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW — interplay of functional safety and cybersecurity (SYS-92, N1)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../static-analysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Static analysis and coding guidelines (PLAT-74)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tool-classification/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW tool classification and safeguards of the generated code (PLAT-75)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../component-qualification/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW — route per pre-existing component and qualification plan (SYS-62)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dev-environment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW development environment: languages, guidelines, tools, build and test flow (DOC-22)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../board-test-spec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW board test specification per SSR with operational use cases (SYS-75)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../openbsw-beitraege/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributor
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Contributor
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_1" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../architecture/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architektur
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_1" id="__nav_5_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Architektur
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/openbsw/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Openbsw
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/openbsw-naehe/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Openbsw naehe
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/autosar/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Autosar
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/autosar-standard-set/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Autosar standard set
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/autosar-ecuc-map/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Autosar ecuc map
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/autosar-ecuc-evaluation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Autosar ecuc evaluation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/plattformen/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plattformen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/customer-project/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Customer project
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/versioning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW – Versionierung und Support
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/csec-concept/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CSEc in neXtBSW: keys, message authentication and secure start (SYS-56)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/kalibrierung/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Calibration in neXtBSW: parameters, maps, a versioned calibration database, measurement signals (ARCH-64)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/pin-interrupts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pin interrupts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/signal-qualifier/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Signal qualifiers for received messages (COM-03)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/treiber-granularitaet/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW – granularity of device drivers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/treiber-anbindung-analyse/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW – binding device drivers to the system: analysis of the hand-written integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/openbsw-console-number-arguments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OpenBSW console commands with a number argument - audit (PLAT-110)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_1_19" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_1_19" id="__nav_5_1_19_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Geplant nach R1
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_1_19_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_1_19">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Geplant nach R1
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/planned/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Planned
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/non-cortex-m-audit/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Non cortex m audit
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/rm4x-quellen/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rm4x quellen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/stm32-nucleo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Stm32 nucleo
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../figures/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bilder
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_2" id="__nav_5_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Bilder
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../figures/01-schichten/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    01 schichten
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../figures/02-konfigurationsfluss/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    02 konfigurationsfluss
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../figures/03-startablauf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    03 startablauf
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../figures/04-flash-uds/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    04 flash uds
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../figures/05-ecu-zustaende/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    05 ecu zustaende
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../figures/06-safety-kette/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    06 safety kette
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../figures/07-modulkarte/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    07 modulkarte
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../figures/08-lesepfade/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    08 lesepfade
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../bootloader/doc/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Moduldokumentation
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_3" id="__nav_5_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Moduldokumentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/modules/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modules
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../bootloader/doc/iso14229-1-clause16-conformance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Conformance with ISO 14229-1 clause 16 (non-volatile server memory programming)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/autosarBase/doc/autosarBase/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AUTOSAR base types (autosarBase)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/canPhyPassive/doc/canPhyPassive/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Passive CAN transceiver (canPhyPassive)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/canSystem/doc/canSystem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CAN system, hardware independent parts (canSystem)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/consoleContext/doc/consoleContext/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Console context (consoleContext)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/dem/doc/dem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    dem – fault memory (simplified AUTOSAR DEM)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/e2e/doc/e2e/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    E2E-Bibliothek (e2e)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/ecuState/doc/ecuState/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ECU-Zustandsverwaltung (ecuState)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/gdTmc6200/doc/gdTmc6200/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Gate-Treiber TMC6200 (gdTmc6200)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/hallDecoder/doc/hallDecoder/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hall decoder (hallDecoder)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/highSideSwitch/doc/highSideSwitch/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Smart high-side switch (highSideSwitch)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/mcuLink/doc/mcuLink/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mcuLink
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/nvm/doc/nvm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NvM core (libs/bsw/nvm)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/nvmDataFlash/doc/nvmDataFlash/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nvmDataFlash - data flash areas (NVM-12)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/sbcUja113x/doc/sbcUja113x/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SBC-Treiber UJA113x (sbcUja113x)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsp/bspAdcAccess/doc/bspAdcAccess/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Serialized ADC access (bspAdcAccess)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsp/bspI2c/doc/bspI2c/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    I2C master contract (bspI2c)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsp/bspPinEdge/doc/bspPinEdge/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pin edge contract (bspPinEdge)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsp/bspPinEvent/doc/bspPinEvent/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    bspPinEvent
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsp/bspSampleGroup/doc/bspSampleGroup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sample group (bspSampleGroup)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsp/bspSpi/doc/bspSpi/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SPI device contract (bspSpi)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/common/clockCheck/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Clock start-up check (PLAT-72)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/common/interruptPriority/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interrupt priorities as ranks (PLAT-10, wired up in PLAT-21, per core profile since ARCH-24)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/s32k1xx/bsp/bspCsec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    bspCsec – CSEc of the S32K1 family
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/s32k1xx/bsp/bspMcu/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    bspMcu (Familie s32k1xx) – Derivat-Header und mcu/mcu.h (PLAT-11)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/s32k1xx/startup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Startup templates per core architecture (PLAT-10)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/s32k1xx/port/safety/safeLifecycle/doc/safeLifecycle/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Safety task, s32k1xx (safeLifecycle)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/s32k1xx/port/safety/safeMemory/doc/safeMemory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Memory safety of the s32k1xx family (safeMemory)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/s32k1xx/port/safety/safeSupervisor/doc/safeSupervisor/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Safe supervisor, project values of the s32k1xx port (safeSupervisor)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/s32k1xx/port/safety/safeSystem/doc/safeSystem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference and supply supervision, s32k1xx (safeSystem)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/s32k1xx/port/bspConfiguration/src/bsp/capture/doc/capture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Input capture, s32k1xx (capture)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/s32k1xx/port/bspConfiguration/src/bsp/hall/doc/hall/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hall sensor set, s32k1xx (hall)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../tools/test/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tests und Werkzeuge
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_4" id="__nav_5_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tests und Werkzeuge
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/docgen/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    docgen - generated reference documentation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/docgen/website/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Doku-Website
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/ci/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/ci – provider-neutral CI (TOOL-03)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/setup – the Python environment of a workspace (TOOL-63)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/distcheck/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    distcheck – distribution check and export of the open tree
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/canflash/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/canflash – application and bootloader over CAN (UDS on ISO-TP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/boardtest/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/boardtest – board measurement scripts with host tests (TOOL-05)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/misra/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/misra – static analysis (PLAT-74)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/trace/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/trace — traceability of the safety requirements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/a2lgen/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    a2lgen - A2L for XCP on CAN (TOOL-01)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/calgen/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    calgen – calibration datasets (stage K2)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/csec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    csec – host side of the CSEc way back to the factory state
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/elfcheck/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    elfcheck – linked images against the derivative map and the core
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/nxupdate/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/schedana/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/schedana – analyse processor load, scheduling and data flow (TOOL-09)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/stackuse/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    stackuse – worst-case stack per execution context
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Beitragen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../SECURITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sicherheitsluecken melden
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../mcudb/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ableitung der Chipdaten (mcudb)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Inhaltsverzeichnis">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Inhaltsverzeichnis
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#0-result-in-one-page" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0. Result in one page
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-reading-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Reading rules
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Reading rules">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-columns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Columns
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-status-words-for-the-check" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Status words for the check
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-overview-which-mechanism-depends-on-which-peripheral" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Overview: which mechanism depends on which peripheral
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-clocks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Clocks
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-per-mechanism" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Per mechanism
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Per mechanism">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-sm-01-sm-02-sm-03-sm-07--mcu-watchdog-wdog" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 SM-01, SM-02, SM-03, SM-07 — MCU watchdog (WDOG)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-sm-04-period-part--lptmr0-against-lpo1k" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 SM-04 (period part) — LPTMR0 against LPO1K
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-sm-06--halt--stall-deadman-lpit0-channel-1-and-dfsr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 SM-06 — halt / stall deadman (LPIT0 channel 1) and DFSR
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#44-sm-10--sm-13--system-mpu" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.4 SM-10 … SM-13 — system MPU
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#45-sm-14--rom-check-crc-unit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.5 SM-14 — ROM check (CRC unit)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#46-sm-15-sm-16--ecc-of-ram-and-flash-erm-ftfc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.6 SM-15, SM-16 — ECC of RAM and flash (ERM, FTFC)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#47-sm-17--fault-handlers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.7 SM-17 — fault handlers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#48-sm-18-sm-19-sm-20--adc-reference-and-internal-supplies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.8 SM-18, SM-19, SM-20 — ADC reference and internal supplies
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#49-sm-21-sm-22--register-lock-and-register-check-safeio-list" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.9 SM-21, SM-22 — register lock and register check (SafeIo list)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#410-sm-23-sm-24-sm-25--safe-outputs-table-and-the-safe-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.10 SM-23, SM-24, SM-25 — safe outputs table and the safe state
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#411-sm-30-sm-31-sm-32--measurement-qualifier-and-can" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.11 SM-30, SM-31, SM-32 — measurement qualifier and CAN
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#412-sm-50--start-reason-and-reset-loop-limit-rcm-no-init-ram" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.12 SM-50 — start reason and reset-loop limit (RCM, no-init RAM)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#413-sm-51--image-check-by-the-bootloader" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.13 SM-51 — image check by the bootloader
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#414-sm-04-sequence-sm-05--the-time-bases-being-supervised" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.14 SM-04 (sequence), SM-05 — the time bases being supervised
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#415-sm-34-sm-53--no-mcu-hardware-of-their-own" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.15 SM-34, SM-53 — no MCU hardware of their own
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-interrupts-and-exceptions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Interrupts and exceptions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-pins" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Pins
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-derivatives-of-the-family" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Derivatives of the family
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-findings--configuration-that-is-relied-on-but-not-re-checked" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Findings — configuration that is relied on but not re-checked
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-hardware-functions-that-are-deliberately-not-used-in-stage-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Hardware functions that are deliberately not used in stage 1
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-review-record" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Review record
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-review-questions-of-the-architecture-section-11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Review questions of the architecture (section 11)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#12-sources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12. Sources
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="nextbsw-hardware-software-interface-of-the-stage-1-safety-mechanisms--s32k1xx-sys-66">neXtBSW hardware-software interface of the stage-1 safety mechanisms — s32k1xx (SYS-66)<a class="headerlink" href="#nextbsw-hardware-software-interface-of-the-stage-1-safety-mechanisms--s32k1xx-sys-66" title="Permanent link">&para;</a></h1>
+<p>Working state: dev at 6812a0b4 (after v0.2.0)</p>
+<p>Status: 2026-09-28, <strong>issue 1 (SYS-66)</strong>, written against <code>dev</code> at <code>ae92e89</code>. Task no. 8 of
+<code>iso26262-gap.md</code> (not published, available on request) section 6 (requirement 6-04 of its section 2.2: the hardware-software interface
+is refined and every safety-related dependency described).
+Readers: the integrator (safety manual DOC-19), the agents of SYS-55 (register list), SYS-73 (ECC injection),
+SYS-85/SYS-86 (hardware paths) and SYS-21 (freedom from interference), and whoever writes the HSI of the next family.
+Language: English, like the rest of <code>doc/</code> (CLAUDE.md, user 2026-09-17).</p>
+<p><strong>Update SYS-125 (2026-09-30, finding H9, anomaly AN-066).</strong> Decision of the safety responsible 2026-09-30: the family
+port switches the PMC low-voltage <strong>detect</strong> reset on instead of leaving the gap to AoU-09. <code>boardInit()</code> writes
+<code>PMC_LVDSC1 = LVDRE</code> (reset on, interrupt off, no acknowledge) in every start
+(<code>platforms/s32k1xx/port/main/include/pmc/LowVoltageDetectReset.h</code>); a VDD falling below VLVD (2.80 … 3.00 V) now
+resets the MCU instead of only a VDD below VLVR (2.50 … 2.70 V). Rows changed: section 2 (PMC), 4.8 (<code>LVDSC1</code>),
+5 (LVD/LVW vector), 8 (H9, now partly closed) and 9; the mechanism is catalogued as <strong>SM-59</strong> in <code>concept.md</code> 6.4
+(not credited) and analysed in <code>fmea.md</code>. What remains of H9: the bit is written at each start but <strong>not re-checked
+cyclically</strong> (it is not in the SafeIo list, 4.9). Host verified with a register model; board proof open.</p>
+<p><strong>Update SYS-153 (2026-10-01, rest of H9).</strong> <code>PMC_LVDSC1</code> is now an entry of the SafeIo list (4.9, class SUPERVISION,
+mask <code>0x30</code>, expected <code>0x10</code>, 8-bit access; the engine got an access width per entry). A cleared <code>LVDRE</code> or a set
+<code>LVDIE</code> is seen within one safety cycle (S1). H9 closed except VLPR/VLPS; the bootloader sets LVDRE itself since
+BL-34. Host verified; board proof open.</p>
+<p><strong>Update SYS-171 (2026-10-02, safety review check point SYS69-S2, findings SFP-F02 … SFP-F04 of
+<code>reviews/code-inspection/INS-SFP-1.md</code> (not published, available on request)).</strong> Section 4.4: <code>RGD0_WORD2</code> is now
+really compared every cycle (it was claimed but never read), <code>WORD2</code> of every descriptor is compared in all fields of
+the bus masters 0 … 3 (before only M0 … M2), the rows name descriptors 1 … 7 (SYS-97 guard, part of SFP-F12), and the
+statement that the descriptors keep M2/M3 out of the protected RAM is corrected: descriptor 0 grants them rwx (H10,
+section 8, section 0). Host verified with a register model and 15 mutants; board check B17 (fmea section 8) open.</p>
+<p><strong>Update DOC-59 (2026-10-04, re-check of CM-02, decision BRD a).</strong> Board check B17 (2026-10-02, <code>fmea.md</code> 8.2)
+reads <code>RGD0_WORD3</code> = 0: the valid bit of descriptor 0 is <strong>not</strong> set after <code>init()</code>. Section 4.4 and H10 carry this
+as a caveat: the M2/M3 rights of descriptor 0 may not be in effect; until the reference manual settles it (S171-3,
+SYS-171) this document keeps the unfavourable reading, and the restriction of descriptor 0 stays SYS-21.</p>
+<p>This document lists, for the family <strong>s32k1xx</strong>, every peripheral, register class, clock, interrupt and pin that a
+<strong>stage-1</strong> mechanism of <a href="../concept/"><code>concept.md</code></a> / <a href="../fmea/"><code>fmea.md</code></a> depends on, with the configuration the
+mechanism expects, who writes that configuration, what re-checks it, and where each value comes from (derivative
+database <code>mcudb</code>, board, project, or a constant of the family port). It is derived from <code>mcudb/s32k1xx/*.yaml</code>, from
+fmea section 5.2 (register classes of SM-21/SM-22) and from the code of <code>platforms/s32k1xx</code>; register facts that the
+code relies on were read again in the S32K1xx Reference Manual Rev. 13 in the repository ([RM13],
+<code>doc/hardware/s32k1xx/S32K-RM.pdf</code>) where section 11 says so.</p>
+<p><strong>Scope.</strong> Stage 1 only, as in fmea.md (user, <code>abn-sys19</code>): mechanisms whose detection runs on the MCU and uses only
+the MCU, its peripherals and the configuration. Device-dependent mechanisms (SM-33, SM-40 … SM-43, SM-52) have their
+HSI in the device packages (SYS-28). The hardware paths of <a href="../hardware-mechanisms/"><code>hardware-mechanisms.md</code></a> are not
+used today; section 9 lists them only so that their registers are not mistaken for unused.</p>
+<p><strong>Not a copy of the reference manual.</strong> The tables name registers and fields and the value neXtBSW expects; for the
+meaning of a field see [RM13]. Where a field is written by the OpenBSW driver in <code>external/openbsw</code> (never changed in
+the submodule), the table says so.</p>
+<hr />
+<h2 id="0-result-in-one-page">0. Result in one page<a class="headerlink" href="#0-result-in-one-page" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Question</th>
+<th>Answer</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Peripherals the stage-1 mechanisms depend on</td>
+<td><strong>20</strong>: WDOG, LPTMR0, LPIT0, SIM, PCC, SCG, PMC (by its reset default), RCM, MPU, ERM, FTFC, CRC, ADC0, PORT, GPIO, FTM (of the PWM group), FlexCAN (per bus), NVIC, SCB (SHCSR, AIRCR, DFSR, DEMCR), SysTick / DWT (time bases of the OS and the system time) — section 2</td>
+</tr>
+<tr>
+<td>Clocks</td>
+<td><strong>LPO128K</strong> (WDOG), <strong>LPO1K</strong> (LPTMR0), <strong>LPIT functional clock</strong> (PCC_LPIT, demo SIRCDIV2 8 MHz), <strong>system/core clock</strong> (SCG → FTM counter, SysTick, DWT, CRC and the safety task itself), <strong>ADC clock</strong> (PCC_ADC0) — section 3</td>
+</tr>
+<tr>
+<td>Interrupts and exceptions</td>
+<td>HardFault (exception 3, all faults escalate to it), WDOG warning (IRQ 22), LPIT0 channel 1 (IRQ 49 on S32K14x, the shared LPIT IRQ 20 on S32K11x), SysTick/PendSV/SVC of the RTOS; <strong>expected disabled</strong>: BusFault/UsageFault/MemManage enables, ERM and FTFC fault IRQs, LPTMR IRQ — section 5</td>
+</tr>
+<tr>
+<td>Pins</td>
+<td>none of their own for the supervision peripherals; the <strong>pins of the safe outputs</strong> (PWM group, <code>safe_off</code> outputs), the role pins <code>safety.locked_pin</code>, <code>safety.test_pin</code> and <code>safety.safe_state_output</code>, all from the board and project — section 6</td>
+</tr>
+<tr>
+<td>Where the values come from</td>
+<td>derivative (<code>mcudb</code>: MPU regions, LPO range, NVIC bits, ERM channels, ADC internal channels), board (pins, active level, <code>adc_reference_mv</code>, oscillator), project (clock plan, PWM group, safety roles, <code>modules.safe*</code> parameters), family constants (register masks, deadman channel, watchdog clock) — no board value lives in reusable code</td>
+</tr>
+<tr>
+<td>Re-checked at run time</td>
+<td>WDOG control, LPTMR0, LPIT channel 1 + its NVIC entry, MPU descriptors and enable, the register list of SafeIo (pin control, GPIO direction, clock gates, FTM configuration, <code>PMC_LVDSC1</code> since SYS-153), CRC unit (known-answer test)</td>
+</tr>
+<tr>
+<td><strong>Not re-checked, and relied on</strong></td>
+<td>findings <strong>H1 … H10</strong> (section 8): the NVIC entry of the watchdog warning IRQ (H1), the fault enables in SCB_SHCSR (H2), disabled ERM/FTFC fault interrupts (H3), the LPIT functional clock (H4), the system clock and with it the FTM dead time in nanoseconds (H5), FTM OUTMASK/SWOCTRL and GPIO PDOR (H6, known: SYS-30), SIM_PLATCGC (H7), SIM_CHIPCTL (H8), PMC low-voltage detect reset (H9: since SYS-125 switched <strong>on</strong> at every start and re-checked cyclically since SYS-153; remaining: LVD off in VLPR/VLPS), descriptor 0 of the MPU grants the DMA/ENET bus masters full access, so the MPU does not keep them out of the protected RAM (H10, open point N3; no such user today)</td>
+</tr>
+<tr>
+<td>Other derivatives of the family</td>
+<td>the table holds for S32K116 … S32K148; differences (core, NVIC bits, MPU regions, ERM channels, IRQ numbers, time base of the system time) are in section 7 and all come from <code>mcudb</code> or the device header, not from a board</td>
+</tr>
+<tr>
+<td>Review</td>
+<td>author review against code and [RM13] recorded in section 10; <strong>independent review (I1) open</strong> — it needs a second person (gap analysis Q1)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="1-reading-rules">1. Reading rules<a class="headerlink" href="#1-reading-rules" title="Permanent link">&para;</a></h2>
+<h3 id="11-columns">1.1 Columns<a class="headerlink" href="#11-columns" title="Permanent link">&para;</a></h3>
+<p>Each table in section 4 has one row per register or field group:</p>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Register / field</strong></td>
+<td>peripheral register and the fields that matter; <code>x</code> = instance or index from the configuration</td>
+</tr>
+<tr>
+<td><strong>Expected</strong></td>
+<td>the value or relation the mechanism assumes while the ECU runs</td>
+</tr>
+<tr>
+<td><strong>Written by</strong></td>
+<td>the code that sets it (file under <code>platforms/s32k1xx</code> unless stated), or "reset value" if nobody writes it</td>
+</tr>
+<tr>
+<td><strong>Re-checked by</strong></td>
+<td>the mechanism or check that detects a deviation at run time, and how often; "—" = nothing</td>
+</tr>
+<tr>
+<td><strong>Value from</strong></td>
+<td><code>family</code> = constant of the family port (register facts, fixed choices of the mechanism); <code>mcudb</code> = derivative database; <code>board</code> = <code>boards/&lt;board&gt;/board.yaml</code>; <code>project</code> = <code>projects/&lt;project&gt;/project.yaml</code> (including module parameters); <code>derived</code> = computed by <code>tools/bswgen</code> or <code>tools/nxconfig</code> from those</td>
+</tr>
+</tbody>
+</table>
+<h3 id="12-status-words-for-the-check">1.2 Status words for the check<a class="headerlink" href="#12-status-words-for-the-check" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Word</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>cyclic</strong></td>
+<td>compared with the expected value in every safety cycle (nominal 10 ms, guaranteed 17 ms while the task runs, fmea section 2) or at the stated period</td>
+</tr>
+<tr>
+<td><strong>start</strong></td>
+<td>compared once after it was written</td>
+</tr>
+<tr>
+<td><strong>self-healing</strong></td>
+<td>rewritten before each use, so a drifted value does not survive the next use</td>
+</tr>
+<tr>
+<td><strong>fail-safe by access</strong></td>
+<td>a drift makes the next access of the mechanism fault (bus fault → HardFault → SM-17), which is a safe reaction</td>
+</tr>
+<tr>
+<td><strong>not checked</strong></td>
+<td>a drift is not detected; the row names the consequence — these rows are the findings of section 8</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="2-overview-which-mechanism-depends-on-which-peripheral">2. Overview: which mechanism depends on which peripheral<a class="headerlink" href="#2-overview-which-mechanism-depends-on-which-peripheral" title="Permanent link">&para;</a></h2>
+<p><code>●</code> = the mechanism's detection or reaction needs the peripheral; <code>○</code> = it needs it only as a time base, a clock or a
+report path. Mechanism names as in concept section 6.</p>
+<table>
+<thead>
+<tr>
+<th>Peripheral</th>
+<th>SM-01/02/03/07 watchdog</th>
+<th>SM-04 sequence + period</th>
+<th>SM-05 RTE timing</th>
+<th>SM-06 deadman</th>
+<th>SM-10…13 MPU</th>
+<th>SM-14 ROM check</th>
+<th>SM-15/16 ECC</th>
+<th>SM-17 fault handlers</th>
+<th>SM-18/19/20 ADC, supplies</th>
+<th>SM-21/22 register lock/check</th>
+<th>SM-23/24/25 safe outputs</th>
+<th>SM-30 qualifier</th>
+<th>SM-31/32 E2E, CAN</th>
+<th>SM-50 start reason, reset loop</th>
+<th>SM-51 image check</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>WDOG</td>
+<td>●</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>○ (warning IRQ)</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>● (fast test)</td>
+<td></td>
+</tr>
+<tr>
+<td>LPTMR0</td>
+<td></td>
+<td>●</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>LPIT0</td>
+<td></td>
+<td></td>
+<td>○ (ARMv6-M system time, ch 0)</td>
+<td>● (ch 1)</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>SIM</td>
+<td>○ (LPO)</td>
+<td>● (LPOCLKS)</td>
+<td></td>
+<td></td>
+<td>○ (PLATCGC)</td>
+<td></td>
+<td>○ (PLATCGC)</td>
+<td></td>
+<td>● (CHIPCTL)</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>PCC</td>
+<td></td>
+<td>● (LPTMR0)</td>
+<td></td>
+<td>● (LPIT)</td>
+<td></td>
+<td>○ (CRC)</td>
+<td></td>
+<td></td>
+<td>○ (ADC0)</td>
+<td>● (PORT, FTM)</td>
+<td>● (gate of each entry)</td>
+<td>○</td>
+<td>○ (FlexCAN)</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>SCG</td>
+<td>○</td>
+<td>○ (the task's clock)</td>
+<td>○</td>
+<td>○ (SIRC)</td>
+<td></td>
+<td>○</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>○ (FTM counts the system clock)</td>
+<td></td>
+<td>○</td>
+<td>○ (LOC/LOL resets)</td>
+<td></td>
+</tr>
+<tr>
+<td>PMC</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>○ (LVD reset on, SYS-125)</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>○ (LVD in RCM_SRS)</td>
+<td></td>
+</tr>
+<tr>
+<td>RCM</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>●</td>
+<td></td>
+</tr>
+<tr>
+<td>MPU</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>●</td>
+<td></td>
+<td></td>
+<td>○ (bus fault)</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>ERM</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>●</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>FTFC</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>● (CCIF)</td>
+<td>● (FERSTAT)</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>○ (flash reads)</td>
+</tr>
+<tr>
+<td>CRC</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>●</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>ADC0</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>●</td>
+<td></td>
+<td></td>
+<td>● (board channels, any ADC)</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>PORT</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>●</td>
+<td>●</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>GPIO</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>●</td>
+<td>●</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>FTM (PWM group)</td>
+<td></td>
+<td></td>
+<td></td>
+<td>● (inhibit)</td>
+<td></td>
+<td></td>
+<td></td>
+<td>● (walk)</td>
+<td></td>
+<td>●</td>
+<td>●</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>FlexCAN</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>●</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>NVIC</td>
+<td>● (IRQ 22)</td>
+<td></td>
+<td></td>
+<td>● (LPIT vector)</td>
+<td></td>
+<td></td>
+<td>○ (IRQs off)</td>
+<td>●</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>SCB (SHCSR, AIRCR, DFSR, DEMCR)</td>
+<td></td>
+<td></td>
+<td>○ (DEMCR on ARMv7-M)</td>
+<td>● (DFSR)</td>
+<td></td>
+<td></td>
+<td></td>
+<td>● (SHCSR, AIRCR)</td>
+<td></td>
+<td></td>
+<td>● (AIRCR reset after S1)</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>SysTick / DWT</td>
+<td></td>
+<td>○ (supervised)</td>
+<td>●</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>SRAM (no-init)</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>○ (ECC)</td>
+<td>● (dump)</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>● (record)</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="3-clocks">3. Clocks<a class="headerlink" href="#3-clocks" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Clock</th>
+<th>Source and path</th>
+<th>Used by</th>
+<th>Expected</th>
+<th>Written by</th>
+<th>Re-checked by</th>
+<th>Value from</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>LPO128K</strong></td>
+<td>PMC low-power oscillator, always on, no divider in SCG</td>
+<td>WDOG counter (<code>CS[CLK] = 1</code>)</td>
+<td>running; frequency within the data-sheet range 113 … 139 kHz</td>
+<td>nobody (always on)</td>
+<td>a stopped or drifted LPO is seen by the SM-04 period window against the core-clocked safety task (fmea SM-01 "SM-04 also covers a stopped LPO")</td>
+<td><code>mcudb</code> <code>clock.lpo</code></td>
+</tr>
+<tr>
+<td><strong>LPO1K</strong></td>
+<td>LPO128K ÷ 128, gated by <code>SIM_LPOCLKS[LPO1KCLKEN]</code></td>
+<td>LPTMR0 time counter (<code>PSR[PCS] = 01</code>, prescaler bypassed)</td>
+<td><code>LPO1KCLKEN = 1</code></td>
+<td>reset value (not written)</td>
+<td><strong>cyclic</strong>, <code>checkCycleTimer()</code> (field LPO1K, kind 3 of <code>SAFETY_CYCLE_PERIOD_VIOLATION</code>)</td>
+<td><code>family</code></td>
+</tr>
+<tr>
+<td><strong>LPIT functional clock</strong></td>
+<td><code>PCC_LPIT[PCS]</code> → one of SOSCDIV2/SIRCDIV2/FIRCDIV2/SPLLDIV2 (SCG <code>xxxDIV</code> dividers); <code>NX_CLOCK_LPIT_HZ</code></td>
+<td>LPIT channel 1 (deadman time-out = <code>TIMEOUT_TICKS</code> = <code>NX_CLOCK_LPIT_HZ / 1000 × 10</code>); on ARMv6-M also channel 0 (system time)</td>
+<td>the frequency the build assumed; demo SIRCDIV2 = 8 MHz → <code>TVAL1 = 79 999</code> (board 2026-09-22: <code>0x1387F</code>)</td>
+<td><code>clockConfig.cpp</code> / generated clock plan</td>
+<td><strong>not checked</strong> (H4): <code>TVAL</code> is checked in ticks, not the tick length</td>
+<td><code>project</code> (clock plan), default <code>mcudb</code> <code>clock.pcc.LPIT</code></td>
+</tr>
+<tr>
+<td><strong>System / core clock</strong></td>
+<td>SCG <code>RCCR</code> → SOSC or SPLL or FIRC; <code>DIVCORE</code>, <code>DIVBUS</code>, <code>DIVSLOW</code></td>
+<td>the safety task and the OS tick (SysTick), DWT system time (ARMv7-M), FTM counter of the PWM group (<code>SC[CLKS] = 01</code>, system clock), CRC, all bus accesses</td>
+<td>the clock plan of the project (demo: SOSC 40 MHz → SPLL, core 80 MHz)</td>
+<td><code>configurPll()</code> from <code>boardInit()</code></td>
+<td><strong>not checked as a register</strong> (H5); its <strong>effect</strong> on the safety task's period is SM-04 (period part, against LPO1K); loss of SOSC or SPLL lock is a hardware reset (LOC/LOL, below)</td>
+<td><code>board</code> (oscillator <code>clock.sosc_hz</code>), <code>project</code> (<code>clock.system_hz</code>), limits <code>mcudb</code> <code>clock.*</code></td>
+</tr>
+<tr>
+<td><strong>SOSC / SPLL clock monitors</strong></td>
+<td><code>SCG_SOSCCSR[SOSCCM, SOSCCMRE]</code>, <code>SCG_SPLLCSR[SPLLCM, SPLLCMRE]</code></td>
+<td>loss-of-clock / loss-of-lock <strong>reset</strong> ([RM13] 25.2.2.4, 25.2.2.5); <code>RCM_SRS[LOC]</code> / <code>[LOL]</code> afterwards</td>
+<td><code>CM = 1</code>, <code>CMRE = 1</code> for every oscillator and PLL the clock plan uses</td>
+<td><code>soscMon()</code>, <code>spllMon()</code> in <code>platforms/s32k1xx/bsp/bspClock/src/clockConfig.cpp</code></td>
+<td><strong>not checked</strong> (H5). A hardware mechanism of the MCU, <strong>not credited</strong> in stage 1</td>
+<td><code>family</code> (always on when the source is used)</td>
+</tr>
+<tr>
+<td><strong>ADC clock</strong></td>
+<td><code>PCC_ADC0[PCS]</code> + divider</td>
+<td>bandgap and supply conversions (SM-18…20), board channels (SM-30)</td>
+<td>conversion clock ≤ 50 MHz (mcudb <code>max_hz</code>)</td>
+<td>clock plan</td>
+<td><strong>fail-safe by access</strong> for a gated clock (read failures → SM-19/SM-20 limit); frequency not checked (no effect on a ratio measurement)</td>
+<td><code>project</code>, <code>mcudb</code> <code>instances.ADC0.clock</code></td>
+</tr>
+<tr>
+<td><strong>Peripheral clock gates</strong></td>
+<td><code>PCC_x[CGC]</code></td>
+<td>every peripheral above</td>
+<td>1 for every peripheral a mechanism uses</td>
+<td><code>configurPll()</code> → <code>enablePeripheralClocks()</code> (OpenBSW) and <code>nxEnablePeripheralClocks()</code></td>
+<td>FTM and PORT of the safe outputs: <strong>cyclic</strong> (class CLOCK_GATE of SafeIo); LPTMR0: <strong>cyclic</strong> (<code>checkCycleTimer</code>); others: <strong>fail-safe by access</strong> (a gated peripheral bus-faults on access, SM-17)</td>
+<td><code>derived</code> (bswgen: every used peripheral; <code>S32K1_INFRASTRUCTURE_GATES</code> for FTFC, CRC, PORTx, …)</td>
+</tr>
+</tbody>
+</table>
+<p>The two time bases that do not depend on the clock plan are LPO128K (watchdog) and LPO1K (period check). The deadman
+(SM-06) runs on an SCG-derived clock chosen by the project: it is independent of the <strong>core</strong> being halted, not of the
+clock plan (H4).</p>
+<hr />
+<h2 id="4-per-mechanism">4. Per mechanism<a class="headerlink" href="#4-per-mechanism" title="Permanent link">&para;</a></h2>
+<h3 id="41-sm-01-sm-02-sm-03-sm-07--mcu-watchdog-wdog">4.1 SM-01, SM-02, SM-03, SM-07 — MCU watchdog (WDOG)<a class="headerlink" href="#41-sm-01-sm-02-sm-03-sm-07--mcu-watchdog-wdog" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Register / field</th>
+<th>Expected</th>
+<th>Written by</th>
+<th>Re-checked by</th>
+<th>Value from</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>WDOG_CS[EN]</code></td>
+<td>1</td>
+<td>OpenBSW <code>Watchdog::enableWatchdog()</code> (<code>safeBspMcuWatchdog</code>), called from <code>SafeWatchdog::enableMcuWatchdog()</code> (<code>ecu/safety/safeWatchdog</code>) after the fast test</td>
+<td><strong>cyclic</strong> every 7 safety cycles, <code>checkWatchdogConfiguration()</code> (SM-02)</td>
+<td><code>family</code></td>
+</tr>
+<tr>
+<td><code>WDOG_CS[CLK]</code></td>
+<td>1 = LPO clock</td>
+<td>same</td>
+<td>SM-02</td>
+<td><code>family</code></td>
+</tr>
+<tr>
+<td><code>WDOG_TOVAL</code></td>
+<td><code>128 000 / 1000 × watchdog_timeout_ms</code> = 32 000 for 250 ms (the driver computes with the <strong>nominal</strong> LPO 128 kHz; real time-out 230 … 283 ms over the LPO range)</td>
+<td>same</td>
+<td>SM-02 (low 16 bits)</td>
+<td><code>project</code> <code>modules.safeLifecycle.watchdog_timeout_ms</code>; relation to the service interval checked by <code>nxconfig</code> (<code>safety_timing</code>)</td>
+</tr>
+<tr>
+<td><code>WDOG_CS[INT]</code></td>
+<td>1 (warning interrupt before the reset)</td>
+<td>same, with <code>interruptActive = true</code></td>
+<td>SM-02 via <code>checkWatchdogControl()</code> (context bit 2)</td>
+<td><code>family</code></td>
+</tr>
+<tr>
+<td><code>WDOG_CS[WIN]</code>, <code>WDOG_WIN</code></td>
+<td>0 (no window)</td>
+<td>same</td>
+<td>SM-02 (<code>WIN</code>, bit 4); window register not read</td>
+<td><code>family</code></td>
+</tr>
+<tr>
+<td><code>WDOG_CS[PRES]</code></td>
+<td>0 (no ÷256 prescaler)</td>
+<td>same</td>
+<td>SM-02 (bit 8)</td>
+<td><code>family</code></td>
+</tr>
+<tr>
+<td><code>WDOG_CS[UPDATE]</code></td>
+<td>1 (reconfigurable — required by the service path of the driver)</td>
+<td>same</td>
+<td>SM-02 (bit 16): a change is <strong>detected</strong>, not prevented (fmea SM-02)</td>
+<td><code>family</code></td>
+</tr>
+<tr>
+<td><code>WDOG_CS[CMD32EN]</code>, <code>[STOP]</code>, <code>[WAIT]</code></td>
+<td>1, 1, 1 (32-bit command words; counts in STOP and WAIT modes)</td>
+<td>same</td>
+<td>not checked (no effect on detection in RUN)</td>
+<td><code>family</code></td>
+</tr>
+<tr>
+<td><code>WDOG_CS[DBG]</code></td>
+<td>0 (the watchdog <strong>stops</strong> in a debugger halt — by design, the halt is SM-06's)</td>
+<td>same (not set)</td>
+<td>not checked</td>
+<td><code>family</code></td>
+</tr>
+<tr>
+<td><code>WDOG_CS[TST]</code></td>
+<td>2 or 3 during the two fast-test resets, then kept as written by the driver</td>
+<td><code>executeFastTest()</code> from <code>main()</code> (SM-07)</td>
+<td>SM-07 at every start; the start-up code reads <code>TST</code> to tell a fast-test reset from a real one (<code>boardInit()</code>, SM-50)</td>
+<td><code>family</code></td>
+</tr>
+<tr>
+<td><code>WDOG_CNT</code></td>
+<td>refresh sequence only from <code>Watchdog::serviceWatchdog()</code></td>
+<td><code>SafeWatchdog::cyclic()</code> every 7 cycles</td>
+<td>SM-03 counts calls of the service function; a direct write to <code>CNT</code> is not seen (fmea SM-03)</td>
+<td><code>family</code> / <code>derived</code> (service interval from <code>task_period_ms</code> and the fastest LPO, SYS-53)</td>
+</tr>
+<tr>
+<td>NVIC <code>ISER</code> bit of <code>WDOG_EWM_IRQn</code> (22)</td>
+<td>enabled</td>
+<td>OpenBSW <code>enableWatchdog()</code> (direct <code>NVIC-&gt;ISER</code> write)</td>
+<td><strong>not checked</strong> (H1)</td>
+<td><code>family</code></td>
+</tr>
+<tr>
+<td>NVIC priority of <code>WDOG_EWM_IRQn</code></td>
+<td>reset value 0 (most urgent)</td>
+<td>nobody</td>
+<td><strong>not checked</strong> (H1)</td>
+<td>reset value</td>
+</tr>
+<tr>
+<td>vector 38 (<code>Safe_WDOG_EWM_IRQHandler</code>, <code>os/isr/isr_wdg.cpp</code>)</td>
+<td>naked handler: safe outputs walk first, R0–R3 only</td>
+<td>startup <code>startUp.S</code>, bswgen <code>FAMILY_IRQ_HANDLERS</code> (S32K11x: <code>WDOG_IRQn</code>, same number)</td>
+<td><code>safe-outputs-order</code> (disassembly) at build/test time</td>
+<td><code>family</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="42-sm-04-period-part--lptmr0-against-lpo1k">4.2 SM-04 (period part) — LPTMR0 against LPO1K<a class="headerlink" href="#42-sm-04-period-part--lptmr0-against-lpo1k" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Register / field</th>
+<th>Expected</th>
+<th>Written by</th>
+<th>Re-checked by</th>
+<th>Value from</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PCC_LPTMR0[CGC]</code></td>
+<td>1</td>
+<td>clock plan</td>
+<td><strong>cyclic</strong> <code>checkCycleTimer()</code> (checked first: without it an LPTMR access would bus-fault)</td>
+<td><code>family</code></td>
+</tr>
+<tr>
+<td><code>LPTMR0_CSR[TEN]</code></td>
+<td>1</td>
+<td><code>startCycleTimer()</code> (<code>safeSupervisionCheck/LptmrCycleTimer.cpp</code>, start sequence [RM13] 49.5.1)</td>
+<td><strong>cyclic</strong> (kind 3, field ENABLE)</td>
+<td><code>family</code></td>
+</tr>
+<tr>
+<td><code>LPTMR0_CSR[TMS, TFC, TIE, TDRE]</code></td>
+<td>0, 1, 0, 0 (time counter, free running, <strong>no interrupt</strong>, no DMA)</td>
+<td>same</td>
+<td><strong>cyclic</strong> (field MODE)</td>
+<td><code>family</code></td>
+</tr>
+<tr>
+<td><code>LPTMR0_PSR[PCS, PBYP, PRESCALE]</code></td>
+<td>01 (LPO1K), 1, 0</td>
+<td>same</td>
+<td><strong>cyclic</strong> (field PRESCALER)</td>
+<td><code>family</code></td>
+</tr>
+<tr>
+<td><code>LPTMR0_CMR</code></td>
+<td>0 (compare unused)</td>
+<td>same</td>
+<td>not checked (no effect with <code>TIE = 0</code> and <code>TFC = 1</code>)</td>
+<td><code>family</code></td>
+</tr>
+<tr>
+<td><code>LPTMR0_CNR</code></td>
+<td>free-running 16-bit counter, read by writing CNR first (latch)</td>
+<td><code>readCycleTimer()</code></td>
+<td>a stopped counter: the 7-cycle window (kind 2)</td>
+<td><code>family</code>; bounds <code>derived</code> from <code>task_period_ms</code>, <code>cycle_lateness_ms</code>, <code>mcudb</code> <code>clock.lpo</code></td>
+</tr>
+<tr>
+<td><code>SIM_LPOCLKS[LPO1KCLKEN]</code></td>
+<td>1</td>
+<td>reset value</td>
+<td><strong>cyclic</strong> (field LPO1K)</td>
+<td><code>family</code></td>
+</tr>
+<tr>
+<td>NVIC <code>LPTMR0_IRQn</code></td>
+<td>disabled (no hardware deadline yet — proposed T1b)</td>
+<td>nobody</td>
+<td>not needed while <code>TIE = 0</code> (checked)</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h3 id="43-sm-06--halt--stall-deadman-lpit0-channel-1-and-dfsr">4.3 SM-06 — halt / stall deadman (LPIT0 channel 1) and DFSR<a class="headerlink" href="#43-sm-06--halt--stall-deadman-lpit0-channel-1-and-dfsr" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Register / field</th>
+<th>Expected</th>
+<th>Written by</th>
+<th>Re-checked by</th>
+<th>Value from</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PCC_LPIT[CGC]</code>, <code>[PCS]</code></td>
+<td>1, the clock source of <code>NX_CLOCK_LPIT_HZ</code></td>
+<td>clock plan</td>
+<td>CGC: <strong>fail-safe by access</strong>; PCS: <strong>not checked</strong> (H4)</td>
+<td><code>project</code>, default <code>mcudb</code></td>
+</tr>
+<tr>
+<td><code>LPIT0_MCR[M_CEN]</code></td>
+<td>1</td>
+<td><code>initSystemTimer()</code> (keeps it), <code>LpitHaltDeadman::init()</code></td>
+<td><strong>cyclic</strong> <code>checkLpitDeadman()</code> from the safety task (field 0x01)</td>
+<td><code>family</code></td>
+</tr>
+<tr>
+<td><code>LPIT0_MCR[DBG_EN]</code></td>
+<td>1 (keeps counting while the core is halted — the point of the mechanism)</td>
+<td><code>LpitHaltDeadman::init()</code> (<code>port/main/src/integration/LpitHaltDeadman.h</code>)</td>
+<td><strong>cyclic</strong> (0x02)</td>
+<td><code>family</code></td>
+</tr>
+<tr>
+<td><code>LPIT0_MIER</code> bit 1</td>
+<td>1</td>
+<td>same</td>
+<td><strong>cyclic</strong> (0x04)</td>
+<td><code>family</code></td>
+</tr>
+<tr>
+<td><code>LPIT0_TCTRL1</code></td>
+<td>0 except <code>T_EN</code> (32-bit periodic counter, no trigger, no chaining)</td>
+<td>same</td>
+<td><strong>cyclic</strong> (0x08); <code>T_EN</code> excluded on purpose (retrigger toggles it) and healed by <code>SETTEN</code> every 1 ms</td>
+<td><code>family</code></td>
+</tr>
+<tr>
+<td><code>LPIT0_TVAL1</code></td>
+<td><code>TIMEOUT_TICKS − 1</code> (10 ms; demo 79 999)</td>
+<td>same</td>
+<td><strong>cyclic</strong> (0x10)</td>
+<td><code>family</code> (10 ms) × <code>project</code> (LPIT clock)</td>
+</tr>
+<tr>
+<td>NVIC enable of <code>LPIT0_Ch1_IRQn</code> (49; S32K11x: shared <code>LPIT_IRQn</code> 20)</td>
+<td>enabled</td>
+<td><code>LpitHaltDeadman::init()</code></td>
+<td><strong>cyclic</strong> (0x20)</td>
+<td><code>family</code>; IRQ alias bswgen <code>FAMILY_IRQ_ALIASES</code></td>
+</tr>
+<tr>
+<td>NVIC priority of the same</td>
+<td><code>NX_IRQ_MAX_SYSCALL_LEVEL − 1</code> (more urgent than every RTOS critical section; 0 on ARMv6-M)</td>
+<td><code>SYS_SetPriority()</code> in <code>init()</code></td>
+<td><strong>cyclic</strong> (0x40)</td>
+<td><code>derived</code> from the RTOS boundary and <code>mcudb</code> <code>nvic_priority_bits</code></td>
+</tr>
+<tr>
+<td><code>LPIT0_MSR</code> bit 1</td>
+<td>cleared at init; set by an expiry, taken by the handler</td>
+<td><code>init()</code>, handler</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>SCB_DFSR</code> (0xE000ED30) bits 0–4</td>
+<td>read and cleared (write 1) by the guard every poll; debug events of connect/reset discarded at start</td>
+<td><code>CortexMDebugEvents::take()</code> (<code>DebugHaltGuardSystem.h</code>)</td>
+<td>secondary source only (the J-Link clears it, IO-32)</td>
+<td>architecture</td>
+</tr>
+<tr>
+<td>FTM <code>SWOCTRL</code> of the PWM group</td>
+<td>written as inhibit (<code>CHnOC</code> of the group, <code>CHnOCV = 0</code>) by the deadman reaction</td>
+<td><code>DebugHaltGuardSystem.h</code> <code>inhibit()</code></td>
+<td>see 4.10</td>
+<td><code>derived</code> (PWM group)</td>
+</tr>
+</tbody>
+</table>
+<p>The expected configuration of the re-check comes from the owner of the deadman (<code>EXPECTED_CONFIGURATION</code> in
+<code>LpitHaltDeadman.h</code>, strong <code>deadmanExpectedConfiguration()</code> since SYS-48, defined out of line in <code>integration/Integration.cpp</code> since SYS-133 - it must never become inline, otherwise the weak default wins and SM-06 no longer checks the deadman); a project without a power stage has no
+deadman and nothing to check.</p>
+<h3 id="44-sm-10--sm-13--system-mpu">4.4 SM-10 … SM-13 — system MPU<a class="headerlink" href="#44-sm-10--sm-13--system-mpu" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Register / field</th>
+<th>Expected</th>
+<th>Written by</th>
+<th>Re-checked by</th>
+<th>Value from</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>MPU_CESR[VLD]</code></td>
+<td>1</td>
+<td><code>MemoryProtection::init()</code> (<code>safeMemory/MemoryProtection.cpp</code>)</td>
+<td><strong>cyclic</strong> <code>mpu::isGlobalEnabled()</code> (SM-12, context = CESR)</td>
+<td><code>family</code></td>
+</tr>
+<tr>
+<td><code>MPU_CESR[NRGD]</code></td>
+<td>encodes <code>NX_MPU_REGIONS</code> (0 = 8, 2 = 16 regions)</td>
+<td>hardware</td>
+<td><strong>cyclic</strong> <code>hasRegionsOfDerivative()</code> (SM-12)</td>
+<td><code>mcudb</code> <code>mpu.regions</code> → <code>NX_MPU_CESR_NRGD</code> (bswgen, <code>static_assert</code> in <code>mpu.h</code>)</td>
+</tr>
+<tr>
+<td><code>MPU_RGD0_WORD2</code></td>
+<td>debugger region over the whole address space, <code>REGION0_ACCESS</code> (fields of the bus masters 0 … 3: <code>0x007C77D8</code>): core (M0) <strong>no access</strong> (M0SM 11b, M0UM 000b), debugger (M1) its reset rights, M2 (DMA) <strong>rwx</strong>, M3 (ENET, S32K148 only) <strong>rwx</strong> (M3SM 11b, M3UM 111b); M4 … M7 not implemented on the S32K1 ([RM13] 15.1.2)</td>
+<td><code>init()</code>; <code>platform::StaticBsp::init()</code> afterwards ORs M3SM 11b / M3UM 111b in through the alias <code>RGDAAC0</code>, which <code>REGION0_ACCESS</code> already contains</td>
+<td><strong>cyclic</strong> <code>areRegionsConfiguredCorrectly()</code> (SM-13), every implemented field, reported as region 0 — <strong>since SYS-171</strong>; before, descriptor 0 was never read (finding SFP-F02)</td>
+<td><code>family</code></td>
+</tr>
+<tr>
+<td><code>MPU_RGD0_WORD3[VLD]</code></td>
+<td>a write to <code>RGDn_WORD2</code> clears the valid bit ([RM13] 15.4.7), so after <code>init()</code> descriptor 0 is expected <strong>not valid</strong> (the comment in <code>init()</code>: "implicitly deactivated"); the debug chapter of [RM13] says the debugger keeps its access through RGD0 regardless. <em>Board check B17 (2026-10-02):</em> reads 0 - not valid after <code>init()</code></td>
+<td><code>init()</code> (implicitly)</td>
+<td><strong>not checked</strong>; read once on the board by B17 (<code>fmea.md</code> 8.2, SYS-171): 0</td>
+<td><code>family</code></td>
+</tr>
+<tr>
+<td><code>MPU_RGD1…7_WORD0/1</code></td>
+<td>start/end from the linker symbols: 0 … protected RAM − 1, protected RAM (<code>__MPU_BSS_START</code> … <code>__MPU_BSS_END</code> − 1, <code>FUSA_REGION</code> = 2), gap, safety stack (<code>SAFETY_STACK_REGION</code> = 4), rest … guard − 1, guard below the MSP (<code>__StackGuardStart</code> … <code>__StackGuardEnd</code> − 1, <code>STACK_GUARD_REGION</code> = 6, SYS-97), guard end … 0xFFFFFFFF (7)</td>
+<td><code>init()</code></td>
+<td><strong>cyclic</strong> (SM-13)</td>
+<td><code>derived</code> (linker script <code>application.dld.in</code>)</td>
+</tr>
+<tr>
+<td><code>MPU_RGD1…7_WORD2</code></td>
+<td><code>REGION_FULL_ACCESS</code> (M0 … M3 rwx) for 1, 3, 4 (while the safety task runs), 5, 7; <code>REGION_LOCKED_READ_ACCESS</code> for 6 (guard); 2 see the gate row</td>
+<td><code>init()</code>; descriptor 4 also <code>fusaTaskStackCloseIsr()</code> / <code>fusaTaskStackOpenIsr()</code></td>
+<td><strong>cyclic</strong> (SM-13), every field of the bus masters 0 … 3 (<code>WORD2_FIELDS</code> = <code>0x007DFFFF</code>); before SYS-171 only M0 … M2 (<code>0x0001FFFF</code>, finding SFP-F04). The reserved bits 17, 23 and the M4 … M7 enables (not implemented, [RM13] 15.1.2) are not compared</td>
+<td><code>family</code></td>
+</tr>
+<tr>
+<td><code>MPU_RGD2_WORD2</code> (gate)</td>
+<td>outside the safety shell <code>REGION_LOCKED_READ_ACCESS</code> (M0/M1 read only, M2/M3 no access in this descriptor, M4–M7 bits 0); inside the shell full access. The "no access" of M2/M3 has <strong>no effect</strong> while descriptor 0 is valid, which grants them rwx everywhere (finding SFP-F03, see below)</td>
+<td><code>fusaGateClose()</code> / <code>fusaGateOpen()</code></td>
+<td><strong>cyclic</strong> on entry and exit of the safety cycle (SM-11, whole word), every implemented field in the region check (SM-13)</td>
+<td><code>family</code></td>
+</tr>
+<tr>
+<td><code>MPU_RGDn_WORD3[VLD]</code></td>
+<td>1 for regions 1 … 7; the unused descriptors up to <code>NX_MPU_REGIONS − 1</code> not valid</td>
+<td><code>init()</code></td>
+<td><strong>cyclic</strong> (SM-13, also RGD[8..15] on a 16-region derivative, ARCH-16)</td>
+<td><code>family</code>, count <code>mcudb</code></td>
+</tr>
+<tr>
+<td><code>SIM_PLATCGC[CGCMPU]</code></td>
+<td>1 (reset value 0x1F)</td>
+<td>nobody</td>
+<td><strong>not checked</strong> (H7)</td>
+<td>reset value</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Other bus masters (SYS-171, finding SFP-F03, open point N3 answered).</strong> The MPU master numbers of the S32K1 are
+M0 core, M1 debugger, M2 DMA, M3 ENET (S32K148 only); M4 … M7 are not implemented ([RM13] 15.1.2 Table 15-3). The
+system MPU grants an access when <strong>any</strong> valid descriptor grants it. Descriptor 0 covers the whole address space and
+grants M2 and M3 rwx, so the "no access" for M2/M3 in the locked gate word and in the guard has no effect as long
+as descriptor 0 is valid: <strong>the MPU does not protect the protected RAM, the safety stack or the guard against the DMA
+(or the ENET)</strong>. Whether descriptor 0 is still valid after <code>init()</code> (its <code>WORD2</code> write clears <code>VLD</code> per [RM13]
+15.4.7, while the debug chapter says the debugger keeps its RGD0 access) read 0 on the board (B17, 2026-10-02:
+not valid), but the effect on the M2/M3 rights is not settled (S171-3, SYS-171); this document assumes the
+unfavourable case. No neXtBSW driver enables the DMA or the ENET today (dfa DF-44, the ADC
+driver refuses <code>DMAEN</code>), so the gap has no coupling factor in the code; before the first such user, descriptor 0 must
+be restricted for M2/M3 and the master be granted only the regions it needs (H10, SYS-21).</p>
+<h3 id="45-sm-14--rom-check-crc-unit">4.5 SM-14 — ROM check (CRC unit)<a class="headerlink" href="#45-sm-14--rom-check-crc-unit" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Register / field</th>
+<th>Expected</th>
+<th>Written by</th>
+<th>Re-checked by</th>
+<th>Value from</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PCC_CRC[CGC]</code></td>
+<td>1</td>
+<td><code>nxEnablePeripheralClocks()</code> (infrastructure gate)</td>
+<td><strong>fail-safe by access</strong></td>
+<td><code>family</code></td>
+</tr>
+<tr>
+<td><code>CRC_CTRL[TCRC, TOT, TOTR, FXOR, WAS]</code></td>
+<td>32-bit, transpose bits on write, bits and bytes on read, final XOR; <code>WAS</code> 1 only while the seed is written</td>
+<td><code>crcStart()</code> (<code>safeMemory/RomCheck.cpp</code>) before <strong>every</strong> pass and every known-answer test</td>
+<td><strong>self-healing</strong> + known-answer test before every pass (<code>0x498CFAA3</code>, <code>ROMCHECK_UNIT_FAILED</code>)</td>
+<td><code>family</code></td>
+</tr>
+<tr>
+<td><code>CRC_GPOLY</code></td>
+<td><code>0x04C11DB7</code></td>
+<td>same</td>
+<td>same</td>
+<td><code>family</code> (same polynomial as the post-link step <code>tools/romCheckImage.py</code>)</td>
+</tr>
+<tr>
+<td><code>CRC_DATA</code></td>
+<td>seed <code>0xFFFFFFFF</code>, then the image words</td>
+<td>same</td>
+<td>the result against <code>__checksum_result</code></td>
+<td><code>derived</code> (post-link step)</td>
+</tr>
+<tr>
+<td>exclusive use of the CRC unit</td>
+<td>no other user in the image</td>
+<td>—</td>
+<td>by review (fmea SM-14: "reserved for SM-14")</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>FTFC_FSTAT[CCIF]</code></td>
+<td>1 while no flash command runs; a pass does not start with 0 and is discarded if one started</td>
+<td>FTFC hardware</td>
+<td>read before and after each pass (SYS-44)</td>
+<td><code>family</code></td>
+</tr>
+<tr>
+<td>program flash (<code>PFLASH</code>, <code>mcudb</code> <code>memory</code>)</td>
+<td>the image areas of the checksum list</td>
+<td>bootloader / flashing tool</td>
+<td>SM-14 itself; ECC on read (SM-16)</td>
+<td><code>mcudb</code>, linker script</td>
+</tr>
+</tbody>
+</table>
+<h3 id="46-sm-15-sm-16--ecc-of-ram-and-flash-erm-ftfc">4.6 SM-15, SM-16 — ECC of RAM and flash (ERM, FTFC)<a class="headerlink" href="#46-sm-15-sm-16--ecc-of-ram-and-flash-erm-ftfc" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Register / field</th>
+<th>Expected</th>
+<th>Written by</th>
+<th>Re-checked by</th>
+<th>Value from</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ERM_SR0[NCE0, NCE1]</code></td>
+<td>0; a set bit is taken and cleared (write 1) <strong>before</strong> the report</td>
+<td><code>takeEccErrors()</code> (<code>safeMemory/IntegrityEccHandler.cpp</code>)</td>
+<td>the mechanism itself, <strong>cyclic</strong></td>
+<td><code>NCE1</code> only where the device header defines it (<code>mcudb</code>: two RAM channels on S32K14x, one on S32K11x)</td>
+</tr>
+<tr>
+<td><code>ERM_SR0[SBC0, SBC1]</code></td>
+<td>counted (<code>eccCorrectionCount()</code>), cleared, no reaction</td>
+<td>same</td>
+<td>diagnostic only</td>
+<td>same</td>
+</tr>
+<tr>
+<td><code>ERM_EARn[0..1]</code></td>
+<td>address of the last non-correctable RAM error, logged</td>
+<td>same</td>
+<td>—</td>
+<td><code>ERM_EARn_COUNT</code> of the device header</td>
+</tr>
+<tr>
+<td><code>ERM_CR0[ENCIEn, ESCIEn]</code></td>
+<td><strong>0</strong> (no interrupt): the ERM records in <code>SR0</code> independently of <code>CR0</code> ([RM13] 22.4.1/22.4.2, fmea SM-15)</td>
+<td>reset value (nobody writes it)</td>
+<td><strong>not checked</strong> (H3)</td>
+<td>reset value</td>
+</tr>
+<tr>
+<td><code>FTFC_FERSTAT[DFDIF]</code></td>
+<td>0; taken and cleared like the ERM flags</td>
+<td><code>takeEccErrors()</code></td>
+<td>the mechanism itself, <strong>cyclic</strong> (context bit 2)</td>
+<td><code>family</code></td>
+</tr>
+<tr>
+<td><code>FTFC_FERCNFG[DFDIE]</code></td>
+<td><strong>0</strong> (no interrupt)</td>
+<td>reset value</td>
+<td><strong>not checked</strong> (H3)</td>
+<td>reset value</td>
+</tr>
+<tr>
+<td><code>FTFC_FERCNFG[FDFD]</code></td>
+<td><strong>0</strong> in operation (1 forces <code>DFDIF</code> on every flash read, [RM13] 36.4.4.1.12) — also the natural latent-fault test of the SM-16 path (SYS-73)</td>
+<td>reset value</td>
+<td>a set <code>FDFD</code> makes SM-16 fire in the next cycle: safe direction</td>
+<td>reset value</td>
+</tr>
+<tr>
+<td><code>EIM_EIMCR</code>, <code>EIM_EICHEN</code>, <code>EIM_EICHDn_WORD0/1</code> (SM-55, SYS-73)</td>
+<td><strong>0</strong> outside the start-up test; during it one channel with one or two data bits for one register-only read, then 0 again (checked after every read, switched off if not)</td>
+<td><code>eccLatentTestAtStart()</code> (<code>safeMemory/EccLatentTest.cpp</code>, <code>EccLatentTestTarget.cpp</code>), once per start in <code>main()</code></td>
+<td>the test itself; <strong>not checked</strong> in operation (H3)</td>
+<td>reset value; channel count <code>ERM_EARn_COUNT</code>/<code>EIM_EICHDn_COUNT</code> of the device header</td>
+</tr>
+<tr>
+<td><code>ERM_CR0</code> during SM-55</td>
+<td>the channel's <code>ESCIEn</code>/<code>ENCIEn</code> cleared for the test, the previous value restored after the test's record was cleared</td>
+<td><code>testEccChannel()</code></td>
+<td>host test <code>safe-memory-ecc-latent</code></td>
+<td>reset value (0)</td>
+</tr>
+<tr>
+<td>NVIC <code>ERM_double_fault_IRQn</code> (45), <code>FTFM_Fault_IRQn</code> (21) (S32K11x: <code>ERM_IRQn</code> 5, <code>FTFC_IRQn</code> 18)</td>
+<td><strong>disabled</strong> — their handlers (<code>os/isr/isr_erm.cpp</code>, <code>isr_ftfc.cpp</code>) print and loop <strong>without</strong> walking the safe outputs table</td>
+<td>nobody</td>
+<td><strong>not checked</strong> (H3)</td>
+<td>reset value</td>
+</tr>
+<tr>
+<td><code>SIM_PLATCGC[CGCERM]</code></td>
+<td>1 (reset value)</td>
+<td>nobody</td>
+<td><strong>not checked</strong> (H7)</td>
+<td>reset value</td>
+</tr>
+<tr>
+<td>EIM (error injection module)</td>
+<td>unused, <code>SIM_PLATCGC[CGCEIM]</code> at reset value</td>
+<td>nobody</td>
+<td>—</td>
+<td>latent-fault test is SYS-73 / gap task 18</td>
+</tr>
+<tr>
+<td>core bus fault on a read with a double-bit error</td>
+<td>taken as HardFault (4.7)</td>
+<td>hardware</td>
+<td>SM-17</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h3 id="47-sm-17--fault-handlers">4.7 SM-17 — fault handlers<a class="headerlink" href="#47-sm-17--fault-handlers" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Register / field</th>
+<th>Expected</th>
+<th>Written by</th>
+<th>Re-checked by</th>
+<th>Value from</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>vector 3 <code>HardFault_Handler</code></td>
+<td>naked branch to <code>customHardFaultHandler</code> (<code>hardFaultHandler/src/&lt;architecture&gt;/hardFaultHandler.S</code>): walk of <code>nxSafeOutputs</code> first (R0–R3, no stack, no RAM), then dump, then reset</td>
+<td><code>os/isr/isr_sys.cpp</code>, startup vector table</td>
+<td><code>safe-outputs-order</code> (disassembly of both architectures and of the demo ELF)</td>
+<td><code>family</code></td>
+</tr>
+<tr>
+<td><code>SCB_SHCSR[MEMFAULTENA, BUSFAULTENA, USGFAULTENA]</code> (ARMv7-M)</td>
+<td><strong>0</strong> (reset value): every MPU violation (the S32K1 system MPU answers with a bus error), ECC read error, usage fault escalates to HardFault. <code>BusFault_Handler</code> and <code>UsageFault_Handler</code> print and reset <strong>without</strong> the walk; <code>MemManage</code> is <code>DefaultISR</code></td>
+<td>nobody</td>
+<td><strong>not checked</strong> (H2)</td>
+<td>reset value</td>
+</tr>
+<tr>
+<td><code>SCB_CCR[DIV_0_TRP, UNALIGN_TRP]</code></td>
+<td>reset value (division by zero yields 0; <code>SafeSystem</code> guards its division itself)</td>
+<td>nobody</td>
+<td>not checked; no mechanism relies on the trap</td>
+<td>reset value</td>
+</tr>
+<tr>
+<td><code>SCB_AIRCR[SYSRESETREQ]</code></td>
+<td>the reset of every S2 reaction (<code>softwareSystemReset()</code>)</td>
+<td>the reaction</td>
+<td>the reset itself; <code>RCM_SRS[SW]</code> after it</td>
+<td>architecture</td>
+</tr>
+<tr>
+<td>no-init RAM of the dump (<code>hardFaultDumpLayout.h</code>)</td>
+<td>outside the RAM the start-up initializes; cleared after POR/LVD before its first read (<code>prepareDump()</code> in <code>boardInit()</code>)</td>
+<td>start-up, handler</td>
+<td>read after the reset</td>
+<td><code>derived</code> (linker script)</td>
+</tr>
+<tr>
+<td>on ARMv6-M (S32K11x)</td>
+<td>only HardFault exists; same walk (<code>armv6m/hardFaultHandler.S</code>)</td>
+<td>—</td>
+<td><code>safe-outputs-order</code></td>
+<td><code>mcudb</code> <code>core</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="48-sm-18-sm-19-sm-20--adc-reference-and-internal-supplies">4.8 SM-18, SM-19, SM-20 — ADC reference and internal supplies<a class="headerlink" href="#48-sm-18-sm-19-sm-20--adc-reference-and-internal-supplies" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Register / field</th>
+<th>Expected</th>
+<th>Written by</th>
+<th>Re-checked by</th>
+<th>Value from</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ADC instance of the internal channels</td>
+<td><code>ADC0</code> (the only instance with <code>INTERNAL0</code> on every S32K1 derivative)</td>
+<td>generated ADC configuration</td>
+<td><code>bswgen</code> refuses an internal channel an instance does not have</td>
+<td><code>project</code> <code>adc_internal</code>, allowed channels <code>mcudb</code> <code>instances.ADCx.internal_channels</code></td>
+</tr>
+<tr>
+<td><code>ADC0_SC1n[ADCH]</code> of slot 13 / 14</td>
+<td><code>BANDGAP</code> / <code>INTERNAL0</code> (slots just below the last)</td>
+<td>bspAdc from <code>bsp/adc/…Configuration.h</code></td>
+<td>a wrong channel gives a wrong value: out of band → SM-18/SM-20; in band → not detected</td>
+<td><code>derived</code> (bswgen slot rule)</td>
+</tr>
+<tr>
+<td><code>PCC_ADC0[CGC]</code></td>
+<td>1</td>
+<td>clock plan</td>
+<td><strong>fail-safe by access</strong> / read failures → SM-19, SM-20 limit</td>
+<td><code>derived</code></td>
+</tr>
+<tr>
+<td>VREFH pin</td>
+<td>the board reference, nominal <code>adc_reference_mv</code></td>
+<td>board hardware</td>
+<td>SM-18 every cycle (± <code>adc_reference_tolerance_mv</code>)</td>
+<td><code>board</code> <code>adc_reference_mv</code> (demo 4096 mV), <code>project</code> tolerance</td>
+</tr>
+<tr>
+<td><code>SIM_CHIPCTL[ADC_SUPPLYEN]</code></td>
+<td>1</td>
+<td><code>SafeSystem::init()</code> (<code>safeSystem/SafeSystem.cpp</code>)</td>
+<td><strong>not checked</strong> (H8): cleared, the supply channel reads a value the band rejects (SM-20 fires, safe direction) — assumption, not verified on the board</td>
+<td><code>family</code></td>
+</tr>
+<tr>
+<td><code>SIM_CHIPCTL[ADC_SUPPLY]</code></td>
+<td>rotated by the safety task over 3.3 V flash, 3.3 V oscillator, 1.2 V core, one step per cycle group</td>
+<td><code>SafeSystem::checkInternalSupplies()</code></td>
+<td><strong>self-healing</strong> (written every round); the value read back decides the nominal 1200 or 3300 mV</td>
+<td><code>family</code></td>
+</tr>
+<tr>
+<td>PMC <code>LVDSC1[LVDRE, LVDIE]</code></td>
+<td><em>changed by SYS-125:</em> <code>LVDRE = 1</code>, <code>LVDIE = 0</code> (whole register written as <code>0x10</code>, <code>LVDACK</code> not written). 0 after POR and unaffected by other resets ([RM13] 41.7.1.2), so it is written in <strong>every</strong> start; a VDD below VLVD (2.80 … 3.00 V, [DS13] table 8) resets (<code>RCM_SRS[LVD]</code>) and holds the MCU in reset until VDD is above VLVD + 50 mV; the LVR (2.50 … 2.70 V) stays on in all modes (25.2.2.2); in VLPR/VLPS the LVD is off (41.6), SM-59</td>
+<td><code>boardInit()</code> (<code>main.cpp</code>, <code>pmc/LowVoltageDetectReset.h</code>) before the RAM initialization</td>
+<td>checked every safety cycle by SafeIo (4.9, SYS-153); host test <code>low-voltage-detect-reset</code></td>
+<td><code>family</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="49-sm-21-sm-22--register-lock-and-register-check-safeio-list">4.9 SM-21, SM-22 — register lock and register check (SafeIo list)<a class="headerlink" href="#49-sm-21-sm-22--register-lock-and-register-check-safeio-list" title="Permanent link">&para;</a></h3>
+<p>The list is generated per project by <code>tools/bswgen</code> (<code>collect_safe_io()</code>, <code>bsp/safeIo/safeIoConfiguration.h</code>) from
+the PWM group, the <code>safe_off</code> outputs and the role pin; <code>SafeIo::init()</code> locks and reads back, <code>SafeIo::cyclic()</code>
+compares every entry every safety cycle (context: class in bits 31..24, index in 15..0). Nothing is a demo constant
+since SYS-24.</p>
+<table>
+<thead>
+<tr>
+<th>Class</th>
+<th>Register / field</th>
+<th>Mask</th>
+<th>Expected</th>
+<th>Lock</th>
+<th>Value from</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PIN_FUNCTION</td>
+<td><code>PORTx_PCRn</code> of every pin of the used PWM group, of every <code>safe_off</code> output and of <code>safety.locked_pin</code></td>
+<td><code>0x8743</code> (PS, PE, DSE, MUX, LK; <code>PFE</code> not judged)</td>
+<td>MUX and attributes of the pin table + <code>LK</code></td>
+<td><code>LK</code> (bit 15, until reset); <code>ISF</code> (w1c, bit 24) kept out of the lock write</td>
+<td><code>board</code> (pin, function), <code>project</code> (roles) → <code>derived</code></td>
+</tr>
+<tr>
+<td>GPIO_DIRECTION</td>
+<td><code>GPIOx_PDDR</code> of the GPIO pins of that list, one word per port</td>
+<td>pins of the port</td>
+<td>1 for outputs</td>
+<td>—</td>
+<td><code>derived</code></td>
+</tr>
+<tr>
+<td>GPIO_DIRECTION</td>
+<td><code>GPIOx_PIDR</code> of the same</td>
+<td>same</td>
+<td>0 (input not disabled)</td>
+<td>—</td>
+<td><code>derived</code></td>
+</tr>
+<tr>
+<td>CLOCK_GATE</td>
+<td><code>PCC_FTMx[CGC]</code> of the PWM group, <code>PCC_PORTx[CGC]</code> of every port in the list</td>
+<td><code>CGC</code></td>
+<td>1</td>
+<td>—</td>
+<td><code>derived</code></td>
+</tr>
+<tr>
+<td>PWM_TIMER</td>
+<td><code>FTMx_SC</code></td>
+<td><code>0x00FF003F</code></td>
+<td><code>CLKS = 01</code> (system clock), <code>PS</code>, <code>PWMEN</code> of the group's channels</td>
+<td>—</td>
+<td><code>project</code> PWM group → <code>derived</code></td>
+</tr>
+<tr>
+<td>PWM_TIMER</td>
+<td><code>FTMx_MOD</code>, <code>FTMx_CNTIN</code></td>
+<td><code>0xFFFF</code></td>
+<td>period − 1, 0</td>
+<td>—</td>
+<td><code>derived</code> (frequency, clock plan)</td>
+</tr>
+<tr>
+<td>PWM_TIMER</td>
+<td><code>FTMx_COMBINE</code></td>
+<td><code>0x77777777</code></td>
+<td><code>COMBINE, COMP, DTEN, SYNCEN</code> of the used pairs; <code>FAULTEN = 0</code></td>
+<td>—</td>
+<td><code>derived</code></td>
+</tr>
+<tr>
+<td>PWM_TIMER</td>
+<td><code>FTMx_POL</code></td>
+<td><code>0xFF</code></td>
+<td>active-low channels of the group</td>
+<td>—</td>
+<td><code>board</code> (active level)</td>
+</tr>
+<tr>
+<td>PWM_TIMER</td>
+<td><code>FTMx_INVCTRL</code></td>
+<td><code>0x0F</code></td>
+<td>0</td>
+<td>—</td>
+<td><code>family</code></td>
+</tr>
+<tr>
+<td>PWM_TIMER</td>
+<td><code>FTMx_CONF[BDMMODE]</code></td>
+<td><code>0xC0</code></td>
+<td>01 (outputs at their safe value in a debug halt)</td>
+<td>—</td>
+<td><code>family</code></td>
+</tr>
+<tr>
+<td>PWM_TIMER</td>
+<td><code>FTMx_PAIRnDEADTIME</code> of the used pairs</td>
+<td><code>0x000F00FF</code></td>
+<td><code>DTPS</code>, <code>DTVAL</code> of the configured dead time <strong>in ticks</strong> (see H5)</td>
+<td>—</td>
+<td><code>project</code> dead time (ns) → <code>derived</code> with the system clock</td>
+</tr>
+<tr>
+<td>SYSTEM_CLOCK</td>
+<td><code>SCG</code></td>
+<td>—</td>
+<td><strong>reserved, not in the list</strong> (SYS-55). <code>SCG_xCSR[LK]</code> is a guard against accidental writes only: it can be cleared at any time ([RM13] 28.3.8)</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>SUPERVISION</td>
+<td><code>PMC_LVDSC1[LVDRE, LVDIE]</code> (8-bit access)</td>
+<td><code>0x30</code></td>
+<td><code>0x10</code></td>
+<td>—</td>
+<td><code>family</code></td>
+</tr>
+<tr>
+<td>SUPERVISION</td>
+<td>WDOG, LPIT, LPTMR</td>
+<td>—</td>
+<td>covered by 4.1–4.3</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>(demo pin of SM-22)</td>
+<td>direction of <code>safety.test_pin</code> through <code>Io::getConfiguration()</code></td>
+<td>—</td>
+<td>input</td>
+<td>—</td>
+<td><code>project</code> <code>safety.test_pin</code> (demo PTE14, unconnected, AoU-30)</td>
+</tr>
+</tbody>
+</table>
+<p>Not in the list on purpose: <code>FTMx_OUTMASK</code>, <code>FTMx_SWOCTRL</code>, <code>FTMx_CnV</code>/<code>SYNC</code> and <code>GPIOx_PDOR</code> — they change at run
+time (duty, enable, safe state); their read-back is SYS-30 (H6). FTM write protection (<code>MODE[WPDIS]</code>, <code>FMS[WPEN]</code>,
+[RM13] 47) is not used: the safe outputs walk must still be able to write <code>SWOCTRL</code> (SYS-55).</p>
+<h3 id="410-sm-23-sm-24-sm-25--safe-outputs-table-and-the-safe-state">4.10 SM-23, SM-24, SM-25 — safe outputs table and the safe state<a class="headerlink" href="#410-sm-23-sm-24-sm-25--safe-outputs-table-and-the-safe-state" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Register / field</th>
+<th>Expected</th>
+<th>Written by</th>
+<th>Re-checked by</th>
+<th>Value from</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>nxSafeOutputs[]</code> in flash</td>
+<td>one entry per PWM group and per <code>safe_off</code> output: address, value, clock gate register, gate mask; end entry 0</td>
+<td>bswgen <code>collect_safe_outputs()</code> → <code>bsp/safeOutputs/safeOutputsConfiguration.h</code>, <code>os/isr/isr_wdg.cpp</code></td>
+<td>build: <code>static_assert</code> (aligned address, value, gate); SM-24 (<code>NX_SAFE_OFF_OUTPUT_COUNT</code> against the adapters); PLAT-77 (entry by entry in the linked ELF against an independent expectation, board TB1 2026-09-22); SM-14/SM-16 (flash)</td>
+<td><code>derived</code></td>
+</tr>
+<tr>
+<td><code>FTMx_SWOCTRL</code> of every PWM group</td>
+<td><code>CHnOC</code> of the group's channels, <code>CHnOCV = 0</code>: every channel forced to its inactive level before dead-time insertion and polarity ([RM13] 47.5.15); takes effect at the next FTM input clock with <code>SYNCONF[SWOC] = 0</code></td>
+<td>the walk (fault handlers, watchdog warning, deadman, <code>enterSafeState()</code>)</td>
+<td><strong>not read back</strong> (G1, H6)</td>
+<td><code>derived</code> (PWM group)</td>
+</tr>
+<tr>
+<td><code>FTMx_POL</code></td>
+<td>the polarity that makes "inactive" safe for the circuit</td>
+<td>driver init</td>
+<td>cyclic (4.9)</td>
+<td><code>board</code> (active level, AoU-07)</td>
+</tr>
+<tr>
+<td><code>GPIOx_PCOR</code> / <code>GPIOx_PSOR</code> of every <code>safe_off</code> output</td>
+<td><code>1 &lt;&lt; n</code> to PCOR for an active-high output, PSOR for an active-low one</td>
+<td>the walk</td>
+<td><strong>not read back</strong> (G1; <code>PDOR</code> not in the list, H6)</td>
+<td><code>board</code> <code>active</code></td>
+</tr>
+<tr>
+<td>gate of each entry</td>
+<td><code>PCC_FTMx</code> / <code>PCC_PORTx</code> <code>CGC</code>; an entry whose gate reads 0 is <strong>skipped</strong> (the access would bus-fault inside the fault handler)</td>
+<td>—</td>
+<td>the gates of the listed peripherals: cyclic (CLOCK_GATE)</td>
+<td><code>derived</code></td>
+</tr>
+<tr>
+<td>final <code>DSB</code></td>
+<td>after the last store, before anything else runs</td>
+<td>the walk</td>
+<td><code>safe-outputs-order</code></td>
+<td><code>family</code></td>
+</tr>
+<tr>
+<td>pin state during and after reset</td>
+<td>the reset state of each pin (input, no pull, unless the port says otherwise) must be safe for the circuit</td>
+<td>hardware</td>
+<td>—</td>
+<td><strong>AoU-07</strong> (integrator, external pulls)</td>
+</tr>
+</tbody>
+</table>
+<p>Demo (<code>evalboard_s32k144_demo</code>, reference output of bswgen): <code>FTM0_SWOCTRL = 0x3F</code> (MOT1 on channels 0–5, gate
+<code>PCC_FTM0</code>), <code>PTC_PCOR = 1 &lt;&lt; 11</code> (<code>MOT1_GD_DRV_EN</code>, gate <code>PCC_PORTC</code>), <code>PTD_PCOR = 1 &lt;&lt; 17</code> (<code>EN_SW_KL30B</code>, gate
+<code>PCC_PORTD</code>).</p>
+<h3 id="411-sm-30-sm-31-sm-32--measurement-qualifier-and-can">4.11 SM-30, SM-31, SM-32 — measurement qualifier and CAN<a class="headerlink" href="#411-sm-30-sm-31-sm-32--measurement-qualifier-and-can" title="Permanent link">&para;</a></h3>
+<p>These mechanisms are software judgements over values a peripheral delivers; their HSI is the peripheral's normal
+function.</p>
+<table>
+<thead>
+<tr>
+<th>Register / field</th>
+<th>Expected</th>
+<th>Written by</th>
+<th>Re-checked by</th>
+<th>Value from</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ADC channels of the board (any instance)</td>
+<td>conversion per <code>SC1n[ADCH]</code> of the generated slot, 12 bit</td>
+<td>bspAdc</td>
+<td>qualifier (SM-30) for out-of-range values only; in-range faults not detected (G2)</td>
+<td><code>board</code> <code>adc</code>, <code>project</code></td>
+</tr>
+<tr>
+<td><code>FlexCANx_ESR1[FLTCONF, BOFFINT]</code> per bus</td>
+<td>read by <code>CanBusMonitor</code> / <code>BusStateTransceiver</code>; <code>BOFFINT</code> cleared by the caller after reading</td>
+<td>FlexCAN driver (<code>port/bspConfiguration/bspFlexCan</code>)</td>
+<td>SM-32 (per bus)</td>
+<td><code>board</code> (CAN instances), <code>project</code></td>
+</tr>
+<tr>
+<td><code>FlexCANx_ECR[TXERRCNT, RXERRCNT]</code></td>
+<td>read for the bus state</td>
+<td>same</td>
+<td>SM-32</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>FlexCANx_CTRL1[BOFFREC]</code></td>
+<td>1 while the recovery holds the controller in bus off (<code>CanBusOffRecovery.h</code>)</td>
+<td>recovery</td>
+<td>—</td>
+<td><code>project</code></td>
+</tr>
+<tr>
+<td><code>PCC_FlexCANx[CGC]</code></td>
+<td>1</td>
+<td>clock plan</td>
+<td><strong>fail-safe by access</strong></td>
+<td><code>derived</code></td>
+</tr>
+<tr>
+<td>CAN controller CRC and error confinement</td>
+<td>hardware function</td>
+<td>—</td>
+<td>E2E (SM-31) adds a CRC on top for configured signals</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h3 id="412-sm-50--start-reason-and-reset-loop-limit-rcm-no-init-ram">4.12 SM-50 — start reason and reset-loop limit (RCM, no-init RAM)<a class="headerlink" href="#412-sm-50--start-reason-and-reset-loop-limit-rcm-no-init-ram" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Register / field</th>
+<th>Expected</th>
+<th>Written by</th>
+<th>Re-checked by</th>
+<th>Value from</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>RCM_SRS[POR, LVD]</code></td>
+<td>read in <code>boardInit()</code> before the RAM initialization: POR or LVD clears the dump and the reset-loop record</td>
+<td>hardware</td>
+<td>—</td>
+<td><code>family</code></td>
+</tr>
+<tr>
+<td><code>RCM_SRS[WDOG]</code> together with <code>WDOG_CS[TST]</code></td>
+<td>a watchdog reset with <code>TST</code> 2 or 3 is the fast test (SM-07), otherwise a real watchdog reset; counted only without another reset reason in the same start (a J-Link reset starts with the reasons RESET and WATCHDOG together, board finding 2026-09-22, fmea SM-50)</td>
+<td>hardware</td>
+<td><code>ecustate</code> / <code>safe-supervisor</code> host tests; board SYS-18</td>
+<td><code>family</code></td>
+</tr>
+<tr>
+<td><code>RCM_SRS[LOCKUP]</code></td>
+<td>kept across the fast-test resets (<code>resetLoopLockup</code>), counts as a fault exception</td>
+<td>hardware</td>
+<td>same</td>
+<td><code>family</code></td>
+</tr>
+<tr>
+<td><code>RCM_SRS[LOC, LOL]</code></td>
+<td>loss of clock / lock from the SCG monitors (section 3) — reported as a start reason, not counted</td>
+<td>hardware</td>
+<td>—</td>
+<td><code>family</code></td>
+</tr>
+<tr>
+<td>reset-loop record (4 words, section <code>.noinit</code>)</td>
+<td>above the RAM the start-up initializes, outside the MPU region, below the boot request; cleared on POR/LVD</td>
+<td><code>main.cpp</code>, <code>SafeSupervisor::handle()</code></td>
+<td>check word; ELF placement <code>safety-context-elf</code></td>
+<td><code>derived</code> (linker script), <code>family</code> defaults <code>reset_loop_limit</code> 3, <code>reset_loop_clear_ms</code> 60 000</td>
+</tr>
+<tr>
+<td>SRAM ECC of the no-init words</td>
+<td>valid after POR only once written; the clear on POR/LVD writes them before the first read (PLAT-20)</td>
+<td><code>boardInit()</code></td>
+<td>SM-15 on a later read</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h3 id="413-sm-51--image-check-by-the-bootloader">4.13 SM-51 — image check by the bootloader<a class="headerlink" href="#413-sm-51--image-check-by-the-bootloader" title="Permanent link">&para;</a></h3>
+<p>The bootloader uses a software CRC-32 (<code>bootloader/src/core/crc32</code>) and reads the program flash; the CRC unit is not
+used there. Its HSI is the flash read path (ECC, SM-16 of the application does not run yet) and the FTFC command
+interface for flashing, which belongs to the bootloader's own documentation. The integrity of the bootloader itself
+is open point <strong>N4</strong>.</p>
+<p>What the bootloader configures and leaves behind (BL-36, safety review 2026-10-02 SYS69-S11, finding BLI-F03 of
+INS-BLI-1):</p>
+<table>
+<thead>
+<tr>
+<th>Register / field</th>
+<th>Expected</th>
+<th>Written by</th>
+<th>Re-checked by</th>
+<th>Value from</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>WDOG_CS</code>, <code>WDOG_TOVAL</code></td>
+<td>watchdog <strong>disabled</strong> (<code>TOVAL</code> 0xFFFF, <code>EN</code> 0, unlock sequence before the interrupts are on), <code>WDOG_CS[TST]</code> kept for the application's fast test (BL-33)</td>
+<td><code>bl_system_init()</code> in the reset handler (<code>bootloader/platforms/s32k1xx/hal_s32k1xx.c</code>)</td>
+<td>not re-checked in the bootloader; the application configures the watchdog again in its own start-up and checks it (SM-07, section 4.1)</td>
+<td><code>family</code></td>
+</tr>
+<tr>
+<td>fault vectors</td>
+<td>every fault vector of the bootloader resets unconditionally (<code>Fault_Handler</code>: <code>NVIC_SystemReset()</code>), no output is touched</td>
+<td>bootloader vector table</td>
+<td>—</td>
+<td><code>family</code></td>
+</tr>
+<tr>
+<td><code>PMC_LVDSC1[LVDRE]</code></td>
+<td>1 from the reset handler on (BL-34, SM-59)</td>
+<td><code>bl_lvd_reset_enable()</code></td>
+<td>the application (SYS-153)</td>
+<td><code>family</code></td>
+</tr>
+<tr>
+<td>SBC watchdog (board device UJA113x, register 0x00 <code>WMC</code>/<code>NWP</code> over SPI; BL-28, BL-41, BL-42)</td>
+<td><strong>SDMS 0</strong> (no software development mode; with <code>serve</code> or <code>leave</code>) or <code>serve</code> with a watchdog that runs in Normal mode: set in Standby to autonomous, 1 024 ms (written twice, read back; an SBC found in Normal mode is put into Standby first), then Normal mode; triggered every 256 ms by <code>bl_device_service()</code> and once more right before the jump. Not taken (read back differs) → no Normal mode, stage <code>0xE5</code>. <strong>SDMS 1 with <code>leave</code>:</strong> not touched, Normal mode as before. Forced Normal mode: not touched (off). <strong>Read only</strong> (<code>bootloader.init</code> without the SBC, <code>sbc_init(false)</code>; BL-42): with <strong>SDMS 0</strong> only the watchdog is set (same fixed setting, in Standby; an SBC found in Normal mode is put into Standby first) and triggered as above - the SBC stays in Standby, regulator (V2) and CAN control are not written, no Normal mode (autonomous runs in Standby as timeout while an interrupt is pending, INTN1 low, otherwise it is off; Table 8); not taken → stage <code>0xE5</code>; with SDMS 1 read only, nothing written. Reason in <code>bl_sbc_watchdog.reason</code> (3 = read only with SDMS 0)</td>
+<td><code>sbc_init()</code>, <code>bl_device_service()</code> (<code>bootloader/devices/sbcUja113x/sbc_uja113x.c</code>)</td>
+<td>read back after the setting; the application's SBC driver takes the running watchdog over (AoU-34)</td>
+<td><code>project</code> (<code>bootloader.sbc_watchdog</code>), device state (SDMS, data sheet UJA113X_SER Table 7, 7.2.1, Table 8)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The bootloader phase is not supervised by the MCU watchdog.</strong> From the reset until the application has enabled the
+watchdog in its start-up, a hang (program flow, a peripheral that never answers) is not detected by any neXtBSW
+mechanism; it ends only by a reset from outside (power cycle, the SBC watchdog the bootloader serves — always with an
+SBC without software development mode (SDMS 0, BL-41; since BL-42 also if the SBC is only read), with <code>bootloader.sbc_watchdog: serve</code> also with it; AoU-34 —
+or a tester's ECU reset). The SBC watchdog then supervises only the bootloader's main loop, not its program flow.
+<strong>Why SDMS 0 is always served (BL-41, safety review SBC watchdog 2026-10-06, SDMS0-1 c):</strong> after an SBC reset
+without development mode the UJA113x watchdog is a timeout watchdog with 128 ms that already runs in Standby
+(public data sheet UJA113X_SER Rev. 2, Table 7 with 7.2.1 and Table 8). A bootloader that left it alone would be
+reset over and over without a valid application and would hand the application only the rest of 128 ms since the
+SBC reset; <code>leave</code> therefore takes effect only with SDMS 1. <strong>The same holds for an SBC that is only read (BL-42,
+safety review bootloader 0.3.10 2026-10-07, BL41-2 b):</strong> the watchdog runs whether or not the bootloader needs the
+SBC as its transceiver, so the hook sets up the watchdog alone; it needs Standby for the setting (data sheet 7.2,
+7.3.3) but not Normal mode for serving, so V2 and CAN stay as found. The updater is not changed: it still refuses to run
+unless the SBC watchdog is off (SDMS 1). This is acceptable because the bootloader configures no pin of a power output: all
+outputs keep their reset state while it runs (AoU-07, AoU-SEC-3), and a bootloader that stays is a state with
+de-energised outputs. The decision to start the application does not rest on RAM state of the past: since BL-36 the
+start is checked again immediately before <code>hal_jump_to_app()</code>, and a record without compatibility block is not
+started. Since BL-38 (bootloader 0.3.8) that second check reads record, compatibility block and entry again from flash
+and requires the record's size and CRC field to be the ones the single CRC-32 over the image of <code>bl_init()</code> was
+computed for and matched; it does not compute a second CRC over the image (0.3.7 did, about 160 ms per start after
+the start-up window, BL36-P2). This is sufficient because the bootloader issues no flash command between the two
+checks: erase, download and the record write need the programming session, which keeps the bootloader from jumping.
+An image body changed without such a command (debugger, bit error) is not seen again before the jump; it is covered by
+the flash ECC and by the application's ROM check SM-14 at its start (bootloader README, "One CRC per start"). The flash
+read path of the checks is unchanged (ECC of the program flash; a non-correctable error during the check is a bus
+fault and resets, BLI-F02).</p>
+<h3 id="414-sm-04-sequence-sm-05--the-time-bases-being-supervised">4.14 SM-04 (sequence), SM-05 — the time bases being supervised<a class="headerlink" href="#414-sm-04-sequence-sm-05--the-time-bases-being-supervised" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Register / field</th>
+<th>Expected</th>
+<th>Written by</th>
+<th>Re-checked by</th>
+<th>Value from</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SysTick_LOAD</code>, <code>CTRL</code></td>
+<td>one OS tick per <code>ASYNC_CONFIG_TICK_IN_US</code> at the core clock (e.g. 80 000 − 1 at 80 MHz)</td>
+<td><code>clockConfig.cpp</code> / RTOS port</td>
+<td><strong>effect</strong> checked by SM-04 (the safety task's period against LPO1K), not the register</td>
+<td><code>derived</code> (clock plan)</td>
+</tr>
+<tr>
+<td><code>DEMCR[TRCENA]</code>, <code>DWT_CYCCNT</code> (ARMv7-M system time)</td>
+<td>TRCENA 1 (a J-Link session can clear it: re-armed, PLAT-67)</td>
+<td><code>SystemTimer.cpp</code></td>
+<td>a stopped system time stops the safety task → SM-01</td>
+<td><code>family</code></td>
+</tr>
+<tr>
+<td><code>LPIT0</code> channel 0 (ARMv6-M system time)</td>
+<td>32-bit periodic, <code>M_CEN</code>, with <code>DBG_EN = 1</code> when the deadman is present</td>
+<td><code>initSystemTimer()</code></td>
+<td>not checked by itself; its effect by SM-04</td>
+<td><code>family</code></td>
+</tr>
+<tr>
+<td>RTE deadlines (SM-05)</td>
+<td>measured with the OpenBSW system time above</td>
+<td>generated RTE</td>
+<td>S3 only</td>
+<td><code>project</code> <code>rte.yaml</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="415-sm-34-sm-53--no-mcu-hardware-of-their-own">4.15 SM-34, SM-53 — no MCU hardware of their own<a class="headerlink" href="#415-sm-34-sm-53--no-mcu-hardware-of-their-own" title="Permanent link">&para;</a></h3>
+<p>SM-34 (device reports to the safe supervisor) is a software report path in RAM; its hardware interface is that of
+the reporting device package (SYS-28). SM-53 (defined run-down) drives the supply role through its driver; since
+SYS-174 its last run-down step walks the safe outputs table (the registers of 4.10, the same walk as the fault
+handlers), and since SYS-173 an overdue restart ends in the software reset of 4.7 after the same walk. The rest is
+device-dependent.</p>
+<hr />
+<h2 id="5-interrupts-and-exceptions">5. Interrupts and exceptions<a class="headerlink" href="#5-interrupts-and-exceptions" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Exception / IRQ (S32K14x; S32K11x)</th>
+<th>Handler</th>
+<th>Expected state</th>
+<th>Priority expected</th>
+<th>Set by</th>
+<th>Re-checked by</th>
+<th>Mechanism</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>exception 3 HardFault</td>
+<td><code>HardFault_Handler</code> → <code>customHardFaultHandler</code></td>
+<td>always enabled</td>
+<td>fixed −1</td>
+<td>architecture</td>
+<td>disassembly test</td>
+<td>SM-17, SM-10, SM-15/16 on access</td>
+</tr>
+<tr>
+<td>exceptions 4/5/6 MemManage, BusFault, UsageFault (ARMv7-M only)</td>
+<td><code>DefaultISR</code> / print + reset, <strong>no walk</strong></td>
+<td><strong>disabled</strong> (<code>SHCSR</code> enables 0) → escalate to HardFault</td>
+<td>—</td>
+<td>reset value</td>
+<td><strong>not checked</strong> (H2)</td>
+<td>SM-17</td>
+</tr>
+<tr>
+<td>IRQ 22 <code>WDOG_EWM_IRQn</code> (22 <code>WDOG_IRQn</code>)</td>
+<td><code>Safe_WDOG_EWM_IRQHandler</code> (naked, walk first)</td>
+<td>enabled</td>
+<td>reset value 0 (most urgent)</td>
+<td>OpenBSW <code>enableWatchdog()</code></td>
+<td><strong>not checked</strong> (H1); <code>CS[INT]</code> checked (SM-02)</td>
+<td>SM-01, SM-17</td>
+</tr>
+<tr>
+<td>IRQ 49 <code>LPIT0_Ch1_IRQn</code> (20 <code>LPIT_IRQn</code>, shared)</td>
+<td><code>LPIT0_Ch1_IRQHandler</code> (defined in <code>integration/Integration.cpp</code>, SYS-133) → <code>LpitHaltDeadman::onInterrupt()</code> (walk, flag)</td>
+<td>enabled when the project has a power stage</td>
+<td><code>NX_IRQ_MAX_SYSCALL_LEVEL − 1</code> (0 on ARMv6-M)</td>
+<td><code>LpitHaltDeadman::init()</code></td>
+<td><strong>cyclic</strong> (<code>checkLpitDeadman</code>)</td>
+<td>SM-06</td>
+</tr>
+<tr>
+<td>IRQ 45 <code>ERM_double_fault_IRQn</code> (5 <code>ERM_IRQn</code>); IRQ 44 single-bit</td>
+<td>45: <code>Safe_ERM_double_fault_IRQHandler</code> (SAFE_ISR wrapper) → print + endless loop, no walk; 44: <code>DefaultISR</code></td>
+<td><strong>disabled</strong> (<code>ERM_CR0</code> = 0, NVIC off)</td>
+<td>—</td>
+<td>reset value</td>
+<td><strong>not checked</strong> (H3)</td>
+<td>SM-15 (polling instead)</td>
+</tr>
+<tr>
+<td>IRQ 21 <code>FTFM_Fault_IRQn</code> (18 <code>FTFC_IRQn</code>)</td>
+<td><code>Safe_FTFC_Fault_IRQHandler</code> (SAFE_ISR wrapper) → print + endless loop, no walk</td>
+<td><strong>disabled</strong> (<code>FERCNFG[DFDIE]</code> = 0, NVIC off)</td>
+<td>—</td>
+<td>reset value</td>
+<td><strong>not checked</strong> (H3)</td>
+<td>SM-16 (polling instead)</td>
+</tr>
+<tr>
+<td>IRQ 58 <code>LPTMR0_IRQn</code> (8)</td>
+<td>none</td>
+<td><strong>disabled</strong> (<code>LPTMR0_CSR[TIE] = 0</code>)</td>
+<td>—</td>
+<td><code>startCycleTimer()</code></td>
+<td><code>TIE</code> cyclic (4.2)</td>
+<td>SM-04; T1b would enable it</td>
+</tr>
+<tr>
+<td>IRQ 20 <code>LVD_LVW_IRQn</code> (21 <code>PMC_SCG_CMU_IRQn</code>, shared)</td>
+<td><code>DefaultISR</code></td>
+<td><strong>disabled</strong> (<code>LVDIE</code>, <code>LVWIE</code> 0) — the LVD acts by its reset (SM-59), not by the interrupt</td>
+<td>—</td>
+<td><code>LVDIE</code>: <code>boardInit()</code> (SYS-125); <code>LVWIE</code>: reset value</td>
+<td>not checked</td>
+<td>none</td>
+</tr>
+<tr>
+<td>SysTick, PendSV, SVC</td>
+<td>RTOS port</td>
+<td>enabled</td>
+<td>RTOS port; SysTick below <code>NX_IRQ_MAX_SYSCALL_LEVEL</code></td>
+<td>RTOS</td>
+<td>effect: SM-04</td>
+<td>the safety task itself</td>
+</tr>
+<tr>
+<td>FlexCAN IRQs per bus</td>
+<td>CAN driver</td>
+<td>enabled per used bus</td>
+<td>project</td>
+<td><code>main.cpp</code> <code>NX_ENABLE_CAN_MB_IRQ</code></td>
+<td>—</td>
+<td>SM-32 (report path)</td>
+</tr>
+</tbody>
+</table>
+<p>Priority rule that the safety argument relies on: the vectors that walk the safe outputs table (WDOG, LPIT channel 1)
+must not be delayed by an RTOS critical section. The deadman's level is chosen above the RTOS boundary and checked;
+the watchdog vector stays at the reset level 0, which is the most urgent — correct, but unchecked (H1).</p>
+<hr />
+<h2 id="6-pins">6. Pins<a class="headerlink" href="#6-pins" title="Permanent link">&para;</a></h2>
+<p>The supervision peripherals (WDOG, LPIT, LPTMR, MPU, ERM, CRC, ADC internal channels) use <strong>no pin</strong>. Every pin a
+stage-1 mechanism touches comes from the board and the project; none is a constant of reusable code.</p>
+<table>
+<thead>
+<tr>
+<th>Pin role</th>
+<th>Mechanism</th>
+<th>Expected configuration</th>
+<th>Written by</th>
+<th>Re-checked by</th>
+<th>Value from</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>channels of the used PWM group</td>
+<td>SM-23 (reaction), SM-21/22</td>
+<td>FTM function (MUX of the pinmux table), <code>PCR[LK] = 1</code></td>
+<td><code>Io</code> init from <code>ioConfiguration.h</code>, lock in <code>SafeIo::init()</code></td>
+<td>cyclic (PIN_FUNCTION, start read-back)</td>
+<td><code>board</code> <code>pwm[]</code>, pinmux <code>mcudb/&lt;derivative&gt;_&lt;package&gt;.pinmux.yaml</code></td>
+</tr>
+<tr>
+<td>every <code>safe_off</code> output (module connections such as <code>DRV_EN</code>, KL30B enable)</td>
+<td>SM-23 (reaction), SM-21/22</td>
+<td>GPIO output, <code>LK = 1</code>, <code>PDDR</code> bit 1, <code>PIDR</code> bit 0</td>
+<td>same</td>
+<td>cyclic (PIN_FUNCTION, GPIO_DIRECTION)</td>
+<td><code>board</code> (pin, <code>active</code>), module manifest <code>connect.&lt;name&gt;.safe_off</code></td>
+</tr>
+<tr>
+<td><code>safety.locked_pin</code></td>
+<td>SM-21</td>
+<td>its pin-table function, <code>LK = 1</code></td>
+<td>same</td>
+<td>cyclic</td>
+<td><code>project</code></td>
+</tr>
+<tr>
+<td><code>safety.test_pin</code></td>
+<td>SM-22 (demo part)</td>
+<td>input, unconnected</td>
+<td><code>Io</code> init</td>
+<td>cyclic (direction)</td>
+<td><code>project</code>; AoU-30</td>
+</tr>
+<tr>
+<td><code>safety.safe_state_output</code></td>
+<td>S1 indicator</td>
+<td>output; <strong>not</strong> locked (the safe state writes it) — <code>bswgen</code> refuses a locked indicator</td>
+<td><code>Io</code> init</td>
+<td>—</td>
+<td><code>project</code>; AoU-30</td>
+</tr>
+<tr>
+<td>VREFH</td>
+<td>SM-18</td>
+<td>board reference</td>
+<td>hardware</td>
+<td>SM-18</td>
+<td><code>board</code> <code>adc_reference_mv</code></td>
+</tr>
+<tr>
+<td>RESET_b</td>
+<td>SM-50</td>
+<td>reset input, filtered ([RM13] 25.2.2)</td>
+<td>hardware</td>
+<td><code>RCM_SRS[PIN]</code></td>
+<td>board circuit</td>
+</tr>
+<tr>
+<td>FTM fault inputs, TRGMUX, CMP0 inputs</td>
+<td>—</td>
+<td><strong>unused</strong> (section 9)</td>
+<td>—</td>
+<td>—</td>
+<td>SYS-85, SYS-86</td>
+</tr>
+</tbody>
+</table>
+<p>Demo (<code>evalboard_s32k144_demo</code>, bswgen reference <code>tools/bswgen/test/reference/evalboard_s32k144_demo</code>, board 2026-09-22
+SYS-24 point P2): PTB12 … PTB17 ALT2 = FTM0 CH0 … CH5, <code>PCR = 0x8200</code>; PTC11 <code>MOT1_GD_DRV_EN</code>, PTD17 <code>EN_SW_KL30B</code>,
+PTC8 <code>LED2</code> (locked pin), each GPIO <code>PCR = 0x8100</code>; test pin PTE14; indicator LED1 (PTC9). These are board data and
+appear here only as an example.</p>
+<hr />
+<h2 id="7-derivatives-of-the-family">7. Derivatives of the family<a class="headerlink" href="#7-derivatives-of-the-family" title="Permanent link">&para;</a></h2>
+<p>Everything that differs between the derivatives comes from <code>mcudb/s32k1xx/&lt;derivative&gt;.yaml</code> or the device header;
+the code adapts through generated macros. No row of sections 3–6 changes its <strong>meaning</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Fact</th>
+<th>S32K116</th>
+<th>S32K142 / S32K144 / S32K146</th>
+<th>S32K148</th>
+<th>Source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>core</td>
+<td>Cortex-M0+ (ARMv6-M)</td>
+<td>Cortex-M4F (ARMv7-M)</td>
+<td>Cortex-M4F</td>
+<td><code>mcudb</code> <code>derivative.core</code></td>
+</tr>
+<tr>
+<td>NVIC priority bits</td>
+<td>2</td>
+<td>4</td>
+<td>4</td>
+<td><code>mcudb</code> <code>nvic_priority_bits</code></td>
+</tr>
+<tr>
+<td>fault exceptions</td>
+<td>HardFault only</td>
+<td>HardFault + (disabled) MemManage/BusFault/UsageFault</td>
+<td>same</td>
+<td>architecture</td>
+</tr>
+<tr>
+<td>system time of OpenBSW</td>
+<td>LPIT0 channel 0</td>
+<td>DWT <code>CYCCNT</code></td>
+<td>DWT</td>
+<td>family port</td>
+</tr>
+<tr>
+<td>MPU region descriptors</td>
+<td>8</td>
+<td>8</td>
+<td>16</td>
+<td><code>mcudb</code> <code>mpu.regions</code></td>
+</tr>
+<tr>
+<td>ERM RAM channels (<code>NCE0/NCE1</code>)</td>
+<td>1</td>
+<td>2</td>
+<td>2</td>
+<td>device header (<code>ERM_SR0_NCE1_MASK</code>)</td>
+</tr>
+<tr>
+<td>WDOG / LPIT / ERM / FTFC IRQ</td>
+<td>22 / 20 (shared) / 5 / 18</td>
+<td>22 / 48–51 / 44–45 / 21</td>
+<td>same</td>
+<td>device header, bswgen <code>FAMILY_IRQ_ALIASES</code></td>
+</tr>
+<tr>
+<td><code>INTERNAL0</code> supply channel</td>
+<td>ADC0</td>
+<td>ADC0 (not ADC1)</td>
+<td>ADC0</td>
+<td><code>mcudb</code> <code>internal_channels</code></td>
+</tr>
+<tr>
+<td>FTM instances for a PWM group</td>
+<td>FTM0, FTM1</td>
+<td>FTM0–3 (K142/K144), FTM0–5 (K146)</td>
+<td>FTM0–7</td>
+<td><code>mcudb</code> <code>instances</code></td>
+</tr>
+<tr>
+<td>code cache (LMEM)</td>
+<td>none</td>
+<td>4 KB</td>
+<td>4 KB</td>
+<td><code>mcudb</code> <code>features</code></td>
+</tr>
+<tr>
+<td>LPO range</td>
+<td>113 … 139 kHz</td>
+<td>113 … 139 kHz</td>
+<td>113 … 139 kHz</td>
+<td><code>mcudb</code> <code>clock.lpo</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Other families.</strong> S32K3xx, STM32 and RM4x need their own HSI document (<code>hsi-&lt;family&gt;.md</code>) because the peripherals
+differ (S32K3: SWT, XRDC/MPU, eMCEM/ERM, STCU; STM32: IWDG/WWDG, ARM MPU, ECC in flash controller; RM4x: RTI/DWD,
+ESM, CCM-R4 lockstep). What carries over is the structure: sections 1, 2 (with the family's peripherals), 5 and 6
+and the column "value from". The register list of SafeIo (4.9) is already family-neutral in its runtime part
+(<code>RegisterCheck.h</code>); only the generator knows s32k1xx registers.</p>
+<hr />
+<h2 id="8-findings--configuration-that-is-relied-on-but-not-re-checked">8. Findings — configuration that is relied on but not re-checked<a class="headerlink" href="#8-findings--configuration-that-is-relied-on-but-not-re-checked" title="Permanent link">&para;</a></h2>
+<p>IDs H1 … H10 are local to this document. Proposals, not decisions; the coordinator assigns task IDs.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Finding</th>
+<th>Consequence if the value drifts</th>
+<th>Proposal</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>H1</strong></td>
+<td>NVIC enable and priority of the watchdog warning IRQ (<code>WDOG_EWM_IRQn</code>) are written once (enable by the OpenBSW driver, priority left at its reset value) and never read back. SM-02 checks <code>WDOG_CS[INT]</code> only</td>
+<td>with the IRQ disabled or delayed, the watchdog still resets, but the de-energising <strong>before</strong> the reset (SM-01 reaction, SM-17 walk) is lost; the pins go to their reset state (AoU-07)</td>
+<td>add NVIC enable and priority of the vector to <code>checkWatchdogControl()</code> (same pattern as <code>checkLpitDeadman</code>), expected values from the family port; or class SUPERVISION of the SafeIo list (SYS-55)</td>
+</tr>
+<tr>
+<td><strong>H2</strong></td>
+<td><code>SCB_SHCSR</code> fault enables must stay 0: <code>BusFault_Handler</code> and <code>UsageFault_Handler</code> print and reset without the walk, <code>MemManage</code> is <code>DefaultISR</code></td>
+<td>a set enable bit turns an MPU violation or an ECC read error into a handler that does <strong>not</strong> switch the outputs off before the reset</td>
+<td>either a start-up + cyclic check <code>SHCSR &amp; (MEMFAULTENA|BUSFAULTENA|USGFAULTENA) == 0</code> in the family safety port, or point all three vectors at <code>customHardFaultHandler</code>; the second removes the dependency</td>
+</tr>
+<tr>
+<td><strong>H3</strong></td>
+<td>ERM (<code>CR0</code>) and FTFC (<code>FERCNFG[DFDIE]</code>) fault interrupts must stay disabled: their handlers (<code>isr_erm.cpp</code>, <code>isr_ftfc.cpp</code>) print and loop forever without the walk. Nobody sets their priority, so an enabled one would run at the reset level 0 like the watchdog vector, which then cannot preempt the loop</td>
+<td>an enabled ERM/FTFC IRQ turns SM-15/SM-16 into "stuck in an ISR until the watchdog resets" — 250 ms without de-energising, then the reset</td>
+<td>make the two handlers walk the table and reset (as HardFault_Handler_Final does), and add <code>ERM_CR0 == 0</code>, <code>DFDIE == 0</code> to a cyclic check; alternatively state them as configuration rules in the safety manual (DOC-19)</td>
+</tr>
+<tr>
+<td><strong>H4</strong></td>
+<td>the LPIT functional clock (<code>PCC_LPIT[PCS]</code>, SCG divider <code>SIRCDIV2</code> in the demo) is not checked; <code>TVAL1</code> is checked in ticks</td>
+<td>a slower LPIT clock stretches the deadman time-out beyond 10 ms (a faster one gives false trips, safe direction)</td>
+<td>include <code>PCC_LPIT</code> (CGC, PCS) and the source divider in the deadman check or in class SYSTEM_CLOCK (SYS-55)</td>
+</tr>
+<tr>
+<td><strong>H5</strong></td>
+<td>the system clock (SCG <code>RCCR</code>, dividers, source status) is not in the register list (class SYSTEM_CLOCK reserved, SYS-55). The FTM of a PWM group counts the system clock, so <code>PAIRnDEADTIME</code> (checked in <strong>ticks</strong>) means a different <strong>time</strong> at a different clock: a faster clock <strong>shortens</strong> the dead time — the hazard of ASG-01 that no other mechanism sees. SM-04 notices a changed clock only through the OS tick, i.e. only if SysTick runs on the same wrong clock and the change exceeds the period tolerance (12 … 17 ms band)</td>
+<td>shoot-through risk on a bridge with a clock that is too fast but inside SM-04's band</td>
+<td>SYS-55: SCG class with <code>RCCR</code>/<code>CSR</code> (source and dividers), <code>SOSCCSR</code>/<code>SPLLCSR</code> (<code>CM</code>, <code>CMRE</code>, <code>VLD</code>, <code>LK</code> — the lock is only a write guard, [RM13] 28.3.8); expected values derived from the clock plan</td>
+</tr>
+<tr>
+<td><strong>H6</strong></td>
+<td><code>FTMx_OUTMASK</code>, <code>FTMx_SWOCTRL</code> and <code>GPIOx_PDOR</code> are not read back (known, G1, SYS-30)</td>
+<td>the safe state is written but not confirmed</td>
+<td>SYS-30 (unchanged)</td>
+</tr>
+<tr>
+<td><strong>H7</strong></td>
+<td><code>SIM_PLATCGC</code> (clock gates of MPU, ERM, EIM, DMA, MSCM; reset value <code>0x1F</code>) is not written and not checked; what a gated MPU or ERM does to SM-10…13 and SM-15 was not analysed here</td>
+<td>possibly a silently inactive MPU or ERM</td>
+<td>analyse against [RM13] ch. 11/15/22 and add <code>CGCMPU</code>, <code>CGCERM</code> to the cyclic check (SYS-55, class SUPERVISION)</td>
+</tr>
+<tr>
+<td><strong>H8</strong></td>
+<td><code>SIM_CHIPCTL[ADC_SUPPLYEN]</code> is written once at init and not checked</td>
+<td>assumed safe direction (the supply reading fails the band → SM-20) — not verified</td>
+<td>host test of that case in <code>safe-system</code>, or include the bit in the rotation write (self-healing)</td>
+</tr>
+<tr>
+<td><strong>H9</strong></td>
+<td>PMC low-voltage <strong>detect</strong> reset is <strong>off</strong>: <code>PMC_LVDSC1[LVDRE] = 0</code> after POR and nobody sets it ([RM13] 41.7.1.2); only the low-voltage <strong>reset</strong> (LVR) and POR act. <em>Partly closed by SYS-125 (decision of the safety responsible 2026-09-30, AN-066):</em> <code>boardInit()</code> sets <code>LVDRE</code> in every start (SM-59). <em>Closed by SYS-153</em> (cyclic check, class SUPERVISION) and BL-34 (bootloader sets LVDRE); remaining: LVD off in VLPR/VLPS</td>
+<td>before SYS-125: a supply between LVD and LVR threshold was detected by SM-20 (1.2 V / 3.3 V band) only, at safety-task speed. Until SYS-153: a bit flip that clears <code>LVDRE</code> went unnoticed until the next start (the LVR still acts); since SYS-153 it is CHECK_REGISTER_ERROR within one safety cycle (S1 without reset)</td>
+<td>add <code>PMC_LVDSC1</code> (mask <code>0x30</code>, expected <code>0x10</code>, 8-bit access) to the cyclic check — class SUPERVISION of the SafeIo list (generator <code>collect_safe_io()</code>, SYS-55) or a check next to <code>checkWatchdogControl()</code> - done by SYS-153 in the SafeIo list; board proof open</td>
+</tr>
+<tr>
+<td><strong>H10</strong></td>
+<td>descriptor 0 (whole address space) grants the bus masters M2 (DMA) and M3 (ENET, S32K148) rwx, so the locked gate word and the guard do not keep them out of the protected RAM, the safety stack and the guard; master assignment per [RM13] 15.1.2 Table 15-3 (M4 … M7 not implemented). Corrected by SYS-171 (finding SFP-F03): this row said before that the descriptors give M2/M3 no access. <em>Caveat of B17 (DOC-59):</em> the board reads <code>RGD0_WORD3</code> = 0, the valid bit of descriptor 0 is not set after <code>init()</code>, so the M2/M3 rights may not be in effect; the unfavourable reading stays until S171-3 (SYS-171) settles it</td>
+<td>a DMA or ENET user could write the safety manager's data without detection (SM-10 void for it) — open point N3 of fmea SM-10</td>
+<td>before the first DMA/ENET user: restrict descriptor 0 for M2/M3, grant the master only the regions it needs, and refuse such a configuration until then (SYS-21; dfa DF-44); until then <strong>AoU-41</strong> (safety manual section 7.4) forbids any bus master other than the core, review Welle-0210-Tag S171-1</td>
+</tr>
+</tbody>
+</table>
+<p>Observation without a finding: <code>WDOG_CS[DBG] = 0</code> (the watchdog stops in a debugger halt) and <code>FTMx_CONF[BDMMODE] = 01</code>
+(outputs safe in a halt) are consistent with the deadman design of SM-06; <code>CS[STOP] = CS[WAIT] = 1</code> keep the watchdog
+running in the low-power modes neXtBSW does not use today.</p>
+<hr />
+<h2 id="9-hardware-functions-that-are-deliberately-not-used-in-stage-1">9. Hardware functions that are deliberately not used in stage 1<a class="headerlink" href="#9-hardware-functions-that-are-deliberately-not-used-in-stage-1" title="Permanent link">&para;</a></h2>
+<p>So that their registers are not mistaken for configured: FTM fault inputs (<code>FLTCTRL</code>, <code>FLTPOL</code> generated as 0,
+<code>SIM_FTMOPT0</code>, <code>TRGMUX_FTMx</code> — SYS-85), comparator CMP0 (SYS-86), EWM (external watchdog monitor; <code>PCC_EWM</code> gate is
+enabled as infrastructure on derivatives that have it, the module itself is not configured), EIM (error injection,
+SYS-73), CMU0/CMU1 (clock monitor units where the derivative has them; gate enabled as infrastructure only), LPTMR compare
+interrupt (T1b), PMC LVD/LVW interrupts (H9; the LVD <strong>reset</strong> is used since SYS-125, SM-59), CSEc key storage (only with the user, CLAUDE.md).</p>
+<hr />
+<h2 id="10-review-record">10. Review record<a class="headerlink" href="#10-review-record" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Method</td>
+<td>every row traced to the code that writes the value and the code that re-checks it (file named in the row); masks and expected values of 4.9 compared with <code>tools/bswgen/bswgen.py</code> <code>collect_safe_io()</code> and the reference output of <code>evalboard_s32k144_demo</code>; derivative facts compared with <code>mcudb/s32k1xx/*.yaml</code> and the device headers; the rows marked with [RM13] re-read in the reference manual in the repository: PMC <code>LVDSC1</code> reset value (41.7.1.2), LVD/LVR and LOC/LOL resets (25.2.2.2–25.2.2.5), <code>SIM_PLATCGC</code> reset value (11.1.1.3), <code>FTFC_FERCNFG</code> fields (36.4.4.1.12), <code>SCG_SOSCCSR[LK]</code> semantics (28.3.8), <code>PCC[PCS]</code> only writable with <code>CGC = 0</code> (29)</td>
+</tr>
+<tr>
+<td>Result</td>
+<td>consistent with fmea section 3 and section 5.2; the ten findings of section 8 are new; no contradiction to concept.md found</td>
+</tr>
+<tr>
+<td>Not reviewed</td>
+<td>register details of the OpenBSW drivers beyond the fields quoted; the S32K1 safety manual (not available, gap 11-01). The MPU master mapping (H10) was read in [RM13] 15.1.2 by SYS-171</td>
+</tr>
+<tr>
+<td>Reviewer</td>
+<td>author (SYS-66, agent). <strong>Independent review open</strong> — needs a person other than the author (gap analysis section 6 no. 4, question Q1)</td>
+</tr>
+<tr>
+<td>Verification</td>
+<td><strong>mock</strong> (desk review against code and manual); no board access in this task</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="11-review-questions-of-the-architecture-section-11">11. Review questions of the architecture (section 11)<a class="headerlink" href="#11-review-questions-of-the-architecture-section-11" title="Permanent link">&para;</a></h2>
+<p>This task changes no code, generator or bootloader; the answers concern the document.</p>
+<ol>
+<li><strong>Without an SBC:</strong> nothing in the table depends on an SBC; the SBC's watchdog and reset counter are stage 2.</li>
+<li><strong>Different crystal / clock:</strong> the clock facts are project and derivative values (section 3); H4 and H5 name the two
+   places where a changed clock is not seen.</li>
+<li><strong>Other derivative / family:</strong> section 7; the way to S32K3, STM32 and RM4x is a separate HSI per family with the
+   same structure.</li>
+<li><strong>Several CAN buses:</strong> 4.11 is per bus instance.</li>
+<li><strong>Several tasks:</strong> priorities are listed where a mechanism relies on them (section 5); nothing assumes a single task.</li>
+<li><strong>One configuration level per value:</strong> column "value from"; no new value is introduced.</li>
+<li><strong>Host test with own profile:</strong> not applicable (document only); proposed follow-up: a consistency test that every
+   mechanism of fmea section 3 has a row here and that every expected value of 4.9 matches the bswgen reference
+   outputs of <strong>several</strong> profiles (demo, <code>testproject_safe_outputs</code>, <code>s32k116evb_minimal</code>).</li>
+<li><strong>Qt-free core:</strong> not applicable.</li>
+<li><strong>Device driver granularity:</strong> not applicable.</li>
+<li><strong>Platform rule:</strong> no file under <code>platforms/</code> added.</li>
+</ol>
+<hr />
+<h2 id="12-sources">12. Sources<a class="headerlink" href="#12-sources" title="Permanent link">&para;</a></h2>
+<ul>
+<li>[RM13] S32K1xx Series Reference Manual, Rev. 13, 04/2020 (<code>doc/hardware/s32k1xx/S32K-RM.pdf</code>): ch. 11 (SIM,
+  <code>PLATCGC</code>), 15 (MPU), 22 (ERM), 25 (reset sources), 27 (clocking), 29 (PCC), 28 (SCG), 36 (FTFC), 41 (PMC),
+  47 (FTM), 48 (LPIT), 49 (LPTMR).</li>
+<li>[DS13] S32K1xx Data Sheet Rev. 13 — LPO range (via <code>mcudb</code> <code>clock.lpo</code>).</li>
+<li>UJA113X_SER, public data sheet Rev. 2 (<code>doc/hardware/uja113x/UJA113X_SER.pdf</code>): Table 7 with 7.2.1 (watchdog
+  after an SBC reset with and without software development mode), Table 8 (watchdog per mode), 7.2.5 — the SBC
+  watchdog row of 4.13 (BL-41).</li>
+<li><code>mcudb/s32k1xx/S32K116.yaml</code> … <code>S32K148.yaml</code>; device headers under <code>platforms/s32k1xx/bsp/bspMcu/include/3rdparty</code>
+  and <code>external/openbsw/platforms/s32k1xx/bsp/bspMcu/include/3rdparty/nxp/S32K148_COMMON.h</code>.</li>
+<li><code>doc/safety/fmea.md</code> sections 2, 3 and 5.2; <code>doc/safety/concept.md</code> sections 4 (AoU) and 6; <code>doc/safety/iso26262-gap.md</code>
+  sections 2.2 (6-04), 2.6 and 6 (task 8); <code>doc/safety/hardware-mechanisms.md</code>.</li>
+<li>Code: <code>platforms/s32k1xx/port/safety/*</code> (safeIo, safeMemory, safeSupervisionCheck, safeSystem, safeLifecycle),
+  <code>platforms/s32k1xx/port/main/src/main.cpp</code>, <code>…/integration/LpitHaltDeadman.h</code>, <code>…/integration/DebugHaltGuardSystem.h</code>, <code>…/integration/Integration.cpp</code> (strong <code>LPIT0_Ch1_IRQHandler</code> and <code>deadmanExpectedConfiguration()</code>, out of line since SYS-133),
+  <code>…/os/isr/isr_sys.cpp</code>, <code>isr_wdg.cpp</code>, <code>isr_erm.cpp</code>, <code>isr_ftfc.cpp</code>, <code>…/bsp/startUp.S</code>,
+  <code>platforms/s32k1xx/hardFaultHandler</code>, <code>platforms/s32k1xx/bsp/bspClock/src/clockConfig.cpp</code>,
+  <code>ecu/safety/safeWatchdog</code>, <code>external/openbsw/platforms/s32k1xx/safety/safeBspMcuWatchdog</code>,
+  <code>tools/bswgen/bswgen.py</code> (<code>collect_safe_io</code>, <code>collect_safe_outputs</code>, <code>FAMILY_IRQ_ALIASES</code>) and its reference output
+  <code>tools/bswgen/test/reference/evalboard_s32k144_demo</code>.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Zurück zum Seitenanfang
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Fußzeile" >
+        
+          
+          <a href="../config-range/" class="md-footer__link md-footer__link--prev" aria-label="Zurück: neXtBSW — argument over the admissible configuration range (SYS-92, N3)">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Zurück
+              </span>
+              <div class="md-ellipsis">
+                neXtBSW — argument over the admissible configuration range (SYS-92, N3)
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../hardware-mechanisms/" class="md-footer__link md-footer__link--next" aria-label="Weiter: Hardware safety mechanisms">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Weiter
+              </span>
+              <div class="md-ellipsis">
+                Hardware safety mechanisms
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright 2026 Daniel Simon Reinhardt-Probul - Apache-2.0
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.sections", "navigation.indexes", "navigation.top", "navigation.footer", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "In Zwischenablage kopiert", "clipboard.copy": "In Zwischenablage kopieren", "search.result.more.one": "1 weiteres Suchergebnis auf dieser Seite", "search.result.more.other": "# weitere Suchergebnisse auf dieser Seite", "search.result.none": "Keine Suchergebnisse", "search.result.one": "1 Suchergebnis", "search.result.other": "# Suchergebnisse", "search.result.placeholder": "Suchbegriff eingeben", "search.result.term.missing": "Es fehlt", "select.version": "Version ausw\u00e4hlen"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

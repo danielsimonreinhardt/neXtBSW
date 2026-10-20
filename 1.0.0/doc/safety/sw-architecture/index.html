@@ -1,0 +1,7147 @@
+
+<!doctype html>
+<html lang="de" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Hardware-neutral, configurable basic software for 32-bit automotive MCUs, built on Eclipse OpenBSW">
+      
+      
+      
+      
+        <link rel="prev" href="../cm-plan/">
+      
+      
+        <link rel="next" href="../architecture-safety-analysis/">
+      
+      
+        
+          <link rel="alternate" href="./" hreflang="de">
+        
+          <link rel="alternate" href="../../../en/doc/safety/sw-architecture/" hreflang="en">
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>neXtBSW — software architectural design specification of the safety part (SYS-65) - neXtBSW</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#nextbsw--software-architectural-design-specification-of-the-safety-part-sys-65" class="md-skip">
+          Zum Inhalt
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Kopfzeile">
+    <a href="../../.." title="neXtBSW" class="md-header__button md-logo" aria-label="neXtBSW" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            neXtBSW
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              neXtBSW — software architectural design specification of the safety part (SYS-65)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="indigo"  aria-label="Dunkel"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Dunkel" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="indigo"  aria-label="Hell"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Hell" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Sprache wechseln">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="de" class="md-select__link">
+              Deutsch
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../../../en/doc/safety/sw-architecture/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Suche" placeholder="Suche" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Suche">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Zurücksetzen" aria-label="Zurücksetzen" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Suche wird initialisiert
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="neXtBSW" class="md-nav__button md-logo" aria-label="neXtBSW" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    neXtBSW
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Start
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Wegweiser
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../guide/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Integrator
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Integrator
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Erste Schritte
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/host-durchlauf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Host-Durchlauf ohne Hardware
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/your-first-board/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Das erste Board
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/the-application/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Die Anwendung
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/build-and-flash/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bauen und Flashen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/customer-project/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Eigenes ECU-Repository
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/new-derivative/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Neues Derivat
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/board-readme-template/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vorlage Board-README
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_10" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../reference/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Konfigurationsreferenz
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3_10" id="__nav_3_10_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Konfigurationsreferenz
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/derivative/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Derivative
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/board/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Board
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/project/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/rte/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rte
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/diag/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diag
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/console/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Console
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_11" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../projects/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Projekte, Komponenten, Boards
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3_11" id="__nav_3_11_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Projekte, Komponenten, Boards
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../swc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Software-Komponenten
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../swc/DemoSwcSubstitute/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    C-Ersatz der DemoSwc
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../ecu/platforms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Board-Ports
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../boards/buildtest_s32k148/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S32K148 build-test board (S32K148 LQFP176)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_12" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_12" id="__nav_3_12_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release Notes
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_12">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Release Notes
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../release-notes/v1.0.0-rc2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.0.0-rc2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../release-notes/v1.0.0-rc1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.0.0-rc1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../start/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Safety-Assessor
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Safety-Assessor
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../safety-manual/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sicherheitshandbuch
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../concept/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sicherheitskonzept
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../figures/concept-figures/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bilder zum Konzept
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../anomaly-register/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Anomalie-Register
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_6" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4_6" id="__nav_4_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Arbeitsprodukte
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Arbeitsprodukte
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../safety-plan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW safety plan — software SEooC at ASIL B (SYS-60)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../verification-plan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW verification plan and archived reports per baseline (SYS-67)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../safety-case/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW safety case — software SEooC at ASIL B (SYS-64)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cm-plan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW configuration management plan and baselines (SYS-68)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW — software architectural design specification of the safety part (SYS-65)
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW — software architectural design specification of the safety part (SYS-65)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Inhaltsverzeichnis">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Inhaltsverzeichnis
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#0-what-this-document-is" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0. What this document is
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-components-of-the-safety-part" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Components of the safety part
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Components of the safety part">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-interfaces-inside-the-safety-part" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Interfaces inside the safety part
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-global-data-of-the-safety-part" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Global data of the safety part
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-dynamic-view" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Dynamic view
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Dynamic view">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-execution-contexts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 Execution contexts
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-start-up-and-lifecycle-levels" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Start-up and lifecycle levels
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-one-safety-cycle-safetymanagercyclic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 One safety cycle (SafetyManager::cyclic)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24-reaction-sequences" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.4 Reaction sequences
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-freedom-from-interference--what-the-architecture-provides" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Freedom from interference — what the architecture provides
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-allocation-of-the-software-safety-requirements-to-components" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Allocation of the software safety requirements to components
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-design-principles-applied-6-743" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Design principles applied (6-7.4.3)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-resource-estimate-6-7413" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Resource estimate (6-7.4.13)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-worst-case-stack" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Worst-case stack
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. Worst-case stack">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#71-method" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.1 Method
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#72-safety-task" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.2 Safety task
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#73-interrupt-stack-msp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.3 Interrupt stack (MSP)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#74-findings-of-the-stack-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.4 Findings of the stack analysis
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#75-limits-of-the-estimate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.5 Limits of the estimate
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-architectural-analysis-hooks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Architectural analysis hooks
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-inspection-record-6-7414" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Inspection record (6-7.4.14)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-other-families" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Other families
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-review-questions-of-the-architecture-section-11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Review questions of the architecture (section 11)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#12-proposals-for-the-coordinator-paths-outside-this-task" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12. Proposals for the coordinator (paths outside this task)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#13-sources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13. Sources
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture-safety-analysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW software architectural safety analysis beyond the mechanisms (SYS-71)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../fmea/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW failure analysis of the base-software safety mechanisms (stage 1)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../figures/fmea-figures/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fmea figures
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dfa/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW dependent failure analysis of the stage-1 mechanisms (SYS-70)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../unit-design/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW — software unit design: watchdog handling, fault handlers, safety task (SYS-92, N2)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../coexistence/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW — coexistence of ASIL B and QM software in one image (SYS-61)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../partner-and-degraded/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Partner MCU supervision, degraded reaction and active short circuit — concept
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../config-range/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW — argument over the admissible configuration range (SYS-92, N3)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../hsi-s32k1xx/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW hardware-software interface of the stage-1 safety mechanisms — s32k1xx (SYS-66)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../hardware-mechanisms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hardware safety mechanisms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security-interplay/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW — interplay of functional safety and cybersecurity (SYS-92, N1)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../static-analysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Static analysis and coding guidelines (PLAT-74)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tool-classification/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW tool classification and safeguards of the generated code (PLAT-75)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../component-qualification/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW — route per pre-existing component and qualification plan (SYS-62)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dev-environment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW development environment: languages, guidelines, tools, build and test flow (DOC-22)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../board-test-spec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW board test specification per SSR with operational use cases (SYS-75)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../openbsw-beitraege/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributor
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Contributor
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_1" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../architecture/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architektur
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_1" id="__nav_5_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Architektur
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/openbsw/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Openbsw
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/openbsw-naehe/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Openbsw naehe
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/autosar/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Autosar
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/autosar-standard-set/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Autosar standard set
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/autosar-ecuc-map/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Autosar ecuc map
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/autosar-ecuc-evaluation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Autosar ecuc evaluation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/plattformen/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plattformen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/customer-project/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Customer project
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/versioning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW – Versionierung und Support
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/csec-concept/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CSEc in neXtBSW: keys, message authentication and secure start (SYS-56)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/kalibrierung/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Calibration in neXtBSW: parameters, maps, a versioned calibration database, measurement signals (ARCH-64)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/pin-interrupts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pin interrupts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/signal-qualifier/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Signal qualifiers for received messages (COM-03)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/treiber-granularitaet/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW – granularity of device drivers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/treiber-anbindung-analyse/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    neXtBSW – binding device drivers to the system: analysis of the hand-written integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/openbsw-console-number-arguments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OpenBSW console commands with a number argument - audit (PLAT-110)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_1_19" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_1_19" id="__nav_5_1_19_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Geplant nach R1
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_1_19_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_1_19">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Geplant nach R1
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/planned/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Planned
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/non-cortex-m-audit/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Non cortex m audit
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/rm4x-quellen/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rm4x quellen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/stm32-nucleo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Stm32 nucleo
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../figures/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bilder
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_2" id="__nav_5_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Bilder
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../figures/01-schichten/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    01 schichten
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../figures/02-konfigurationsfluss/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    02 konfigurationsfluss
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../figures/03-startablauf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    03 startablauf
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../figures/04-flash-uds/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    04 flash uds
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../figures/05-ecu-zustaende/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    05 ecu zustaende
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../figures/06-safety-kette/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    06 safety kette
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../figures/07-modulkarte/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    07 modulkarte
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../figures/08-lesepfade/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    08 lesepfade
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../bootloader/doc/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Moduldokumentation
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_3" id="__nav_5_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Moduldokumentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/modules/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modules
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../bootloader/doc/iso14229-1-clause16-conformance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Conformance with ISO 14229-1 clause 16 (non-volatile server memory programming)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/autosarBase/doc/autosarBase/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AUTOSAR base types (autosarBase)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/canPhyPassive/doc/canPhyPassive/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Passive CAN transceiver (canPhyPassive)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/canSystem/doc/canSystem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CAN system, hardware independent parts (canSystem)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/consoleContext/doc/consoleContext/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Console context (consoleContext)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/dem/doc/dem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    dem – fault memory (simplified AUTOSAR DEM)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/e2e/doc/e2e/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    E2E-Bibliothek (e2e)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/ecuState/doc/ecuState/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ECU-Zustandsverwaltung (ecuState)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/gdTmc6200/doc/gdTmc6200/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Gate-Treiber TMC6200 (gdTmc6200)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/hallDecoder/doc/hallDecoder/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hall decoder (hallDecoder)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/highSideSwitch/doc/highSideSwitch/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Smart high-side switch (highSideSwitch)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/mcuLink/doc/mcuLink/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mcuLink
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/nvm/doc/nvm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NvM core (libs/bsw/nvm)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/nvmDataFlash/doc/nvmDataFlash/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nvmDataFlash - data flash areas (NVM-12)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsw/sbcUja113x/doc/sbcUja113x/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SBC-Treiber UJA113x (sbcUja113x)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsp/bspAdcAccess/doc/bspAdcAccess/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Serialized ADC access (bspAdcAccess)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsp/bspI2c/doc/bspI2c/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    I2C master contract (bspI2c)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsp/bspPinEdge/doc/bspPinEdge/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pin edge contract (bspPinEdge)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsp/bspPinEvent/doc/bspPinEvent/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    bspPinEvent
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsp/bspSampleGroup/doc/bspSampleGroup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sample group (bspSampleGroup)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../libs/bsp/bspSpi/doc/bspSpi/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SPI device contract (bspSpi)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/common/clockCheck/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Clock start-up check (PLAT-72)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/common/interruptPriority/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interrupt priorities as ranks (PLAT-10, wired up in PLAT-21, per core profile since ARCH-24)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/s32k1xx/bsp/bspCsec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    bspCsec – CSEc of the S32K1 family
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/s32k1xx/bsp/bspMcu/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    bspMcu (Familie s32k1xx) – Derivat-Header und mcu/mcu.h (PLAT-11)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/s32k1xx/startup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Startup templates per core architecture (PLAT-10)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/s32k1xx/port/safety/safeLifecycle/doc/safeLifecycle/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Safety task, s32k1xx (safeLifecycle)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/s32k1xx/port/safety/safeMemory/doc/safeMemory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Memory safety of the s32k1xx family (safeMemory)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/s32k1xx/port/safety/safeSupervisor/doc/safeSupervisor/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Safe supervisor, project values of the s32k1xx port (safeSupervisor)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/s32k1xx/port/safety/safeSystem/doc/safeSystem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference and supply supervision, s32k1xx (safeSystem)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/s32k1xx/port/bspConfiguration/src/bsp/capture/doc/capture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Input capture, s32k1xx (capture)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../platforms/s32k1xx/port/bspConfiguration/src/bsp/hall/doc/hall/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hall sensor set, s32k1xx (hall)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../tools/test/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tests und Werkzeuge
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_4" id="__nav_5_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tests und Werkzeuge
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/docgen/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    docgen - generated reference documentation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/docgen/website/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Doku-Website
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/ci/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/ci – provider-neutral CI (TOOL-03)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/setup – the Python environment of a workspace (TOOL-63)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/distcheck/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    distcheck – distribution check and export of the open tree
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/canflash/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/canflash – application and bootloader over CAN (UDS on ISO-TP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/boardtest/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/boardtest – board measurement scripts with host tests (TOOL-05)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/misra/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/misra – static analysis (PLAT-74)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/trace/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/trace — traceability of the safety requirements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/a2lgen/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    a2lgen - A2L for XCP on CAN (TOOL-01)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/calgen/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    calgen – calibration datasets (stage K2)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/csec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    csec – host side of the CSEc way back to the factory state
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/elfcheck/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    elfcheck – linked images against the derivative map and the core
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/nxupdate/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/schedana/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/schedana – analyse processor load, scheduling and data flow (TOOL-09)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/stackuse/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    stackuse – worst-case stack per execution context
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Beitragen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../SECURITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sicherheitsluecken melden
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../mcudb/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ableitung der Chipdaten (mcudb)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Inhaltsverzeichnis">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Inhaltsverzeichnis
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#0-what-this-document-is" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0. What this document is
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-components-of-the-safety-part" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Components of the safety part
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Components of the safety part">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-interfaces-inside-the-safety-part" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Interfaces inside the safety part
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-global-data-of-the-safety-part" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Global data of the safety part
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-dynamic-view" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Dynamic view
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Dynamic view">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-execution-contexts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 Execution contexts
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-start-up-and-lifecycle-levels" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Start-up and lifecycle levels
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-one-safety-cycle-safetymanagercyclic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 One safety cycle (SafetyManager::cyclic)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24-reaction-sequences" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.4 Reaction sequences
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-freedom-from-interference--what-the-architecture-provides" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Freedom from interference — what the architecture provides
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-allocation-of-the-software-safety-requirements-to-components" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Allocation of the software safety requirements to components
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-design-principles-applied-6-743" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Design principles applied (6-7.4.3)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-resource-estimate-6-7413" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Resource estimate (6-7.4.13)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-worst-case-stack" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Worst-case stack
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. Worst-case stack">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#71-method" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.1 Method
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#72-safety-task" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.2 Safety task
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#73-interrupt-stack-msp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.3 Interrupt stack (MSP)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#74-findings-of-the-stack-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.4 Findings of the stack analysis
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#75-limits-of-the-estimate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.5 Limits of the estimate
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-architectural-analysis-hooks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Architectural analysis hooks
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-inspection-record-6-7414" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Inspection record (6-7.4.14)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-other-families" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Other families
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-review-questions-of-the-architecture-section-11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Review questions of the architecture (section 11)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#12-proposals-for-the-coordinator-paths-outside-this-task" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12. Proposals for the coordinator (paths outside this task)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#13-sources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13. Sources
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="nextbsw--software-architectural-design-specification-of-the-safety-part-sys-65">neXtBSW — software architectural design specification of the safety part (SYS-65)<a class="headerlink" href="#nextbsw--software-architectural-design-specification-of-the-safety-part-sys-65" title="Permanent link">&para;</a></h1>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Issue</td>
+<td>1, 2026-09-28</td>
+</tr>
+<tr>
+<td>Task</td>
+<td>SYS-65 — gap analysis <code>iso26262-gap.md</code> (not published, available on request) section 6 no. 7; rows 6-07 … 6-19</td>
+</tr>
+<tr>
+<td>Status</td>
+<td>draft for review; written by an agent on the user's behalf (author side, see section 9)</td>
+</tr>
+<tr>
+<td>Built against</td>
+<td>branch <code>dev</code> at <code>20b2e04</code>, demo project <code>projects/evalboard_s32k144_demo</code>, build preset <code>evalboard-s32k144-demo</code> (RelWithDebInfo), xPack GCC 11.3.1</td>
+</tr>
+<tr>
+<td>Verification</td>
+<td>mock/host: stack tool with host tests and against the target build of the baseline; <strong>nothing on the board</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Baseline: v0.2.0</p>
+<h2 id="0-what-this-document-is">0. What this document is<a class="headerlink" href="#0-what-this-document-is" title="Permanent link">&para;</a></h2>
+<p>The software architecture of neXtBSW as a whole is described in <a href="../../architecture/"><code>doc/architecture/README.md</code></a>
+(layers, roles, module manifests, configuration levels) and in the module manifests. The safety documents describe
+the mechanisms (<a href="../concept/"><code>concept.md</code></a> section 6), their analysis (<a href="../fmea/"><code>fmea.md</code></a>, <a href="../dfa/"><code>dfa.md</code></a>),
+the requirements (<a href="../../requirements/safety/ssr.sdoc"><code>ssr.sdoc</code></a>) and the hardware-software interface
+(<a href="../hsi-s32k1xx/"><code>hsi-s32k1xx.md</code></a>). What the gap analysis found missing (rows 6-10, 6-11, 6-18, 6-19) is <strong>one
+view of the safety part</strong> that says which units implement which mechanism, in which task or interrupt, with which
+data, which requirement is allocated to which component at which ASIL, how much of the resources it needs, and how
+the design was inspected. This document is that view. It adds no mechanism and changes no requirement.</p>
+<p>References to ISO 26262:2018 are given as <code>&lt;part&gt;-&lt;clause&gt;</code> (for example 6-7.4.13), in the project's own words; the
+standard is not quoted.</p>
+<p>Scope: stage 1 of the concept (base-software mechanisms, <a href="../concept/"><code>concept.md</code></a> section 1.4) on the only family
+with a safety port, <strong>s32k1xx</strong>. Numbers are those of the demo image (S32K144, Cortex-M4F). What changes for other
+families is named where it matters (section 10).</p>
+<hr />
+<h2 id="1-components-of-the-safety-part">1. Components of the safety part<a class="headerlink" href="#1-components-of-the-safety-part" title="Permanent link">&para;</a></h2>
+<p>A <em>component</em> here is a group of units with one responsibility and one place in the repository; a <em>unit</em> is a class
+or a translation unit (the level at which the host tests and the coverage measure). IDs are used by the allocation in
+section 4.</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Component</th>
+<th>Units (main)</th>
+<th>Place</th>
+<th>Layer (architecture section 2)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C-SUP</td>
+<td>Safe supervisor</td>
+<td><code>SafeSupervisor</code> (monitors, <code>handle()</code>, <code>holdSafeState()</code>, deferred event box), <code>ResetLoopLimit</code>, <code>SafeConsole</code></td>
+<td><code>ecu/safety/safeSupervisor</code></td>
+<td>family-neutral safety</td>
+</tr>
+<tr>
+<td>C-WDG</td>
+<td>Safe watchdog</td>
+<td><code>SafeWatchdog</code>, <code>CyclePeriodCheck</code></td>
+<td><code>ecu/safety/safeWatchdog</code></td>
+<td>family-neutral safety</td>
+</tr>
+<tr>
+<td>C-LCY</td>
+<td>Safety lifecycle</td>
+<td><code>SafetyManager</code> (safety cycle), <code>IsrHooks</code> (MPU gate for safe ISRs), <code>IsrWrapper</code> (<code>SAFE_ISR</code>)</td>
+<td><code>platforms/s32k1xx/port/safety/safeLifecycle</code></td>
+<td>family safety port</td>
+</tr>
+<tr>
+<td>C-MEM</td>
+<td>Safe memory</td>
+<td><code>MemoryProtection</code> (MPU, gate), <code>SafeMemory</code>, <code>RomCheck</code>, <code>IntegrityEccHandler</code>, <code>RomCheckFlashWrites</code></td>
+<td><code>platforms/s32k1xx/port/safety/safeMemory</code></td>
+<td>family safety port</td>
+</tr>
+<tr>
+<td>C-SYS</td>
+<td>Safe system</td>
+<td><code>SafeSystem</code> (ADC reference, internal supplies), <code>AdcSafetyConsole</code></td>
+<td><code>platforms/s32k1xx/port/safety/safeSystem</code>, <code>adcSafetyConsole</code></td>
+<td>family safety port</td>
+</tr>
+<tr>
+<td>C-SIO</td>
+<td>Safe I/O</td>
+<td><code>SafeIo</code> (pin lock and register check), <code>SafeState</code> (enter/leave S1)</td>
+<td><code>platforms/s32k1xx/port/safety/safeIo</code></td>
+<td>family safety port</td>
+</tr>
+<tr>
+<td>C-SPC</td>
+<td>Supervision-peripheral checks</td>
+<td><code>LpitDeadmanCheck</code>, <code>WatchdogControlCheck</code>, <code>LptmrCycleTimer</code></td>
+<td><code>platforms/s32k1xx/port/safety/safeSupervisionCheck</code></td>
+<td>family safety port</td>
+</tr>
+<tr>
+<td>C-HFH</td>
+<td>Fault handlers and safe outputs table</td>
+<td><code>hardFaultHandler.S</code> (armv6m, armv7m), <code>HardFaultDump</code>, <code>safeOutputs.h</code> (table walk)</td>
+<td><code>platforms/s32k1xx/hardFaultHandler</code></td>
+<td>family port</td>
+</tr>
+<tr>
+<td>C-INT</td>
+<td>Integration of the safety part</td>
+<td><code>main.cpp</code> (start-up order, watchdog self-test, reset-loop start), <code>Integration.cpp</code> (power-stage adapters), <code>DebugHaltGuardSystem</code>, <code>LpitHaltDeadman</code>, <code>RomCheckSystem</code>, <code>SafetySystem</code>, <code>FlashWriteBracket</code></td>
+<td><code>platforms/s32k1xx/port/main</code>, <code>ecu/application/src/systems</code></td>
+<td>integration</td>
+</tr>
+<tr>
+<td>C-RTE</td>
+<td>RTE run-time supervision and signal qualifier</td>
+<td><code>RteSystem</code> (deadlines, SYS-05), generated <code>RteConfig.cpp</code> (qualifier)</td>
+<td><code>ecu/application/src/systems</code>, <code>tools/rtegen/templates</code></td>
+<td>RTE</td>
+</tr>
+<tr>
+<td>C-E2E</td>
+<td>End-to-end protection</td>
+<td><code>E2E_P01</code>, <code>E2E_P02</code>, <code>E2E_P11</code></td>
+<td><code>libs/bsw/e2e</code></td>
+<td>device-independent BSW</td>
+</tr>
+<tr>
+<td>C-CAN</td>
+<td>CAN transmit gate and bus state</td>
+<td><code>CanBusState</code>, <code>CanPhyGate</code></td>
+<td><code>libs/bsw/canSystem</code></td>
+<td>device-independent BSW</td>
+</tr>
+<tr>
+<td>C-ECU</td>
+<td>ECU state and start reason</td>
+<td><code>EcuStateController</code>, <code>EcuStateMachine</code>, <code>McuResetReason</code></td>
+<td><code>libs/bsw/ecuState</code>, <code>platforms/s32k1xx/port/mcuResetReason</code></td>
+<td>BSW / family port</td>
+</tr>
+<tr>
+<td>C-BLD</td>
+<td>Bootloader image check</td>
+<td><code>app_image.c</code> (validity record, CRC, compatibility)</td>
+<td><code>bootloader/src/core</code></td>
+<td>bootloader</td>
+</tr>
+<tr>
+<td>C-GEN</td>
+<td>Generators and image checks (off-target)</td>
+<td><code>tools/bswgen</code> (safe outputs table, lock list), <code>tools/nxconfig/checks.py</code> (timing relations), <code>tools/elfcheck</code>, <code>tools/dbcgen</code> tests</td>
+<td><code>tools/</code></td>
+<td>tools (classification: <a href="../tool-classification/"><code>tool-classification.md</code></a>)</td>
+</tr>
+</tbody>
+</table>
+<p>Components in the image <strong>without</strong> an allocated safety requirement (QM by intent): console and its commands, the
+logger, UDS and DoCAN, XCP, the CAN stack above the gate, NvM, DEM, the device drivers (stage 2), the OpenBSW
+lifecycle and <code>async</code> framework, FreeRTOS, newlib, ETL. Until the coexistence decision (gap analysis Q4, rows 6-13
+and 6-14, task SYS-21) they count as <strong>ASIL B by default</strong> — they run in the same address space and on the same
+stacks as the safety part (section 3.4 shows that the console and the ETL assert handler are on the deepest stack
+paths of the safety task).</p>
+<h3 id="11-interfaces-inside-the-safety-part">1.1 Interfaces inside the safety part<a class="headerlink" href="#11-interfaces-inside-the-safety-part" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Interface</th>
+<th>Provider → user</th>
+<th>Form</th>
+<th>Rule</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Monitor API <code>trigger(context)</code>, <code>check(bool)</code>, <code>hit(checkpoint)</code></td>
+<td>C-SUP → every mechanism</td>
+<td>member monitors of <code>SafeSupervisor::getInstance()</code></td>
+<td>detection only raises an event; the reaction is decided in <code>SafeSupervisor::handle()</code> alone (SSR-001, concept section 5)</td>
+</tr>
+<tr>
+<td>Deferred event box</td>
+<td>C-SUP ← C-RTE (tasks without write access)</td>
+<td>plain struct in general <code>.bss</code>, delivered by <code>deliverDeferredEvents()</code> in the safety cycle</td>
+<td>the reporting task never opens the MPU gate (SYS-37)</td>
+</tr>
+<tr>
+<td>Safe state <code>enterSafeState()</code> / <code>leaveSafeState()</code></td>
+<td>C-SIO → C-SUP</td>
+<td>functions</td>
+<td>S1 is one-way upwards: leaving releases only the indicator (SSR-004)</td>
+</tr>
+<tr>
+<td>Safe outputs table <code>nxSafeOutputs[]</code></td>
+<td>C-GEN (generated) → C-HFH, C-SIO, deadman ISR</td>
+<td>const array of address/value/clock-gate words in flash</td>
+<td>walked without stack, RAM or driver objects; the same table for every switch-off path (SSR-005)</td>
+</tr>
+<tr>
+<td>MPU gate <code>fusaGateGetLockAndUnlock()</code>, <code>ProtectedRamScopedUnlock</code></td>
+<td>C-MEM → C-LCY</td>
+<td>functions + RAII scope</td>
+<td>the protected RAM is writable only inside the safety cycle and the safe ISR hooks (SSR-020, SSR-021)</td>
+</tr>
+<tr>
+<td>Safe ISR hook <code>SafePreIsrHook</code>/<code>SafePostIsrHook</code></td>
+<td>C-LCY → safe handlers (<code>SAFE_ISR</code>)</td>
+<td>wrapper per vector</td>
+<td>opens and closes the gate around a safety interrupt</td>
+</tr>
+<tr>
+<td>Watchdog BSP <code>safety::bsp::Watchdog</code></td>
+<td>family BSP → C-WDG</td>
+<td>static class</td>
+<td>serviced from the safety task only (SSR-010)</td>
+</tr>
+<tr>
+<td>Supervision-peripheral expectations</td>
+<td>C-INT (<code>LpitHaltDeadman::EXPECTED_CONFIGURATION</code>) → C-SPC</td>
+<td>constexpr struct</td>
+<td>one definition for init and check (SYS-48)</td>
+</tr>
+<tr>
+<td>Generated configuration</td>
+<td>C-GEN → all</td>
+<td>headers from <code>project.yaml</code> / <code>mcudb</code> (<code>NX_MODULE_SAFELIFECYCLE_*</code>, <code>safeIoConfiguration.h</code>, <code>safeOutputsConfiguration.h</code>, <code>interruptPriorities.h</code>)</td>
+<td>values in exactly one configuration level, relations checked by <code>nxconfig</code> and by <code>static_assert</code> (SSR-011)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="12-global-data-of-the-safety-part">1.2 Global data of the safety part<a class="headerlink" href="#12-global-data-of-the-safety-part" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Data</th>
+<th>Where (demo image)</th>
+<th>Written by</th>
+<th>Protection</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>state of the safety components (every <code>.bss</code> of a <code>libsafe*</code> archive: supervisor monitors, watchdog state, period check, ROM check progress, …)</td>
+<td><code>.mpu_bss</code>, 576 B at 0x1FFF9000</td>
+<td>safety cycle, safe ISR hooks</td>
+<td>MPU region, gate closed outside the safety context (SM-10 … SM-13)</td>
+</tr>
+<tr>
+<td>safety task stack <code>safetyStack</code></td>
+<td>2048 B, MPU region of its own</td>
+<td>safety task</td>
+<td>MPU (opened for the safety ISR hooks, <code>fusaTaskStackOpenIsr</code>)</td>
+</tr>
+<tr>
+<td>deferred event box of the RTE deadline monitor</td>
+<td>general <code>.bss</code></td>
+<td>RTE tasks</td>
+<td>none by design; content checked on delivery</td>
+</tr>
+<tr>
+<td>safe outputs table <code>nxSafeOutputs</code></td>
+<td>flash (const)</td>
+<td>generator</td>
+<td>ROM check (SM-14), linked-image check (SSR-080)</td>
+</tr>
+<tr>
+<td>hard-fault dump</td>
+<td>fixed RAM area of the dump layout (<code>hardFaultDumpLayout.h</code>)</td>
+<td><code>customHardFaultHandler</code></td>
+<td>written only on the way to a reset</td>
+</tr>
+<tr>
+<td>reset-loop record <code>resetLoopRecord</code></td>
+<td><code>.noinit</code> (0x20006D44, 16 B)</td>
+<td><code>startResetLoopLimit</code> in <code>main()</code>, supervisor before a safety reset</td>
+<td>survives a reset; plausibility record (SSR-065)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="2-dynamic-view">2. Dynamic view<a class="headerlink" href="#2-dynamic-view" title="Permanent link">&para;</a></h2>
+<h3 id="21-execution-contexts">2.1 Execution contexts<a class="headerlink" href="#21-execution-contexts" title="Permanent link">&para;</a></h3>
+<p>Priorities are the ordering keys of <code>ecu/asyncCoreConfiguration/tasks.yaml</code>; FreeRTOS priorities follow from their
+order. Stacks from <code>ecu/application/src/app/app.cpp</code> and <code>ecu/configuration/include/app/appConfig.h</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Context</th>
+<th>Priority / level</th>
+<th>Stack</th>
+<th>Safety content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>task <code>safety</code></td>
+<td>60, highest (<code>above_application: true</code>)</td>
+<td>2048 B (<code>safetyStack</code>, MPU)</td>
+<td>safety cycle every <code>task_period_ms</code> = 10 ms (project value), watchdog service every 7th cycle, delivery of deferred events; lifecycle transitions of the component "safety"; console command <code>safety</code></td>
+</tr>
+<tr>
+<td>task <code>sysadmin</code></td>
+<td>50</td>
+<td>2048 B</td>
+<td>lifecycle manager (run levels)</td>
+</tr>
+<tr>
+<td>task <code>can</code></td>
+<td>40</td>
+<td>2048 B</td>
+<td>CAN transceivers, transmit gate (SM-32), UDS, XCP</td>
+</tr>
+<tr>
+<td>application task <code>swc</code> (RTE)</td>
+<td>30</td>
+<td>2048 B</td>
+<td>runnables of the SWCs; deadline supervision raises into the deferred box (SM-05)</td>
+</tr>
+<tr>
+<td>task <code>bsp</code></td>
+<td>20</td>
+<td>2048 B</td>
+<td>BSP, SBC, ECU state (SM-50, SM-53), halt deadman retrigger (SM-06)</td>
+</tr>
+<tr>
+<td>task <code>background</code></td>
+<td>10</td>
+<td>2048 B</td>
+<td>run-time statistics</td>
+</tr>
+<tr>
+<td>idle</td>
+<td>0</td>
+<td>2048 B</td>
+<td>console input, logger output, <strong>ROM check pass</strong> (<code>RomCheck::idle</code>, lowest priority, preempted by every supervised task: SSR-025)</td>
+</tr>
+<tr>
+<td>FreeRTOS timer task</td>
+<td>highest + 1</td>
+<td>1024 B</td>
+<td>—</td>
+</tr>
+<tr>
+<td>HardFault / BusFault / UsageFault</td>
+<td>fixed above all levels</td>
+<td>MSP 4096 B (SYS-97; 1024 B before), 1 KB no-write guard below</td>
+<td><code>customHardFaultHandler</code>: safe outputs table first (SM-17), dump, reset; SYS-97: an MSP below the stack limit (overflow into the guard) is moved back to the top before any C code, own line</td>
+</tr>
+<tr>
+<td>ERM double-bit, FTFC fault, WDOG pre-reset</td>
+<td>NVIC level 0 (reset value, not set by the image)</td>
+<td>MSP</td>
+<td>ECC (SM-15, SM-16) via <code>SAFE_ISR</code>; WDOG_EWM branches to the fault handler</td>
+</tr>
+<tr>
+<td>LPIT0 ch 1 — halt deadman</td>
+<td>level 4 = <code>NX_IRQ_MAX_SYSCALL_LEVEL − 1</code>, above the RTOS boundary</td>
+<td>MSP</td>
+<td>walks the safe outputs table when not retriggered within 10 ms (SM-06)</td>
+</tr>
+<tr>
+<td>FlexCAN0 message buffers</td>
+<td>level 8 (rank 3)</td>
+<td>MSP</td>
+<td>receive/transmit; <code>SAFE_ISR</code> wrapper</td>
+</tr>
+<tr>
+<td>LPUART2 console</td>
+<td>level 9 (rank 4)</td>
+<td>MSP</td>
+<td>—</td>
+</tr>
+<tr>
+<td>SysTick, PendSV, SVC</td>
+<td>level 15 (kernel)</td>
+<td>MSP</td>
+<td>scheduler; <code>configASSERT</code> → RTOS_ASSERT (S1 + S2)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="22-start-up-and-lifecycle-levels">2.2 Start-up and lifecycle levels<a class="headerlink" href="#22-start-up-and-lifecycle-levels" title="Permanent link">&para;</a></h3>
+<ol>
+<li><code>Reset_Handler</code> → <code>main()</code> of the family port: clocks, watchdog configuration, <strong>watchdog self-test</strong>
+   (SM-07, SSR-017; failure → S1 held), <strong>reset-loop limit</strong> (<code>startResetLoopLimit</code>, SSR-065; limit reached → S1
+   held), MPU init (SM-12), ROM check registration, then the scheduler.</li>
+<li><code>app::startApp()</code> adds the lifecycle components; run level 1: platform, <code>runtime</code>, <strong><code>safety</code></strong>
+   (<code>SafetySystem::init</code> → <code>SafetyManager::init</code>: watchdog, supplies, pin lock (SM-21), cycle timer, period check),
+   <code>ecu</code>; run level 2: platform part two; level 3: UDS, XCP; level 8: <code>sysadmin</code>; level 9: RTE.</li>
+<li><code>SafetySystem::run</code> schedules the safety cycle at a fixed rate of 10 ms in the safety task.</li>
+<li>Shutdown (run-down, SM-53): components in reverse order with a time-out per step; <code>SafetySystem::shutdown</code>
+   cancels the cycle and disables the watchdog.</li>
+</ol>
+<h3 id="23-one-safety-cycle-safetymanagercyclic">2.3 One safety cycle (<code>SafetyManager::cyclic</code>)<a class="headerlink" href="#23-one-safety-cycle-safetymanagercyclic" title="Permanent link">&para;</a></h3>
+<p><code>ENTER</code> → MPU gate state on entry (SM-11) → <strong>period check</strong> against LPTMR (SM-04) → <code>PERIOD_CHECKED</code> → every 7th
+cycle the watchdog service with its own enter/leave sequence and configuration re-check (SM-01 … SM-03) →
+<code>safe_memory::cyclic</code> (MPU descriptors SM-13, ECC status) → <code>MEMORY_CHECKED</code> → <code>SafeSystem::cyclic</code> (ADC reference
+SM-18/19, internal supplies SM-20) → <code>SYSTEM_CHECKED</code> → <code>SafeIo::cyclic</code> (register check SM-22) → <code>IO_CHECKED</code> →
+supervision-peripheral checks (deadman SM-06, watchdog control) → <code>PERIPHERALS_CHECKED</code> → delivery of deferred
+events (RTE deadlines) → <code>LEAVE</code> → MPU gate state on exit. Every checkpoint is a <code>hit()</code> of the sequence monitor
+(SM-04): a skipped or reordered check is <code>SAFETY_MANAGER_SEQUENCE_DEVIATION</code>.</p>
+<h3 id="24-reaction-sequences">2.4 Reaction sequences<a class="headerlink" href="#24-reaction-sequences" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Reaction</th>
+<th>Sequence (all in <code>SafeSupervisor::handle()</code> under the interrupt lock)</th>
+<th>Events (demo)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>S3 report and continue</td>
+<td>log line, return</td>
+<td><code>RTE_TIMING_VIOLATION</code>, <code>DEVICE_REPORT</code>, <code>CHECK_REGISTER_ERROR</code> without I/O support</td>
+</tr>
+<tr>
+<td>S1</td>
+<td><code>enterSafeState()</code>: walk the safe outputs table, indicator on; <code>leaveSafeState()</code> when the register is correct again (indicator only, SSR-004)</td>
+<td><code>CHECK_REGISTER_ERROR</code> (with <code>PLATFORM_SUPPORT_IO</code>); SYS-169: its context names the cause - 1 check fine again, 0 the SAFETY_TEST pin, else class (bits 31..24) and entry (bits 15..0) of the register list, in the log line</td>
+</tr>
+<tr>
+<td>S1 + S2</td>
+<td><code>enterLimpHome()</code> → <code>enterSafeState()</code> → console line → reset-loop record → <code>softwareSystemReset()</code></td>
+<td>sequence deviations, watchdog configuration/service, MPU, ECC, ADC reference, supplies, lock register, deadman configuration, period violation, <code>STACK_OVERFLOW</code>, <code>RTOS_ASSERT</code></td>
+</tr>
+<tr>
+<td>S1 held</td>
+<td><code>holdSafeState()</code>: limp home, S1, one console line, then loop: walk the table again, service the MCU watchdog; interrupts stay locked; ends only with power cycle or external reset</td>
+<td><code>WATCHDOG_STARTUP_CHECK_FAILURE</code>, <code>ROM_CHECK_FAILURE</code>, <code>DEVICE_FAULT</code> (well-formed report of a device configured for it; otherwise S1 + S2), <code>RESET_LOOP_LIMIT</code></td>
+</tr>
+<tr>
+<td>bypass</td>
+<td>fault handlers and the halt deadman walk the table <strong>before</strong> anything else, then dump/report (concept section 5)</td>
+<td>HardFault, BusFault, UsageFault, WDOG_EWM, deadman time-out</td>
+</tr>
+</tbody>
+</table>
+<p>The reaction times per class are in <a href="../concept/"><code>concept.md</code></a> section 7; they are not repeated here.</p>
+<hr />
+<h2 id="3-freedom-from-interference--what-the-architecture-provides">3. Freedom from interference — what the architecture provides<a class="headerlink" href="#3-freedom-from-interference--what-the-architecture-provides" title="Permanent link">&para;</a></h2>
+<p>Summary of what exists (details: concept 6.3, <a href="../dfa/"><code>dfa.md</code></a>, task SYS-21 for the rest), sorted by the three
+kinds of interference of 6-Annex D:</p>
+<table>
+<thead>
+<tr>
+<th>Kind</th>
+<th>Provided</th>
+<th>Not provided</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>memory</td>
+<td>MPU region for the safety data and the safety stack, gate open only in the safety context (SM-10 … SM-13); runtime stack check of every <strong>task</strong> at the context switch (<code>configCHECK_FOR_STACK_OVERFLOW 2</code> → <code>STACK_OVERFLOW</code>, S1 + S2); <strong>since SYS-97</strong> a guard of 1 KB directly below the interrupt stack (MSP) that the core may read but not write (MPU descriptor 6, checked every cycle by SM-13): an overflow ends in the hard fault reaction (SM-17)</td>
+<td>no partitioning of the application; before SYS-97 the MSP had no guard (section 7.3, finding STK-2)</td>
+</tr>
+<tr>
+<td>timing and execution</td>
+<td>safety task above every application task; period check against an independent timer (SM-04); program-flow checkpoints (SM-04); watchdog with window relation (SM-01 … SM-03); halt deadman above the RTOS boundary (SM-06); RTE deadlines (SM-05, report only)</td>
+<td>the watchdog follows one task (AoU-14)</td>
+</tr>
+<tr>
+<td>exchange of information</td>
+<td>E2E for configured signals (SM-31), qualifier for analogue values (SM-30), deferred event box instead of opening the gate (SYS-37)</td>
+<td>no protection of the internal RTE buffers against a faulty writer in the same address space</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="4-allocation-of-the-software-safety-requirements-to-components">4. Allocation of the software safety requirements to components<a class="headerlink" href="#4-allocation-of-the-software-safety-requirements-to-components" title="Permanent link">&para;</a></h2>
+<p>Every SSR of stage 1 is ASIL B (<a href="../../requirements/safety/ssr.sdoc"><code>ssr.sdoc</code></a>). A component is developed to the highest
+ASIL allocated to it (6-7.4.6), so <strong>every component C-SUP … C-BLD is ASIL B</strong>; C-GEN is off-target and falls
+under tool classification and the image checks (<a href="../tool-classification/"><code>tool-classification.md</code></a>). Derived from
+the <code>code:</code> links of each requirement (component = the place of the linked file, table of section 1).</p>
+<table>
+<thead>
+<tr>
+<th>SSR</th>
+<th>Title</th>
+<th>Component(s)</th>
+<th>ASIL</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SSR-001</td>
+<td>Reaction decided in one place</td>
+<td>C-SUP</td>
+<td>B</td>
+<td>implemented</td>
+</tr>
+<tr>
+<td>SSR-002</td>
+<td>De-energise before every safety reset</td>
+<td>C-SUP</td>
+<td>B</td>
+<td>implemented</td>
+</tr>
+<tr>
+<td>SSR-003</td>
+<td>Safe state held without reset for faults a reset cannot remove</td>
+<td>C-SUP</td>
+<td>B</td>
+<td>implemented</td>
+</tr>
+<tr>
+<td>SSR-004</td>
+<td>Leaving the safe state never re-energises a power output</td>
+<td>C-SIO</td>
+<td>B</td>
+<td>implemented</td>
+</tr>
+<tr>
+<td>SSR-005</td>
+<td>One safe outputs table for every switch-off path</td>
+<td>C-HFH, C-SIO, C-GEN</td>
+<td>B</td>
+<td>partial</td>
+</tr>
+<tr>
+<td>SSR-006</td>
+<td>Safe state on a board without power outputs</td>
+<td>C-HFH</td>
+<td>B</td>
+<td>implemented</td>
+</tr>
+<tr>
+<td>SSR-007</td>
+<td>One power-stage adapter per safe_off output, enforced by the build</td>
+<td>C-INT, C-GEN</td>
+<td>B</td>
+<td>implemented</td>
+</tr>
+<tr>
+<td>SSR-010</td>
+<td>MCU watchdog serviced by the safety task only</td>
+<td>C-WDG, C-LCY</td>
+<td>B</td>
+<td>partial</td>
+</tr>
+<tr>
+<td>SSR-011</td>
+<td>Watchdog timing relation is a checked property</td>
+<td>C-GEN, C-LCY</td>
+<td>B</td>
+<td>implemented</td>
+</tr>
+<tr>
+<td>SSR-012</td>
+<td>Watchdog configuration re-checked at every service</td>
+<td>C-WDG, C-SPC</td>
+<td>B</td>
+<td>implemented</td>
+</tr>
+<tr>
+<td>SSR-013</td>
+<td>Watchdog over-service detected</td>
+<td>C-WDG</td>
+<td>B</td>
+<td>implemented</td>
+</tr>
+<tr>
+<td>SSR-014</td>
+<td>Control flow through the safety cycle supervised</td>
+<td>C-LCY</td>
+<td>B</td>
+<td>implemented</td>
+</tr>
+<tr>
+<td>SSR-015</td>
+<td>RTE task and runnable deadlines reported</td>
+<td>C-RTE, C-SUP</td>
+<td>B</td>
+<td>partial</td>
+</tr>
+<tr>
+<td>SSR-016</td>
+<td>Core halt or stall longer than the deadman time-out de-energises</td>
+<td>C-INT</td>
+<td>B</td>
+<td>implemented</td>
+</tr>
+<tr>
+<td>SSR-017</td>
+<td>Watchdog hardware tested at every start</td>
+<td>C-INT</td>
+<td>B</td>
+<td>implemented</td>
+</tr>
+<tr>
+<td>SSR-018</td>
+<td>Safety task period supervised against a hardware time base</td>
+<td>C-LCY, C-WDG, C-SPC</td>
+<td>B</td>
+<td>partial</td>
+</tr>
+<tr>
+<td>SSR-020</td>
+<td>Safety data writable only from the safety context</td>
+<td>C-MEM, C-LCY</td>
+<td>B</td>
+<td>implemented</td>
+</tr>
+<tr>
+<td>SSR-021</td>
+<td>Protection gate state checked on entry and exit of the safety cycle</td>
+<td>C-LCY, C-MEM</td>
+<td>B</td>
+<td>implemented</td>
+</tr>
+<tr>
+<td>SSR-022</td>
+<td>MPU enabled with the region count of the derivative</td>
+<td>C-MEM</td>
+<td>B</td>
+<td>implemented</td>
+</tr>
+<tr>
+<td>SSR-023</td>
+<td>MPU region descriptors unchanged</td>
+<td>C-MEM</td>
+<td>B</td>
+<td>implemented</td>
+</tr>
+<tr>
+<td>SSR-024</td>
+<td>ROM check of the application image</td>
+<td>C-MEM</td>
+<td>B</td>
+<td>implemented</td>
+</tr>
+<tr>
+<td>SSR-025</td>
+<td>Context in which the ROM check may run</td>
+<td>C-INT, C-MEM</td>
+<td>B</td>
+<td>implemented</td>
+</tr>
+<tr>
+<td>SSR-026</td>
+<td>Uncorrectable RAM ECC error detected</td>
+<td>C-MEM</td>
+<td>B</td>
+<td>implemented</td>
+</tr>
+<tr>
+<td>SSR-027</td>
+<td>Uncorrectable flash ECC error detected</td>
+<td>C-MEM</td>
+<td>B</td>
+<td>implemented</td>
+</tr>
+<tr>
+<td>SSR-028</td>
+<td>Fault handlers de-energise first</td>
+<td>C-HFH</td>
+<td>B</td>
+<td>implemented</td>
+</tr>
+<tr>
+<td>SSR-030</td>
+<td>ADC reference supervised against a configured band</td>
+<td>C-SYS</td>
+<td>B</td>
+<td>implemented</td>
+</tr>
+<tr>
+<td>SSR-031</td>
+<td>Loss of the ADC reference supervision detected</td>
+<td>C-SYS</td>
+<td>B</td>
+<td>implemented</td>
+</tr>
+<tr>
+<td>SSR-032</td>
+<td>Internal supplies of the MCU supervised</td>
+<td>C-SYS</td>
+<td>B</td>
+<td>implemented</td>
+</tr>
+<tr>
+<td>SSR-033</td>
+<td>Safety-relevant pin configuration locked at start-up</td>
+<td>C-SIO</td>
+<td>B</td>
+<td>partial</td>
+</tr>
+<tr>
+<td>SSR-034</td>
+<td>Safety-relevant registers checked cyclically</td>
+<td>C-SIO</td>
+<td>B</td>
+<td>partial</td>
+</tr>
+<tr>
+<td>SSR-040</td>
+<td>Quality qualifier for every analogue value</td>
+<td>C-RTE</td>
+<td>B</td>
+<td>implemented</td>
+</tr>
+<tr>
+<td>SSR-041</td>
+<td>End-to-end protection of configured CAN signals</td>
+<td>C-E2E</td>
+<td>B</td>
+<td>implemented</td>
+</tr>
+<tr>
+<td>SSR-042</td>
+<td>No transmission into an unhealthy bus</td>
+<td>C-CAN</td>
+<td>B</td>
+<td>implemented</td>
+</tr>
+<tr>
+<td>SSR-050</td>
+<td>Start reason from two independent sources</td>
+<td>C-ECU</td>
+<td>B</td>
+<td>implemented</td>
+</tr>
+<tr>
+<td>SSR-051</td>
+<td>Bootloader starts only a valid, compatible image</td>
+<td>C-BLD</td>
+<td>B</td>
+<td>implemented</td>
+</tr>
+<tr>
+<td>SSR-052</td>
+<td>Defined run-down with time-outs per step</td>
+<td>C-ECU</td>
+<td>B</td>
+<td>implemented</td>
+</tr>
+<tr>
+<td>SSR-060</td>
+<td>Safe state verified by read-back</td>
+<td>planned: C-SIO</td>
+<td>B</td>
+<td>open</td>
+</tr>
+<tr>
+<td>SSR-061</td>
+<td>Plausibility between two independent measurement paths</td>
+<td>planned: C-RTE (signal layer)</td>
+<td>B</td>
+<td>open</td>
+</tr>
+<tr>
+<td>SSR-062</td>
+<td>Age supervision of safety-relevant signals</td>
+<td>planned: C-RTE / C-E2E</td>
+<td>B</td>
+<td>open</td>
+</tr>
+<tr>
+<td>SSR-063</td>
+<td>Safe state reaches bus-commanded actuators</td>
+<td>planned: C-SUP + C-CAN</td>
+<td>B</td>
+<td>open</td>
+</tr>
+<tr>
+<td>SSR-064</td>
+<td>Device reports to the safe supervisor</td>
+<td>C-SUP</td>
+<td>B</td>
+<td>implemented</td>
+</tr>
+<tr>
+<td>SSR-065</td>
+<td>Limit on repeated safety resets</td>
+<td>C-SUP, C-INT</td>
+<td>B</td>
+<td>implemented</td>
+</tr>
+<tr>
+<td>SSR-066</td>
+<td>Complete configuration checks of the supervision peripherals</td>
+<td>C-SPC, C-LCY</td>
+<td>B</td>
+<td>partial</td>
+</tr>
+<tr>
+<td>SSR-067</td>
+<td>ROM check repeated during operation</td>
+<td>C-MEM, C-INT</td>
+<td>B</td>
+<td>implemented</td>
+</tr>
+<tr>
+<td>SSR-068</td>
+<td>ECC supervision complete</td>
+<td>C-MEM</td>
+<td>B</td>
+<td>implemented</td>
+</tr>
+<tr>
+<td>SSR-069</td>
+<td>Read-failure limit for the internal supply channel</td>
+<td>C-SYS</td>
+<td>B</td>
+<td>implemented</td>
+</tr>
+<tr>
+<td>SSR-070</td>
+<td>Register lock and check list derived from the configuration</td>
+<td>C-GEN, C-SIO</td>
+<td>B</td>
+<td>partial</td>
+</tr>
+<tr>
+<td>SSR-080</td>
+<td>Safe outputs table checked in the linked image against an independent expectation</td>
+<td>C-GEN, C-HFH</td>
+<td>B</td>
+<td>implemented</td>
+</tr>
+<tr>
+<td>SSR-081</td>
+<td>Change of a safety-relevant generated file detected</td>
+<td>C-GEN</td>
+<td>B</td>
+<td>implemented</td>
+</tr>
+<tr>
+<td>SSR-082</td>
+<td>Configuration and generator identity recognisable in the image</td>
+<td>C-GEN + C-BLD</td>
+<td>B</td>
+<td>implemented</td>
+</tr>
+<tr>
+<td>SSR-083</td>
+<td>Memory layout of the linked images checked against the derivative</td>
+<td>C-GEN</td>
+<td>B</td>
+<td>implemented</td>
+</tr>
+<tr>
+<td>SSR-084</td>
+<td>CAN signal layout of every project checked against an independent decoder</td>
+<td>C-GEN</td>
+<td>B</td>
+<td>implemented</td>
+</tr>
+</tbody>
+</table>
+<p>The allocation "planned" of the open requirements is a proposal of this document, not a decision.</p>
+<p>Proposal (not done here, other paths): a field <code>COMPONENT</code> per SSR in <code>ssr.sdoc</code> and a check in
+<code>tools/trace</code> that the component exists in this table would make the allocation bidirectional and checked
+(row 6-08: SSR ↔ architectural element).</p>
+<hr />
+<h2 id="5-design-principles-applied-6-743">5. Design principles applied (6-7.4.3)<a class="headerlink" href="#5-design-principles-applied-6-743" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Principle (own words)</th>
+<th>How the safety part meets it</th>
+<th>Gap</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>hierarchical structure</td>
+<td>detection → reaction → recovery (concept section 5); family-neutral C-SUP/C-WDG over the family port</td>
+<td>—</td>
+</tr>
+<tr>
+<td>restricted size and complexity of components</td>
+<td>one mechanism per unit in the family port; the supervisor's <code>handle()</code> is the one large switch by design</td>
+<td><code>handle()</code> has 23 cases; its cyclomatic complexity is not measured</td>
+</tr>
+<tr>
+<td>restricted size of interfaces</td>
+<td>monitor API with three calls and one context word</td>
+<td>—</td>
+</tr>
+<tr>
+<td>strong cohesion</td>
+<td>one component per protected resource (memory, system, I/O, supervision peripherals)</td>
+<td>—</td>
+</tr>
+<tr>
+<td>loose coupling</td>
+<td>mechanisms know only the monitor API, not each other</td>
+<td>the safety task hosts the console command <code>safety</code> (test functions; gap analysis task 19)</td>
+</tr>
+<tr>
+<td>appropriate scheduling</td>
+<td>safety task above every application task, fixed rate; <code>tools/schedana</code> for the application tasks</td>
+<td>the safety cycle's execution time is measured on the board only indirectly (period check)</td>
+</tr>
+<tr>
+<td>restricted use of interrupts</td>
+<td>two bypass paths (fault handlers, deadman) with no RTOS call and no stack beyond their frames</td>
+<td>the level-0 fault interrupts reach the logger and the ETL assert handler (section 7.3)</td>
+</tr>
+<tr>
+<td>appropriate management of shared resources</td>
+<td>MPU gate, deferred event box</td>
+<td>SPI shared with the SBC (fmea F5), DMA rights (N3) — SYS-21</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="6-resource-estimate-6-7413">6. Resource estimate (6-7.4.13)<a class="headerlink" href="#6-resource-estimate-6-7413" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Resource</th>
+<th>Estimate</th>
+<th>Source</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>execution time</td>
+<td>safety task period and lateness bound, watchdog relation (<code>static_assert</code> + <code>nxconfig</code>); application tasks by <code>tools/schedana</code></td>
+<td><a href="../concept/"><code>concept.md</code></a> 7.1, <code>tools/schedana</code></td>
+<td>analysed; measured WCET of the safety cycle open</td>
+</tr>
+<tr>
+<td>program memory</td>
+<td>208 464 B <code>.text</code> + 1 024 B vectors + small sections of the demo image; layout against the derivative</td>
+<td><code>arm-none-eabi-size</code>, <code>tools/elfcheck</code> (SSR-083)</td>
+<td>checked</td>
+</tr>
+<tr>
+<td>data memory</td>
+<td><code>.mpu_bss</code> 576 B, <code>.hot_bss</code> 22 464 B, <code>.bss</code> 16 692 B, <code>.data_general</code> 496 B, <code>.noinit</code> 352 B, <code>.heap</code> 516 B, <code>.stack</code> (MSP) 1 024 B; <strong>SYS-97:</strong> <code>.stack</code> 4 096 B and <code>.stack_guard</code> 1 024 B (+4 096 B RAM; demo image: guard 0x200045E0 … 0x200049E0, stack up to 0x200059E0, 4 640 B free up to the no-init area at 0x20006C00)</td>
+<td><code>arm-none-eabi-size -A</code>, <code>nm</code> (SYS-97)</td>
+<td>measured</td>
+</tr>
+<tr>
+<td><strong>stack</strong></td>
+<td>per context below (section 7)</td>
+<td><code>tools/stackuse</code></td>
+<td><strong>new</strong></td>
+</tr>
+<tr>
+<td>communication</td>
+<td>CAN bus load</td>
+<td>—</td>
+<td><strong>open</strong> (no estimate; outside this task)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="7-worst-case-stack">7. Worst-case stack<a class="headerlink" href="#7-worst-case-stack" title="Permanent link">&para;</a></h2>
+<h3 id="71-method">7.1 Method<a class="headerlink" href="#71-method" title="Permanent link">&para;</a></h3>
+<p><code>tools/stackuse</code> (<a href="../../../tools/stackuse/">README</a>) combines the <code>-fstack-usage</code> output of the build with
+the call graph of the linked image. Frame of a function = the larger of its <code>.su</code> value and the sum of its stack
+decrements in the disassembly; call graph on the exact symbols; indirect calls only as far as the profile resolves
+them, otherwise the context is marked incomplete; recursion only as bounded where the profile says so, with the
+number of times a function can be on the stack. The facts the image does not contain (contexts, stacks, targets of
+indirect calls, interrupt levels) are in the profile
+<a href="../../../tools/stackuse/profiles/evalboard_s32k144_demo.yaml"><code>profiles/evalboard_s32k144_demo.yaml</code></a>, each with its
+source. The full report of the baseline build is
+<code>reports/evalboard_s32k144_demo.md</code> (not published, available on request).</p>
+<p>Cross-check of the two frame sources in the demo image: 1 457 functions have both; 1 308 agree exactly, 14 have a
+larger sum in the disassembly (taken), the rest are template instances merged under one key (the larger <code>.su</code> value
+taken). 895 indirect call sites exist in the image (310 virtual); the profile resolves 51 callers.</p>
+<p>Task stacks carry, in addition to the call tree, the exception frame of a preemption and the context FreeRTOS saves
+on a switch: 108 B + 100 B = 208 B (<code>context_bytes</code>). Interrupt handlers run on the MSP; per nesting level one
+exception frame of 108 B (Cortex-M4F, extended frame with lazy FP stacking, plus alignment).</p>
+<h3 id="72-safety-task">7.2 Safety task<a class="headerlink" href="#72-safety-task" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Context</th>
+<th style="text-align: right;">Stack</th>
+<th style="text-align: right;">Worst case</th>
+<th style="text-align: right;">Margin</th>
+<th>Complete</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>safety task, all entries</td>
+<td style="text-align: right;">2 048 B</td>
+<td style="text-align: right;"><strong>1 200 B</strong> (59 %)</td>
+<td style="text-align: right;">848 B</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>— cyclic supervision only (<code>SafetySystem::execute</code>)</td>
+<td style="text-align: right;">2 048 B</td>
+<td style="text-align: right;">1 112 B (54 %)</td>
+<td style="text-align: right;">936 B</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>— console command <code>safety</code> only</td>
+<td style="text-align: right;">2 048 B</td>
+<td style="text-align: right;">1 200 B (59 %)</td>
+<td style="text-align: right;">848 B</td>
+<td>yes</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Update SYS-98 (wave cloud-1001, 2026-09-29).</strong> The table above is measured again after SYS-98 (lean ETL assert
+handler <code>safety::etlAssertFailed</code>, kernel faults without <code>handle()</code> and logger, ECC interrupts without <code>printf</code>); the
+report <code>reports/evalboard_s32k144_demo.md</code> (not published, available on request) is regenerated
+from the same build. The deepest console path now ends in <code>Uart::getInstance</code> → <code>safety::etlAssertFailed</code> →
+<code>resetWithLine</code> → <code>safeConsoleWrite</code> → <code>Uart::write</code> → <code>Uart::init</code> instead of formatting in <code>etl_assert_function</code>;
+the cyclic part grew by 16 B (frame of <code>resetWithLine</code>, no longer inlined). The paths described below are those of
+issue 1 (SYS-65) and are kept for the history.</p>
+<p>Deepest path (console): dispatch 176 B incl. context → <code>AsyncCommandWrapper::execute</code> → <code>AsyncConsole::terminate</code>
+→ <code>StringWriter::printf</code> → <code>PrintfFormatter</code> → the stream chain (Tagged → NormalizeLf → Stdout) →
+<code>Uart::getInstance</code> → <strong><code>etl_assert_function</code></strong> (frame 200 B, counted twice as bounded recursion) → <code>putByteToStdout</code>
+→ <code>Uart::write</code>. Deepest path (cyclic): <code>SafetyManager::cyclic</code> → <code>SafeSystem::checkAdcReference</code> →
+<code>SafeSupervisor::handle</code> (200 B) → <code>handleDeviceReport</code> → <code>Logger::warn</code> → <code>BufferedLoggerOutput::logOutput</code>
+(128 B entry buffer) → entry serializer. The graph merges all branches of <code>handle()</code>, so these are upper bounds:
+the device-report branch is not reachable from the ADC check in the real control flow.</p>
+<p>Sensitivity: without the ETL assert handler on the paths (profile variant with <code>ignore</code>), the safety task needs
+1 192 B.</p>
+<p>The task stack overflow check of FreeRTOS (<code>STACK_OVERFLOW</code>, S1 + S2) catches an overflow of this stack at the next
+context switch; the 472 B margin makes it a second line, not the first.</p>
+<h3 id="73-interrupt-stack-msp">7.3 Interrupt stack (MSP)<a class="headerlink" href="#73-interrupt-stack-msp" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Level</th>
+<th>Deepest handler</th>
+<th style="text-align: right;">Worst case</th>
+<th>Complete</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>fault (−1)</td>
+<td>HardFault/BusFault/UsageFault → <code>HardFault_Handler_Final</code> → <code>safeConsoleWrite</code> (SYS-98: no <code>checkEccErrors</code>)</td>
+<td style="text-align: right;">96 B</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>0</td>
+<td><code>Safe_ERM_double_fault_IRQHandler</code> → <code>reportEccError</code> → <code>resetWithLine</code> → <code>safeConsoleWrite</code> (SYS-98: no <code>printf</code>)</td>
+<td style="text-align: right;">288 B</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>4</td>
+<td>LPIT0 ch 1 (deadman)</td>
+<td style="text-align: right;">0 B</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>8</td>
+<td>FlexCAN0 → receive/transmit → DoCAN transmitter callbacks</td>
+<td style="text-align: right;">≥ 768 B</td>
+<td><strong>no</strong> (DoCAN transmit path not resolved)</td>
+</tr>
+<tr>
+<td>9</td>
+<td>LPUART2</td>
+<td style="text-align: right;">28 B</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>15</td>
+<td>SysTick → <code>xTaskIncrementTick</code> → <code>configASSERT</code> → <code>KernelFaultReaction</code> → <code>resetOnKernelFault</code> → <code>safeConsoleWrite</code> (SYS-98)</td>
+<td style="text-align: right;">392 B</td>
+<td>yes</td>
+</tr>
+<tr>
+<td><strong>all levels nested</strong></td>
+<td>per level deepest + 108 B</td>
+<td style="text-align: right;"><strong>≥ 2 220 B</strong> of 1 024 B (issue 1: ≥ 3 980 B)</td>
+<td>no</td>
+</tr>
+</tbody>
+</table>
+<p>Without the ETL assert handler (sensitivity): level 0 needs 456 B, nested ≥ 3 404 B.</p>
+<p><strong>Update SYS-97 (2026-09-30, host).</strong> Budget and overflow detection of the MSP (findings STK-1, STK-2, STK-6; user
+decision q-stk-msp: shorten the deep paths first - SYS-98 - then size the MSP to the tool value plus reserve, MPU
+guard below it, <code>stackuse --strict</code> in the CI). Report of the same build:
+<code>reports/evalboard_s32k144_demo.md</code> (not published, available on request).</p>
+<table>
+<thead>
+<tr>
+<th>Level / context</th>
+<th>Deepest path</th>
+<th style="text-align: right;">Worst case</th>
+<th>Complete</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>fault (−1)</td>
+<td>HardFault → <code>customHardFaultHandler</code> → <code>HardFault_Handler_Final</code> (naked MSP check) → <code>nxHardFaultFinal</code> / <code>nxIsrStackOverflowFinal</code> → <code>safeConsoleWrite</code></td>
+<td style="text-align: right;">104 B</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>0</td>
+<td>ERM/FTFC/WDOG_EWM, unchanged</td>
+<td style="text-align: right;">288 B</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>4</td>
+<td>LPIT0 ch 1 (deadman)</td>
+<td style="text-align: right;">0 B</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>8</td>
+<td>FlexCAN0 → <code>transmitISR</code> → <code>canFrameSentCallback</code> → <code>async::execute</code> (queues the completion for the CAN task) → <code>xTaskGenericNotify</code> → <code>configASSERT</code> → kernel fault reaction</td>
+<td style="text-align: right;"><strong>400 B</strong></td>
+<td><strong>yes</strong> (AN-084)</td>
+</tr>
+<tr>
+<td>9</td>
+<td>LPUART2</td>
+<td style="text-align: right;">28 B</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>15</td>
+<td>SysTick/PendSV/SVC, unchanged</td>
+<td style="text-align: right;">392 B</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>all levels nested</td>
+<td>per level deepest + 108 B</td>
+<td style="text-align: right;"><strong>1 860 B</strong></td>
+<td>yes</td>
+</tr>
+<tr>
+<td>start-up on the MSP (<code>main-before-scheduler</code>)</td>
+<td>reset handler, static constructors (<code>.init_array</code>), <code>main()</code>, <code>app::startApp</code> in <code>vTaskStartScheduler</code>; interrupts are enabled, every level nests on top</td>
+<td style="text-align: right;">≥ 928 B</td>
+<td>lower bound, <strong>accepted</strong> in the profile (reason there)</td>
+</tr>
+<tr>
+<td><strong>MSP need</strong></td>
+<td>start-up + nested</td>
+<td style="text-align: right;"><strong>≥ 2 788 B of 4 096 B</strong>, margin 1 308 B</td>
+<td>levels complete</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>CAN level (AN-084, STK-6):</strong> SYS-65 had resolved the frame-sent delegate of <code>FlexCANDevice::transmitISR</code> to both
+  <code>canFrameSentCallback</code> and <code>canFrameSentAsyncCallback</code>. The only construction of the device in the image
+  (<code>CanFlex2Transceiver</code>) passes <code>canFrameSentCallback</code>, which only queues <code>canFrameSentAsyncCallback</code> for the CAN task
+  (<code>async::execute</code> → <code>RunnableExecutor::enqueue</code>). The listeners and the DoCAN transmit path
+  (<code>DoCanPhysicalCanTransceiver::canFrameSent</code> → <code>DoCanTransmitter::dataFramesSent</code> → <code>sendNextFrames</code> → ...
+  → <code>CanFlex2Transceiver::write</code>) therefore run in the CAN task, not on the MSP. Their indirect calls are resolved in
+  the profile all the same (tick generator, <code>nowUs</code> delegate, frame transmitter, transport listeners, frame size
+  mapper), so a context that reaches them is not a lower bound; such a context would report the cycle
+  write → notifySentListeners → canFrameSent → ... → write, bounded by the send lock of <code>DoCanTransmitter</code> (argument
+  not made, no context reaches it today).</li>
+<li><strong>New interrupt paths of the night (IO-62 sample group "group complete", ARCH-65 fast loop, pin events):</strong> none is
+  linked into the demo image - their vectors are weak stubs to <code>DefaultISR</code>. The profile now checks the vector table:
+  a handler that is linked later is UNCOVERED until it gets a context, the nested bound is then incomplete and
+  <code>stackuse --strict</code> (CI) fails. A fast loop above the RTOS boundary adds one level (its depth + 108 B); the reserve of
+  1 308 B covers a few such levels, the tool says when it does not.</li>
+<li><strong>Guard:</strong> 1 KB below <code>__StackLimit</code> (linker section <code>.stack_guard</code>, <code>__StackGuardStart/End</code>, 32-byte aligned),
+  own MPU descriptor (core read, no write), cut out of the full-access region that contains it. Size check of the
+  tool: largest frame on the MSP plus the larger of that frame and an exception frame; because the start-up is only a
+  lower bound, the largest frame of the whole image counts (432 B) → 864 B needed.</li>
+</ul>
+<h3 id="74-findings-of-the-stack-analysis">7.4 Findings of the stack analysis<a class="headerlink" href="#74-findings-of-the-stack-analysis" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Finding</th>
+<th>Consequence</th>
+<th>Proposal</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>STK-1</td>
+<td><strong>The interrupt stack (1 024 B) is not shown to be sufficient.</strong> The level-0 memory-fault handler alone reaches 1 032 B + 108 B frame on its deepest path; nested, the bound is ≥ 3 980 B.</td>
+<td>An overflow of the MSP is not detected (STK-2) and would overwrite <code>.heap</code> and then <code>.bss</code>. The bound is conservative (every level at its deepest at once, all branches of <code>handle()</code> merged), but even the single-handler case exceeds the stack.</td>
+<td>decide a stack budget: either enlarge <code>STACK_SIZE</code> to a value the tool proves, or cut the deep paths (STK-3, STK-4); then run <code>stackuse --strict</code> in the CI (proposed test entry below). <strong>Done by SYS-97 (host):</strong> MSP 4 096 B against a need of ≥ 2 788 B (levels complete 1 860 B, start-up an accepted lower bound 928 B), <code>stackuse --strict</code> green in <code>stackuse-demo</code>; board counter-check with the fill pattern (<code>inject mspuse</code>) open</td>
+</tr>
+<tr>
+<td>STK-2</td>
+<td>No overflow detection for the MSP (no MPU guard below <code>__StackLimit</code>, no stack limit register on ARMv7-M).</td>
+<td>a silent overwrite of general RAM; outside the MPU-protected safety data, but the RTE and the deferred event box live there</td>
+<td>MPU guard region below the MSP (SM-10 code, family port) or a watermark check in the safety cycle. <strong>Done by SYS-97 (host):</strong> 1 KB guard, read-only for the core (<code>MemoryProtection::STACK_GUARD_REGION</code>, covered by the descriptor check SM-13); the hard fault moves an MSP below the limit back to the top before any C code and writes <code>HARD FAULT RESET: interrupt stack overflow (guard), outputs off</code>. Board proof (<code>inject mspoverflow</code>) open</td>
+</tr>
+<tr>
+<td>STK-3</td>
+<td><strong><code>etl_assert_function</code> (frame 200 B) is reachable from every context</strong> through <code>etl::singleton_base::instance()</code> and <code>Uart::getInstance</code>; it formats with <code>etl::print</code> on the stack.</td>
+<td>+400 B on the deepest paths of the safety task and of the level-0 fault interrupt</td>
+<td>a lean assert handler (safe state + reset, a fixed string without formatting), as <code>holdSafeState</code> does with <code>safeConsoleWrite</code>. <strong>Done by SYS-98 (host):</strong> <code>safety::etlAssertFailed</code>, event <code>ETL_ASSERT</code> (0x117); board proof <code>lc assert</code> open</td>
+</tr>
+<tr>
+<td>STK-4</td>
+<td>Fault handlers and the kernel tick log through the buffered logger (128 B entry buffer) and <code>printf</code>: <code>HardFault_Handler_Final</code> → <code>checkEccErrors</code> → <code>Logger::debug</code>; <code>ERM_double_fault_IRQHandler</code> → <code>debug_printf</code>; <code>SafeSupervisor::handle</code> → <code>Logger::warn</code> from <code>configASSERT</code> in SysTick.</td>
+<td>QM code (logger, printf) on the stack of safety reactions; the logger takes a lock</td>
+<td>move the logging of fault paths behind the reaction or to the synchronous <code>safeConsoleWrite</code>. <strong>Done by SYS-98 (host):</strong> kernel faults, ERM/FTFC and the hard fault reach no logger or <code>printf</code> (rule 5 of <code>hold-console-elf</code>); nested MSP ≥ 2 220 B, the rest is SYS-97 (CAN level, <code>safeConsoleWrite</code> → <code>Uart::init</code>)</td>
+</tr>
+<tr>
+<td>STK-5</td>
+<td>The console command <code>safety</code> (test and fault-injection functions) runs in the safety task and determines its worst case (1 576 B against 1 096 B for the cyclic part).</td>
+<td>test code on the safety stack in the product</td>
+<td>covered by gap analysis task 19 (product build without test commands)</td>
+</tr>
+<tr>
+<td>STK-6</td>
+<td>The CAN interrupt reaches DoCAN transmit callbacks from the ISR; the tool does not resolve them yet.</td>
+<td>level 8 is a lower bound</td>
+<td>resolve in the profile (outside the safety part). <strong>Done by SYS-97 (host):</strong> the transmit interrupt only queues the completion for the CAN task; the DoCAN callbacks are not on the MSP, level 8 complete with 400 B (section 7.3, update SYS-97)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="75-limits-of-the-estimate">7.5 Limits of the estimate<a class="headerlink" href="#75-limits-of-the-estimate" title="Permanent link">&para;</a></h3>
+<ul>
+<li>The profile's resolutions of indirect calls are a review item: a wrong resolution hides a path. Each resolution
+  names its source in the profile.</li>
+<li>Merged branches over-estimate (see 7.2); nothing under-estimates as long as the resolutions are complete, no
+  function uses <code>alloca</code> or a VLA (the image has none: all <code>.su</code> qualifiers are <code>static</code>) and the bounded cycles are
+  bounded as stated.</li>
+<li>Measured values are not available: a stack watermark on the board (FreeRTOS <code>uxTaskGetStackHighWaterMark</code>, MSP
+  fill pattern) would give a lower bound to compare against — open, needs the board. <strong>SYS-97:</strong> <code>main()</code> fills the
+  free MSP with a pattern as its first statement; <code>inject mspuse</code> (test build with
+  <code>NX_SAFETY_FAULT_INJECTION_COMMAND</code>) prints the high-water mark since then, which includes the start-up phase the
+  tool only bounds from below. Board run open.</li>
+</ul>
+<hr />
+<h2 id="8-architectural-analysis-hooks">8. Architectural analysis hooks<a class="headerlink" href="#8-architectural-analysis-hooks" title="Permanent link">&para;</a></h2>
+<p>The safety-oriented analysis of the architecture (6-7.4.10) and the dependent-failure analysis (6-7.4.11) are
+separate work products (<a href="../fmea/"><code>fmea.md</code></a>, <a href="../dfa/"><code>dfa.md</code></a>; gap analysis task 16 for the failure propagation
+of RTE, ecuState, CAN, NvM and bootloader). This document provides their input: the components and interfaces of
+section 1, the contexts of section 2 and the shared stacks of section 7 (a shared stack is a coupling between
+components of different intent: STK-3 … STK-5).</p>
+<hr />
+<h2 id="9-inspection-record-6-7414">9. Inspection record (6-7.4.14)<a class="headerlink" href="#9-inspection-record-6-7414" title="Permanent link">&para;</a></h2>
+<p><strong>Object:</strong> this document, issue 1, against the code of the baseline. <strong>Method:</strong> inspection with a checklist
+derived from the verification methods the standard lists for the architectural design at ASIL B (in own words:
+walk-through or inspection of the design, control-flow and data-flow analysis, scheduling analysis; simulation and
+prototyping where useful), plus the architecture review questions (section 11 of the architecture).
+<strong>Inspector:</strong> the author (agent, cloud session 2026-09-28). <strong>Independence: not met</strong> — the gap analysis
+(row 2-14, question Q1) requires a person other than the author for a confirmation; this record is the author's
+self-inspection and the input for that review.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Check</th>
+<th>Result</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>I1</td>
+<td>every stage-1 SSR allocated to a component with ASIL</td>
+<td>pass (52 SSR; the 5 open ones with a proposed component)</td>
+<td>section 4, generated from <code>requirements.yaml</code></td>
+</tr>
+<tr>
+<td>I2</td>
+<td>every component of the safety part has a place in the repository and named units</td>
+<td>pass</td>
+<td>section 1</td>
+</tr>
+<tr>
+<td>I3</td>
+<td>interfaces between safety components named with their rule</td>
+<td>pass</td>
+<td>section 1.1</td>
+</tr>
+<tr>
+<td>I4</td>
+<td>global data of the safety part with writer and protection</td>
+<td>pass</td>
+<td>section 1.2, <code>arm-none-eabi-size -A</code>, <code>nm</code></td>
+</tr>
+<tr>
+<td>I5</td>
+<td>every safety mechanism assigned to a task or interrupt (control flow)</td>
+<td>pass</td>
+<td>section 2.1, 2.3</td>
+</tr>
+<tr>
+<td>I6</td>
+<td>data flow of events from detection to reaction without a bypass of <code>handle()</code> except the two named ones</td>
+<td>pass (code reading of <code>SafeSupervisor.cpp</code> <code>handle()</code>, 23 cases; the bypasses are the fault handlers and the deadman)</td>
+<td>section 2.4</td>
+</tr>
+<tr>
+<td>I7</td>
+<td>scheduling: safety task above application tasks; watchdog relation checked</td>
+<td>pass</td>
+<td><code>tasks.yaml</code>, <code>SafetyManager.cpp</code> <code>static_assert</code>s</td>
+</tr>
+<tr>
+<td>I8</td>
+<td>resource estimate complete (time, memory, stack, communication)</td>
+<td><strong>fail in part</strong>: communication (bus load) not estimated; safety-cycle WCET not measured</td>
+<td>section 6</td>
+</tr>
+<tr>
+<td>I9</td>
+<td>stack of every safety context bounded and below its size</td>
+<td><strong>fail</strong>: MSP (STK-1); safety task pass</td>
+<td>section 7</td>
+</tr>
+<tr>
+<td>I10</td>
+<td>freedom from interference: the three kinds addressed</td>
+<td>partial (memory: MSP unguarded; application unpartitioned)</td>
+<td>section 3</td>
+</tr>
+<tr>
+<td>I11</td>
+<td>QM code on safety paths identified</td>
+<td>pass (identified: console, logger, printf, ETL assert handler)</td>
+<td>STK-3 … STK-5</td>
+</tr>
+<tr>
+<td>I12</td>
+<td>review questions of the architecture answered</td>
+<td>pass</td>
+<td>section 11</td>
+</tr>
+</tbody>
+</table>
+<p>Findings of the inspection: STK-1 … STK-6 (section 7.4), I8. None changes a requirement; STK-1 and STK-2 need a
+decision (budget, guard) before a release claim.</p>
+<hr />
+<h2 id="10-other-families">10. Other families<a class="headerlink" href="#10-other-families" title="Permanent link">&para;</a></h2>
+<p>The family-neutral components (C-SUP, C-WDG, C-RTE, C-E2E, C-CAN, C-ECU) carry over. The family port (C-LCY,
+C-MEM, C-SYS, C-SIO, C-SPC, C-HFH) exists only for s32k1xx (<a href="../concept/"><code>concept.md</code></a> 1.3). The stack tool is
+family-neutral for Arm Thumb-2 images (Cortex-M and the Thumb state of Cortex-R); a new family needs its own profile
+with its exception frame size (Cortex-M0+: 32 B, no FP; Cortex-R4F: the port's own interrupt frame, no hardware
+stacking) and, on Cortex-R in ARM state, an extension of the instruction patterns in <code>sp_decrement</code> (<code>stmfd</code>,
+<code>sub sp, sp, #</code> are covered, <code>push</code> in ARM state is the same mnemonic).</p>
+<hr />
+<h2 id="11-review-questions-of-the-architecture-section-11">11. Review questions of the architecture (section 11)<a class="headerlink" href="#11-review-questions-of-the-architecture-section-11" title="Permanent link">&para;</a></h2>
+<p>Changes: a new document and a new tool under <code>tools/stackuse</code> (host tool, not in the image).</p>
+<ol>
+<li><strong>Without an SBC:</strong> the tool and the document are independent of the SBC; the MCU watchdog path is described.</li>
+<li><strong>Other crystal / clock:</strong> no clock value in the tool; frames do not depend on the clock.</li>
+<li><strong>Other derivative / S32K3, STM32, Cortex-R:</strong> the tool reads any Arm Thumb image; derivative facts (MSP size,
+   exception frame, levels) are in the profile. Section 10 names what a Cortex-R profile needs.</li>
+<li><strong>Two or more CAN buses:</strong> CAN handlers are contexts of the profile; a second bus is a second entry.</li>
+<li><strong>Several tasks, free priorities:</strong> every task is a context of its own with its own stack; ISR levels come from
+   the profile.</li>
+<li><strong>One configuration level per value:</strong> the tool introduces no configuration value of the image; the profile only
+   records image facts with their source (stack sizes, levels), it does not feed the build.</li>
+<li><strong>Host test with its own profile:</strong> <code>tools/stackuse/test/profile_test.yaml</code> with a made-up image; the demo profile
+   is tested against the real build only when one exists.</li>
+<li><strong>Tools free of Qt, messages with YAML path:</strong> no Qt; profile errors name the YAML path (<code>contexts[0].entries</code>).</li>
+<li><strong>Device drivers:</strong> not affected.</li>
+<li><strong>Files under <code>platforms/</code>:</strong> none.</li>
+</ol>
+<hr />
+<h2 id="12-proposals-for-the-coordinator-paths-outside-this-task">12. Proposals for the coordinator (paths outside this task)<a class="headerlink" href="#12-proposals-for-the-coordinator-paths-outside-this-task" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Test entries for <code>tools/test/tests.yaml</code> (the inventory check of <code>tools/test</code> reports
+  <code>tools/stackuse/test/test_stackuse.py</code> as unregistered until they exist):</li>
+</ul>
+<p><div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">stackuse</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">  </span><span class="nt">group</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">python</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">  </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">unittest</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">  </span><span class="nt">comment</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">&gt;</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">    </span><span class="no">SYS-65: Worst-Case-Stack aus .su und Aufrufgraph mit eigenem Testprofil (zwei Tasks, vier Handler auf drei</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">    </span><span class="no">Ebenen, Dispatch-Kette, offene/aufgeloeste indirekte Aufrufe, begrenzte/offene Rekursion); 8 Mutanten rot</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="w">  </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">tools/stackuse/test/test_stackuse.py</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">-k</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">NameKeyTest</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">-k</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">ParseTest</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">-k</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">AnalysisTest</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">-k</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">ProfileTest</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">-k</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">CliTest</span><span class="p p-Indicator">]</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="w">  </span><span class="nt">covers</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">tools/stackuse/test/test_stackuse.py</span><span class="p p-Indicator">]</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">stackuse-demo</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="w">  </span><span class="nt">group</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">target</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="w">  </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">unittest</span>
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="w">  </span><span class="nt">comment</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">&gt;</span>
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="w">    </span><span class="no">SYS-65: Profil evalboard_s32k144_demo gegen den Demo-Build - Sicherheits-Task vollstaendig und mit Reserve,</span>
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="w">    </span><span class="no">jede Profil-Referenz ein Symbol des Abbilds, Rahmenquellen zu mehr als 85 % gleich</span>
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="w">  </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">tools/stackuse/test/test_stackuse.py</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">-k</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">DemoImageTest</span><span class="p p-Indicator">]</span>
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a><span class="w">  </span><span class="nt">covers</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">tools/stackuse/test/test_stackuse.py</span><span class="p p-Indicator">]</span>
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a><span class="w">  </span><span class="nt">requires</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">arm_gcc</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">openbsw</span><span class="p p-Indicator">]</span>
+</code></pre></div>
+- After STK-1 is decided: a CI step <code>python tools/stackuse --build {build}/demo --elf … --profile
+  tools/stackuse/profiles/evalboard_s32k144_demo.yaml --strict</code> next to <code>elfcheck</code>.
+- <code>ssr.sdoc</code>: field <code>COMPONENT</code> per SSR, checked by <code>tools/trace</code> against section 1 (row 6-08).
+- New tasks from STK-1 … STK-4 (MSP budget and guard, lean ETL assert handler, logging out of fault paths).</p>
+<h2 id="13-sources">13. Sources<a class="headerlink" href="#13-sources" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Code of the baseline: <code>ecu/safety/*</code>, <code>platforms/s32k1xx/port/safety/*</code>, <code>platforms/s32k1xx/hardFaultHandler</code>,
+  <code>platforms/s32k1xx/port/main/src/{main.cpp,integration/*,os/isr/*}</code>, <code>ecu/application/src/{app/app.cpp,systems/SafetySystem.cpp}</code>,
+  <code>ecu/asyncCoreConfiguration/tasks.yaml</code>, <code>platforms/s32k1xx/port/main/linkerscript/application.dld.in</code>.</li>
+<li>Safety documents: <a href="../concept/"><code>concept.md</code></a>, <a href="../fmea/"><code>fmea.md</code></a>, <a href="../dfa/"><code>dfa.md</code></a>,
+  <a href="../../requirements/safety/ssr.sdoc"><code>ssr.sdoc</code></a>, <code>iso26262-gap.md</code> (not published, available on request), <a href="../hsi-s32k1xx/"><code>hsi-s32k1xx.md</code></a>.</li>
+<li>Arm: exception entry and the extended stack frame with lazy FP state preservation (ARMv7-M Architecture Reference
+  Manual, exception model), FreeRTOS Cortex-M4F port (<code>port.c</code>, PendSV context save).</li>
+<li>ISO 26262:2018 part 6 clause 7 and part 9; cited by clause number only.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Zurück zum Seitenanfang
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Fußzeile" >
+        
+          
+          <a href="../cm-plan/" class="md-footer__link md-footer__link--prev" aria-label="Zurück: neXtBSW configuration management plan and baselines (SYS-68)">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Zurück
+              </span>
+              <div class="md-ellipsis">
+                neXtBSW configuration management plan and baselines (SYS-68)
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../architecture-safety-analysis/" class="md-footer__link md-footer__link--next" aria-label="Weiter: neXtBSW software architectural safety analysis beyond the mechanisms (SYS-71)">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Weiter
+              </span>
+              <div class="md-ellipsis">
+                neXtBSW software architectural safety analysis beyond the mechanisms (SYS-71)
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright 2026 Daniel Simon Reinhardt-Probul - Apache-2.0
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.sections", "navigation.indexes", "navigation.top", "navigation.footer", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "In Zwischenablage kopiert", "clipboard.copy": "In Zwischenablage kopieren", "search.result.more.one": "1 weiteres Suchergebnis auf dieser Seite", "search.result.more.other": "# weitere Suchergebnisse auf dieser Seite", "search.result.none": "Keine Suchergebnisse", "search.result.one": "1 Suchergebnis", "search.result.other": "# Suchergebnisse", "search.result.placeholder": "Suchbegriff eingeben", "search.result.term.missing": "Es fehlt", "select.version": "Version ausw\u00e4hlen"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>
