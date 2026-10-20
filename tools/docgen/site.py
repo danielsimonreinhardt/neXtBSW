@@ -13,7 +13,8 @@ has the links to unpublished pages replaced by "not published, available on requ
 cut (DOC-74) and the internal review links substituted (PLAT-114). Building the development tree works for a local
 preview, but its links to private pages are dead there and `--strict` fails on them - on purpose.
 
-    python -m tools.docgen.site build --out <dir>            export to a temp folder, build the site there (strict)
+    python -m tools.docgen.site build --out <dir>            export to a temp folder, build the site there (strict);
+                                                              in an exported tree (release repository): build it as is
     python -m tools.docgen.site build --tree <export> --out <dir>   build an already exported tree
     python -m tools.docgen.site pages [--tree <dir>]          list the pages and files that would be staged
 
@@ -228,7 +229,14 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     with tempfile.TemporaryDirectory(prefix="nx-site-export-") as tmp:
-        tree = args.tree.resolve() if args.tree else export_tree(REPO, Path(tmp) / "export")
+        # in the release repository the checkout already is the export: exporting it again would apply
+        # export.overlay a second time and fail (DemoSwc already replaced) - build it as it is
+        if args.tree:
+            tree = args.tree.resolve()
+        elif is_export(REPO):
+            tree = REPO
+        else:
+            tree = export_tree(REPO, Path(tmp) / "export")
         done = build(tree, args.out.resolve(), strict=not args.no_strict)
         sys.stdout.write(done.stdout)
         sys.stderr.write(done.stderr)
