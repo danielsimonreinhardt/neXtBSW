@@ -21,7 +21,7 @@ ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from tools.docgen import site          # noqa: E402
+from tools.docgen import sanitize, site          # noqa: E402
 
 log = logging.getLogger("mkdocs.hooks.nextbsw")
 _state: dict[str, object] = {"command": "build", "staging": []}
@@ -54,12 +54,14 @@ def on_config(config):
 
 
 def on_page_markdown(markdown: str, page, config, files) -> str:
-    """Links to folders and other repository paths that are no site page (site.rewrite_links)."""
+    """Links to folders and other repository paths that are no site page (site.rewrite_links), then the internal
+    traces out of the rendered text (tools/docgen/sanitize.py: task IDs, CLAUDE.md; the sources stay unchanged)."""
     plan = _state.get("plan")
     if plan is None:
         return markdown
     source_url = str((config.extra.get("nextbsw") or {}).get("source_url") or "")
-    return site.rewrite_links(page.file.src_uri, markdown, plan, source_url)
+    return sanitize.clean_page(site.rewrite_links(page.file.src_uri, markdown, plan, source_url),
+                               path=page.file.src_uri)
 
 
 def _cleanup(keep_last: bool) -> None:

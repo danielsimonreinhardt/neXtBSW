@@ -1241,6 +1241,38 @@ tests:
     args: [tools/docgen/test_site.py]
     covers: [tools/docgen/test_site.py, tools/docgen/site.py, tools/docgen/mkdocs_hooks.py]
     timeout: 1500
+  - name: docgen-sanitize
+    group: python
+    kind: unittest
+    comment: >
+      Bereinigung der Website (SITE-CLEAN, tools/docgen/sanitize.py): je Regel echte Zeilen der veroeffentlichten
+      Seiten - Klammern nur aus Aufgaben-IDs entfallen, gemischte Klammern verlieren nur die IDs, Tabellenzellen
+      ("–", reine ID-Spalte entfernt), Label-IDs am Zeilenanfang, neutrale Wendungen im Fliesstext, CLAUDE.md-Verweise,
+      geaenderte Ueberschriften behalten ihren Anker, Codebloecke und Link-Ziele bleiben, Mermaid-Beschriftungen;
+      Gegenproben: echte Kennungen (SSR-, SM-, AoU-, DF-, AN-, CM-, CR-, EW-, F-, BT-, B16, FM-RTE-01) bleiben, ein
+      gieriger Sanitizer faellt auf, die Pruefmuster beissen. Stufe 2: abgeleitete Befund-IDs (SYS188-P2, S211-1,
+      B-IO44-4), Review-Punkte mit Entscheidungsbuchstaben (K-2 a), kleingeschriebene Board-/Wellen-IDs
+      (cloud-1001-sys-62, tool229-cm-regeln-1011), Rollen (coordinator, agent, dev-motor, integ/, Welle, Nacht),
+      Personen als Rolle (safety manager in den Safety-Dokumenten, sonst maintainer; Datum eines persoenlichen
+      Belegs faellt weg), Entscheidungsboard, Artefakt-IDs und claude.ai-Links, Planungsdateien; Gegenproben:
+      UDS-session, Ausgabedaten, R-NN der DFA, Testnamen, Versionen, camelCase-Bezeichner, 'half wave' bleiben
+    args: [tools/docgen/test_sanitize.py]
+    covers: [tools/docgen/test_sanitize.py, tools/docgen/sanitize.py]
+  - name: docgen-site-clean
+    group: python
+    kind: unittest
+    requires: [mkdocs]   # ohne die Pakete aus tools/requirements-site.txt uebersprungen
+    comment: >
+      Website ohne interne Spuren (SITE-CLEAN): echte Website aus dem offenen Export gebaut (strict), in jeder
+      HTML-Seite beider Sprachen ausserhalb von Codebloecken 0 Aufgaben-IDs (ARCH, BL, COM, DOC, IO, NVM, PLAT, RTE,
+      SYS, TOOL, VER) und 0 "Claude" - Text, Titel, Navigation, HTML-Kommentare und Mermaid-Bilder; Treffer in
+      Codebloecken werden gezaehlt und ausgegeben (bleiben nach Regel stehen). Gegenproben der Zaehlung: ID in Text,
+      Ueberschrift, Kommentar und Mermaid gefunden, Codeblock getrennt, echte Kennungen nicht gezaehlt. Stufe 2:
+      je Kategorie eine eigene Pruefung mit 0 Treffern (abgeleitete Befund-IDs, Board-IDs, Rollen, Personen,
+      Entscheidungsboard, private Links, Planungsdateien), jede mit Gegenprobe und Schonprobe
+    args: [tools/docgen/test_site_clean.py]
+    covers: [tools/docgen/test_site_clean.py, tools/docgen/sanitize.py, tools/docgen/mkdocs_hooks.py]
+    timeout: 1500
   - name: distcheck
     group: python
     kind: unittest
